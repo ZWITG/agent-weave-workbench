@@ -17,7 +17,7 @@ import { useDeviceConversations, type DeviceConversation } from "@/lib/conversat
 import { colorClass } from "@/lib/skills";
 
 type Agent = Database["public"]["Tables"]["agents"]["Row"];
-export function AgentConversation({ agent, agents, userId, saved, initialMode }: { agent: Agent; agents: Agent[]; userId: string; saved?: DeviceConversation; initialMode: "text" | "voice" }) {
+export function AgentConversation({ agent, agents, userId, saved, initialMode }: { agent: Agent; agents: Agent[]; userId: string; saved?: DeviceConversation | undefined; initialMode: "text" | "voice" }) {
   const device = useDeviceConversations(userId);
   const latest = useRef(device);
   latest.current = device;
@@ -44,9 +44,12 @@ export function AgentConversation({ agent, agents, userId, saved, initialMode }:
   const busy = status === "submitted" || status === "streaming";
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const [seconds, setSeconds] = useState<number | null>(null);
   const call = useLiveVoice({
     context: { token, agentId: agent.id, invited, knowledge: extra.current.knowledge },
     onEvent: (event) => {
+      if (event.type === "gateway.session.created") setSeconds(15);
+      if (event.usage && typeof event.usage.seconds === "number") setSeconds(Math.max(15, event.usage.seconds));
       if (!["session.input_transcript.delta", "session.output_transcript.delta"].includes(event.type) || typeof event["delta"] !== "string") return;
       const role = event.type === "session.input_transcript.delta" ? "user" : "assistant";
       const current = messagesRef.current;
@@ -61,10 +64,6 @@ export function AgentConversation({ agent, agents, userId, saved, initialMode }:
     },
   });
   const calling = ["connecting", "connected", "stopping"].includes(call.status);
-  const [seconds, setSeconds] = useState<number | null>(null);
-  // Usage arrives as cumulative provider snapshots; a call includes a 15-second minimum.
-  const callWithUsage = useRef(call);
-  callWithUsage.current = call;
   useEffect(() => { if (mode === "text" && !inviteOpen && !editOpen) textarea.current?.focus(); }, [mode, inviteOpen, editOpen, status]);
   const submit = async (text: string) => {
     if (!text.trim() || busy || calling) return;
@@ -102,7 +101,7 @@ export function AgentConversation({ agent, agents, userId, saved, initialMode }:
     {(error || call.error || device.error) && <p role="alert" className="mb-3 break-words text-sm text-destructive">{error?.message || call.error || device.error}</p>}
     <audio ref={call.audioRef} controls className={mode === "voice" ? "mb-3 h-9 w-full" : "hidden"} />
     {mode === "voice" ? <div className="border-t border-border pt-4">
-      <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground"><span>{call.status === "idle" ? "Ready to call" : call.status}</span><span>Uses AI credits · 15-second minimum</span></div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground"><span>{call.status === "idle" ? "Ready to call" : call.status}</span><span>{seconds === null ? "Uses AI credits · 15-second minimum" : `${seconds.toFixed(0)} billable seconds${call.finalized === false ? " · final usage unconfirmed" : ""}`}</span></div>
       <div className="flex flex-wrap gap-2">
         {!calling ? <Button disabled={!token} onClick={() => { setSeconds(null); call.start(); }}><Mic /> Start voice call</Button> : <Button variant="destructive" onClick={call.stop}><PhoneOff /> End call</Button>}
         {calling && <Button variant="outline" onClick={() => call.setMuted(!call.muted)}>{call.muted ? <MicOff /> : <Mic />}{call.muted ? "Unmute" : "Mute"}</Button>}
