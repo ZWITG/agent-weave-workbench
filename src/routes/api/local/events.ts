@@ -13,7 +13,8 @@ export const Route = createFileRoute("/api/local/events")({
         let cleanup = () => {};
         const stream = new ReadableStream({
           start(controller) {
-            const send = (e: unknown) => controller.enqueue(enc.encode(`data: ${JSON.stringify(e)}\n\n`));
+            const send = (e: unknown) =>
+              controller.enqueue(enc.encode(`data: ${JSON.stringify(e)}\n\n`));
             const ping = setInterval(() => controller.enqueue(enc.encode(": ping\n\n")), 15000);
             events.on("change", send);
             cleanup = () => {
@@ -34,7 +35,11 @@ export const Route = createFileRoute("/api/local/events")({
           },
         });
         return new Response(stream, {
-          headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-store", Connection: "keep-alive" },
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-store",
+            Connection: "keep-alive",
+          },
         });
       },
     },

@@ -28,7 +28,10 @@ export const Route = createFileRoute("/api/local/sync")({
           if (b.action === "unlink") return Response.json(s.unlink());
           return Response.json(await s.syncNow());
         } catch (e) {
-          return Response.json({ error: e instanceof Error ? e.message : "Sync failed" }, { status: 400 });
+          return Response.json(
+            { error: e instanceof Error ? e.message : "Sync failed" },
+            { status: 400 },
+          );
         }
       },
     },

@@ -45,8 +45,12 @@ function Layout() {
         <div className="max-w-sm rounded-xl border border-border bg-card p-8 text-center">
           <Lock className="mx-auto h-6 w-6 text-primary" />
           <h1 className="mt-3 text-xl font-bold">Private studio</h1>
-          <p className="mt-2 text-sm text-muted-foreground">This studio belongs to another account. {user.email} has no access.</p>
-          <Button className="mt-5" variant="secondary" onClick={signOut}>Sign out</Button>
+          <p className="mt-2 text-sm text-muted-foreground">
+            This studio belongs to another account. {user.email} has no access.
+          </p>
+          <Button className="mt-5" variant="secondary" onClick={signOut}>
+            Sign out
+          </Button>
         </div>
       </main>
     );
@@ -55,24 +59,49 @@ function Layout() {
   return (
     <div className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-56 flex-col border-r border-sidebar-border bg-sidebar p-4 md:flex">
-        <div className="flex items-center gap-3 px-2"><img src={mark.url} alt="Tensai" width={32} height={32} className="h-8 w-8 rounded-sm" /><span className="font-display text-xl">TENSAI</span><span className="font-mono text-xs text-primary">天才</span></div>
+        <div className="flex items-center gap-3 px-2">
+          <img src={mark.url} alt="Tensai" width={32} height={32} className="h-8 w-8 rounded-sm" />
+          <span className="font-display text-xl">TENSAI</span>
+          <span className="font-mono text-xs text-primary">天才</span>
+        </div>
         <nav className="mt-8 flex flex-1 flex-col gap-1">
           {nav.map((n) => (
-            <Link key={n.to} to={n.to} className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground" activeProps={{ className: "bg-sidebar-accent !text-foreground" }}>
+            <Link
+              key={n.to}
+              to={n.to}
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+              activeProps={{ className: "bg-sidebar-accent !text-foreground" }}
+            >
               <n.icon className="h-4 w-4" /> {n.label}
             </Link>
           ))}
         </nav>
         <div className="truncate px-2 font-mono text-xs text-muted-foreground">{user.email}</div>
-        {!desktop && <button onClick={signOut} className="mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"><LogOut className="h-4 w-4" /> Sign out</button>}
+        {!desktop && (
+          <button
+            onClick={signOut}
+            className="mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="h-4 w-4" /> Sign out
+          </button>
+        )}
       </aside>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap gap-1 border-b border-border p-2 md:hidden">
           {nav.map((n) => (
-            <Link key={n.to} to={n.to} className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted-foreground" activeProps={{ className: "bg-secondary !text-foreground" }}>{n.label}</Link>
+            <Link
+              key={n.to}
+              to={n.to}
+              className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted-foreground"
+              activeProps={{ className: "bg-secondary !text-foreground" }}
+            >
+              {n.label}
+            </Link>
           ))}
         </div>
-        <main className="mx-auto max-w-6xl p-6 md:p-10"><Outlet /></main>
+        <main className="mx-auto max-w-6xl p-6 md:p-10">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

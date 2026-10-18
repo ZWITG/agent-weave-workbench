@@ -46,7 +46,7 @@ const empty = {
   role: "",
   system_prompt: "",
   skills: ["write"] as string[],
-  color: "amber",
+  color: "violet",
   provider: "default" as string,
 };
 
@@ -231,7 +231,9 @@ function AgentsPage() {
                 className="mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
               >
                 {(Object.keys(PROVIDER_LABELS) as AgentProvider[]).map((k) => (
-                  <option key={k} value={k}>{PROVIDER_LABELS[k]}</option>
+                  <option key={k} value={k}>
+                    {PROVIDER_LABELS[k]}
+                  </option>
                 ))}
               </select>
             </div>

@@ -5,10 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type Status = { linked: boolean; email: string | null; pending: number; lastSync: string | null; lastError: string | null };
+type Status = {
+  linked: boolean;
+  email: string | null;
+  pending: number;
+  lastSync: string | null;
+  lastError: string | null;
+};
 
 async function call(body?: unknown): Promise<Status> {
-  const res = await fetch("/api/local/sync", body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  const res = await fetch(
+    "/api/local/sync",
+    body
+      ? {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      : {},
+  );
   const j = (await res.json()) as Status & { error?: string };
   if (!res.ok) throw new Error(j.error ?? "Sync failed");
   return j;
@@ -21,7 +36,13 @@ export function DesktopSync() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const refresh = useCallback(() => void call().then(setS).catch(() => {}), []);
+  const refresh = useCallback(
+    () =>
+      void call()
+        .then(setS)
+        .catch(() => {}),
+    [],
+  );
   useEffect(() => {
     refresh();
     const t = setInterval(refresh, 10_000);
@@ -46,25 +67,41 @@ export function DesktopSync() {
   return (
     <section className="mt-6 rounded-lg border border-border bg-card p-5">
       <h2 className="flex items-center gap-2 font-semibold">
-        {s?.linked ? <Cloud className="h-4 w-4 text-primary" /> : <CloudOff className="h-4 w-4" />} Sync with your online account
+        {s?.linked ? <Cloud className="h-4 w-4 text-primary" /> : <CloudOff className="h-4 w-4" />}{" "}
+        Sync with your online account
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        This app saves everything on your computer and works without internet. Link your online account to copy changes both ways whenever you're connected.
+        This app saves everything on your computer and works without internet. Link your online
+        account to copy changes both ways whenever you're connected.
       </p>
       {s?.linked ? (
         <div className="mt-4 space-y-3 text-sm">
           <div>
             Linked to <span className="font-mono">{s.email}</span> ·{" "}
-            {s.pending ? `${s.pending} change${s.pending === 1 ? "" : "s"} waiting` : "all changes copied"}
+            {s.pending
+              ? `${s.pending} change${s.pending === 1 ? "" : "s"} waiting`
+              : "all changes copied"}
           </div>
           <div className="text-muted-foreground">
-            {s.lastError ?? (s.lastSync ? `Last synced ${new Date(s.lastSync).toLocaleString()}` : "Not synced yet")}
+            {s.lastError ??
+              (s.lastSync
+                ? `Last synced ${new Date(s.lastSync).toLocaleString()}`
+                : "Not synced yet")}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" onClick={() => void run({ action: "sync" }, "Synced")} disabled={busy}>
+            <Button
+              size="sm"
+              onClick={() => void run({ action: "sync" }, "Synced")}
+              disabled={busy}
+            >
               <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} /> Sync now
             </Button>
-            <Button size="sm" variant="outline" onClick={() => void run({ action: "unlink" }, "Unlinked")} disabled={busy}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => void run({ action: "unlink" }, "Unlinked")}
+              disabled={busy}
+            >
               Unlink
             </Button>
           </div>
@@ -79,11 +116,23 @@ export function DesktopSync() {
         >
           <div>
             <Label htmlFor="se">Email</Label>
-            <Input id="se" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Input
+              id="se"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="sp">Password</Label>
-            <Input id="sp" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <Input
+              id="sp"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
           <Button type="submit" className="w-fit" disabled={busy}>
             {busy ? "Linking…" : "Link account"}

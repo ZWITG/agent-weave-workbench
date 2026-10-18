@@ -32,7 +32,9 @@ function client(): Db {
   const url = process.env["SUPABASE_URL"];
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
   if (!url || !key) throw new Error("Online account settings are missing");
-  return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient<Database>(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 export async function link(email: string, password: string) {
@@ -69,7 +71,9 @@ async function push(db: Db, uid: string) {
   const d = load();
   const m = d.meta;
   const order = (c: Change) =>
-    c.op === "delete" ? 100 - SYNC_TABLES.indexOf(c.table as never) : SYNC_TABLES.indexOf(c.table as never);
+    c.op === "delete"
+      ? 100 - SYNC_TABLES.indexOf(c.table as never)
+      : SYNC_TABLES.indexOf(c.table as never);
   const queue = [...m.dirty].sort((a, b) => order(a) - order(b));
   for (const c of queue) {
     const table = c.table as (typeof SYNC_TABLES)[number];
@@ -116,7 +120,10 @@ async function pull(db: Db) {
     const previouslySynced = new Set(m.synced[table] ?? []);
     // Removed online (and not changed here since) → remove here too.
     d.tables[table] = rows.filter(
-      (r) => remoteIds.has(r["id"] as string) || dirtyIds.has(r["id"] as string) || !previouslySynced.has(r["id"] as string),
+      (r) =>
+        remoteIds.has(r["id"] as string) ||
+        dirtyIds.has(r["id"] as string) ||
+        !previouslySynced.has(r["id"] as string),
     );
     for (const r of remote) {
       if (dirtyIds.has(r["id"] as string)) continue;
@@ -137,7 +144,8 @@ export function syncNow(): Promise<SyncStatus> {
     try {
       const db = client();
       const { data, error } = await db.auth.refreshSession({ refresh_token: m.link.refresh_token });
-      if (error || !data.session) throw new Error(error?.message ?? "Please link your online account again");
+      if (error || !data.session)
+        throw new Error(error?.message ?? "Please link your online account again");
       m.link.refresh_token = data.session.refresh_token;
       save(true);
       await push(db, m.link.user_id);
@@ -146,7 +154,9 @@ export function syncNow(): Promise<SyncStatus> {
       m.lastError = null;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Sync failed";
-      m.lastError = /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(msg) ? "Offline — will sync when internet is back" : msg;
+      m.lastError = /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(msg)
+        ? "Offline — will sync when internet is back"
+        : msg;
     } finally {
       save(true);
       running = null;

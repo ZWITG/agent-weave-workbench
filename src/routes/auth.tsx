@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import mark from "@/assets/tensai-mark.png.asset.json";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Hexagon } from "lucide-react";
 import "@lovable.dev/cloud-auth-js/styles.css";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -53,7 +52,11 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) toast.error(error.message);
     } else {
-      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.origin },
+      });
       if (error) toast.error(error.message);
       else toast.success("Check your email to confirm your account.");
     }
@@ -61,27 +64,65 @@ function AuthPage() {
   };
 
   const oauth = async (p: "google" | "lovable") => {
-    const r = await lovable.auth.signInWithOAuth(p, { redirect_uri: window.location.origin + "/auth" });
+    const r = await lovable.auth.signInWithOAuth(p, {
+      redirect_uri: window.location.origin + "/auth",
+    });
     if (r.error) toast.error(String(r.error.message ?? r.error));
   };
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
-        <div className="flex items-center gap-3"><img src={mark.url} alt="Tensai" width={40} height={40} className="h-10 w-10 rounded-sm" /><span className="font-display text-2xl">TENSAI</span></div>
+        <div className="flex items-center gap-3">
+          <img
+            src={mark.url}
+            alt="Tensai"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-sm"
+          />
+          <span className="font-display text-2xl">TENSAI</span>
+        </div>
         <h1 className="mt-4 text-2xl font-bold">{mode === "in" ? "Sign in" : "Create account"}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Private studio — only the owner can get in.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Private studio — only the owner can get in.
+        </p>
         <div className="mt-6 space-y-2">
-          <button type="button" className="lovable-auth-button w-full" onClick={() => oauth("lovable")}>Continue with Lovable</button>
-          <Button variant="secondary" className="w-full" onClick={() => oauth("google")}>Continue with Google</Button>
+          <button
+            type="button"
+            className="lovable-auth-button w-full"
+            onClick={() => oauth("lovable")}
+          >
+            Continue with Lovable
+          </button>
+          <Button variant="secondary" className="w-full" onClick={() => oauth("google")}>
+            Continue with Google
+          </Button>
         </div>
         <div className="my-5 text-center font-mono text-xs text-muted-foreground">— or email —</div>
         <form onSubmit={submit} className="space-y-3">
-          <div><Label>Email</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-          <div><Label>Password</Label><Input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-          <Button type="submit" className="w-full" disabled={busy}>{mode === "in" ? "Sign in" : "Sign up"}</Button>
+          <div>
+            <Label>Email</Label>
+            <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div>
+            <Label>Password</Label>
+            <Input
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={busy}>
+            {mode === "in" ? "Sign in" : "Sign up"}
+          </Button>
         </form>
-        <button className="mt-4 text-sm text-muted-foreground hover:text-foreground" onClick={() => setMode(mode === "in" ? "up" : "in")}>
+        <button
+          className="mt-4 text-sm text-muted-foreground hover:text-foreground"
+          onClick={() => setMode(mode === "in" ? "up" : "in")}
+        >
           {mode === "in" ? "No account yet? Sign up" : "Have an account? Sign in"}
         </button>
       </div>

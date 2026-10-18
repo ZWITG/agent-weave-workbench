@@ -73,7 +73,8 @@ function defaults(table: string, row: Row): Row {
   const d = load();
   const now = new Date().toISOString();
   const base: Row = { user_id: LOCAL_USER_ID, ...row };
-  if (table === "run_logs") base["id"] ??= d.meta.nextLogId--; // negative = not yet synced
+  if (table === "run_logs")
+    base["id"] ??= d.meta.nextLogId--; // negative = not yet synced
   else if (table !== "ai_settings") base["id"] ??= crypto.randomUUID();
   if (table === "runs") {
     base["started_at"] ??= now;
@@ -104,7 +105,12 @@ function markDirty(table: string, id: string | number, op: Change["op"]) {
 }
 
 function emit(table: string, eventType: "INSERT" | "UPDATE" | "DELETE", row: Row, old?: Row) {
-  events.emit("change", { table, eventType, new: eventType === "DELETE" ? {} : row, old: old ?? {} });
+  events.emit("change", {
+    table,
+    eventType,
+    new: eventType === "DELETE" ? {} : row,
+    old: old ?? {},
+  });
 }
 
 /** Runs one query against the local data. `track` = record the change for syncing. */
@@ -113,7 +119,11 @@ export function execute(q: Query, track = true): Result {
   const rows = d.tables[q.table];
   if (!rows) return { data: null, error: { message: `Unknown table ${q.table}` } };
   const key = keyOf(q.table);
-  if (q.op === "select") return shape(rows.filter((r) => matches(r, q.filters)), q);
+  if (q.op === "select")
+    return shape(
+      rows.filter((r) => matches(r, q.filters)),
+      q,
+    );
 
   const touched: Row[] = [];
   if (q.op === "insert" || q.op === "upsert") {
@@ -163,7 +173,10 @@ export function localServerClient() {
     from: makeFrom(async (q) => execute(q)),
     rpc: async () => ({ data: true, error: null }),
     auth: {
-      getUser: async () => ({ data: { user: { id: LOCAL_USER_ID, email: "this computer" } }, error: null }),
+      getUser: async () => ({
+        data: { user: { id: LOCAL_USER_ID, email: "this computer" } },
+        error: null,
+      }),
     },
   };
 }

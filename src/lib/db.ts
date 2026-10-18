@@ -14,14 +14,20 @@ function createLocalClient() {
     if (source) return;
     source = new EventSource("/api/local/events");
     source.onmessage = (m) => {
-      const e = JSON.parse(m.data as string) as { table: string; eventType: string; new: Row; old: Row };
+      const e = JSON.parse(m.data as string) as {
+        table: string;
+        eventType: string;
+        new: Row;
+        old: Row;
+      };
       for (const l of listeners) {
         if (l.table !== e.table || (l.event !== "*" && l.event !== e.eventType)) continue;
         if (l.filter) {
           const [col, rest] = l.filter.split("=");
           const val = rest?.replace(/^eq\./, "");
           const row = e.eventType === "DELETE" ? e.old : e.new;
-          if (!matches({ v: String(row[col ?? ""] ?? "") }, [{ type: "eq", col: "v", val }])) continue;
+          if (!matches({ v: String(row[col ?? ""] ?? "") }, [{ type: "eq", col: "v", val }]))
+            continue;
         }
         l.cb(e);
       }
@@ -42,8 +48,17 @@ function createLocalClient() {
     channel: (_name: string) => {
       const mine: Listener[] = [];
       const ch = {
-        on: (_type: string, opts: { event: string; table: string; filter?: string }, cb: (p: unknown) => void) => {
-          mine.push({ table: opts.table, event: opts.event, cb, ...(opts.filter ? { filter: opts.filter } : {}) });
+        on: (
+          _type: string,
+          opts: { event: string; table: string; filter?: string },
+          cb: (p: unknown) => void,
+        ) => {
+          mine.push({
+            table: opts.table,
+            event: opts.event,
+            cb,
+            ...(opts.filter ? { filter: opts.filter } : {}),
+          });
           return ch;
         },
         subscribe: () => {

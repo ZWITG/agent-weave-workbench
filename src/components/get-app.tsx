@@ -26,7 +26,9 @@ export function GetApp() {
 
   const install = async () => {
     if (!prompt) {
-      toast.info("Open Tensai in Chrome or Edge on the published site, then use the browser menu → Install Tensai. On iPhone: Share → Add to Home Screen.");
+      toast.info(
+        "Open Tensai in Chrome or Edge on the published site, then use the browser menu → Install Tensai. On iPhone: Share → Add to Home Screen.",
+      );
       return;
     }
     await prompt.prompt();

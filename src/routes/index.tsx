@@ -6,9 +6,15 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Tensai — Your private AI agent studio" },
-      { name: "description", content: "Create AI agents, chain them into workflows, and watch them work together live." },
+      {
+        name: "description",
+        content: "Create AI agents, chain them into workflows, and watch them work together live.",
+      },
       { property: "og:title", content: "Tensai — Your private AI agent studio" },
-      { property: "og:description", content: "Create AI agents, chain them into workflows, and watch them work together live." },
+      {
+        property: "og:description",
+        content: "Create AI agents, chain them into workflows, and watch them work together live.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -18,10 +24,22 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const features = [
-    { icon: Bot, t: "Custom agents", d: "Roles, prompts and skills like web search or spawning helper AIs." },
-    { icon: Workflow, t: "Chained workflows", d: "Stages run in order; agents in a stage work side by side." },
+    {
+      icon: Bot,
+      t: "Custom agents",
+      d: "Roles, prompts and skills like web search or spawning helper AIs.",
+    },
+    {
+      icon: Workflow,
+      t: "Chained workflows",
+      d: "Stages run in order; agents in a stage work side by side.",
+    },
     { icon: Brain, t: "Shared mind", d: "What one agent learns, every agent can use." },
-    { icon: Activity, t: "Live signal", d: "Watch every step, tool call and output as it happens." },
+    {
+      icon: Activity,
+      t: "Live signal",
+      d: "Watch every step, tool call and output as it happens.",
+    },
   ];
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 py-16 text-center">
@@ -38,7 +56,8 @@ function Index() {
         <span className="text-primary">THINKING AS ONE</span>
       </h1>
       <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-        Design agents, connect them into workflows, and run them from one control room — online, or fully offline on your own computer.
+        Design agents, connect them into workflows, and run them from one control room — online, or
+        fully offline on your own computer.
       </p>
       <Link
         to="/auth"
