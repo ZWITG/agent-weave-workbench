@@ -1,7 +1,7 @@
 export type InstallerLinks = { windows: string | null; android: string | null };
 
 export function installerLinks(value: unknown): InstallerLinks {
-  const row = value && typeof value === "object" ? value as Record<string, unknown> : {};
+  const row = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   const link = (key: string, extension: string) => {
     try {
       const url = new URL(String(row[key] ?? ""));
