@@ -3,12 +3,26 @@ import { appendFollowUps, unseenFollowUps, queuedMessage } from "./continuous-wo
 
 describe("continuous work", () => {
   it("accepts follow-ups without discarding earlier work", () => {
-    expect(appendFollowUps([{ role: "assistant", content: "Working" }], [{ id: 1, message: "Make it green" }]))
-      .toEqual([{ role: "assistant", content: "Working" }, { role: "user", content: "Make it green" }]);
+    expect(
+      appendFollowUps(
+        [{ role: "assistant", content: "Working" }],
+        [{ id: 1, message: "Make it green" }],
+      ),
+    ).toEqual([
+      { role: "assistant", content: "Working" },
+      { role: "user", content: "Make it green" },
+    ]);
   });
   it("delivers each instruction once even with descending desktop IDs", () => {
-    expect(unseenFollowUps([{ id: -1, message: "first" }, { id: -2, message: "second" }], new Set([-1])))
-      .toEqual([{ id: -2, message: "second" }]);
+    expect(
+      unseenFollowUps(
+        [
+          { id: -1, message: "first" },
+          { id: -2, message: "second" },
+        ],
+        new Set([-1]),
+      ),
+    ).toEqual([{ id: -2, message: "second" }]);
   });
   it("keeps continuous chat replies as separate user messages", () => {
     const first = queuedMessage("Continue building");

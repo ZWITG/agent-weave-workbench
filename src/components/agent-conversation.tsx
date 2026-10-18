@@ -1,7 +1,19 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MessageSquare, Mic, MicOff, PhoneOff, Play, UserPlus, Trash2, Pencil, ArrowUp, Square, X } from "lucide-react";
+import {
+  MessageSquare,
+  Mic,
+  MicOff,
+  PhoneOff,
+  Play,
+  UserPlus,
+  Trash2,
+  Pencil,
+  ArrowUp,
+  Square,
+  X,
+} from "lucide-react";
 import { queuedMessage } from "@/lib/continuous-work";
 import { db as supabase } from "@/lib/db";
 import type { Database } from "@/integrations/supabase/types";
@@ -165,7 +177,10 @@ export function AgentConversation({
     if (!next) return;
     sending.current = true;
     setPending((current) => current.filter((message) => message.id !== next.id));
-    void sendMessage(next).finally(() => { sending.current = false; setPending((current) => [...current]); });
+    void sendMessage(next).finally(() => {
+      sending.current = false;
+      setPending((current) => [...current]);
+    });
   }, [busy, calling, queuePaused, status, pending, sendMessage]);
   useEffect(() => {
     if (messages.length)
@@ -339,34 +354,85 @@ export function AgentConversation({
         </div>
       ) : (
         <>
-        {pending.length > 0 && <div className="mb-3 space-y-2 border-t border-border pt-3">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{queuePaused || error ? "Paused replies" : "Next replies"} · {pending.length}</span>
-            {(queuePaused || error) && <Button size="sm" variant="ghost" onClick={() => { setQueuePaused(false); if (error) void sendMessage(); }}>Resume</Button>}
-          </div>
-          {pending.map((message) => <Message from="user" key={message.id}>
-            <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground">
-              <div className="flex items-start gap-3"><span className="whitespace-pre-wrap break-words">{message.parts.map((part) => part.type === "text" ? part.text : "").join("")}</span>
-              <Button type="button" size="icon-sm" variant="ghost" aria-label="Remove queued reply" onClick={() => setPending((current) => current.filter((item) => item.id !== message.id))}><X /></Button></div>
-            </MessageContent>
-          </Message>)}
-        </div>}
-        <PromptInput onSubmit={({ text }) => submit(text)}>
-          <PromptInputTextarea
-            ref={textarea}
-            aria-label="Message agent"
-            placeholder={busy ? `Send a follow-up to ${agent.name}…` : `Message ${agent.name}…`}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <PromptInputFooter className="justify-between">
-            <span className="text-xs text-muted-foreground">{busy ? "Working" : queuePaused ? "Paused" : "Ready"}</span>
-            <div className="flex gap-2">
-            {busy && <Button type="button" size="icon-sm" variant="outline" aria-label="Stop agent" title="Stop agent" onClick={() => { setQueuePaused(true); void stop(); }}><Square /></Button>}
-            <PromptInputSubmit status={status} aria-label="Send reply" disabled={!input.trim()}><ArrowUp /></PromptInputSubmit>
+          {pending.length > 0 && (
+            <div className="mb-3 space-y-2 border-t border-border pt-3">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>
+                  {queuePaused || error ? "Paused replies" : "Next replies"} · {pending.length}
+                </span>
+                {(queuePaused || error) && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setQueuePaused(false);
+                      if (error) void sendMessage();
+                    }}
+                  >
+                    Resume
+                  </Button>
+                )}
+              </div>
+              {pending.map((message) => (
+                <Message from="user" key={message.id}>
+                  <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground">
+                    <div className="flex items-start gap-3">
+                      <span className="whitespace-pre-wrap break-words">
+                        {message.parts
+                          .map((part) => (part.type === "text" ? part.text : ""))
+                          .join("")}
+                      </span>
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        variant="ghost"
+                        aria-label="Remove queued reply"
+                        onClick={() =>
+                          setPending((current) => current.filter((item) => item.id !== message.id))
+                        }
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  </MessageContent>
+                </Message>
+              ))}
             </div>
-          </PromptInputFooter>
-        </PromptInput>
+          )}
+          <PromptInput onSubmit={({ text }) => submit(text)}>
+            <PromptInputTextarea
+              ref={textarea}
+              aria-label="Message agent"
+              placeholder={busy ? `Send a follow-up to ${agent.name}…` : `Message ${agent.name}…`}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <PromptInputFooter className="justify-between">
+              <span className="text-xs text-muted-foreground">
+                {busy ? "Working" : queuePaused ? "Paused" : "Ready"}
+              </span>
+              <div className="flex gap-2">
+                {busy && (
+                  <Button
+                    type="button"
+                    size="icon-sm"
+                    variant="outline"
+                    aria-label="Stop agent"
+                    title="Stop agent"
+                    onClick={() => {
+                      setQueuePaused(true);
+                      void stop();
+                    }}
+                  >
+                    <Square />
+                  </Button>
+                )}
+                <PromptInputSubmit status={status} aria-label="Send reply" disabled={!input.trim()}>
+                  <ArrowUp />
+                </PromptInputSubmit>
+              </div>
+            </PromptInputFooter>
+          </PromptInput>
         </>
       )}
       <div className="mt-4 flex flex-wrap justify-end gap-2">

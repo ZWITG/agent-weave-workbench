@@ -8,7 +8,10 @@ export function unseenFollowUps(rows: FollowUp[], seen: Set<number>) {
 }
 
 export function appendFollowUps(messages: ModelMessage[], rows: FollowUp[]): ModelMessage[] {
-  return [...messages, ...rows.map((row): ModelMessage => ({ role: "user", content: row.message }))];
+  return [
+    ...messages,
+    ...rows.map((row): ModelMessage => ({ role: "user", content: row.message })),
+  ];
 }
 
 export function queuedMessage(text: string): UIMessage {
