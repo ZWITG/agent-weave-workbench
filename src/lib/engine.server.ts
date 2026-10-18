@@ -132,6 +132,37 @@ export async function executeRun(opts: {
         },
       });
     }
+    if (skills.includes("build")) {
+      tools.write_file = tool({
+        description:
+          "Create or overwrite a project file (e.g. index.html, game.js, styles.css, main.py, song.md). For playable web games/apps, put everything needed in index.html (inline CSS/JS) so it previews live. Write complete, working code — never placeholders.",
+        inputSchema: z.object({ path: z.string(), content: z.string() }),
+        execute: async ({ path, content }) => {
+          const { error } = await db.from("artifacts").upsert(
+            { user_id: userId, run_id: runId, agent_name: name, path, content, updated_at: new Date().toISOString() },
+            { onConflict: "run_id,path" },
+          );
+          await log(name, "file", `${error ? "Failed to write" : "Wrote"} ${path} (${content.length} chars)`);
+          return error ? { error: error.message } : { saved: path };
+        },
+      });
+      tools.read_file = tool({
+        description: "Read a project file written earlier in this run by any agent.",
+        inputSchema: z.object({ path: z.string() }),
+        execute: async ({ path }) => {
+          const { data } = await db.from("artifacts").select("content").eq("run_id", runId).eq("path", path).maybeSingle();
+          return data?.content ?? "File not found";
+        },
+      });
+      tools.list_files = tool({
+        description: "List project files written in this run.",
+        inputSchema: z.object({}),
+        execute: async () => {
+          const { data } = await db.from("artifacts").select("path, agent_name").eq("run_id", runId);
+          return data ?? [];
+        },
+      });
+    }
     if (skills.includes("create_helper") && depth < 2) {
       tools.create_helper_agent = tool({
         description:
@@ -151,7 +182,7 @@ export async function executeRun(opts: {
               skills: ["write", "web_search"], color: "violet",
             });
           }
-          return await runAgent(h.name, h.system_prompt, ["write", "web_search"], h.task, depth + 1);
+          return await runAgent(h.name, h.system_prompt, ["write", "web_search", ...(skills.includes("build") ? ["build"] : [])], h.task, depth + 1);
         },
       });
     }
