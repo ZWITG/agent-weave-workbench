@@ -10,6 +10,7 @@ export const SYNC_TABLES = [
   "artifacts",
   "run_logs",
   "knowledge",
+  "customizations",
 ] as const;
 export const LOCAL_TABLES = [...SYNC_TABLES, "ai_settings"] as const;
 export type LocalTable = (typeof LOCAL_TABLES)[number];
