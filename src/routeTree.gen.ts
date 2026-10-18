@@ -19,6 +19,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedWorkflowsRouteImport } from './routes/_authenticated/workflows'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedAgentsAgentIdRouteImport } from './routes/_authenticated/agents_.$agentId'
+import { Route as AuthenticatedPSlugRouteImport } from './routes/_authenticated/p.$slug'
 import { Route as AuthenticatedRunsRunIdRouteImport } from './routes/_authenticated/runs.$runId'
 import { Route as ApiLocalDbRouteImport } from './routes/api/local/db'
 import { Route as ApiLocalEventsRouteImport } from './routes/api/local/events'
@@ -74,6 +75,11 @@ const AuthenticatedAgentsAgentIdRoute =
     path: '/agents/$agentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPSlugRoute = AuthenticatedPSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRunsRunIdRoute = AuthenticatedRunsRunIdRouteImport.update({
   id: '/runs/$runId',
   path: '/runs/$runId',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/workflows': typeof AuthenticatedWorkflowsRoute
   '/api/chat': typeof ApiChatRoute
   '/agents/$agentId': typeof AuthenticatedAgentsAgentIdRoute
+  '/p/$slug': typeof AuthenticatedPSlugRoute
   '/runs/$runId': typeof AuthenticatedRunsRunIdRoute
   '/api/local/db': typeof ApiLocalDbRoute
   '/api/local/events': typeof ApiLocalEventsRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/workflows': typeof AuthenticatedWorkflowsRoute
   '/api/chat': typeof ApiChatRoute
   '/agents/$agentId': typeof AuthenticatedAgentsAgentIdRoute
+  '/p/$slug': typeof AuthenticatedPSlugRoute
   '/runs/$runId': typeof AuthenticatedRunsRunIdRoute
   '/api/local/db': typeof ApiLocalDbRoute
   '/api/local/events': typeof ApiLocalEventsRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/_authenticated/workflows': typeof AuthenticatedWorkflowsRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/agents_/$agentId': typeof AuthenticatedAgentsAgentIdRoute
+  '/_authenticated/p/$slug': typeof AuthenticatedPSlugRoute
   '/_authenticated/runs/$runId': typeof AuthenticatedRunsRunIdRoute
   '/api/local/db': typeof ApiLocalDbRoute
   '/api/local/events': typeof ApiLocalEventsRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/workflows'
     | '/api/chat'
     | '/agents/$agentId'
+    | '/p/$slug'
     | '/runs/$runId'
     | '/api/local/db'
     | '/api/local/events'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/workflows'
     | '/api/chat'
     | '/agents/$agentId'
+    | '/p/$slug'
     | '/runs/$runId'
     | '/api/local/db'
     | '/api/local/events'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workflows'
     | '/api/chat'
     | '/_authenticated/agents_/$agentId'
+    | '/_authenticated/p/$slug'
     | '/_authenticated/runs/$runId'
     | '/api/local/db'
     | '/api/local/events'
@@ -273,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgentsAgentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/p/$slug': {
+      id: '/_authenticated/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof AuthenticatedPSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/runs/$runId': {
       id: '/_authenticated/runs/$runId'
       path: '/runs/$runId'
@@ -311,6 +330,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedWorkflowsRoute: typeof AuthenticatedWorkflowsRoute
   AuthenticatedAgentsAgentIdRoute: typeof AuthenticatedAgentsAgentIdRoute
+  AuthenticatedPSlugRoute: typeof AuthenticatedPSlugRoute
   AuthenticatedRunsRunIdRoute: typeof AuthenticatedRunsRunIdRoute
 }
 
@@ -321,6 +341,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedWorkflowsRoute: AuthenticatedWorkflowsRoute,
   AuthenticatedAgentsAgentIdRoute: AuthenticatedAgentsAgentIdRoute,
+  AuthenticatedPSlugRoute: AuthenticatedPSlugRoute,
   AuthenticatedRunsRunIdRoute: AuthenticatedRunsRunIdRoute,
 }
 
