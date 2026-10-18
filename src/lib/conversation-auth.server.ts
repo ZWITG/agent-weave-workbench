@@ -1,5 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+
+/** Desktop app: the on-computer studio's owner is whoever uses this computer's Hive window. */
+export async function authorizeLocalConversation(agentIds: string[]) {
+  const { localServerClient } = await import("./local-db/store.server");
+  return authorizeWith(localServerClient() as unknown as SupabaseClient<Database>, "", agentIds);
+}
 
 export async function authorizeConversation(token: string, agentIds: string[]) {
   const url = process.env["SUPABASE_URL"];
@@ -9,7 +15,11 @@ export async function authorizeConversation(token: string, agentIds: string[]) {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { headers: { apikey: key, Authorization: `Bearer ${token}` } },
   });
-  const { data, error } = await db.auth.getUser(token);
+  return authorizeWith(db, token, agentIds);
+}
+
+async function authorizeWith(db: SupabaseClient<Database>, token: string, agentIds: string[]) {
+  const { data, error } = token ? await db.auth.getUser(token) : await db.auth.getUser();
   if (error || !data.user) throw new Error("Please sign in to speak with an agent");
   const { data: owner, error: ownerError } = await db.rpc("is_owner");
   if (ownerError || !owner) throw new Error("This studio is private");

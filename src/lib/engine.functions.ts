@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAppAuth } from "./app-auth";
 import { executeRun, type Stage } from "./engine.server";
 import { loadSettings } from "./ai-provider.server";
 
 export const createRun = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((d: { workflowId: string; input: string }) => d)
   .handler(async ({ data, context }) => {
     const db = context.supabase;
@@ -20,7 +20,7 @@ export const createRun = createServerFn({ method: "POST" })
   });
 
 export const executeRunFn = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((d: { runId: string }) => d)
   .handler(async ({ data, context }) => {
     const db = context.supabase;
