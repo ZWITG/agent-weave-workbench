@@ -1,4 +1,6 @@
 # Agent rules
+- End-user downloads use validated HTTPS EXE/APK links in public/downloads/installers.json, enabled only after release verification. Why: source ZIPs are not installers.
+- Android packaging lives in mobile/ as a Capacitor shell for the published HTTPS app, with stable release signing in android.yml; offline Android AI is not implemented by this shell. Why: the desktop Node runtime cannot execute inside Android WebView.
 - Continuous chat follow-ups use a persisted device queue without interrupting the active stream; workflow follow-ups use owner-scoped user_message run logs read between model steps and on completion. Why: preserve ongoing work, history, and offline sync while accepting new instructions.
 - Agent execution engine lives in src/lib/engine.server.ts; client calls createRun then executeRunFn (engine.functions.ts) so the UI can navigate before the run finishes. Why: live logs stream via realtime on run_logs/runs/artifacts.
 - All app tables are gated by public.is_owner(); the first signed-in user claims ownership via claim_owner(). Why: single-owner private studio.

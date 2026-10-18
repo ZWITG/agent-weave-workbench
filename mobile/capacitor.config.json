@@ -1,0 +1,9 @@
+{
+  "appId": "app.tensai.mobile",
+  "appName": "Tensai",
+  "webDir": "www",
+  "server": {
+    "url": "https://tensaizwitg.app",
+    "cleartext": false
+  }
+}
