@@ -250,6 +250,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
     const seen = new Set<number>();
     let messages = [{ role: "user" as const, content: task }] as import("ai").ModelMessage[];
     let text = "";
+    let continuing = true;
     do {
       const appliedThisCall: import("./continuous-work").FollowUp[] = [];
       const result = streamText({
@@ -290,7 +291,8 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
         delivered.add(reply.id);
       }
       messages = appendFollowUps(messages, fresh);
-    } while (true);
+      continuing = fresh.length > 0;
+    } while (continuing);
     await log(name, "output", text || "(no output)");
     return text;
   };

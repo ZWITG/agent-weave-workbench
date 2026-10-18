@@ -19,15 +19,13 @@ export const sendRunReply = createServerFn({ method: "POST" })
       .single();
     if (!run || !run.workflow_id) throw new Error("Run not available");
     if (run.status === "failed") throw new Error("Start a new run after resolving the error.");
-    const { error } = await db
-      .from("run_logs")
-      .insert({
-        run_id: run.id,
-        user_id: context.userId,
-        agent_name: "You",
-        kind: "user_message",
-        message: data.message,
-      });
+    const { error } = await db.from("run_logs").insert({
+      run_id: run.id,
+      user_id: context.userId,
+      agent_name: "You",
+      kind: "user_message",
+      message: data.message,
+    });
     if (error) throw new Error(error.message);
     // Compare-and-set prevents two replies from launching two continuations.
     const { data: resumed, error: resumeError } = await db
