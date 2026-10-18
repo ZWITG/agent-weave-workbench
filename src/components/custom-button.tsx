@@ -20,7 +20,7 @@ export function CustomButtonView({
   const exec = useServerFn(executeRunFn);
   const [busy, setBusy] = useState(false);
 
-  const run = async () => {
+  const run = async (): Promise<void> => {
     const a = button.action;
     if (a.type === "link") {
       if (!/^https?:\/\//.test(a.url))
