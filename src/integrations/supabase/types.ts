@@ -142,6 +142,30 @@ export type Database = {
           },
         ]
       }
+      customizations: {
+        Row: {
+          config: Json
+          history: Json
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json
+          history?: Json
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config?: Json
+          history?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       knowledge: {
         Row: {
           agent_name: string

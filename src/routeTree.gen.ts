@@ -13,12 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
+import { Route as AuthenticatedCustomizeRouteImport } from './routes/_authenticated/customize'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedKnowledgeRouteImport } from './routes/_authenticated/knowledge'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedWorkflowsRouteImport } from './routes/_authenticated/workflows'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedAgentsAgentIdRouteImport } from './routes/_authenticated/agents_.$agentId'
+import { Route as AuthenticatedPSlugRouteImport } from './routes/_authenticated/p.$slug'
 import { Route as AuthenticatedRunsRunIdRouteImport } from './routes/_authenticated/runs.$runId'
 import { Route as ApiLocalDbRouteImport } from './routes/api/local/db'
 import { Route as ApiLocalEventsRouteImport } from './routes/api/local/events'
@@ -41,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedAgentsRoute = AuthenticatedAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCustomizeRoute = AuthenticatedCustomizeRouteImport.update({
+  id: '/customize',
+  path: '/customize',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -74,6 +81,11 @@ const AuthenticatedAgentsAgentIdRoute =
     path: '/agents/$agentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPSlugRoute = AuthenticatedPSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRunsRunIdRoute = AuthenticatedRunsRunIdRouteImport.update({
   id: '/runs/$runId',
   path: '/runs/$runId',
@@ -99,12 +111,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agents': typeof AuthenticatedAgentsRoute
+  '/customize': typeof AuthenticatedCustomizeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/workflows': typeof AuthenticatedWorkflowsRoute
   '/api/chat': typeof ApiChatRoute
   '/agents/$agentId': typeof AuthenticatedAgentsAgentIdRoute
+  '/p/$slug': typeof AuthenticatedPSlugRoute
   '/runs/$runId': typeof AuthenticatedRunsRunIdRoute
   '/api/local/db': typeof ApiLocalDbRoute
   '/api/local/events': typeof ApiLocalEventsRoute
@@ -114,12 +128,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agents': typeof AuthenticatedAgentsRoute
+  '/customize': typeof AuthenticatedCustomizeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/workflows': typeof AuthenticatedWorkflowsRoute
   '/api/chat': typeof ApiChatRoute
   '/agents/$agentId': typeof AuthenticatedAgentsAgentIdRoute
+  '/p/$slug': typeof AuthenticatedPSlugRoute
   '/runs/$runId': typeof AuthenticatedRunsRunIdRoute
   '/api/local/db': typeof ApiLocalDbRoute
   '/api/local/events': typeof ApiLocalEventsRoute
@@ -131,12 +147,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/agents': typeof AuthenticatedAgentsRoute
+  '/_authenticated/customize': typeof AuthenticatedCustomizeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/knowledge': typeof AuthenticatedKnowledgeRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/workflows': typeof AuthenticatedWorkflowsRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/agents_/$agentId': typeof AuthenticatedAgentsAgentIdRoute
+  '/_authenticated/p/$slug': typeof AuthenticatedPSlugRoute
   '/_authenticated/runs/$runId': typeof AuthenticatedRunsRunIdRoute
   '/api/local/db': typeof ApiLocalDbRoute
   '/api/local/events': typeof ApiLocalEventsRoute
@@ -148,12 +166,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/agents'
+    | '/customize'
     | '/dashboard'
     | '/knowledge'
     | '/settings'
     | '/workflows'
     | '/api/chat'
     | '/agents/$agentId'
+    | '/p/$slug'
     | '/runs/$runId'
     | '/api/local/db'
     | '/api/local/events'
@@ -163,12 +183,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/agents'
+    | '/customize'
     | '/dashboard'
     | '/knowledge'
     | '/settings'
     | '/workflows'
     | '/api/chat'
     | '/agents/$agentId'
+    | '/p/$slug'
     | '/runs/$runId'
     | '/api/local/db'
     | '/api/local/events'
@@ -179,12 +201,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/agents'
+    | '/_authenticated/customize'
     | '/_authenticated/dashboard'
     | '/_authenticated/knowledge'
     | '/_authenticated/settings'
     | '/_authenticated/workflows'
     | '/api/chat'
     | '/_authenticated/agents_/$agentId'
+    | '/_authenticated/p/$slug'
     | '/_authenticated/runs/$runId'
     | '/api/local/db'
     | '/api/local/events'
@@ -231,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/customize': {
+      id: '/_authenticated/customize'
+      path: '/customize'
+      fullPath: '/customize'
+      preLoaderRoute: typeof AuthenticatedCustomizeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -273,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgentsAgentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/p/$slug': {
+      id: '/_authenticated/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof AuthenticatedPSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/runs/$runId': {
       id: '/_authenticated/runs/$runId'
       path: '/runs/$runId'
@@ -306,21 +344,25 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgentsRoute: typeof AuthenticatedAgentsRoute
+  AuthenticatedCustomizeRoute: typeof AuthenticatedCustomizeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKnowledgeRoute: typeof AuthenticatedKnowledgeRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedWorkflowsRoute: typeof AuthenticatedWorkflowsRoute
   AuthenticatedAgentsAgentIdRoute: typeof AuthenticatedAgentsAgentIdRoute
+  AuthenticatedPSlugRoute: typeof AuthenticatedPSlugRoute
   AuthenticatedRunsRunIdRoute: typeof AuthenticatedRunsRunIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgentsRoute: AuthenticatedAgentsRoute,
+  AuthenticatedCustomizeRoute: AuthenticatedCustomizeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKnowledgeRoute: AuthenticatedKnowledgeRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedWorkflowsRoute: AuthenticatedWorkflowsRoute,
   AuthenticatedAgentsAgentIdRoute: AuthenticatedAgentsAgentIdRoute,
+  AuthenticatedPSlugRoute: AuthenticatedPSlugRoute,
   AuthenticatedRunsRunIdRoute: AuthenticatedRunsRunIdRoute,
 }
 
