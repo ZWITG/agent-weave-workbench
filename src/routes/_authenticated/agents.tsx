@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SKILLS, COLORS, colorClass } from "@/lib/skills";
+import { PROVIDER_LABELS, type AgentProvider } from "@/lib/ai-settings";
 
 type Agent = Database["public"]["Tables"]["agents"]["Row"];
 
@@ -46,6 +47,7 @@ const empty = {
   system_prompt: "",
   skills: ["write"] as string[],
   color: "amber",
+  provider: "default" as string,
 };
 
 function AgentsPage() {
@@ -68,6 +70,7 @@ function AgentsPage() {
       system_prompt: a.system_prompt,
       skills: a.skills,
       color: a.color,
+      provider: a.provider,
     });
     setOpen(true);
   };
@@ -218,6 +221,19 @@ function AgentsPage() {
                   Every agent can read and add to the shared knowledge library.
                 </p>
               </div>
+            </div>
+            <div>
+              <Label htmlFor="agent-ai">AI brain</Label>
+              <select
+                id="agent-ai"
+                value={form.provider}
+                onChange={(e) => setForm({ ...form, provider: e.target.value })}
+                className="mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                {(Object.keys(PROVIDER_LABELS) as AgentProvider[]).map((k) => (
+                  <option key={k} value={k}>{PROVIDER_LABELS[k]}</option>
+                ))}
+              </select>
             </div>
             <div>
               <Label>Color</Label>
