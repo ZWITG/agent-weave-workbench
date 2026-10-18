@@ -5,6 +5,16 @@ import { ArrowLeft, Download, FileCode } from "lucide-react";
 import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { StatusDot } from "./dashboard";
+import { useServerFn } from "@tanstack/react-start";
+import { sendRunReply, executeRunFn } from "@/lib/engine.functions";
+import {
+  PromptInput,
+  PromptInputTextarea,
+  PromptInputFooter,
+  PromptInputSubmit,
+} from "@/components/ai-elements/prompt-input";
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+import { ArrowUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/runs/$runId")({
   head: () => ({
@@ -30,6 +40,8 @@ const kindColor: Record<string, string> = {
   knowledge: "text-chart-3",
   helper: "text-chart-3",
   file: "text-chart-4",
+  user_message: "text-foreground",
+  steering: "text-accent",
 };
 
 function RunPage() {
@@ -37,15 +49,30 @@ function RunPage() {
   const qc = useQueryClient();
   const bottom = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<string | null>(null);
+  const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
+  const replyInput = useRef<HTMLTextAreaElement>(null);
+  const sendReply = useServerFn(sendRunReply);
+  const execute = useServerFn(executeRunFn);
 
   const { data: run } = useQuery({
     queryKey: ["run", runId],
     queryFn: async () => (await supabase.from("runs").select("*").eq("id", runId).single()).data,
+    refetchInterval: 2000,
   });
   const { data: logs = [] } = useQuery({
     queryKey: ["logs", runId],
     queryFn: async () =>
-      (await supabase.from("run_logs").select("*").eq("run_id", runId).order("id")).data ?? [],
+      (
+        await supabase
+          .from("run_logs")
+          .select("*")
+          .eq("run_id", runId)
+          .order("created_at")
+          .order("id")
+      ).data ?? [],
+    refetchInterval: 2000,
   });
   const { data: files = [] } = useQuery({
     queryKey: ["artifacts", runId],
@@ -80,6 +107,9 @@ function RunPage() {
   useEffect(() => {
     bottom.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [logs.length]);
+  useEffect(() => {
+    replyInput.current?.focus();
+  }, [run?.id]);
 
   const current = files.find(
     (f) => f.path === (file ?? files.find((x) => x.path.endsWith(".html"))?.path ?? files[0]?.path),
@@ -123,11 +153,19 @@ function RunPage() {
                 {new Date(l.created_at).toLocaleTimeString()}
               </span>
               <span className="shrink-0 text-primary">[{l.agent_name}]</span>
-              <span
-                className={`whitespace-pre-wrap break-words ${kindColor[l.kind] ?? ""} ${l.kind === "output" ? "line-clamp-6" : ""}`}
-              >
-                {l.message}
-              </span>
+              {l.kind === "user_message" ? (
+                <Message from="user">
+                  <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground">
+                    <MessageResponse>{l.message}</MessageResponse>
+                  </MessageContent>
+                </Message>
+              ) : (
+                <span
+                  className={`whitespace-pre-wrap break-words ${kindColor[l.kind] ?? ""} ${l.kind === "output" ? "line-clamp-6" : ""}`}
+                >
+                  {l.message}
+                </span>
+              )}
             </div>
           ))}
           {run.status === "running" && (
@@ -137,18 +175,79 @@ function RunPage() {
         </div>
       </div>
 
+      <div className="mt-4">
+        {replyError && (
+          <p role="alert" className="mb-2 text-sm text-destructive">
+            {replyError}
+          </p>
+        )}
+        <PromptInput
+          onSubmit={async ({ text }) => {
+            if (!text.trim() || sending) return;
+            setSending(true);
+            setReplyError(null);
+            try {
+              const result = await sendReply({ data: { runId, message: text } });
+              setReply("");
+              await qc.invalidateQueries({ queryKey: ["logs", runId] });
+              await qc.invalidateQueries({ queryKey: ["run", runId] });
+              if (result.resume)
+                void execute({ data: { runId } }).catch((error: unknown) =>
+                  setReplyError(error instanceof Error ? error.message : "Could not continue run"),
+                );
+            } catch (error) {
+              setReplyError(error instanceof Error ? error.message : "Could not send reply");
+            } finally {
+              setSending(false);
+              replyInput.current?.focus();
+            }
+          }}
+        >
+          <PromptInputTextarea
+            ref={replyInput}
+            aria-label="Reply to agents"
+            value={reply}
+            onChange={(event) => setReply(event.target.value)}
+            placeholder={
+              run.status === "running"
+                ? "Send instructions while agents work…"
+                : "Continue working on this…"
+            }
+            disabled={run.status === "failed"}
+          />
+          <PromptInputFooter className="justify-between">
+            <span className="text-xs text-muted-foreground">
+              {sending
+                ? "Sending"
+                : run.status === "running"
+                  ? "Agents working"
+                  : "Ready to continue"}
+            </span>
+            <PromptInputSubmit
+              aria-label="Send instructions"
+              disabled={!reply.trim() || sending || run.status === "failed"}
+            >
+              <ArrowUp />
+            </PromptInputSubmit>
+          </PromptInputFooter>
+        </PromptInput>
+      </div>
+
       {files.length > 0 && (
         <div className="mt-6 rounded-lg border border-border bg-card">
           <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
             <span className="font-mono text-xs text-muted-foreground">PROJECT FILES</span>
             {files.map((f) => (
-              <button
+              <Button
+                type="button"
+                size="sm"
+                variant={current?.path === f.path ? "default" : "secondary"}
                 key={f.id}
                 onClick={() => setFile(f.path)}
                 className={`inline-flex items-center gap-1 rounded px-2 py-1 font-mono text-xs ${current?.path === f.path ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
               >
                 <FileCode className="h-3 w-3" /> {f.path}
-              </button>
+              </Button>
             ))}
           </div>
           {current && (
@@ -182,7 +281,7 @@ function RunPage() {
       {run.output && (
         <div className="mt-6 rounded-lg border border-border bg-card p-5">
           <div className="font-mono text-xs text-primary">FINAL OUTPUT</div>
-          <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">{run.output}</div>
+          <MessageResponse className="mt-3 text-sm leading-relaxed">{run.output}</MessageResponse>
         </div>
       )}
     </div>
