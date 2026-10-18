@@ -84,7 +84,11 @@ export function parseConfig(raw: unknown): Config {
 export const newId = () => Math.random().toString(36).slice(2, 10);
 
 export const slugify = (s: string) =>
-  s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "page";
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40) || "page";
 
 /** CSS variables to set on the page for a theme. Unset values keep Tensai's defaults. */
 export function themeVars(t: Theme): Record<string, string> {
@@ -103,13 +107,21 @@ export function themeVars(t: Theme): Record<string, string> {
   }
   if (t.card) v["--card"] = t.card;
   if (t.foreground) {
-    for (const k of ["--foreground", "--card-foreground", "--popover-foreground", "--secondary-foreground", "--sidebar-foreground", "--sidebar-accent-foreground"])
+    for (const k of [
+      "--foreground",
+      "--card-foreground",
+      "--popover-foreground",
+      "--secondary-foreground",
+      "--sidebar-foreground",
+      "--sidebar-accent-foreground",
+    ])
       v[k] = t.foreground;
     v["--muted-foreground"] = `color-mix(in oklab, ${t.foreground} 65%, transparent)`;
     v["--dot"] = `color-mix(in oklab, ${t.foreground} 7%, transparent)`;
   }
   if (t.primary) {
-    for (const k of ["--primary", "--ring", "--sidebar-primary", "--sidebar-ring", "--chart-1"]) v[k] = t.primary;
+    for (const k of ["--primary", "--ring", "--sidebar-primary", "--sidebar-ring", "--chart-1"])
+      v[k] = t.primary;
     v["--primary-glow"] = `color-mix(in oklab, ${t.primary} 75%, white)`;
     v["--accent"] = `color-mix(in oklab, ${t.primary} 60%, black)`;
   }

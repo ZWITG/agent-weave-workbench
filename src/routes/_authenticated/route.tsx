@@ -1,6 +1,16 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Bot, Workflow, Brain, LogOut, Lock, Settings, Paintbrush, FileText } from "lucide-react";
+import {
+  LayoutDashboard,
+  Bot,
+  Workflow,
+  Brain,
+  LogOut,
+  Lock,
+  Settings,
+  Paintbrush,
+  FileText,
+} from "lucide-react";
 import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import mark from "@/assets/tensai-mark.png.asset.json";
@@ -68,7 +78,9 @@ function Layout() {
       <aside className="sticky top-0 hidden h-screen w-56 flex-col border-r border-sidebar-border bg-sidebar p-4 md:flex">
         <div className="flex items-center gap-3 px-2">
           <img src={mark.url} alt="Tensai" width={32} height={32} className="h-8 w-8 rounded-sm" />
-          <span className="truncate font-display text-xl">{(config.appName || "Tensai").toUpperCase()}</span>
+          <span className="truncate font-display text-xl">
+            {(config.appName || "Tensai").toUpperCase()}
+          </span>
           {!config.appName && <span className="font-mono text-xs text-primary">天才</span>}
         </div>
         <nav className="mt-8 flex flex-1 flex-col gap-1">

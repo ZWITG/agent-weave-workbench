@@ -22,7 +22,8 @@ Use short random ids for new items. Only use workflow and agent ids from the lis
 export const editWithAI = createServerFn({ method: "POST" })
   .middleware([requireAppAuth])
   .inputValidator((d: { request: string; config: unknown }) => {
-    if (!d.request?.trim() || d.request.length > 4000) throw new Error("Describe the change you want");
+    if (!d.request?.trim() || d.request.length > 4000)
+      throw new Error("Describe the change you want");
     return d;
   })
   .handler(async ({ data, context }) => {
@@ -50,13 +51,15 @@ Owner's request: ${data.request}`;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
       const status = (e as { statusCode?: number }).statusCode;
-      if (status === 402) throw new Error("Out of AI credits — top up or switch to a free AI in AI settings.");
+      if (status === 402)
+        throw new Error("Out of AI credits — top up or switch to a free AI in AI settings.");
       if (status === 429) throw new Error("The AI is busy right now — try again in a minute.");
       throw new Error(msg || "The AI couldn't make that change");
     }
     const start = text.indexOf("{");
     const end = text.lastIndexOf("}");
-    if (start < 0 || end < start) throw new Error("The AI didn't return a change. Try describing it differently.");
+    if (start < 0 || end < start)
+      throw new Error("The AI didn't return a change. Try describing it differently.");
     let parsed: { summary?: unknown; config?: unknown };
     try {
       parsed = JSON.parse(text.slice(start, end + 1));

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
+import { Route as AuthenticatedCustomizeRouteImport } from './routes/_authenticated/customize'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedKnowledgeRouteImport } from './routes/_authenticated/knowledge'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -42,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedAgentsRoute = AuthenticatedAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCustomizeRoute = AuthenticatedCustomizeRouteImport.update({
+  id: '/customize',
+  path: '/customize',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agents': typeof AuthenticatedAgentsRoute
+  '/customize': typeof AuthenticatedCustomizeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agents': typeof AuthenticatedAgentsRoute
+  '/customize': typeof AuthenticatedCustomizeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/agents': typeof AuthenticatedAgentsRoute
+  '/_authenticated/customize': typeof AuthenticatedCustomizeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/knowledge': typeof AuthenticatedKnowledgeRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/agents'
+    | '/customize'
     | '/dashboard'
     | '/knowledge'
     | '/settings'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/agents'
+    | '/customize'
     | '/dashboard'
     | '/knowledge'
     | '/settings'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/agents'
+    | '/_authenticated/customize'
     | '/_authenticated/dashboard'
     | '/_authenticated/knowledge'
     | '/_authenticated/settings'
@@ -241,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/agents'
       fullPath: '/agents'
       preLoaderRoute: typeof AuthenticatedAgentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/customize': {
+      id: '/_authenticated/customize'
+      path: '/customize'
+      fullPath: '/customize'
+      preLoaderRoute: typeof AuthenticatedCustomizeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -325,6 +344,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgentsRoute: typeof AuthenticatedAgentsRoute
+  AuthenticatedCustomizeRoute: typeof AuthenticatedCustomizeRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKnowledgeRoute: typeof AuthenticatedKnowledgeRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -336,6 +356,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgentsRoute: AuthenticatedAgentsRoute,
+  AuthenticatedCustomizeRoute: AuthenticatedCustomizeRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKnowledgeRoute: AuthenticatedKnowledgeRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,

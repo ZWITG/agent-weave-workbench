@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/button";
 import { createRun, executeRunFn } from "@/lib/engine.functions";
 import type { CustomButton } from "@/lib/customize";
 
-export function CustomButtonView({ button, variant = "secondary", className }: { button: CustomButton; variant?: "secondary" | "default" | "ghost"; className?: string }) {
+export function CustomButtonView({
+  button,
+  variant = "secondary",
+  className,
+}: {
+  button: CustomButton;
+  variant?: "secondary" | "default" | "ghost";
+  className?: string;
+}) {
   const navigate = useNavigate();
   const create = useServerFn(createRun);
   const exec = useServerFn(executeRunFn);
@@ -15,16 +23,23 @@ export function CustomButtonView({ button, variant = "secondary", className }: {
   const run = async () => {
     const a = button.action;
     if (a.type === "link") {
-      if (!/^https?:\/\//.test(a.url)) return toast.error("This button's link must start with https://");
+      if (!/^https?:\/\//.test(a.url))
+        return toast.error("This button's link must start with https://");
       window.open(a.url, "_blank", "noopener");
     } else if (a.type === "page") {
       navigate({ to: "/p/$slug", params: { slug: a.slug } });
     } else if (a.type === "agent") {
-      navigate({ to: "/agents/$agentId", params: { agentId: a.agentId }, search: { mode: a.mode } });
+      navigate({
+        to: "/agents/$agentId",
+        params: { agentId: a.agentId },
+        search: { mode: a.mode },
+      });
     } else {
       setBusy(true);
       try {
-        const { runId } = await create({ data: { workflowId: a.workflowId, input: a.task || button.label } });
+        const { runId } = await create({
+          data: { workflowId: a.workflowId, input: a.task || button.label },
+        });
         void exec({ data: { runId } }).catch(() => {});
         navigate({ to: "/runs/$runId", params: { runId } });
       } catch (e) {

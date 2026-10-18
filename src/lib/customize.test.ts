@@ -4,7 +4,9 @@ import { parseConfig, themeVars } from "./customize";
 describe("customization", () => {
   it("keeps valid buttons and pages", () => {
     const c = parseConfig({
-      buttons: [{ id: "a", label: "Go", place: "sidebar", action: { type: "link", url: "https://x.y" } }],
+      buttons: [
+        { id: "a", label: "Go", place: "sidebar", action: { type: "link", url: "https://x.y" } },
+      ],
       pages: [{ id: "p", slug: "notes", title: "Notes", inNav: true, blocks: [] }],
     });
     expect(c.buttons).toHaveLength(1);

@@ -33,9 +33,7 @@ export function useCustomization() {
       if (error) throw new Error(error.message);
     } else {
       const { data: u } = await db.auth.getUser();
-      const { error } = await db
-        .from("customizations")
-        .insert({ ...values, user_id: u.user!.id });
+      const { error } = await db.from("customizations").insert({ ...values, user_id: u.user!.id });
       if (error) throw new Error(error.message);
     }
     await qc.invalidateQueries({ queryKey: KEY });
@@ -52,7 +50,7 @@ export function useCustomization() {
 }
 
 /** Applies the owner's colours and fonts to the whole app. */
-export function useApplyTheme(config: Config) {
+export function useApplyTheme(config: Config, restore?: Config) {
   const json = JSON.stringify(config.theme);
   useEffect(() => {
     const vars = themeVars(config.theme);
@@ -72,6 +70,8 @@ export function useApplyTheme(config: Config) {
     }
     return () => {
       for (const k of Object.keys(vars)) root.style.removeProperty(k);
+      if (restore)
+        for (const [k, v] of Object.entries(themeVars(restore.theme))) root.style.setProperty(k, v);
       link?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -28,7 +28,9 @@ export function BlockView({ block, config }: { block: Block; config: Config }) {
         {btns.map((b) => (
           <CustomButtonView key={b.id} button={b} variant="default" />
         ))}
-        {!btns.length && <span className="text-sm text-muted-foreground">No buttons chosen yet.</span>}
+        {!btns.length && (
+          <span className="text-sm text-muted-foreground">No buttons chosen yet.</span>
+        )}
       </div>
     );
   }
