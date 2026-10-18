@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import mark from "@/assets/tensai-mark.png.asset.json";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Hexagon } from "lucide-react";
@@ -67,7 +68,7 @@ function AuthPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
-        <div className="flex items-center gap-2 font-mono text-sm text-primary"><Hexagon className="h-4 w-4" /> HIVE</div>
+        <div className="flex items-center gap-3"><img src={mark.url} alt="Tensai" width={40} height={40} className="h-10 w-10 rounded-sm" /><span className="font-display text-2xl">TENSAI</span></div>
         <h1 className="mt-4 text-2xl font-bold">{mode === "in" ? "Sign in" : "Create account"}</h1>
         <p className="mt-1 text-sm text-muted-foreground">Private studio — only the owner can get in.</p>
         <div className="mt-6 space-y-2">

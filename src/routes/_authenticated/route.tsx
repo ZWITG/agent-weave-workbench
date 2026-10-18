@@ -1,8 +1,11 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Hexagon, LayoutDashboard, Bot, Workflow, Brain, LogOut, Lock, Settings } from "lucide-react";
+import { LayoutDashboard, Bot, Workflow, Brain, LogOut, Lock, Settings } from "lucide-react";
 import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import mark from "@/assets/tensai-mark.png.asset.json";
+import { isDesktop } from "@/lib/ai-settings";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -27,6 +30,8 @@ function Layout() {
   const { isOwner, user } = Route.useRouteContext();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => setDesktop(isDesktop()), []);
   const signOut = async () => {
     await qc.cancelQueries();
     qc.clear();
@@ -50,7 +55,7 @@ function Layout() {
   return (
     <div className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-56 flex-col border-r border-sidebar-border bg-sidebar p-4 md:flex">
-        <div className="flex items-center gap-2 px-2 font-mono text-sm font-semibold text-primary"><Hexagon className="h-4 w-4" /> HIVE</div>
+        <div className="flex items-center gap-3 px-2"><img src={mark.url} alt="Tensai" width={32} height={32} className="h-8 w-8 rounded-sm" /><span className="font-display text-xl">TENSAI</span><span className="font-mono text-xs text-primary">天才</span></div>
         <nav className="mt-8 flex flex-1 flex-col gap-1">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground" activeProps={{ className: "bg-sidebar-accent !text-foreground" }}>
@@ -59,7 +64,7 @@ function Layout() {
           ))}
         </nav>
         <div className="truncate px-2 font-mono text-xs text-muted-foreground">{user.email}</div>
-        <button onClick={signOut} className="mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"><LogOut className="h-4 w-4" /> Sign out</button>
+        {!desktop && <button onClick={signOut} className="mt-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"><LogOut className="h-4 w-4" /> Sign out</button>}
       </aside>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap gap-1 border-b border-border p-2 md:hidden">
