@@ -78,6 +78,12 @@ const connectGateway: LiveConnector = (address, headers, signal) =>
       if (signal.aborted) return abort();
       resolve(liveSocket(socket));
     });
+    socket.once("upgrade", (response) => {
+      const value = response.headers["x-lovable-aig-run-id"];
+      const id = typeof value === "string" ? value : undefined;
+      socket.once("open", () => { /* The correlation ID is retained by the live socket adapter below. */ });
+      if (id) (socket as WebSocket & { gatewayRunId?: string }).gatewayRunId = id;
+    });
   });
 
 function upgradeRequest(request: IncomingMessage): Request {

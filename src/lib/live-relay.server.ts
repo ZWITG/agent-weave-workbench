@@ -17,6 +17,7 @@ export type LiveConfig = {
 const liveSettings = { baseURL: "https://ai.gateway.lovable.dev/v1", liveModel: "openai/gpt-live-1", backendModel: "openai/gpt-6-astra" };
 
 export type LiveSocket = {
+  runId?: string | undefined;
   readonly readyState: number;
   send(data: string): void;
   close(code?: number, reason?: string): void;
@@ -107,7 +108,7 @@ export function handleLiveRequest(request: Request): Response {
     const socket = (response as Response & { webSocket?: WorkerSocket | null }).webSocket;
     if (!socket) throw await gatewayRejection(response);
     socket.accept();
-    return workerSocket(socket);
+    return { ...workerSocket(socket), runId: response.headers.get("X-Lovable-AIG-Run-ID") ?? undefined };
   });
   const response: ResponseInit & { webSocket: WebSocket } = { status: 101, webSocket: pair[0] };
   return new Response(null, response);
@@ -458,7 +459,6 @@ export function bindLiveConnection(
       if (closing) return;
       if (event.type === "gateway.session.created") {
         sessionID = event.session?.id;
-        runID = (event as unknown as { run_id?: string }).run_id;
         clearTimeout(startupTimer);
         requestGreeting();
       }
@@ -557,6 +557,7 @@ export function bindLiveConnection(
       return;
     }
     gateway = accepted;
+    runID = accepted.runId;
     gateway.onMessage(receiveGateway);
     gateway.onClose(finish);
     gateway.onError(() => {

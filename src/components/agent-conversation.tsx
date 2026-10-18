@@ -92,7 +92,7 @@ export function AgentConversation({ agent, agents, userId, saved, initialMode }:
     <Conversation className="h-[52vh] min-h-64">
       <ConversationContent className="px-0">
         {!messages.length && <div className="py-16 text-center"><div className="text-lg font-semibold">{agent.name}</div><p className="mt-2 text-sm text-muted-foreground">No conversation yet.</p></div>}
-        {messages.map((message) => <Message key={message.id} from={message.role} className="max-w-full"><MessageContent className={message.role === "user" ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground"}>
+        {messages.map((message) => <Message key={message.id} from={message.role} className="max-w-full"><MessageContent className={message.role === "user" ? "group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground" : "bg-transparent text-foreground"}>
           {message.parts.map((part, index) => part.type === "text" ? <MessageResponse key={index}>{part.text}</MessageResponse> : part.type === "reasoning" ? <details key={index} className="text-xs text-muted-foreground"><summary>Thinking</summary><MessageResponse>{part.text}</MessageResponse></details> : null)}
         </MessageContent></Message>)}
         {status === "submitted" && <Shimmer>Thinking…</Shimmer>}
