@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          provider: string
           role: string
           skills: string[]
           system_prompt: string
@@ -30,6 +31,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          provider?: string
           role?: string
           skills?: string[]
           system_prompt?: string
@@ -40,9 +42,43 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          provider?: string
           role?: string
           skills?: string[]
           system_prompt?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_settings: {
+        Row: {
+          custom_api_key: string
+          custom_base_url: string
+          custom_model: string
+          default_provider: string
+          ollama_model: string
+          ollama_url: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          custom_api_key?: string
+          custom_base_url?: string
+          custom_model?: string
+          default_provider?: string
+          ollama_model?: string
+          ollama_url?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          custom_api_key?: string
+          custom_base_url?: string
+          custom_model?: string
+          default_provider?: string
+          ollama_model?: string
+          ollama_url?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
