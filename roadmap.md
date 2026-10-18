@@ -16,3 +16,4 @@
 - [x] Desktop offline mode: on-computer storage + sync with online account + Ollama setup guide
 - [ ] Sync with online account real check (blocked: needs your password inside the installed desktop app)
 - [x] Rebrand to Tensai: name, logo, and new theme from the uploaded logo
+- [x] In-app editing: visual editor (look, buttons, pages) + Ask Tensai AI changes with undo
