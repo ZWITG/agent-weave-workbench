@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { executeRun, type Stage } from "./engine.server";
+import { loadSettings } from "./ai-provider.server";
 
 export const createRun = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -23,15 +24,14 @@ export const executeRunFn = createServerFn({ method: "POST" })
   .inputValidator((d: { runId: string }) => d)
   .handler(async ({ data, context }) => {
     const db = context.supabase;
-    const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) throw new Error("AI is not configured");
     const { data: run } = await db.from("runs").select("*").eq("id", data.runId).single();
     if (!run || run.status !== "running" || !run.workflow_id) throw new Error("Run not available");
     const { data: wf } = await db.from("workflows").select("stages").eq("id", run.workflow_id).single();
     const { data: agents } = await db.from("agents").select("*");
     await executeRun({
       db, userId: context.userId, runId: run.id,
-      stages: ((wf?.stages ?? []) as unknown as Stage[]), agents: agents ?? [], input: run.input, apiKey,
+      stages: ((wf?.stages ?? []) as unknown as Stage[]), agents: agents ?? [], input: run.input,
+      settings: await loadSettings(db, context.userId),
     });
     return { ok: true };
   });

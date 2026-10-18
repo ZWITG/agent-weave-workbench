@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Hexagon, LayoutDashboard, Bot, Workflow, Brain, LogOut, Lock } from "lucide-react";
+import { Hexagon, LayoutDashboard, Bot, Workflow, Brain, LogOut, Lock, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +20,7 @@ const nav = [
   { to: "/agents", label: "Agents", icon: Bot },
   { to: "/workflows", label: "Workflows", icon: Workflow },
   { to: "/knowledge", label: "Knowledge", icon: Brain },
+  { to: "/settings", label: "AI settings", icon: Settings },
 ] as const;
 
 function Layout() {

@@ -1,41 +1,12 @@
-import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, tool, isStepCount, type ToolSet } from "ai";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { resolveModel, type Settings } from "./ai-provider.server";
 
 type Db = SupabaseClient<Database>;
 type Agent = Database["public"]["Tables"]["agents"]["Row"];
 export type Stage = { agent_ids: string[] };
-
-const MODEL = "openai/gpt-6-astra";
-const RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
-
-function makeProvider(apiKey: string) {
-  let runId: string | undefined;
-  return createOpenAI({
-    baseURL: "https://ai.gateway.lovable.dev/v1",
-    apiKey,
-    headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
-    fetch: async (input, init) => {
-      const headers = new Headers(init?.headers);
-      if (runId) headers.set(RUN_ID_HEADER, runId);
-      const res = await fetch(input, { ...init, headers });
-      runId ??= res.headers.get(RUN_ID_HEADER)?.trim() || undefined;
-      return res;
-    },
-  });
-}
-
-const openaiOptions = {
-  openai: {
-    forceReasoning: true,
-    reasoningEffort: "low",
-    reasoningSummary: "auto",
-    store: false,
-    include: ["reasoning.encrypted_content"],
-  },
-};
 
 async function webSearch(query: string) {
   const res = await fetch("https://html.duckduckgo.com/html/?q=" + encodeURIComponent(query), {
@@ -72,10 +43,9 @@ export async function executeRun(opts: {
   stages: Stage[];
   agents: Agent[];
   input: string;
-  apiKey: string;
+  settings: Settings | null;
 }) {
-  const { db, userId, runId, stages, agents, input, apiKey } = opts;
-  const provider = makeProvider(apiKey);
+  const { db, userId, runId, stages, agents, input, settings } = opts;
 
   const log = async (agent_name: string, kind: string, message: string) => {
     await db.from("run_logs").insert({ run_id: runId, user_id: userId, agent_name, kind, message: message.slice(0, 20000) });
@@ -112,7 +82,9 @@ export async function executeRun(opts: {
     skills: string[],
     task: string,
     depth: number,
+    aiProvider: string,
   ): Promise<string> => {
+    const ai = resolveModel(settings, aiProvider);
     const tools: ToolSet = { ...knowledgeTools(name) };
     if (skills.includes("web_search")) {
       tools["web_search"] = tool({
@@ -182,7 +154,7 @@ export async function executeRun(opts: {
               skills: ["write", "web_search"], color: "violet",
             });
           }
-          return await runAgent(h.name, h.system_prompt, ["write", "web_search", ...(skills.includes("build") ? ["build"] : [])], h.task, depth + 1);
+          return await runAgent(h.name, h.system_prompt, ["write", "web_search", ...(skills.includes("build") ? ["build"] : [])], h.task, depth + 1, aiProvider);
         },
       });
     }
@@ -202,13 +174,13 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
 
     await log(name, "start", `Working on task`);
     const result = streamText({
-      model: provider.responses(MODEL),
+      model: ai.model,
       instructions,
       messages: [{ role: "user", content: task }],
       tools,
       stopWhen: isStepCount(50),
       maxRetries: 0,
-      providerOptions: openaiOptions,
+      ...(ai.providerOptions ? { providerOptions: ai.providerOptions } : {}),
     });
     const text = await result.text;
     await log(name, "output", text || "(no output)");
@@ -228,7 +200,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
         : input;
       const outputs = await Promise.all(
         stageAgents.map((a) =>
-          runAgent(a.name, `${a.role ? `Role: ${a.role}\n` : ""}${a.system_prompt}`, a.skills, task, 0).then(
+          runAgent(a.name, `${a.role ? `Role: ${a.role}\n` : ""}${a.system_prompt}`, a.skills, task, 0, a.provider).then(
             (t) => `## ${a.name}\n${t}`,
           ),
         ),
@@ -241,7 +213,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
     const err = e as { statusCode?: number; message?: string };
     const msg =
       err.statusCode === 402
-        ? "Out of AI credits. Add credits in Settings → Plans & credits."
+        ? "Out of AI credits. Add credits, or switch agents to Ollama or your own key in Settings."
         : err.statusCode === 429
           ? "Rate limited. Please try again in a moment."
           : err.message || "Run failed";
