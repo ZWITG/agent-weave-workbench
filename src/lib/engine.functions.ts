@@ -23,7 +23,7 @@ export const executeRunFn = createServerFn({ method: "POST" })
   .inputValidator((d: { runId: string }) => d)
   .handler(async ({ data, context }) => {
     const db = context.supabase;
-    const apiKey = process.env.LOVABLE_API_KEY;
+    const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("AI is not configured");
     const { data: run } = await db.from("runs").select("*").eq("id", data.runId).single();
     if (!run || run.status !== "running" || !run.workflow_id) throw new Error("Run not available");

@@ -44,17 +44,17 @@ function AgentsPage() {
   const startEdit = (a: Agent) => { setEditing(a); setForm({ name: a.name, role: a.role, system_prompt: a.system_prompt, skills: a.skills, color: a.color }); setOpen(true); };
 
   const save = async () => {
-    if (!form.name.trim()) return toast.error("Give the agent a name");
+    if (!form.name.trim()) { toast.error("Give the agent a name"); return; }
     const { error } = editing
       ? await supabase.from("agents").update(form).eq("id", editing.id)
       : await supabase.from("agents").insert(form);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setOpen(false);
     qc.invalidateQueries({ queryKey: ["agents"] });
   };
   const remove = async (id: string) => {
     const { error } = await supabase.from("agents").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["agents"] });
   };
 

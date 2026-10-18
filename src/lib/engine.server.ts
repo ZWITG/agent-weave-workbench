@@ -47,10 +47,10 @@ async function webSearch(query: string) {
   const strip = (s: string) => s.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x27;/g, "'").trim();
   let m: RegExpExecArray | null;
   while ((m = re.exec(html)) && results.length < 6) {
-    let url = m[1];
+    let url = m[1] ?? "";
     const u = url.match(/uddg=([^&]+)/);
-    if (u) url = decodeURIComponent(u[1]);
-    results.push({ title: strip(m[2]), url, snippet: strip(m[3]) });
+    if (u?.[1]) url = decodeURIComponent(u[1]);
+    results.push({ title: strip(m[2] ?? ""), url, snippet: strip(m[3] ?? "") });
   }
   return results;
 }
@@ -115,7 +115,7 @@ export async function executeRun(opts: {
   ): Promise<string> => {
     const tools: ToolSet = { ...knowledgeTools(name) };
     if (skills.includes("web_search")) {
-      tools.web_search = tool({
+      tools["web_search"] = tool({
         description: "Search the web. Returns titles, URLs and snippets.",
         inputSchema: z.object({ query: z.string() }),
         execute: async ({ query }) => {
@@ -123,7 +123,7 @@ export async function executeRun(opts: {
           try { return await webSearch(query); } catch { return { error: "Search failed" }; }
         },
       });
-      tools.read_page = tool({
+      tools["read_page"] = tool({
         description: "Read the text of a web page.",
         inputSchema: z.object({ url: z.string() }),
         execute: async ({ url }) => {
@@ -133,7 +133,7 @@ export async function executeRun(opts: {
       });
     }
     if (skills.includes("build")) {
-      tools.write_file = tool({
+      tools["write_file"] = tool({
         description:
           "Create or overwrite a project file (e.g. index.html, game.js, styles.css, main.py, song.md). For playable web games/apps, put everything needed in index.html (inline CSS/JS) so it previews live. Write complete, working code — never placeholders.",
         inputSchema: z.object({ path: z.string(), content: z.string() }),
@@ -146,7 +146,7 @@ export async function executeRun(opts: {
           return error ? { error: error.message } : { saved: path };
         },
       });
-      tools.read_file = tool({
+      tools["read_file"] = tool({
         description: "Read a project file written earlier in this run by any agent.",
         inputSchema: z.object({ path: z.string() }),
         execute: async ({ path }) => {
@@ -154,7 +154,7 @@ export async function executeRun(opts: {
           return data?.content ?? "File not found";
         },
       });
-      tools.list_files = tool({
+      tools["list_files"] = tool({
         description: "List project files written in this run.",
         inputSchema: z.object({}),
         execute: async () => {
@@ -164,7 +164,7 @@ export async function executeRun(opts: {
       });
     }
     if (skills.includes("create_helper") && depth < 2) {
-      tools.create_helper_agent = tool({
+      tools["create_helper_agent"] = tool({
         description:
           "Create a new specialist AI agent to learn or handle a sub-task you lack expertise in. It runs immediately and returns its answer. Set save=true to keep it in the agent roster.",
         inputSchema: z.object({
@@ -218,7 +218,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
   try {
     let carry = "";
     for (let i = 0; i < stages.length; i++) {
-      const stageAgents = stages[i].agent_ids
+      const stageAgents = stages[i]!.agent_ids
         .map((id) => agents.find((a) => a.id === id))
         .filter((a): a is Agent => !!a);
       if (!stageAgents.length) continue;

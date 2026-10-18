@@ -55,7 +55,7 @@ function Dashboard() {
   }, [qc]);
 
   const start = async () => {
-    if (!wfId || !input.trim()) return toast.error("Pick a workflow and describe the task");
+    if (!wfId || !input.trim()) { toast.error("Pick a workflow and describe the task"); return; }
     setBusy(true);
     try {
       const { runId } = await create({ data: { workflowId: wfId, input } });

@@ -28,9 +28,9 @@ function KnowledgePage() {
   const [q, setQ] = useState("");
 
   const add = async () => {
-    if (!topic || !content) return;
+    if (!topic || !content) { return; }
     const { error } = await supabase.from("knowledge").insert({ topic, content, agent_name: "You" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setTopic(""); setContent("");
     qc.invalidateQueries({ queryKey: ["knowledge"] });
   };

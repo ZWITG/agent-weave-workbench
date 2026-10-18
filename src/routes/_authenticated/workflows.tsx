@@ -43,14 +43,14 @@ function WorkflowsPage() {
 
   const create = async () => {
     const { data, error } = await supabase.from("workflows").insert({ name: "New workflow", stages: [{ agent_ids: [] }] }).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await qc.invalidateQueries({ queryKey: ["workflows"] });
     setSelected(data.id);
   };
   const save = async () => {
     if (!wf) return;
     const { error } = await supabase.from("workflows").update({ name, description: desc, stages: stages as never }).eq("id", wf.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Workflow saved");
     qc.invalidateQueries({ queryKey: ["workflows"] });
   };
