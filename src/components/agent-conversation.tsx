@@ -135,7 +135,7 @@ export function AgentConversation({
     await promise;
   };
   useEffect(() => {
-    if (!busy && messages.length)
+    if (messages.length)
       latest.current.update(agent.id, { messages, invited: extra.current.invited });
   }, [messages, busy, agent.id]);
 
