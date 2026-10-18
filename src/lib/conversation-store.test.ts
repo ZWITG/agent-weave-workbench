@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { conversationKey, updateConversation, conversationText } from "./conversation-store";
 import type { UIMessage } from "ai";
-const message = (text: string): UIMessage => ({ id: text, role: "user", parts: [{ type: "text", text }] });
+const message = (text: string): UIMessage => ({
+  id: text,
+  role: "user",
+  parts: [{ type: "text", text }],
+});
 describe("device conversations", () => {
   it("keeps ongoing conversations separate per agent", () => {
     const first = updateConversation({}, "a", { messages: [message("First")] });
@@ -13,7 +17,9 @@ describe("device conversations", () => {
     const first = updateConversation({}, "a", { messages: [message("First")] });
     expect(first["a"]?.knowledge).toBe("You: First");
     const edited = updateConversation(first, "a", { knowledge: "Edited lesson" });
-    const next = updateConversation(edited, "a", { messages: [message("First"), message("Second")] });
+    const next = updateConversation(edited, "a", {
+      messages: [message("First"), message("Second")],
+    });
     expect(next["a"]?.knowledge).toBe("Edited lesson\n\nYou: Second");
   });
   it("keeps invited agents attached only to the selected conversation", () => {
