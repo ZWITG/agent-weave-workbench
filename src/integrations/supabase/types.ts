@@ -65,6 +65,47 @@ export type Database = {
         }
         Relationships: []
       }
+      artifacts: {
+        Row: {
+          agent_name: string
+          content: string
+          created_at: string
+          id: string
+          path: string
+          run_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          path: string
+          run_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          agent_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          path?: string
+          run_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artifacts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       knowledge: {
         Row: {
           agent_name: string
