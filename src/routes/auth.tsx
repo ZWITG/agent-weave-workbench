@@ -31,6 +31,11 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    // The desktop app keeps its studio on this computer, so no sign-in is needed.
+    if (/HiveDesktop/.test(navigator.userAgent)) {
+      navigate({ to: "/dashboard" });
+      return;
+    }
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
     });
