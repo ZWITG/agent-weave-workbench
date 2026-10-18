@@ -10,6 +10,9 @@ import { liveVoiceDev } from "./live-vite-plugin";
 
 export default defineConfig({
   vite: { plugins: [liveVoiceDev()] },
+  // Desktop builds (GitHub Actions, HIVE_DESKTOP=1) produce a Node server for the Electron app.
+  // Inside Lovable this is ignored and the normal web build is used.
+  ...(process.env["HIVE_DESKTOP"] ? { nitro: { preset: "node-server" } } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
