@@ -44,9 +44,21 @@ export function useAiSettings() {
 
 const PRESETS = [
   { label: "OpenAI", url: "https://api.openai.com/v1", model: "gpt-4o-mini" },
-  { label: "Groq (free tier)", url: "https://api.groq.com/openai/v1", model: "llama-3.3-70b-versatile" },
-  { label: "Gemini (free tier)", url: "https://generativelanguage.googleapis.com/v1beta/openai", model: "gemini-2.0-flash" },
-  { label: "OpenRouter", url: "https://openrouter.ai/api/v1", model: "meta-llama/llama-3.3-70b-instruct" },
+  {
+    label: "Groq (free tier)",
+    url: "https://api.groq.com/openai/v1",
+    model: "llama-3.3-70b-versatile",
+  },
+  {
+    label: "Gemini (free tier)",
+    url: "https://generativelanguage.googleapis.com/v1beta/openai",
+    model: "gemini-2.0-flash",
+  },
+  {
+    label: "OpenRouter",
+    url: "https://openrouter.ai/api/v1",
+    model: "meta-llama/llama-3.3-70b-instruct",
+  },
 ];
 
 function SettingsPage() {
@@ -77,7 +89,9 @@ function SettingsPage() {
     try {
       const res = await fetch(`${form.ollama_url.replace(/\/+$/, "")}/api/tags`);
       const j = (await res.json()) as { models?: { name: string }[] };
-      toast.success(`Ollama is running. Models: ${j.models?.map((m) => m.name).join(", ") || "none yet"}`);
+      toast.success(
+        `Ollama is running. Models: ${j.models?.map((m) => m.name).join(", ") || "none yet"}`,
+      );
     } catch {
       toast.error("Can't reach Ollama. Is it installed and running?");
     }
@@ -91,7 +105,8 @@ function SettingsPage() {
       <div className="font-mono text-xs text-primary">BRAINS</div>
       <h1 className="text-3xl font-bold">AI settings</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Choose which AI your agents think with. Only the built-in AI uses Lovable credits. Each agent can also pick its own on the Agents page.
+        Choose which AI your agents think with. Only the built-in AI uses Lovable credits. Each
+        agent can also pick its own on the Agents page.
       </p>
 
       <section className="mt-8 rounded-lg border border-border bg-card p-5">
@@ -106,7 +121,11 @@ function SettingsPage() {
                 onChange={() => setForm({ ...form, default_provider: k })}
               />
               {PROVIDER_LABELS[k]}
-              {k === "lovable" && desktop && <span className="text-xs text-muted-foreground">(not available in the desktop app)</span>}
+              {k === "lovable" && desktop && (
+                <span className="text-xs text-muted-foreground">
+                  (not available in the desktop app)
+                </span>
+              )}
             </label>
           ))}
         </div>
@@ -115,33 +134,67 @@ function SettingsPage() {
       <section className="mt-6 rounded-lg border border-border bg-card p-5">
         <h2 className="font-semibold">Ollama — free, on your computer</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Install Ollama from ollama.com, then run <code className="font-mono">ollama pull qwen2.5:7b</code>. Works in the desktop app only (the website can't see your computer).
+          Install Ollama from ollama.com, then run{" "}
+          <code className="font-mono">ollama pull qwen2.5:7b</code>. Works in the desktop app only
+          (the website can't see your computer).
         </p>
         <div className="mt-4 grid gap-3">
-          <div><Label htmlFor="ou">Address</Label><Input id="ou" value={form.ollama_url} onChange={set("ollama_url")} /></div>
-          <div><Label htmlFor="om">Model</Label><Input id="om" value={form.ollama_model} onChange={set("ollama_model")} /></div>
-          <Button variant="secondary" className="w-fit" onClick={testOllama}>Test connection</Button>
+          <div>
+            <Label htmlFor="ou">Address</Label>
+            <Input id="ou" value={form.ollama_url} onChange={set("ollama_url")} />
+          </div>
+          <div>
+            <Label htmlFor="om">Model</Label>
+            <Input id="om" value={form.ollama_model} onChange={set("ollama_model")} />
+          </div>
+          <Button variant="secondary" className="w-fit" onClick={testOllama}>
+            Test connection
+          </Button>
         </div>
       </section>
 
       <section className="mt-6 rounded-lg border border-border bg-card p-5">
         <h2 className="font-semibold">My own API key</h2>
-        <p className="mt-1 text-sm text-muted-foreground">You pay that company directly. Groq and Gemini have free tiers.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          You pay that company directly. Groq and Gemini have free tiers.
+        </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {PRESETS.map((p) => (
-            <Button key={p.label} size="sm" variant="outline" onClick={() => setForm({ ...form, custom_base_url: p.url, custom_model: p.model })}>
+            <Button
+              key={p.label}
+              size="sm"
+              variant="outline"
+              onClick={() => setForm({ ...form, custom_base_url: p.url, custom_model: p.model })}
+            >
               {p.label}
             </Button>
           ))}
         </div>
         <div className="mt-4 grid gap-3">
-          <div><Label htmlFor="cu">Service address</Label><Input id="cu" value={form.custom_base_url} onChange={set("custom_base_url")} /></div>
-          <div><Label htmlFor="ck">API key</Label><Input id="ck" type="password" value={form.custom_api_key} onChange={set("custom_api_key")} placeholder="Paste your key" /></div>
-          <div><Label htmlFor="cm">Model</Label><Input id="cm" value={form.custom_model} onChange={set("custom_model")} /></div>
+          <div>
+            <Label htmlFor="cu">Service address</Label>
+            <Input id="cu" value={form.custom_base_url} onChange={set("custom_base_url")} />
+          </div>
+          <div>
+            <Label htmlFor="ck">API key</Label>
+            <Input
+              id="ck"
+              type="password"
+              value={form.custom_api_key}
+              onChange={set("custom_api_key")}
+              placeholder="Paste your key"
+            />
+          </div>
+          <div>
+            <Label htmlFor="cm">Model</Label>
+            <Input id="cm" value={form.custom_model} onChange={set("custom_model")} />
+          </div>
         </div>
       </section>
 
-      <Button className="mt-6" onClick={save} disabled={saving}>{saving ? "Saving…" : "Save settings"}</Button>
+      <Button className="mt-6" onClick={save} disabled={saving}>
+        {saving ? "Saving…" : "Save settings"}
+      </Button>
     </div>
   );
 }

@@ -38,10 +38,13 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
     set("idle");
   }, []);
 
-  useEffect(() => () => {
-    stop();
-    worker.current?.terminate();
-  }, [stop]);
+  useEffect(
+    () => () => {
+      stop();
+      worker.current?.terminate();
+    },
+    [stop],
+  );
 
   const speak = (text: string) =>
     new Promise<void>((resolve) => {
@@ -74,16 +77,16 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
     set("thinking");
     try {
       const text = await transcribe(audio);
-      if (statusRef.current === "idle") return;
+      if ((statusRef.current as FreeVoiceStatus) === "idle") return;
       if (!text || /^\[.*\]$|^\(.*\)$/.test(text)) return set("listening");
       const reply = await onUtteranceRef.current(text);
-      if (statusRef.current === "idle") return;
+      if ((statusRef.current as FreeVoiceStatus) === "idle") return;
       set("speaking");
       await speak(reply);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Voice failed");
     }
-    if (statusRef.current !== "idle") set("listening");
+    if ((statusRef.current as FreeVoiceStatus) !== "idle") set("listening");
   };
 
   const start = useCallback(async () => {
@@ -94,7 +97,9 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
         audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 },
       });
       if (!worker.current) {
-        worker.current = new Worker(new URL("../lib/whisper.worker.ts", import.meta.url), { type: "module" });
+        worker.current = new Worker(new URL("../lib/whisper.worker.ts", import.meta.url), {
+          type: "module",
+        });
         worker.current.addEventListener("message", (e) => {
           if (e.data.type === "progress") setProgress(Math.round(e.data.progress));
         });
@@ -102,8 +107,14 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
       await new Promise<void>((resolve, reject) => {
         const w = worker.current!;
         const h = (e: MessageEvent) => {
-          if (e.data.type === "ready") { w.removeEventListener("message", h); resolve(); }
-          if (e.data.type === "error") { w.removeEventListener("message", h); reject(new Error(e.data.message)); }
+          if (e.data.type === "ready") {
+            w.removeEventListener("message", h);
+            resolve();
+          }
+          if (e.data.type === "error") {
+            w.removeEventListener("message", h);
+            reject(new Error(e.data.message));
+          }
         };
         w.addEventListener("message", h);
         w.postMessage({ type: "load" });
@@ -123,17 +134,25 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
         let sum = 0;
         for (const v of data) sum += v * v;
         const loud = Math.sqrt(sum / data.length) > THRESHOLD;
-        if (loud) { speechMs += ms; silentMs = 0; chunks.push(data); }
-        else if (chunks.length) {
+        if (loud) {
+          speechMs += ms;
+          silentMs = 0;
+          chunks.push(data);
+        } else if (chunks.length) {
           silentMs += ms;
           chunks.push(data);
           if (silentMs >= SILENCE_MS) {
             const segment = speechMs >= MIN_SPEECH_MS ? chunks : null;
-            chunks = []; speechMs = 0; silentMs = 0;
+            chunks = [];
+            speechMs = 0;
+            silentMs = 0;
             if (segment) {
               const all = new Float32Array(segment.reduce((n, c) => n + c.length, 0));
               let o = 0;
-              for (const c of segment) { all.set(c, o); o += c.length; }
+              for (const c of segment) {
+                all.set(c, o);
+                o += c.length;
+              }
               void handleSegment(all);
             }
           }

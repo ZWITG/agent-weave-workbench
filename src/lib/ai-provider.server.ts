@@ -59,16 +59,22 @@ export function resolveModel(
 ): ResolvedModel {
   const kind = resolveProviderKind(agentProvider, settings?.default_provider);
   if (kind === "ollama") {
-    const base = (settings?.ollama_url || "http://localhost:11434").replace(/\/+$/, "").replace(/\/v1$/, "");
+    const base = (settings?.ollama_url || "http://localhost:11434")
+      .replace(/\/+$/, "")
+      .replace(/\/v1$/, "");
     const p = createOpenAI({ baseURL: `${base}/v1`, apiKey: "ollama" });
     return { kind, model: p.chat(settings?.ollama_model || "qwen2.5:7b") };
   }
   if (kind === "custom") {
     if (!settings?.custom_api_key) throw new Error("Add your own AI key in Settings first.");
-    const p = createOpenAI({ baseURL: settings.custom_base_url.replace(/\/+$/, ""), apiKey: settings.custom_api_key });
+    const p = createOpenAI({
+      baseURL: settings.custom_base_url.replace(/\/+$/, ""),
+      apiKey: settings.custom_api_key,
+    });
     return { kind, model: p.chat(settings.custom_model) };
   }
   const key = process.env["LOVABLE_API_KEY"];
-  if (!key) throw new Error("Built-in AI isn't available here. Choose Ollama or your own key in Settings.");
+  if (!key)
+    throw new Error("Built-in AI isn't available here. Choose Ollama or your own key in Settings.");
   return lovableModel(key, reasoningEffort);
 }

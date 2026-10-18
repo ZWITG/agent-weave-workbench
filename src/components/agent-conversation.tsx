@@ -248,7 +248,11 @@ export function AgentConversation({
         <div className="border-t border-border pt-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
             <span>
-              {free.status === "idle" ? "Ready to call" : free.status === "loading" ? `Preparing free voice${free.progress ? ` · ${free.progress}%` : ""}` : free.status}
+              {free.status === "idle"
+                ? "Ready to call"
+                : free.status === "loading"
+                  ? `Preparing free voice${free.progress ? ` · ${free.progress}%` : ""}`
+                  : free.status}
             </span>
             <span>Free voice · no credits</span>
           </div>
@@ -270,7 +274,8 @@ export function AgentConversation({
             )}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Speak, then pause — {agent.name} answers out loud. The first call downloads a speech model (about 80 MB) once.
+            Speak, then pause — {agent.name} answers out loud. The first call downloads a speech
+            model (about 80 MB) once.
           </p>
         </div>
       ) : mode === "voice" ? (

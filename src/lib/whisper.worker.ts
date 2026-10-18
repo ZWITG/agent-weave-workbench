@@ -7,11 +7,14 @@ const load = () =>
   (asr ??= pipeline("automatic-speech-recognition", "onnx-community/whisper-base", {
     dtype: "q8",
     progress_callback: (p: { status: string; progress?: number }) => {
-      if (p.status === "progress") self.postMessage({ type: "progress", progress: p.progress ?? 0 });
+      if (p.status === "progress")
+        self.postMessage({ type: "progress", progress: p.progress ?? 0 });
     },
   }) as Promise<AutomaticSpeechRecognitionPipeline>);
 
-self.onmessage = async (e: MessageEvent<{ type: "load" } | { type: "transcribe"; id: number; audio: Float32Array }>) => {
+self.onmessage = async (
+  e: MessageEvent<{ type: "load" } | { type: "transcribe"; id: number; audio: Float32Array }>,
+) => {
   try {
     const model = await load();
     if (e.data.type === "load") return self.postMessage({ type: "ready" });
@@ -19,6 +22,9 @@ self.onmessage = async (e: MessageEvent<{ type: "load" } | { type: "transcribe";
     const text = Array.isArray(out) ? out.map((o) => o.text).join(" ") : out.text;
     self.postMessage({ type: "text", id: e.data.id, text: text.trim() });
   } catch (err) {
-    self.postMessage({ type: "error", message: err instanceof Error ? err.message : "Speech recognition failed" });
+    self.postMessage({
+      type: "error",
+      message: err instanceof Error ? err.message : "Speech recognition failed",
+    });
   }
 };
