@@ -5,3 +5,4 @@
 - [ ] Run engine with skills: web search, write, structured output, create helper AI
 - [ ] Shared knowledge library agents save to and read from
 - [ ] Dashboard with live logs and outputs
+- [ ] (Blocked: user decision) Own AI provider key instead of workspace credits — AI usage can't be free
