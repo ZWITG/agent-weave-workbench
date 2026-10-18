@@ -7,5 +7,9 @@
 - [x] Run engine with skills: web search, write, structured output, create helper AI
 - [x] Shared knowledge library agents save to and read from
 - [x] Dashboard with live logs and outputs
-- [ ] (Blocked: user decision) Own AI provider key instead of workspace credits — AI usage can't be free
+- [x] Switchable AI per agent: built-in, Ollama (free), or own API key
+- [x] Free voice mode (on-device speech recognition + computer voice)
+- [x] Windows desktop app (Electron) + GitHub auto-update workflow
+- [ ] Desktop app first release (blocked: user must connect GitHub and make the repo public)
+- [ ] Free voice real-microphone check (blocked: needs a real microphone)
 - [x] Build skill: agents create project files (games, web apps, code, songs) with live preview + download
