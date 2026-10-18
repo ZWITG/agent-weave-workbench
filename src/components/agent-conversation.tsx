@@ -242,7 +242,7 @@ export function AgentConversation({
       <audio
         ref={call.audioRef}
         controls
-        className={mode === "voice" ? "mb-3 h-9 w-full" : "hidden"}
+        className={mode === "voice" && !freeVoiceMode ? "mb-3 h-9 w-full" : "hidden"}
       />
       {mode === "voice" && freeVoiceMode ? (
         <div className="border-t border-border pt-4">
