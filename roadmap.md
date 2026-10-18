@@ -13,3 +13,5 @@
 - [ ] Desktop app first release (blocked: user must connect GitHub and make the repo public)
 - [ ] Free voice real-microphone check (blocked: needs a real microphone)
 - [x] Build skill: agents create project files (games, web apps, code, songs) with live preview + download
+- [ ] Desktop offline mode: on-computer storage + sync with online account + Ollama setup guide
+- [ ] Rebrand to Tensai: name, logo, and new theme from the uploaded logo
