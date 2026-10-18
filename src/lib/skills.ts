@@ -3,7 +3,11 @@ export const SKILLS = [
   { id: "write", label: "Summarize & write", desc: "Reasoning, writing, summarizing" },
   { id: "structured", label: "Structured output", desc: "Emit JSON tables for the next agent" },
   { id: "build", label: "Build projects", desc: "Write real files: games, web apps, code, songs" },
-  { id: "create_helper", label: "Create helper AI", desc: "Spawn new specialist agents to learn a task" },
+  {
+    id: "create_helper",
+    label: "Create helper AI",
+    desc: "Spawn new specialist agents to learn a task",
+  },
 ] as const;
 
 export const COLORS = ["amber", "teal", "violet", "rose", "lime", "sky"] as const;

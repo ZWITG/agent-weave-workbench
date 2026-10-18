@@ -1,7 +1,8 @@
-// Hive desktop: starts the bundled Hive server on this computer and opens it in a window.
+// Hive desktop: starts the bundled Tensai server on this computer and opens it in a window.
 // Updates come from the project's GitHub releases (electron-updater).
 const { app, BrowserWindow, dialog, session, shell } = require("electron");
 const { spawn } = require("node:child_process");
+const crypto = require("node:crypto");
 const net = require("node:net");
 const path = require("node:path");
 const { autoUpdater } = require("electron-updater");
@@ -12,6 +13,8 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_k5ErVR4VJqnZX5dR4mS_uw_TKlB4rhX
 const PORT = 48217;
 
 let server;
+// Per-launch secret: only this window may use the on-computer studio.
+const LOCAL_TOKEN = crypto.randomBytes(32).toString("hex");
 
 function waitForPort(port, timeoutMs = 30000) {
   const started = Date.now();
@@ -21,7 +24,7 @@ function waitForPort(port, timeoutMs = 30000) {
       sock.once("connect", () => { sock.end(); resolve(); });
       sock.once("error", () => {
         sock.destroy();
-        if (Date.now() - started > timeoutMs) reject(new Error("Hive server did not start"));
+        if (Date.now() - started > timeoutMs) reject(new Error("Tensai server did not start"));
         else setTimeout(tryOnce, 300);
       });
     };
@@ -42,12 +45,15 @@ function startServer() {
       NITRO_HOST: "127.0.0.1",
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY,
+      HIVE_LOCAL: "1",
+      HIVE_LOCAL_TOKEN: LOCAL_TOKEN,
+      HIVE_DATA_DIR: app.getPath("userData"),
     },
     stdio: "inherit",
     windowsHide: true,
   });
   server.on("exit", (code) => {
-    if (code && !app.isQuitting) dialog.showErrorBox("Hive", `The Hive engine stopped (code ${code}).`);
+    if (code && !app.isQuitting) dialog.showErrorBox("Tensai", `The Tensai engine stopped (code ${code}).`);
   });
 }
 
@@ -55,11 +61,15 @@ async function createWindow() {
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) =>
     cb(["media", "microphone", "audioCapture", "clipboard-sanitized-write"].includes(permission)),
   );
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    { urls: [`http://127.0.0.1:${PORT}/*`] },
+    (details, cb) => cb({ requestHeaders: { ...details.requestHeaders, "x-hive-local": LOCAL_TOKEN } }),
+  );
   const win = new BrowserWindow({
     width: 1280,
     height: 860,
-    backgroundColor: "#0b0d10",
-    title: "Hive",
+    backgroundColor: "#090a13",
+    title: "Tensai",
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, sandbox: true },
   });
@@ -80,7 +90,7 @@ app.whenReady().then(async () => {
     await waitForPort(PORT);
     await createWindow();
   } catch (e) {
-    dialog.showErrorBox("Hive", String(e));
+    dialog.showErrorBox("Tensai", String(e));
     app.quit();
   }
   if (app.isPackaged) {
@@ -89,7 +99,7 @@ app.whenReady().then(async () => {
       const { response } = await dialog.showMessageBox({
         type: "info",
         buttons: ["Restart now", "Later"],
-        message: "A new version of Hive is ready. Restart to update?",
+        message: "A new version of Tensai is ready. Restart to update?",
       });
       if (response === 0) autoUpdater.quitAndInstall();
     });

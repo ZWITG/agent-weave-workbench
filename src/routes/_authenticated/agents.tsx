@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, MessageSquare, Mic } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { db as supabase } from "@/lib/db";
 import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,9 +19,9 @@ type Agent = Database["public"]["Tables"]["agents"]["Row"];
 export const Route = createFileRoute("/_authenticated/agents")({
   head: () => ({
     meta: [
-      { title: "Agents — Hive" },
+      { title: "Agents — Tensai" },
       { name: "description", content: "Create and configure AI agents." },
-      { property: "og:title", content: "Agents — Hive" },
+      { property: "og:title", content: "Agents — Tensai" },
       { property: "og:description", content: "Create and configure AI agents." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -46,7 +46,7 @@ const empty = {
   role: "",
   system_prompt: "",
   skills: ["write"] as string[],
-  color: "amber",
+  color: "violet",
   provider: "default" as string,
 };
 
@@ -231,7 +231,9 @@ function AgentsPage() {
                 className="mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
               >
                 {(Object.keys(PROVIDER_LABELS) as AgentProvider[]).map((k) => (
-                  <option key={k} value={k}>{PROVIDER_LABELS[k]}</option>
+                  <option key={k} value={k}>
+                    {PROVIDER_LABELS[k]}
+                  </option>
                 ))}
               </select>
             </div>

@@ -11,12 +11,12 @@ export const Route = createFileRoute("/_authenticated/agents_/$agentId")({
   }),
   head: () => ({
     meta: [
-      { title: "Agent conversation — Hive" },
-      { name: "description", content: "Speak privately with your Hive agents by text or voice." },
-      { property: "og:title", content: "Agent conversation — Hive" },
+      { title: "Agent conversation — Tensai" },
+      { name: "description", content: "Speak privately with your Tensai agents by text or voice." },
+      { property: "og:title", content: "Agent conversation — Tensai" },
       {
         property: "og:description",
-        content: "Speak privately with your Hive agents by text or voice.",
+        content: "Speak privately with your Tensai agents by text or voice.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

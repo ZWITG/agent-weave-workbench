@@ -20,6 +20,9 @@ import { Route as AuthenticatedWorkflowsRouteImport } from './routes/_authentica
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedAgentsAgentIdRouteImport } from './routes/_authenticated/agents_.$agentId'
 import { Route as AuthenticatedRunsRunIdRouteImport } from './routes/_authenticated/runs.$runId'
+import { Route as ApiLocalDbRouteImport } from './routes/api/local/db'
+import { Route as ApiLocalEventsRouteImport } from './routes/api/local/events'
+import { Route as ApiLocalSyncRouteImport } from './routes/api/local/sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +79,21 @@ const AuthenticatedRunsRunIdRoute = AuthenticatedRunsRunIdRouteImport.update({
   path: '/runs/$runId',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiLocalDbRoute = ApiLocalDbRouteImport.update({
+  id: '/api/local/db',
+  path: '/api/local/db',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLocalEventsRoute = ApiLocalEventsRouteImport.update({
+  id: '/api/local/events',
+  path: '/api/local/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLocalSyncRoute = ApiLocalSyncRouteImport.update({
+  id: '/api/local/sync',
+  path: '/api/local/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,6 +106,9 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/agents/$agentId': typeof AuthenticatedAgentsAgentIdRoute
   '/runs/$runId': typeof AuthenticatedRunsRunIdRoute
+  '/api/local/db': typeof ApiLocalDbRoute
+  '/api/local/events': typeof ApiLocalEventsRoute
+  '/api/local/sync': typeof ApiLocalSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,6 +121,9 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/agents/$agentId': typeof AuthenticatedAgentsAgentIdRoute
   '/runs/$runId': typeof AuthenticatedRunsRunIdRoute
+  '/api/local/db': typeof ApiLocalDbRoute
+  '/api/local/events': typeof ApiLocalEventsRoute
+  '/api/local/sync': typeof ApiLocalSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +138,9 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/agents_/$agentId': typeof AuthenticatedAgentsAgentIdRoute
   '/_authenticated/runs/$runId': typeof AuthenticatedRunsRunIdRoute
+  '/api/local/db': typeof ApiLocalDbRoute
+  '/api/local/events': typeof ApiLocalEventsRoute
+  '/api/local/sync': typeof ApiLocalSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +155,9 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/agents/$agentId'
     | '/runs/$runId'
+    | '/api/local/db'
+    | '/api/local/events'
+    | '/api/local/sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +170,9 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/agents/$agentId'
     | '/runs/$runId'
+    | '/api/local/db'
+    | '/api/local/events'
+    | '/api/local/sync'
   id:
     | '__root__'
     | '/'
@@ -153,6 +186,9 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/_authenticated/agents_/$agentId'
     | '/_authenticated/runs/$runId'
+    | '/api/local/db'
+    | '/api/local/events'
+    | '/api/local/sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -160,6 +196,9 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiLocalDbRoute: typeof ApiLocalDbRoute
+  ApiLocalEventsRoute: typeof ApiLocalEventsRoute
+  ApiLocalSyncRoute: typeof ApiLocalSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -241,6 +280,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRunsRunIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/local/db': {
+      id: '/api/local/db'
+      path: '/api/local/db'
+      fullPath: '/api/local/db'
+      preLoaderRoute: typeof ApiLocalDbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/local/events': {
+      id: '/api/local/events'
+      path: '/api/local/events'
+      fullPath: '/api/local/events'
+      preLoaderRoute: typeof ApiLocalEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/local/sync': {
+      id: '/api/local/sync'
+      path: '/api/local/sync'
+      fullPath: '/api/local/sync'
+      preLoaderRoute: typeof ApiLocalSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -272,6 +332,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiLocalDbRoute: ApiLocalDbRoute,
+  ApiLocalEventsRoute: ApiLocalEventsRoute,
+  ApiLocalSyncRoute: ApiLocalSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

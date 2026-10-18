@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Play } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -18,13 +18,15 @@ import { createRun, executeRunFn } from "@/lib/engine.functions";
 import { useAgents } from "./agents";
 import { useWorkflows } from "./workflows";
 import { GetApp } from "@/components/get-app";
+import { OllamaSetup } from "@/components/ollama-setup";
+import { isDesktop } from "@/lib/ai-settings";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Control room — Hive" },
+      { title: "Control room — Tensai" },
       { name: "description", content: "Run workflows and track agent output." },
-      { property: "og:title", content: "Control room — Hive" },
+      { property: "og:title", content: "Control room — Tensai" },
       { property: "og:description", content: "Run workflows and track agent output." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -103,6 +105,7 @@ function Dashboard() {
   };
 
   const active = runs.filter((r) => r.status === "running").length;
+  const desktop = useDesktop();
   const stats = [
     { l: "Agents", v: agents.length },
     { l: "Workflows", v: workflows.length },
@@ -114,7 +117,7 @@ function Dashboard() {
     <div>
       <div className="font-mono text-xs text-primary">CONTROL ROOM</div>
       <h1 className="text-3xl font-bold">Dashboard</h1>
-      <GetApp />
+      {desktop ? <OllamaSetup /> : <GetApp />}
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map((s) => (
           <div key={s.l} className="rounded-lg border border-border bg-card p-4">
@@ -188,4 +191,10 @@ function Dashboard() {
       </div>
     </div>
   );
+}
+
+function useDesktop() {
+  const [d, setD] = useState(false);
+  useEffect(() => setD(isDesktop()), []);
+  return d;
 }

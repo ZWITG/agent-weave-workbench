@@ -1,10 +1,10 @@
 {
   "name": "hive-desktop",
-  "productName": "Hive",
+  "productName": "Tensai",
   "version": "1.0.0",
-  "description": "Hive AI agent studio for your desktop",
+  "description": "Tensai AI agent studio for your desktop",
   "main": "main.cjs",
-  "author": "Hive",
+  "author": "Tensai",
   "private": true,
   "scripts": {
     "start": "electron .",
@@ -18,8 +18,8 @@
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "app.hive.desktop",
-    "productName": "Hive",
+    "appId": "app.tensai.desktop",
+    "productName": "Tensai",
     "files": ["main.cjs", "package.json"],
     "extraResources": [{ "from": "server", "to": "server" }],
     "win": { "target": "nsis", "icon": "icon.png" },

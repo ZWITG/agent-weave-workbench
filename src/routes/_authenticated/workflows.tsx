@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, ChevronRight, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,9 +20,9 @@ import { useAgents } from "./agents";
 export const Route = createFileRoute("/_authenticated/workflows")({
   head: () => ({
     meta: [
-      { title: "Workflows — Hive" },
+      { title: "Workflows — Tensai" },
       { name: "description", content: "Chain agents into workflows." },
-      { property: "og:title", content: "Workflows — Hive" },
+      { property: "og:title", content: "Workflows — Tensai" },
       { property: "og:description", content: "Chain agents into workflows." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
