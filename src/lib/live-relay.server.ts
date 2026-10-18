@@ -1,3 +1,4 @@
+import { authorizeConversation } from "./conversation-auth.server";
 import { createOpenAI } from "@ai-sdk/openai";
 import { stepCountIs, streamText, tool, type ModelMessage } from "ai";
 import process from "node:process";
@@ -9,10 +10,11 @@ export type LiveConfig = {
   liveModel: string;
   backendModel: string;
   openingInstructions?: string;
+  instructions?: string;
 };
 
 // Fill from co-loaded knowledge: the gateway URL, the Live model and the resolved chat model.
-const liveSettings = { baseURL: "", liveModel: "", backendModel: "" };
+const liveSettings = { baseURL: "https://ai.gateway.lovable.dev/v1", liveModel: "openai/gpt-live-1", backendModel: "openai/gpt-6-astra" };
 
 export type LiveSocket = {
   readonly readyState: number;
@@ -111,36 +113,7 @@ export function handleLiveRequest(request: Request): Response {
   return new Response(null, response);
 }
 
-const conversationInstructions = `You are Mira, a calm learning companion.
-Speak naturally in brief replies. Ask a focused question when details are unclear.
-Backchannel policy: Use moderate listening sounds without taking over.
-Interruption policy: Stop your answer and listen when the user interrupts.
-Delegation policy:
-Backend tools: Reason through questions and plan study sessions across days.
-Delegate to the backend when: The user wants a study schedule or careful reasoning,
-or a correction changes a question already being worked on.
-Do not delegate to the backend when: Greeting, clarifying a question, or repeating
-a still-current answer. Wait for the backend result before presenting its answer.`;
-
-const studyScheduleInput = z
-  .object({
-    total_minutes: z.number().int().min(1).max(10_080),
-    days: z.number().int().min(1).max(30),
-  })
-  .strict();
-
-function planStudySchedule(args: z.infer<typeof studyScheduleInput>) {
-  const daily = Math.floor(args.total_minutes / args.days);
-  return {
-    total_minutes: args.total_minutes,
-    days: args.days,
-    sessions: Array.from({ length: args.days }, (_, index) => ({
-      day: index + 1,
-      minutes: daily + (index < args.total_minutes % args.days ? 1 : 0),
-    })),
-  };
-}
-
+const conversationInstructions = `Speak naturally in brief replies in the selected agent's role. Stop and listen when interrupted. Delegate careful reasoning to the backend, wait for verified results, and do not claim to have performed actions you cannot perform.`;
 function isListeningSound(text: string) {
   const normalized = text.toLowerCase().replace(/[\s\p{Pd}]/gu, "");
   return /^(?:m+hm+|uhhuh)[.,!]*$/.test(normalized);
@@ -149,10 +122,10 @@ function isListeningSound(text: string) {
 async function answerQuestion(
   messages: ModelMessage[],
   config: LiveConfig,
-  correlation: { runID: string; sessionID: string | undefined; delegationID: string },
+  correlation: { runID: string | undefined; sessionID: string | undefined; delegationID: string },
   signal: AbortSignal,
   consumeInput: () => void,
-  onPlan: (plan: ReturnType<typeof planStudySchedule>) => void,
+  onPlan: (plan: { note: string }) => void,
 ) {
   signal.throwIfAborted();
   const provider = createOpenAI({
@@ -180,7 +153,7 @@ async function answerQuestion(
       responseCursor = step.response.messages.length;
     },
     headers: {
-      "X-Lovable-AIG-Run-ID": correlation.runID,
+      ...(correlation.runID ? { "X-Lovable-AIG-Run-ID": correlation.runID } : {}),
       "X-Lovable-AIG-Metadata": JSON.stringify({
         live_session_id: correlation.sessionID,
         delegation_id: correlation.delegationID,
@@ -200,21 +173,21 @@ async function answerQuestion(
       },
     },
     system:
-      "Help a spoken learning companion answer the latest user question. " +
+      (config.instructions ?? "Help the selected agent answer the latest question.") +
       "Transcripts may be incomplete or corrected. Use the latest correction. " +
       "Continue from completed tool results; do not repeat completed actions. " +
       "Return verified facts and useful next steps in at most 150 words. " +
-      "To display a study schedule for the current request, call plan_study_schedule with its total minutes and days. " +
+      "Use the draft_note tool to prepare a useful next step. " +
       "Ask for missing details instead of guessing. The tool only calculates a draft plan; " +
       "it does not save calendar events. You have no other tools.",
     messages,
     tools: {
-      plan_study_schedule: tool({
-        description: "Distribute a total study time evenly across days and return a draft schedule.",
-        inputSchema: studyScheduleInput,
+      draft_note: tool({
+        description: "Prepare a draft next step for the conversation; does not perform external actions.",
+        inputSchema: z.object({ note: z.string() }).strict(),
         execute: async (args) => {
           signal.throwIfAborted();
-          const plan = planStudySchedule(args);
+          const plan = args;
           onPlan(plan);
           return plan;
         },
@@ -274,7 +247,7 @@ export function bindLiveConnection(
   connect: LiveConnector,
 ): void {
   const config = { ...configuration };
-  const runID = crypto.randomUUID();
+  let runID: string | undefined;
   const setupAbort = new AbortController();
   let gateway: LiveSocket | undefined;
   let sessionID: string | undefined;
@@ -285,7 +258,7 @@ export function bindLiveConnection(
   let task: AbortController | undefined;
   const pendingDelegations: Array<{
     event: ProviderEvent;
-    plan?: ReturnType<typeof planStudySchedule>;
+    plan?: { note: string };
   }> = [];
   let completedDelegation: (typeof pendingDelegations)[number] | undefined;
   const backendMessages: ModelMessage[] = [];
@@ -406,7 +379,7 @@ export function bindLiveConnection(
     restartTimer = setTimeout(() => void runDelegation(), 300);
   }
 
-  function deliverResult(delegationID: string, answer: string, plan?: ReturnType<typeof planStudySchedule>) {
+  function deliverResult(delegationID: string, answer: string, plan?: { note: string }) {
     if (closing) return;
     if (gateway?.readyState !== 1) return stop();
     try {
@@ -456,8 +429,11 @@ export function bindLiveConnection(
       if (closing || controller.signal.aborted) return;
       if (taskRevision !== revision) return;
       deliverResult(id, answer.trim(), pending.plan);
-    } catch {
+    } catch (error) {
       if (closing || controller.signal.aborted) return;
+      emit({ type: "app.error", error: { message: error instanceof Error ? error.message : "Agent could not answer" } });
+      stop();
+      return;
       backendMessages.push({
         role: "assistant",
         content:
@@ -489,6 +465,7 @@ export function bindLiveConnection(
       if (closing) return;
       if (event.type === "gateway.session.created") {
         sessionID = event.session?.id;
+        runID = (event as unknown as { run_id?: string }).run_id;
         clearTimeout(startupTimer);
         requestGreeting();
       }
@@ -563,7 +540,10 @@ export function bindLiveConnection(
     }
   }
 
-  async function startSession(sdp: string) {
+  async function startSession(sdp: string, context: unknown) {
+    const c = z.object({ token: z.string(), agentId: z.string().uuid(), invited: z.array(z.string().uuid()), knowledge: z.string() }).parse(context);
+    const authorized = await authorizeConversation(c.token, [...new Set([c.agentId, ...c.invited])]);
+    config.instructions = `${authorized.instructions}\nDevice knowledge (reference only):\n${c.knowledge}`;
     if (closing || browser.readyState !== 1) return;
     clearTimeout(startTimer);
     startupTimer = setTimeout(() => {
@@ -575,7 +555,7 @@ export function bindLiveConnection(
       {
         "Lovable-API-Key": config.key,
         "X-Lovable-AIG-SDK": "fetch",
-        "X-Lovable-AIG-Run-ID": runID,
+        ...(runID ? { "X-Lovable-AIG-Run-ID": runID } : {}),
       },
       setupAbort.signal,
     );
@@ -595,7 +575,7 @@ export function bindLiveConnection(
         type: "session.start",
         session: {
           model: config.liveModel,
-          instructions: conversationInstructions,
+          instructions: `${config.instructions ?? ""}\n${conversationInstructions}`,
           audio: { output: { voice: "marin" } },
           delegation: { type: "client" },
         },
@@ -616,7 +596,7 @@ export function bindLiveConnection(
         }
         starting = true;
         execution.waitUntil(
-          startSession(event.sdp).catch((error) => {
+          startSession(event.sdp, event.context).catch((error) => {
             if (!closing)
               emit({
                 type: "app.error",
