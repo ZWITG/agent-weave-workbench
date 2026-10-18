@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Hexagon, LayoutDashboard, Bot, Workflow, Brain, LogOut, Lock, Settings } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated")({
