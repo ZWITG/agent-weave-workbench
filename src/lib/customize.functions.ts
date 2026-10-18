@@ -16,7 +16,7 @@ Settings shape:
 - pages: [{ id, slug (lowercase-with-dashes), title, inNav: boolean, blocks: [block] }]
   block: { id, type: "heading"|"text"|"buttons"|"app", text?, buttonIds? (for "buttons"), html? (for "app"), height? (100-2000 px) }
 
-New features: when the owner asks for a tool, game, calculator, tracker, timer or any new feature, build it as a page with an "app" block containing a complete self-contained HTML document (inline CSS and JS, no external files). It runs in a sandbox: it may use localStorage-free in-memory state only, no network calls to the app. Match the app's colours. Add the page to the sidebar (inNav true) unless told otherwise.
+New features: when the owner asks for a tool, game, calculator, tracker, timer or any new feature, build it as a page with an "app" block containing a complete self-contained HTML document (inline CSS and JS, no external files). It runs in a sandbox: it may use localStorage-free in-memory state only, no network calls to the app. Style it to match the app: use the owner's theme colours if set, otherwise Tensai's defaults — background #090a13, text #f3f2f8, accent #7c4dff, panels #12121f — and set the document body background to match. Add the page to the sidebar (inNav true) unless told otherwise.
 Use short random ids for new items. Only use workflow and agent ids from the lists provided.`;
 
 export const editWithAI = createServerFn({ method: "POST" })
