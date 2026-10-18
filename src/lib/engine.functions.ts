@@ -2,6 +2,23 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireAppAuth } from "./app-auth";
 import { executeRun, type Stage } from "./engine.server";
 import { loadSettings } from "./ai-provider.server";
+import { z } from "zod";
+
+export const sendRunReply = createServerFn({ method: "POST" })
+  .middleware([requireAppAuth])
+  .inputValidator(z.object({ runId: z.string().uuid(), message: z.string().trim().min(1).max(20000) }))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase;
+    const { data: run } = await db.from("runs").select("*").eq("id", data.runId).eq("user_id", context.userId).single();
+    if (!run || !run.workflow_id) throw new Error("Run not available");
+    if (run.status === "failed") throw new Error("Start a new run after resolving the error.");
+    const { error } = await db.from("run_logs").insert({ run_id: run.id, user_id: context.userId, agent_name: "You", kind: "user_message", message: data.message });
+    if (error) throw new Error(error.message);
+    // Compare-and-set prevents two replies from launching two continuations.
+    const { data: resumed, error: resumeError } = await db.from("runs").update({ status: "running", finished_at: null }).eq("id", run.id).eq("status", "completed").select("id");
+    if (resumeError) throw new Error(resumeError.message);
+    return { resume: Boolean(resumed?.length) };
+  });
 
 export const createRun = createServerFn({ method: "POST" })
   .middleware([requireAppAuth])
@@ -47,7 +64,7 @@ export const executeRunFn = createServerFn({ method: "POST" })
       runId: run.id,
       stages: (wf?.stages ?? []) as unknown as Stage[],
       agents: agents ?? [],
-      input: run.input,
+      input: run.output ? `${run.input}\n\nPrevious work (continue and revise, do not start over):\n${run.output}` : run.input,
       settings: await loadSettings(db, context.userId),
     });
     return { ok: true };

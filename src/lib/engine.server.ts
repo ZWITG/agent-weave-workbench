@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { resolveModel, type Settings } from "./ai-provider.server";
+import { appendFollowUps, unseenFollowUps } from "./continuous-work";
 
 type Db = SupabaseClient<Database>;
 type Agent = Database["public"]["Tables"]["agents"]["Row"];
@@ -55,6 +56,12 @@ export async function executeRun(opts: {
   settings: Settings | null;
 }) {
   const { db, userId, runId, stages, agents, input, settings } = opts;
+  const delivered = new Set<number>();
+  const readReplies = async () => {
+    const { data, error } = await db.from("run_logs").select("id, message, created_at").eq("run_id", runId).eq("kind", "user_message").order("created_at").order("id");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  };
 
   const log = async (agent_name: string, kind: string, message: string) => {
     await db.from("run_logs").insert({
@@ -234,16 +241,38 @@ export async function executeRun(opts: {
 You are one agent in a coordinated team. Do your part thoroughly and hand off clear output. Whenever you discover a reusable fact, method or lesson, call save_knowledge so teammates gain it. Check search_knowledge before redoing work.${structured}${knowledgeBlock}`;
 
     await log(name, "start", `Working on task`);
+    const seen = new Set<number>();
+    let messages = [{ role: "user" as const, content: task }] as import("ai").ModelMessage[];
+    let text = "";
+    do {
     const result = streamText({
       model: ai.model,
       instructions,
-      messages: [{ role: "user", content: task }],
+      messages,
+      prepareStep: async ({ messages: current }) => {
+        const fresh = unseenFollowUps(await readReplies(), seen);
+        for (const reply of fresh) { seen.add(reply.id); delivered.add(reply.id); }
+        if (fresh.length) {
+          await log(name, "steering", `Received ${fresh.length} follow-up${fresh.length === 1 ? "" : "s"}`);
+          return { messages: appendFollowUps(current, fresh) };
+        }
+        return {};
+      },
       tools,
       stopWhen: isStepCount(50),
       maxRetries: 0,
       ...(ai.providerOptions ? { providerOptions: ai.providerOptions } : {}),
     });
-    const text = await result.text;
+    text = await result.text;
+    // The model may finish a text-only step; keep its complete tool/history pairs
+    // and continue if a reply arrived while that step was streaming.
+    const response = await result.response;
+    messages = [...messages, ...response.messages];
+    const fresh = unseenFollowUps(await readReplies(), seen);
+    if (!fresh.length) break;
+    for (const reply of fresh) { seen.add(reply.id); delivered.add(reply.id); }
+    messages = appendFollowUps(messages, fresh);
+    } while (true);
     await log(name, "output", text || "(no output)");
     return text;
   };
@@ -251,7 +280,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
   try {
     let carry = "";
     for (let i = 0; i < stages.length; i++) {
-      const stageAgents = stages[i]!.agent_ids.map((id) => agents.find((a) => a.id === id)).filter(
+      const stageAgents = (stages[i]?.agent_ids ?? []).map((id) => agents.find((a) => a.id === id)).filter(
         (a): a is Agent => !!a,
       );
       if (!stageAgents.length) continue;
@@ -273,10 +302,18 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
       );
       carry = outputs.join("\n\n");
     }
+    // Seal completion, then check the inbox: replies arriving at the boundary
+    // are handled here; later replies reopen the run through sendRunReply.
     await db
       .from("runs")
       .update({ status: "completed", output: carry, finished_at: new Date().toISOString() })
       .eq("id", runId);
+    const remaining = unseenFollowUps(await readReplies(), delivered);
+    if (remaining.length) {
+      await db.from("runs").update({ status: "running", finished_at: null }).eq("id", runId);
+      await executeRun({ ...opts, input: `${input}\n\nPrevious work:\n${carry}` });
+      return;
+    }
     await log("system", "done", "Workflow completed");
   } catch (e) {
     const err = e as { statusCode?: number; message?: string };

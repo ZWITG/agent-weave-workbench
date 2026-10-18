@@ -165,7 +165,7 @@ export function AgentConversation({
     if (!next) return;
     sending.current = true;
     setPending((current) => current.filter((message) => message.id !== next.id));
-    void sendMessage(next).finally(() => { sending.current = false; });
+    void sendMessage(next).finally(() => { sending.current = false; setPending((current) => [...current]); });
   }, [busy, calling, queuePaused, status, pending, sendMessage]);
   useEffect(() => {
     if (messages.length)
