@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, MessageSquare, Mic } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
@@ -88,6 +88,10 @@ function AgentsPage() {
               {a.skills.map((s) => (
                 <span key={s} className="rounded bg-secondary px-2 py-0.5 font-mono text-xs">{SKILLS.find((k) => k.id === s)?.label ?? s}</span>
               ))}
+            </div>
+            <div className="mt-5 flex gap-2">
+              <Button asChild variant="outline" size="sm"><Link to="/agents/$agentId" params={{ agentId: a.id }} search={{ mode: "text" }}><MessageSquare /> Text</Link></Button>
+              <Button asChild variant="outline" size="sm"><Link to="/agents/$agentId" params={{ agentId: a.id }} search={{ mode: "voice" }}><Mic /> Voice</Link></Button>
             </div>
           </div>
         ))}
