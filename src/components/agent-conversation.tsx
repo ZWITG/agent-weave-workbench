@@ -22,6 +22,9 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { useLiveVoice } from "@/hooks/use-live-voice";
+import { useFreeVoice } from "@/hooks/use-free-voice";
+import { useAiSettings } from "@/routes/_authenticated/settings";
+import { isDesktop, resolveProviderKind } from "@/lib/ai-settings";
 import { useDeviceConversations, type DeviceConversation } from "@/lib/conversation-store";
 import { colorClass } from "@/lib/skills";
 
@@ -58,6 +61,12 @@ export function AgentConversation({
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? ""));
   }, []);
+  const lastReply = useRef("");
+  const { data: aiSettings } = useAiSettings();
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => setDesktop(isDesktop()), []);
+  const freeVoiceMode =
+    desktop || resolveProviderKind(agent.provider, aiSettings?.default_provider) !== "lovable";
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -74,7 +83,8 @@ export function AgentConversation({
     id: agent.id,
     messages: saved?.messages ?? [],
     transport,
-    onFinish: ({ messages: completed }) => {
+    onFinish: ({ messages: completed, message }) => {
+      lastReply.current = message.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
       latest.current.update(agent.id, { messages: completed, invited: extra.current.invited });
       textarea.current?.focus();
     },
@@ -123,7 +133,15 @@ export function AgentConversation({
       latest.current.update(agent.id, { messages: next, invited: extra.current.invited });
     },
   });
-  const calling = ["connecting", "connected", "stopping"].includes(call.status);
+  const free = useFreeVoice({
+    onUtterance: async (text) => {
+      lastReply.current = "";
+      await sendMessage({ text });
+      return lastReply.current;
+    },
+  });
+  const calling =
+    ["connecting", "connected", "stopping"].includes(call.status) || free.status !== "idle";
   useEffect(() => {
     if (mode === "text" && !inviteOpen && !editOpen) textarea.current?.focus();
   }, [mode, inviteOpen, editOpen, status]);
@@ -218,7 +236,7 @@ export function AgentConversation({
       </Conversation>
       {(error || call.error || device.error) && (
         <p role="alert" className="mb-3 break-words text-sm text-destructive">
-          {error?.message || call.error || device.error}
+          {error?.message || call.error || free.error || device.error}
         </p>
       )}
       <audio
@@ -226,7 +244,36 @@ export function AgentConversation({
         controls
         className={mode === "voice" ? "mb-3 h-9 w-full" : "hidden"}
       />
-      {mode === "voice" ? (
+      {mode === "voice" && freeVoiceMode ? (
+        <div className="border-t border-border pt-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+            <span>
+              {free.status === "idle" ? "Ready to call" : free.status === "loading" ? `Preparing free voice${free.progress ? ` · ${free.progress}%` : ""}` : free.status}
+            </span>
+            <span>Free voice · no credits</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {free.status === "idle" ? (
+              <Button onClick={() => void free.start()}>
+                <Mic /> Start voice call
+              </Button>
+            ) : (
+              <Button variant="destructive" onClick={free.stop}>
+                <PhoneOff /> End call
+              </Button>
+            )}
+            {free.status !== "idle" && (
+              <Button variant="outline" onClick={() => free.setMuted(!free.muted)}>
+                {free.muted ? <MicOff /> : <Mic />}
+                {free.muted ? "Unmute" : "Mute"}
+              </Button>
+            )}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Speak, then pause — {agent.name} answers out loud. The first call downloads a speech model (about 80 MB) once.
+          </p>
+        </div>
+      ) : mode === "voice" ? (
         <div className="border-t border-border pt-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
             <span>{call.status === "idle" ? "Ready to call" : call.status}</span>
