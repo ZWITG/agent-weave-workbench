@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Continuous follow-ups in agent chat and workflow runs, similar to Lovable
 - [x] Agent conversations: text and voice buttons, invite agents, device-saved editable/deletable knowledge
 - [ ] Voice extended verification (blocked: needs a real microphone conversation and published app); automated back-and-forth passed, advanced voice-task completion remains unverified
 - [x] Private sign-in (owner only)
