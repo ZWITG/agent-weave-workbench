@@ -2,6 +2,7 @@
 // Updates come from the project's GitHub releases (electron-updater).
 const { app, BrowserWindow, dialog, session, shell } = require("electron");
 const { spawn } = require("node:child_process");
+const crypto = require("node:crypto");
 const net = require("node:net");
 const path = require("node:path");
 const { autoUpdater } = require("electron-updater");
@@ -12,6 +13,8 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_k5ErVR4VJqnZX5dR4mS_uw_TKlB4rhX
 const PORT = 48217;
 
 let server;
+// Per-launch secret: only this window may use the on-computer studio.
+const LOCAL_TOKEN = crypto.randomBytes(32).toString("hex");
 
 function waitForPort(port, timeoutMs = 30000) {
   const started = Date.now();
@@ -42,6 +45,9 @@ function startServer() {
       NITRO_HOST: "127.0.0.1",
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY,
+      HIVE_LOCAL: "1",
+      HIVE_LOCAL_TOKEN: LOCAL_TOKEN,
+      HIVE_DATA_DIR: app.getPath("userData"),
     },
     stdio: "inherit",
     windowsHide: true,
@@ -54,6 +60,10 @@ function startServer() {
 async function createWindow() {
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) =>
     cb(["media", "microphone", "audioCapture", "clipboard-sanitized-write"].includes(permission)),
+  );
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    { urls: [`http://127.0.0.1:${PORT}/*`] },
+    (details, cb) => cb({ requestHeaders: { ...details.requestHeaders, "x-hive-local": LOCAL_TOKEN } }),
   );
   const win = new BrowserWindow({
     width: 1280,

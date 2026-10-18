@@ -25,6 +25,18 @@ jobs:
       - name: Install app
         run: bun install
 
+      - name: Bundle offline speech model and runtime
+        shell: bash
+        run: |
+          mkdir -p public/ort public/models/onnx-community/whisper-base/onnx
+          cp node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded*.{mjs,wasm} public/ort/
+          base=https://huggingface.co/onnx-community/whisper-base/resolve/main
+          cd public/models/onnx-community/whisper-base
+          for f in config.json generation_config.json preprocessor_config.json tokenizer.json tokenizer_config.json \
+                   onnx/encoder_model_quantized.onnx onnx/decoder_model_merged_quantized.onnx; do
+            curl -fsSL "$base/$f" -o "$f"
+          done
+
       - name: Build Hive for desktop (Node server)
         env:
           HIVE_DESKTOP: "1"
