@@ -1,6 +1,13 @@
 /// <reference lib="webworker" />
 // Free, on-device speech-to-text. The model downloads once and is cached by the browser.
-import { pipeline, type AutomaticSpeechRecognitionPipeline } from "@huggingface/transformers";
+import { env, pipeline, type AutomaticSpeechRecognitionPipeline } from "@huggingface/transformers";
+
+// The desktop app ships the speech model and its runtime, so voice works with no internet.
+if (/HiveDesktop/.test(self.navigator.userAgent)) {
+  env.allowRemoteModels = false;
+  env.localModelPath = "/models/";
+  if (env.backends.onnx.wasm) env.backends.onnx.wasm.wasmPaths = "/ort/";
+}
 
 let asr: Promise<AutomaticSpeechRecognitionPipeline> | null = null;
 const load = () =>

@@ -6,6 +6,7 @@ import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DesktopSync } from "@/components/desktop-sync";
 import { isDesktop, PROVIDER_LABELS, type ProviderKind } from "@/lib/ai-settings";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -76,9 +77,10 @@ function SettingsPage() {
   const save = async () => {
     setSaving(true);
     const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return void setSaving(false);
     const { error } = await supabase
       .from("ai_settings")
-      .upsert({ ...form, user_id: u.user!.id, updated_at: new Date().toISOString() });
+      .upsert({ ...form, user_id: u.user.id, updated_at: new Date().toISOString() });
     setSaving(false);
     if (error) return void toast.error(error.message);
     toast.success("AI settings saved");
@@ -108,6 +110,8 @@ function SettingsPage() {
         Choose which AI your agents think with. Only the built-in AI uses Lovable credits. Each
         agent can also pick its own on the Agents page.
       </p>
+
+      {desktop && <DesktopSync />}
 
       <section className="mt-8 rounded-lg border border-border bg-card p-5">
         <Label>Default for all agents</Label>
