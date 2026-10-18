@@ -1,5 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
+import type { SharedV4ProviderOptions } from "@ai-sdk/provider";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { resolveProviderKind, type ProviderKind } from "./ai-settings";
@@ -13,7 +14,7 @@ const RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
 export type ResolvedModel = {
   kind: ProviderKind;
   model: LanguageModel;
-  providerOptions?: Record<string, Record<string, never> | Record<string, unknown>>;
+  providerOptions?: SharedV4ProviderOptions;
 };
 
 export async function loadSettings(db: Db, userId: string): Promise<Settings | null> {
