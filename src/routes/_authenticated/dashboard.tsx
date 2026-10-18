@@ -20,6 +20,8 @@ import { useWorkflows } from "./workflows";
 import { GetApp } from "@/components/get-app";
 import { OllamaSetup } from "@/components/ollama-setup";
 import { isDesktop } from "@/lib/ai-settings";
+import { useCustomization } from "@/hooks/use-customization";
+import { CustomButtonView } from "@/components/custom-button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -55,6 +57,8 @@ function Dashboard() {
   const [wfId, setWfId] = useState("");
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const { config } = useCustomization();
+  const quick = config.buttons.filter((b) => b.place === "dashboard");
 
   const { data: runs = [] } = useQuery({
     queryKey: ["runs"],
@@ -117,6 +121,13 @@ function Dashboard() {
     <div>
       <div className="font-mono text-xs text-primary">CONTROL ROOM</div>
       <h1 className="text-3xl font-bold">Dashboard</h1>
+      {quick.length > 0 && (
+        <div className="mt-6 flex flex-wrap gap-2">
+          {quick.map((b) => (
+            <CustomButtonView key={b.id} button={b} variant="default" />
+          ))}
+        </div>
+      )}
       {desktop ? <OllamaSetup /> : <GetApp />}
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map((s) => (
