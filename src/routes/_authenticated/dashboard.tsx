@@ -17,6 +17,7 @@ import {
 import { createRun, executeRunFn } from "@/lib/engine.functions";
 import { useAgents } from "./agents";
 import { useWorkflows } from "./workflows";
+import { GetApp } from "@/components/get-app";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -113,6 +114,7 @@ function Dashboard() {
     <div>
       <div className="font-mono text-xs text-primary">CONTROL ROOM</div>
       <h1 className="text-3xl font-bold">Dashboard</h1>
+      <GetApp />
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map((s) => (
           <div key={s.l} className="rounded-lg border border-border bg-card p-4">
