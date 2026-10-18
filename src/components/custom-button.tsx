@@ -24,7 +24,7 @@ export function CustomButtonView({
     const a = button.action;
     if (a.type === "link") {
       if (!/^https?:\/\//.test(a.url))
-        return toast.error("This button's link must start with https://");
+        return void toast.error("Links must start with https://");
       window.open(a.url, "_blank", "noopener");
     } else if (a.type === "page") {
       navigate({ to: "/p/$slug", params: { slug: a.slug } });
