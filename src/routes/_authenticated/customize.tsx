@@ -193,7 +193,7 @@ function ColorField({
   onChange,
 }: {
   label: string;
-  value?: string;
+  value?: string | undefined;
   fallback: string;
   onChange: (v?: string) => void;
 }) {
@@ -225,7 +225,7 @@ function FontField({
   onChange,
 }: {
   label: string;
-  value?: string;
+  value?: string | undefined;
   onChange: (v?: (typeof FONTS)[number]) => void;
 }) {
   return (
