@@ -245,6 +245,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
     let messages = [{ role: "user" as const, content: task }] as import("ai").ModelMessage[];
     let text = "";
     do {
+    const appliedThisCall: import("./continuous-work").FollowUp[] = [];
     const result = streamText({
       model: ai.model,
       instructions,
@@ -253,6 +254,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
         const fresh = unseenFollowUps(await readReplies(), seen);
         for (const reply of fresh) { seen.add(reply.id); delivered.add(reply.id); }
         if (fresh.length) {
+          appliedThisCall.push(...fresh);
           await log(name, "steering", `Received ${fresh.length} follow-up${fresh.length === 1 ? "" : "s"}`);
           return { messages: appendFollowUps(current, fresh) };
         }
@@ -267,7 +269,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
     // The model may finish a text-only step; keep its complete tool/history pairs
     // and continue if a reply arrived while that step was streaming.
     const response = await result.response;
-    messages = [...messages, ...response.messages];
+    messages = [...appendFollowUps(messages, appliedThisCall), ...response.messages];
     const fresh = unseenFollowUps(await readReplies(), seen);
     if (!fresh.length) break;
     for (const reply of fresh) { seen.add(reply.id); delivered.add(reply.id); }
@@ -310,8 +312,8 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
       .eq("id", runId);
     const remaining = unseenFollowUps(await readReplies(), delivered);
     if (remaining.length) {
-      await db.from("runs").update({ status: "running", finished_at: null }).eq("id", runId);
-      await executeRun({ ...opts, input: `${input}\n\nPrevious work:\n${carry}` });
+      const { data: claimed } = await db.from("runs").update({ status: "running", finished_at: null }).eq("id", runId).eq("status", "completed").select("id");
+      if (claimed?.length) await executeRun({ ...opts, input: `${input}\n\nPrevious work:\n${carry}` });
       return;
     }
     await log("system", "done", "Workflow completed");
