@@ -19,9 +19,9 @@ type Agent = Database["public"]["Tables"]["agents"]["Row"];
 export const Route = createFileRoute("/_authenticated/agents")({
   head: () => ({
     meta: [
-      { title: "Agents — Hive" },
+      { title: "Agents — Tensai" },
       { name: "description", content: "Create and configure AI agents." },
-      { property: "og:title", content: "Agents — Hive" },
+      { property: "og:title", content: "Agents — Tensai" },
       { property: "og:description", content: "Create and configure AI agents." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

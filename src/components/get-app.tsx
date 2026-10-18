@@ -26,7 +26,7 @@ export function GetApp() {
 
   const install = async () => {
     if (!prompt) {
-      toast.info("Open Hive in Chrome or Edge on the published site, then use the browser menu → Install Hive. On iPhone: Share → Add to Home Screen.");
+      toast.info("Open Tensai in Chrome or Edge on the published site, then use the browser menu → Install Tensai. On iPhone: Share → Add to Home Screen.");
       return;
     }
     await prompt.prompt();
@@ -37,7 +37,7 @@ export function GetApp() {
   return (
     <div className="mt-6 flex flex-col gap-3 rounded-lg border border-border bg-card p-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <div className="font-semibold">Run Hive as its own app</div>
+        <div className="font-semibold">Run Tensai as its own app</div>
         <div className="text-sm text-muted-foreground">
           Install it to your desktop, or download the full app to run on your computer.
         </div>
@@ -47,7 +47,7 @@ export function GetApp() {
           <MonitorDown className="h-4 w-4" /> {installed ? "Installed" : "Install app"}
         </Button>
         <Button asChild>
-          <a href="/downloads/hive-app.zip" download="hive-app.zip">
+          <a href="/downloads/tensai-app.zip" download="tensai-app.zip">
             <Download className="h-4 w-4" /> Download ZIP
           </a>
         </Button>

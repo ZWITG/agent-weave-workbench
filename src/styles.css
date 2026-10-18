@@ -52,7 +52,10 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
   --color-success: var(--success);
-  --font-sans: "Space Grotesk", ui-sans-serif, sans-serif;
+  --font-sans: "Sora", ui-sans-serif, sans-serif;
+  --font-display: "Doto", "JetBrains Mono", ui-monospace, monospace;
+  --color-primary-glow: var(--primary-glow);
+  --shadow-glow: var(--shadow-glow);
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -65,41 +68,44 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.16 0.012 250);
-  --foreground: oklch(0.94 0.01 90);
-  --card: oklch(0.2 0.014 250);
-  --card-foreground: oklch(0.94 0.01 90);
-  --popover: oklch(0.21 0.014 250);
-  --popover-foreground: oklch(0.94 0.01 90);
-  --primary: oklch(0.8 0.15 75);
-  --primary-foreground: oklch(0.18 0.02 60);
-  --secondary: oklch(0.26 0.015 250);
-  --secondary-foreground: oklch(0.94 0.01 90);
-  --muted: oklch(0.24 0.012 250);
-  --muted-foreground: oklch(0.68 0.015 250);
-  --accent: oklch(0.72 0.12 190);
-  --accent-foreground: oklch(0.16 0.02 220);
-  --destructive: oklch(0.65 0.2 25);
+  --radius: 0.25rem;
+  /* Tensai: LED dot-matrix on deep night, white light, ultraviolet core */
+  --background: oklch(0.145 0.02 280);
+  --foreground: oklch(0.96 0.006 285);
+  --card: oklch(0.18 0.024 282);
+  --card-foreground: oklch(0.96 0.006 285);
+  --popover: oklch(0.19 0.026 282);
+  --popover-foreground: oklch(0.96 0.006 285);
+  --primary: oklch(0.6 0.23 292);
+  --primary-foreground: oklch(0.98 0.005 285);
+  --primary-glow: oklch(0.72 0.18 295);
+  --secondary: oklch(0.23 0.03 284);
+  --secondary-foreground: oklch(0.96 0.006 285);
+  --muted: oklch(0.21 0.026 283);
+  --muted-foreground: oklch(0.68 0.03 285);
+  --accent: oklch(0.42 0.14 290);
+  --accent-foreground: oklch(0.97 0.006 285);
+  --destructive: oklch(0.64 0.21 18);
   --destructive-foreground: oklch(0.98 0 0);
-  --success: oklch(0.75 0.15 150);
-  --border: oklch(0.3 0.014 250);
-  --input: oklch(0.32 0.014 250);
-  --ring: oklch(0.8 0.15 75);
-  --chart-1: oklch(0.8 0.15 75);
-  --chart-2: oklch(0.72 0.12 190);
-  --chart-3: oklch(0.7 0.16 300);
-  --chart-4: oklch(0.75 0.15 150);
-  --chart-5: oklch(0.65 0.2 25);
-  --sidebar: oklch(0.14 0.012 250);
-  --sidebar-foreground: oklch(0.94 0.01 90);
-  --sidebar-primary: oklch(0.8 0.15 75);
-  --sidebar-primary-foreground: oklch(0.18 0.02 60);
-  --sidebar-accent: oklch(0.22 0.014 250);
-  --sidebar-accent-foreground: oklch(0.94 0.01 90);
-  --sidebar-border: oklch(0.28 0.014 250);
-  --sidebar-ring: oklch(0.8 0.15 75);
-  --grid: oklch(0.94 0.01 90 / 4%);
+  --success: oklch(0.78 0.14 160);
+  --border: oklch(0.27 0.03 284);
+  --input: oklch(0.3 0.032 284);
+  --ring: oklch(0.6 0.23 292);
+  --chart-1: oklch(0.6 0.23 292);
+  --chart-2: oklch(0.96 0.006 285);
+  --chart-3: oklch(0.72 0.18 295);
+  --chart-4: oklch(0.78 0.14 160);
+  --chart-5: oklch(0.64 0.21 18);
+  --sidebar: oklch(0.125 0.018 280);
+  --sidebar-foreground: oklch(0.96 0.006 285);
+  --sidebar-primary: oklch(0.6 0.23 292);
+  --sidebar-primary-foreground: oklch(0.98 0.005 285);
+  --sidebar-accent: oklch(0.2 0.03 284);
+  --sidebar-accent-foreground: oklch(0.96 0.006 285);
+  --sidebar-border: oklch(0.24 0.028 284);
+  --sidebar-ring: oklch(0.6 0.23 292);
+  --dot: oklch(0.96 0.006 285 / 7%);
+  --shadow-glow: 0 0 24px -6px color-mix(in oklab, var(--primary) 60%, transparent);
 }
 
 @layer base {
@@ -107,11 +113,17 @@
     border-color: var(--color-border);
   }
 
+  h1, .font-display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-image: radial-gradient(var(--dot) 1px, transparent 1.4px);
+    background-size: 14px 14px;
   }
 }

@@ -80,10 +80,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0b0d10" },
-      { title: "Hive — AI Agent Studio" },
+      { name: "theme-color", content: "#090a13" },
+      { title: "Tensai — AI Agent Studio" },
       { name: "description", content: "Build, chain and run coordinated AI agents." },
-      { property: "og:title", content: "Hive — AI Agent Studio" },
+      { property: "og:title", content: "Tensai — AI Agent Studio" },
       { property: "og:description", content: "Build, chain and run coordinated AI agents." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;500;600;700&display=swap",
       },
     ],
   }),

@@ -13,9 +13,9 @@ import { useAgents } from "./agents";
 export const Route = createFileRoute("/_authenticated/knowledge")({
   head: () => ({
     meta: [
-      { title: "Knowledge — Hive" },
+      { title: "Knowledge — Tensai" },
       { name: "description", content: "Shared knowledge all agents learn from." },
-      { property: "og:title", content: "Knowledge — Hive" },
+      { property: "og:title", content: "Knowledge — Tensai" },
       { property: "og:description", content: "Shared knowledge all agents learn from." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -71,7 +71,7 @@ function KnowledgePage() {
 
   return (
     <div>
-      <div className="font-mono text-xs text-primary">HIVE MIND</div>
+      <div className="font-mono text-xs text-primary">COLLECTIVE MIND</div>
       <h1 className="text-3xl font-bold">Shared knowledge</h1>
       <p className="mt-2 text-muted-foreground">
         Everything agents learn lands here, and every agent reads it before working.

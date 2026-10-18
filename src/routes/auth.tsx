@@ -12,10 +12,10 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Hive" },
-      { name: "description", content: "Sign in to your private Hive agent studio." },
-      { property: "og:title", content: "Sign in — Hive" },
-      { property: "og:description", content: "Sign in to your private Hive agent studio." },
+      { title: "Sign in — Tensai" },
+      { name: "description", content: "Sign in to your private Tensai agent studio." },
+      { property: "og:title", content: "Sign in — Tensai" },
+      { property: "og:description", content: "Sign in to your private Tensai agent studio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

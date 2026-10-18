@@ -12,9 +12,9 @@ import { isDesktop, PROVIDER_LABELS, type ProviderKind } from "@/lib/ai-settings
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
-      { title: "AI settings — Hive" },
+      { title: "AI settings — Tensai" },
       { name: "description", content: "Choose which AI your agents think with." },
-      { property: "og:title", content: "AI settings — Hive" },
+      { property: "og:title", content: "AI settings — Tensai" },
       { property: "og:description", content: "Choose which AI your agents think with." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -83,7 +83,7 @@ export function OllamaSetup() {
       {state === "missing" && (
         <>
           <p className="mt-1 text-sm text-muted-foreground">
-            Hive uses Ollama to run AI on your computer for free, with no internet. Install it, open it, then check again.
+            Tensai uses Ollama to run AI on your computer for free, with no internet. Install it, open it, then check again.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button asChild>

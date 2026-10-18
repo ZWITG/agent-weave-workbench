@@ -24,9 +24,9 @@ import { isDesktop } from "@/lib/ai-settings";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Control room — Hive" },
+      { title: "Control room — Tensai" },
       { name: "description", content: "Run workflows and track agent output." },
-      { property: "og:title", content: "Control room — Hive" },
+      { property: "og:title", content: "Control room — Tensai" },
       { property: "og:description", content: "Run workflows and track agent output." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

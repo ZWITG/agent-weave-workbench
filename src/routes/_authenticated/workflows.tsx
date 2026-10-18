@@ -20,9 +20,9 @@ import { useAgents } from "./agents";
 export const Route = createFileRoute("/_authenticated/workflows")({
   head: () => ({
     meta: [
-      { title: "Workflows — Hive" },
+      { title: "Workflows — Tensai" },
       { name: "description", content: "Chain agents into workflows." },
-      { property: "og:title", content: "Workflows — Hive" },
+      { property: "og:title", content: "Workflows — Tensai" },
       { property: "og:description", content: "Chain agents into workflows." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
