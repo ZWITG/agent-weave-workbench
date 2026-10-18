@@ -1,6 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import type { LanguageModel } from "ai";
-import type { SharedV4ProviderOptions } from "@ai-sdk/provider";
+import type { LanguageModel, streamText } from "ai";
+type SharedV4ProviderOptions = NonNullable<Parameters<typeof streamText>[0]["providerOptions"]>;
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { resolveProviderKind, type ProviderKind } from "./ai-settings";
