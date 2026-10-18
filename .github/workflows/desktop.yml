@@ -1,4 +1,4 @@
-name: Build Hive desktop app
+name: Build Tensai Windows installer
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
             curl -fsSL "$base/$f" -o "$f"
           done
 
-      - name: Build Hive for desktop (Node server)
+      - name: Build Tensai for desktop (Node server)
         env:
           HIVE_DESKTOP: "1"
         run: bun run build
@@ -62,3 +62,10 @@ jobs:
           -c.publish.owner=${{ github.repository_owner }}
           -c.publish.repo=${{ github.event.repository.name }}
           -c.publish.releaseType=release
+
+      - name: Retain single-file installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tensai-Windows-installer
+          path: desktop/dist/Tensai-Setup.exe
+          if-no-files-found: error

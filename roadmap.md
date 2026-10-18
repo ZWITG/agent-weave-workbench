@@ -1,5 +1,8 @@
 # Roadmap
-- [ ] Single Windows installer download and Android APK installation (online and offline)
+- [x] Replace misleading source ZIP install flow with validated single EXE/APK release downloads; configure Windows one-click installer and signed online Android APK workflow
+- [ ] Enable verified Windows EXE download (blocked: GitHub release and a Windows installation check)
+- [ ] Enable verified Android APK download (blocked: GitHub signing secrets, release build, and Android installation check)
+- [ ] Fully offline Android AI (blocked: separate on-device AI engine and native storage/execution integration; online APK is not offline-capable)
 - [x] Continuous follow-ups in agent chat and workflow runs, similar to Lovable (live built-in chat, mid-run instructions, and completed-run continuation verified; Ollama check blocked because local Ollama is unreachable from the website)
 - [x] Agent conversations: text and voice buttons, invite agents, device-saved editable/deletable knowledge
 - [ ] Voice extended verification (blocked: needs a real microphone conversation and published app); automated back-and-forth passed, advanced voice-task completion remains unverified
