@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Agent conversations: text and voice buttons, invite agents, device-saved editable/deletable knowledge
 - [x] Private sign-in (owner only)
 - [x] Agents: create/edit roles, system prompts, skills
 - [x] Workflows: stages chained, parallel agents per stage (visual board)
