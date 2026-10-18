@@ -5,6 +5,7 @@ export type DeviceConversation = {
   agentId: string;
   invited: string[];
   messages: UIMessage[];
+  pending?: UIMessage[];
   knowledge: string;
   updatedAt: string;
 };
