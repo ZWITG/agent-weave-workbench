@@ -9,6 +9,7 @@ import type { LiveConnector, LiveSocket } from "./src/lib/live-relay.server";
 
 function liveSocket(socket: WebSocket): LiveSocket {
   return {
+    runId: (socket as WebSocket & { gatewayRunId?: string }).gatewayRunId,
     get readyState() {
       return socket.readyState;
     },
@@ -81,7 +82,6 @@ const connectGateway: LiveConnector = (address, headers, signal) =>
     socket.once("upgrade", (response) => {
       const value = response.headers["x-lovable-aig-run-id"];
       const id = typeof value === "string" ? value : undefined;
-      socket.once("open", () => { /* The correlation ID is retained by the live socket adapter below. */ });
       if (id) (socket as WebSocket & { gatewayRunId?: string }).gatewayRunId = id;
     });
   });

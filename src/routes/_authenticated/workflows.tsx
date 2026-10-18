@@ -12,7 +12,7 @@ import { colorClass, type Stage } from "@/lib/skills";
 import { useAgents } from "./agents";
 
 export const Route = createFileRoute("/_authenticated/workflows")({
-  head: () => ({ meta: [{ title: "Workflows — Hive" }, { name: "description", content: "Chain agents into workflows." }] }),
+  head: () => ({ meta: [{ title: "Workflows — Hive" }, { name: "description", content: "Chain agents into workflows." }, { property: "og:title", content: "Workflows — Hive" }, { property: "og:description", content: "Chain agents into workflows." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: WorkflowsPage,
 });
 

@@ -13,7 +13,7 @@ import { useAgents } from "./agents";
 import { useWorkflows } from "./workflows";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Control room — Hive" }, { name: "description", content: "Run workflows and track agent output." }] }),
+  head: () => ({ meta: [{ title: "Control room — Hive" }, { name: "description", content: "Run workflows and track agent output." }, { property: "og:title", content: "Control room — Hive" }, { property: "og:description", content: "Run workflows and track agent output." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: Dashboard,
 });
 

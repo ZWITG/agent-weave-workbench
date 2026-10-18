@@ -11,7 +11,7 @@ import { useDeviceConversations } from "@/lib/conversation-store";
 import { useAgents } from "./agents";
 
 export const Route = createFileRoute("/_authenticated/knowledge")({
-  head: () => ({ meta: [{ title: "Knowledge — Hive" }, { name: "description", content: "Shared knowledge all agents learn from." }] }),
+  head: () => ({ meta: [{ title: "Knowledge — Hive" }, { name: "description", content: "Shared knowledge all agents learn from." }, { property: "og:title", content: "Knowledge — Hive" }, { property: "og:description", content: "Shared knowledge all agents learn from." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: KnowledgePage,
 });
 

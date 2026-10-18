@@ -16,7 +16,7 @@ import { SKILLS, COLORS, colorClass } from "@/lib/skills";
 type Agent = Database["public"]["Tables"]["agents"]["Row"];
 
 export const Route = createFileRoute("/_authenticated/agents")({
-  head: () => ({ meta: [{ title: "Agents — Hive" }, { name: "description", content: "Create and configure AI agents." }] }),
+  head: () => ({ meta: [{ title: "Agents — Hive" }, { name: "description", content: "Create and configure AI agents." }, { property: "og:title", content: "Agents — Hive" }, { property: "og:description", content: "Create and configure AI agents." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: AgentsPage,
 });
 

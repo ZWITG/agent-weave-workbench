@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { StatusDot } from "./dashboard";
 
 export const Route = createFileRoute("/_authenticated/runs/$runId")({
-  head: () => ({ meta: [{ title: "Run — Hive" }, { name: "description", content: "Live execution log and output." }] }),
+  head: () => ({ meta: [{ title: "Run — Hive" }, { name: "description", content: "Live execution log and output." }, { property: "og:title", content: "Run — Hive" }, { property: "og:description", content: "Live execution log and output." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: RunPage,
 });
 
