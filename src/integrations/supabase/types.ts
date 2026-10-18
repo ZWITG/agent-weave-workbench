@@ -14,13 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          role: string
+          skills: string[]
+          system_prompt: string
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+          role?: string
+          skills?: string[]
+          system_prompt?: string
+          user_id?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          role?: string
+          skills?: string[]
+          system_prompt?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_owner: {
+        Row: {
+          created_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      knowledge: {
+        Row: {
+          agent_name: string
+          content: string
+          created_at: string
+          id: string
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          agent_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          topic: string
+          user_id?: string
+        }
+        Update: {
+          agent_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          topic?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      run_logs: {
+        Row: {
+          agent_name: string
+          created_at: string
+          id: number
+          kind: string
+          message: string
+          run_id: string
+          user_id: string
+        }
+        Insert: {
+          agent_name?: string
+          created_at?: string
+          id?: number
+          kind?: string
+          message: string
+          run_id: string
+          user_id?: string
+        }
+        Update: {
+          agent_name?: string
+          created_at?: string
+          id?: number
+          kind?: string
+          message?: string
+          run_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "run_logs_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      runs: {
+        Row: {
+          finished_at: string | null
+          id: string
+          input: string
+          output: string | null
+          started_at: string
+          status: string
+          user_id: string
+          workflow_id: string | null
+          workflow_name: string
+        }
+        Insert: {
+          finished_at?: string | null
+          id?: string
+          input?: string
+          output?: string | null
+          started_at?: string
+          status?: string
+          user_id?: string
+          workflow_id?: string | null
+          workflow_name?: string
+        }
+        Update: {
+          finished_at?: string | null
+          id?: string
+          input?: string
+          output?: string | null
+          started_at?: string
+          status?: string
+          user_id?: string
+          workflow_id?: string | null
+          workflow_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "runs_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          stages: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          stages?: Json
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          stages?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_owner: { Args: never; Returns: boolean }
+      is_owner: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
