@@ -61,7 +61,12 @@ jobs:
         with:
           name: Tensai-Android-installer
           path: Tensai.apk
+      # One rolling "android" release so the download link never changes, kept out of "latest"
+      # because the desktop auto-updater reads latest.yml from the latest release.
       - name: Publish APK
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "android-1.0.${{ github.run_number }}" Tensai.apk --title "Tensai Android 1.0.${{ github.run_number }}" --notes "Online Android app. Offline Android AI is not included."
+        run: |
+          gh release view android >/dev/null 2>&1 || gh release create android --latest=false --title "Tensai Android" --notes "Online Android app. Offline Android AI is not included."
+          gh release edit android --latest=false --title "Tensai Android 1.0.${{ github.run_number }}"
+          gh release upload android Tensai.apk --clobber
