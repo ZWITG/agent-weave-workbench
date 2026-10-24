@@ -21,7 +21,10 @@ function waitForPort(port, timeoutMs = 30000) {
   return new Promise((resolve, reject) => {
     const tryOnce = () => {
       const sock = net.connect(port, "127.0.0.1");
-      sock.once("connect", () => { sock.end(); resolve(); });
+      sock.once("connect", () => {
+        sock.end();
+        resolve();
+      });
       sock.once("error", () => {
         sock.destroy();
         if (Date.now() - started > timeoutMs) reject(new Error("Tensai server did not start"));
@@ -33,7 +36,9 @@ function waitForPort(port, timeoutMs = 30000) {
 }
 
 function startServer() {
-  const root = app.isPackaged ? path.join(process.resourcesPath, "server") : path.join(__dirname, "server");
+  const root = app.isPackaged
+    ? path.join(process.resourcesPath, "server")
+    : path.join(__dirname, "server");
   server = spawn(process.execPath, [path.join(root, "server", "index.mjs")], {
     cwd: root,
     env: {
@@ -53,7 +58,8 @@ function startServer() {
     windowsHide: true,
   });
   server.on("exit", (code) => {
-    if (code && !app.isQuitting) dialog.showErrorBox("Tensai", `The Tensai engine stopped (code ${code}).`);
+    if (code && !app.isQuitting)
+      dialog.showErrorBox("Tensai", `The Tensai engine stopped (code ${code}).`);
   });
 }
 
@@ -63,7 +69,8 @@ async function createWindow() {
   );
   session.defaultSession.webRequest.onBeforeSendHeaders(
     { urls: [`http://127.0.0.1:${PORT}/*`] },
-    (details, cb) => cb({ requestHeaders: { ...details.requestHeaders, "x-hive-local": LOCAL_TOKEN } }),
+    (details, cb) =>
+      cb({ requestHeaders: { ...details.requestHeaders, "x-hive-local": LOCAL_TOKEN } }),
   );
   const win = new BrowserWindow({
     width: 1280,
