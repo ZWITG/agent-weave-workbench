@@ -54,6 +54,8 @@ jobs:
 
       - name: Build and publish installer
         working-directory: desktop
+        # bash, not the Windows default pwsh: pwsh splits `-c.publish.x=y` into `-c` + a file path.
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >

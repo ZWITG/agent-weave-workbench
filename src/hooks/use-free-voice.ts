@@ -88,6 +88,8 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
     }
     if ((statusRef.current as FreeVoiceStatus) !== "idle") set("listening");
   };
+  const handleSegmentRef = useRef(handleSegment);
+  handleSegmentRef.current = handleSegment;
 
   const start = useCallback(async () => {
     setError("");
@@ -153,7 +155,7 @@ export function useFreeVoice({ onUtterance }: { onUtterance: (text: string) => P
                 all.set(c, o);
                 o += c.length;
               }
-              void handleSegment(all);
+              void handleSegmentRef.current(all);
             }
           }
         }

@@ -30,3 +30,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Desktop installer build outputs (made by .github/workflows/desktop.yml)
+desktop/server
+desktop/icon.png
+desktop/package-lock.json
