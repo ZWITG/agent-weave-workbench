@@ -52,6 +52,18 @@ jobs:
           npm install --no-audit --no-fund
           npm version "1.0.${{ github.run_number }}" --no-git-tag-version --allow-same-version
 
+      # electron-builder uploads the EXE and blockmap in parallel and each tries to create the
+      # release, so the second fails with 422. Creating it first lets both just upload.
+      - name: Create release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create "v1.0.${{ github.run_number }}"
+          --target "${{ github.sha }}"
+          --title "Tensai 1.0.${{ github.run_number }}"
+          --notes "Windows installer: download Tensai-Setup.exe below."
+
       - name: Build and publish installer
         working-directory: desktop
         # bash, not the Windows default pwsh: pwsh splits `-c.publish.x=y` into `-c` + a file path.
