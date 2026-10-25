@@ -1,5 +1,8 @@
 export type RunMode = "run" | "plan";
-export type RunStatus = "running" | "completed" | "failed" | "awaiting_approval";
+export type RunStatus = "running" | "planning" | "awaiting_approval" | "completed" | "failed";
+
+/** Status is free text, so plan mode needs no schema change: "planning" is a run in plan mode. */
+export const modeForStatus = (status: string): RunMode => (status === "planning" ? "plan" : "run");
 
 /** Tools that only read; everything else (save_knowledge, write_file, create_helper_agent) has side effects. */
 export const READ_ONLY_TOOLS = [
@@ -29,8 +32,9 @@ PLAN MODE: do not do the work yet. Use only your read-only tools to research, th
 ## How we'll check it worked`;
 
 const TRANSITIONS: Record<RunStatus, RunStatus[]> = {
-  running: ["completed", "failed", "awaiting_approval"],
-  awaiting_approval: ["running", "failed"],
+  running: ["completed", "failed"],
+  planning: ["awaiting_approval", "failed"],
+  awaiting_approval: ["running", "planning", "failed"],
   completed: ["running"],
   failed: [],
 };

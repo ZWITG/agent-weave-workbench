@@ -116,7 +116,7 @@ function Dashboard() {
     }
   };
 
-  const active = runs.filter((r) => r.status === "running").length;
+  const active = runs.filter((r) => r.status === "running" || r.status === "planning").length;
   const desktop = useDesktop();
   const stats = [
     { l: "Agents", v: agents.length },

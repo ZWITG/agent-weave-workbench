@@ -3,7 +3,7 @@ import { requireAppAuth } from "./app-auth";
 import { executeRun, type Stage } from "./engine.server";
 import { loadSettings } from "./ai-provider.server";
 import { z } from "zod";
-import { inputWithPlan, type RunMode } from "./plan-mode";
+import { inputWithPlan, modeForStatus, type RunMode } from "./plan-mode";
 
 export const sendRunReply = createServerFn({ method: "POST" })
   .middleware([requireAppAuth])
@@ -29,11 +29,12 @@ export const sendRunReply = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     // Compare-and-set prevents two replies from launching two continuations.
-    // A reply to a pending plan sends the run back to planning (mode stays "plan").
-    const from = run.status === "awaiting_approval" ? "awaiting_approval" : "completed";
+    // A reply to a pending plan sends the run back to planning.
+    const pending = run.status === "awaiting_approval";
+    const from = pending ? "awaiting_approval" : "completed";
     const { data: resumed, error: resumeError } = await db
       .from("runs")
-      .update({ status: "running", finished_at: null })
+      .update({ status: pending ? "planning" : "running", finished_at: null })
       .eq("id", run.id)
       .eq("status", from)
       .select("id");
@@ -59,7 +60,7 @@ export const createRun = createServerFn({ method: "POST" })
         workflow_id: wf.id,
         workflow_name: wf.name,
         input: data.input,
-        mode: data.mode === "plan" ? "plan" : "run",
+        status: data.mode === "plan" ? "planning" : "running",
       })
       .select("id")
       .single();
@@ -73,7 +74,18 @@ export const executeRunFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const db = context.supabase;
     const { data: run } = await db.from("runs").select("*").eq("id", data.runId).single();
-    if (!run || run.status !== "running" || !run.workflow_id) throw new Error("Run not available");
+    if (!run || !["running", "planning"].includes(run.status) || !run.workflow_id)
+      throw new Error("Run not available");
+    const mode = modeForStatus(run.status);
+    const { data: planLog } = await db
+      .from("run_logs")
+      .select("message")
+      .eq("run_id", run.id)
+      .eq("kind", "plan")
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(1)
+      .maybeSingle();
     const { data: wf } = await db
       .from("workflows")
       .select("stages")
@@ -86,9 +98,9 @@ export const executeRunFn = createServerFn({ method: "POST" })
       runId: run.id,
       stages: (wf?.stages ?? []) as unknown as Stage[],
       agents: agents ?? [],
-      input: inputWithPlan(run.input, run.plan, run.mode as RunMode, run.output),
+      input: inputWithPlan(run.input, planLog?.message ?? null, mode, run.output),
       settings: await loadSettings(db, context.userId),
-      mode: run.mode as RunMode,
+      mode,
     });
     return { ok: true };
   });
@@ -103,18 +115,22 @@ export const approvePlan = createServerFn({ method: "POST" })
     // Compare-and-set so a double click cannot start two executions.
     const { data: approved, error } = await db
       .from("runs")
-      .update({
-        status: "running",
-        mode: "run",
-        finished_at: null,
-        ...(data.plan ? { plan: data.plan } : {}),
-      })
+      .update({ status: "running", finished_at: null })
       .eq("id", data.runId)
       .eq("user_id", context.userId)
       .eq("status", "awaiting_approval")
       .select("id");
     if (error) throw new Error(error.message);
     if (!approved?.length) throw new Error("This run is not waiting for approval.");
+    // An edited plan becomes the newest plan log, which is the one the run follows.
+    if (data.plan)
+      await db.from("run_logs").insert({
+        run_id: data.runId,
+        user_id: context.userId,
+        agent_name: "You",
+        kind: "plan",
+        message: data.plan,
+      });
     await db.from("run_logs").insert({
       run_id: data.runId,
       user_id: context.userId,

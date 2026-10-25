@@ -22,4 +22,4 @@
 - [ ] Sync with online account real check (blocked: needs your password inside the installed desktop app)
 - [x] Rebrand to Tensai: name, logo, and new theme from the uploaded logo
 - [x] In-app editing: visual editor (look, buttons, pages) + Ask Tensai AI changes with undo
-- [x] Plan mode: "Plan first" runs research read-only, then wait for Approve / Edit / Reject (agent chat has a Plan toggle). Needs migration 0004 applied to the online database.
+- [x] Plan mode: "Plan first" runs research read-only, then wait for Approve / Edit / Reject (agent chat has a Plan toggle).

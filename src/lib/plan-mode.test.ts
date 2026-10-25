@@ -4,6 +4,7 @@ import {
   canTransition,
   filterToolsForMode,
   inputWithPlan,
+  modeForStatus,
   planInstructions,
 } from "./plan-mode";
 
@@ -34,14 +35,24 @@ describe("filterToolsForMode", () => {
 
 describe("canTransition", () => {
   it("lets a plan be approved, revised or rejected", () => {
-    expect(canTransition("running", "awaiting_approval")).toBe(true);
+    expect(canTransition("planning", "awaiting_approval")).toBe(true);
     expect(canTransition("awaiting_approval", "running")).toBe(true);
+    expect(canTransition("awaiting_approval", "planning")).toBe(true);
     expect(canTransition("awaiting_approval", "failed")).toBe(true);
   });
 
   it("never completes a run straight from awaiting_approval", () => {
     expect(canTransition("awaiting_approval", "completed")).toBe(false);
+    expect(canTransition("running", "awaiting_approval")).toBe(false);
     expect(canTransition("failed", "running")).toBe(false);
+  });
+});
+
+describe("modeForStatus", () => {
+  it("treats only a planning run as plan mode", () => {
+    expect(modeForStatus("planning")).toBe("plan");
+    for (const status of ["running", "awaiting_approval", "completed", "failed"])
+      expect(modeForStatus(status)).toBe("run");
   });
 });
 

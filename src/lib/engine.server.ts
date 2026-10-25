@@ -329,10 +329,11 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
     if (mode === "plan") {
       await db
         .from("runs")
-        .update({ status: "awaiting_approval", plan: carry, finished_at: null })
+        .update({ status: "awaiting_approval", finished_at: null })
         .eq("id", runId)
-        .eq("status", "running");
-      await log("system", "plan", "Plan ready for approval");
+        .eq("status", "planning");
+      // The plan lives in the run log (kind "plan"), so no extra column is needed.
+      await log("system", "plan", carry);
       return;
     }
     // Seal completion, then check the inbox: replies arriving at the boundary

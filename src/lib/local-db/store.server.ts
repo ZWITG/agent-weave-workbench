@@ -80,8 +80,6 @@ function defaults(table: string, row: Row): Row {
     base["started_at"] ??= now;
     base["status"] ??= "running";
     base["output"] ??= null;
-    base["mode"] ??= "run";
-    base["plan"] ??= null;
     base["finished_at"] ??= null;
   } else if (table !== "ai_settings") base["created_at"] ??= now;
   if (table === "artifacts") base["updated_at"] ??= now;

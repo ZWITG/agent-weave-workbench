@@ -133,6 +133,7 @@ function RunPage() {
     URL.revokeObjectURL(url);
   };
 
+  const plan = [...logs].reverse().find((l) => l.kind === "plan")?.message ?? null;
   const decidePlan = async (action: "approve" | "reject") => {
     setPlanBusy(true);
     setPlanError(null);
@@ -140,7 +141,7 @@ function RunPage() {
       if (action === "reject") {
         await reject({ data: { runId } });
       } else {
-        const edited = editing && draft.trim() && draft.trim() !== run?.plan ? draft : undefined;
+        const edited = editing && draft.trim() && draft.trim() !== plan ? draft : undefined;
         await approve({ data: { runId, plan: edited } });
         setEditing(false);
         void execute({ data: { runId } }).catch((error: unknown) =>
@@ -193,21 +194,21 @@ function RunPage() {
                 </Message>
               ) : (
                 <span
-                  className={`whitespace-pre-wrap break-words ${kindColor[l.kind] ?? ""} ${l.kind === "output" ? "line-clamp-6" : ""}`}
+                  className={`whitespace-pre-wrap break-words ${kindColor[l.kind] ?? ""} ${l.kind === "output" || l.kind === "plan" ? "line-clamp-6" : ""}`}
                 >
                   {l.message}
                 </span>
               )}
             </div>
           ))}
-          {run.status === "running" && (
+          {(run.status === "running" || run.status === "planning") && (
             <div className="animate-pulse text-muted-foreground">▍ agents working…</div>
           )}
           <div ref={bottom} />
         </div>
       </div>
 
-      {run.status === "awaiting_approval" && run.plan && (
+      {run.status === "awaiting_approval" && plan && (
         <div className="mt-4 rounded-lg border border-chart-4/60 bg-card p-5">
           <div className="font-mono text-xs text-chart-4">PLAN · WAITING FOR YOUR APPROVAL</div>
           {editing ? (
@@ -219,7 +220,7 @@ function RunPage() {
               onChange={(event) => setDraft(event.target.value)}
             />
           ) : (
-            <MessageResponse className="mt-3 text-sm leading-relaxed">{run.plan}</MessageResponse>
+            <MessageResponse className="mt-3 text-sm leading-relaxed">{plan}</MessageResponse>
           )}
           {planError && (
             <p role="alert" className="mt-3 text-sm text-destructive">
@@ -238,7 +239,7 @@ function RunPage() {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setDraft(run.plan ?? "");
+                  setDraft(plan ?? "");
                   setEditing(true);
                 }}
                 disabled={planBusy}
