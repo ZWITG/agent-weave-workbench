@@ -41,5 +41,15 @@ export function decodeDevSession(value: string | null | undefined): DevSession |
   }
 }
 
+/** Drops this browser's copy of the sign-in without telling the server, so the session stays valid elsewhere. */
+export function forgetStoredSession(storage: Pick<Storage, "length" | "key" | "removeItem">) {
+  const keys: string[] = [];
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i);
+    if (key && /^sb-.+-auth-token/.test(key)) keys.push(key);
+  }
+  for (const key of keys) storage.removeItem(key);
+}
+
 export const devSigninUrl = (origin: string) =>
   `${HOSTED_ORIGIN}/dev-signin?origin=${encodeURIComponent(origin)}`;

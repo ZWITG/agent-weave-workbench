@@ -3,6 +3,7 @@ import {
   decodeDevSession,
   devSigninUrl,
   encodeDevSession,
+  forgetStoredSession,
   isDevOrigin,
   isLocalDev,
 } from "./dev-signin";
@@ -42,6 +43,30 @@ describe("dev session encoding", () => {
     "bm90LWpzb24",
     encodeDevSession({ access_token: "x" } as never),
   ])("returns null for malformed input %s", (value) => expect(decodeDevSession(value)).toBeNull());
+});
+
+describe("forgetStoredSession", () => {
+  const fakeStorage = (initial: Record<string, string>) => {
+    const data = new Map(Object.entries(initial));
+    return {
+      data,
+      get length() {
+        return data.size;
+      },
+      key: (i: number) => [...data.keys()][i] ?? null,
+      removeItem: (key: string) => void data.delete(key),
+    };
+  };
+
+  it("removes only the Supabase auth entries", () => {
+    const storage = fakeStorage({
+      "sb-abc-auth-token": "{}",
+      "sb-abc-auth-token-code-verifier": "x",
+      theme: "dark",
+    });
+    forgetStoredSession(storage);
+    expect([...storage.data.keys()]).toEqual(["theme"]);
+  });
 });
 
 describe("devSigninUrl", () => {

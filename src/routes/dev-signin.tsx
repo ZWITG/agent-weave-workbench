@@ -7,7 +7,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
-import { encodeDevSession, isDevOrigin } from "@/lib/dev-signin";
+import { encodeDevSession, forgetStoredSession, isDevOrigin } from "@/lib/dev-signin";
 
 export const Route = createFileRoute("/dev-signin")({
   head: () => ({
@@ -75,7 +75,9 @@ function DevSignin() {
       refresh_token: session.refresh_token,
     });
     // Only the dev server keeps this session: two clients rotating one refresh token would sign both out.
-    await supabase.auth.signOut({ scope: "local" });
+    // Not supabase.auth.signOut(): even with scope "local" it ends the session on the server, which is
+    // the one being handed over.
+    forgetStoredSession(localStorage);
     finish();
     window.location.replace(`${origin}/auth#dev_session=${token}`);
   };
