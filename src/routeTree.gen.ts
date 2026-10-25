@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DevSigninRouteImport } from './routes/dev-signin'
 import { Route as AuthenticatedAgentsRouteImport } from './routes/_authenticated/agents'
 import { Route as AuthenticatedCustomizeRouteImport } from './routes/_authenticated/customize'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -38,6 +39,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevSigninRoute = DevSigninRouteImport.update({
+  id: '/dev-signin',
+  path: '/dev-signin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAgentsRoute = AuthenticatedAgentsRouteImport.update({
@@ -110,6 +116,7 @@ const ApiLocalSyncRoute = ApiLocalSyncRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dev-signin': typeof DevSigninRoute
   '/agents': typeof AuthenticatedAgentsRoute
   '/customize': typeof AuthenticatedCustomizeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dev-signin': typeof DevSigninRoute
   '/agents': typeof AuthenticatedAgentsRoute
   '/customize': typeof AuthenticatedCustomizeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/dev-signin': typeof DevSigninRoute
   '/_authenticated/agents': typeof AuthenticatedAgentsRoute
   '/_authenticated/customize': typeof AuthenticatedCustomizeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/dev-signin'
     | '/agents'
     | '/customize'
     | '/dashboard'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/dev-signin'
     | '/agents'
     | '/customize'
     | '/dashboard'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/dev-signin'
     | '/_authenticated/agents'
     | '/_authenticated/customize'
     | '/_authenticated/dashboard'
@@ -219,6 +231,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  DevSigninRoute: typeof DevSigninRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiLocalDbRoute: typeof ApiLocalDbRoute
   ApiLocalEventsRoute: typeof ApiLocalEventsRoute
@@ -246,6 +259,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev-signin': {
+      id: '/dev-signin'
+      path: '/dev-signin'
+      fullPath: '/dev-signin'
+      preLoaderRoute: typeof DevSigninRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/agents': {
@@ -373,6 +393,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  DevSigninRoute: DevSigninRoute,
   ApiChatRoute: ApiChatRoute,
   ApiLocalDbRoute: ApiLocalDbRoute,
   ApiLocalEventsRoute: ApiLocalEventsRoute,

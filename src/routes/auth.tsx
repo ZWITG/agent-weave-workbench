@@ -8,6 +8,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { decodeDevSession, devSigninUrl, isLocalDev } from "@/lib/dev-signin";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -35,6 +36,17 @@ function AuthPage() {
     if (/HiveDesktop/.test(navigator.userAgent)) {
       navigate({ to: "/dashboard" });
       return;
+    }
+    // A session handed over from the hosted app (see dev-signin.tsx); the fragment never reaches a server.
+    const handoff = new URLSearchParams(window.location.hash.slice(1)).get("dev_session");
+    if (handoff !== null) {
+      history.replaceState(null, "", window.location.pathname);
+      const tokens = decodeDevSession(handoff);
+      if (!tokens) toast.error("That dev sign-in link is not valid. Try again.");
+      else
+        void supabase.auth.setSession(tokens).then(({ error }) => {
+          if (error) toast.error(`Dev sign-in expired: ${error.message}`);
+        });
     }
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
@@ -64,6 +76,11 @@ function AuthPage() {
   };
 
   const oauth = async (p: "google" | "lovable") => {
+    // Lovable's sign-in broker only exists on Lovable hosting, so localhost borrows a session from there.
+    if (isLocalDev()) {
+      window.location.href = devSigninUrl(window.location.origin);
+      return;
+    }
     const r = await lovable.auth.signInWithOAuth(p, {
       redirect_uri: window.location.origin + "/auth",
     });
