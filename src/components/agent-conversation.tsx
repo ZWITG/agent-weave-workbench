@@ -69,10 +69,12 @@ export function AgentConversation({
   const sending = useRef(false);
   const [token, setToken] = useState("");
   const textarea = useRef<HTMLTextAreaElement>(null);
-  const extra = useRef({ invited, knowledge: saved?.knowledge ?? "" });
+  const [planMode, setPlanMode] = useState(false);
+  const extra = useRef({ invited, knowledge: saved?.knowledge ?? "", plan: false });
   extra.current = {
     invited,
     knowledge: device.records[agent.id]?.knowledge ?? saved?.knowledge ?? "",
+    plan: planMode,
   };
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? ""));
@@ -408,9 +410,21 @@ export function AgentConversation({
               onChange={(e) => setInput(e.target.value)}
             />
             <PromptInputFooter className="justify-between">
-              <span className="text-xs text-muted-foreground">
-                {busy ? "Working" : queuePaused ? "Paused" : "Ready"}
-              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={planMode ? "default" : "outline"}
+                  aria-pressed={planMode}
+                  title="Plan mode: the agent answers with a plan to approve instead of doing the work"
+                  onClick={() => setPlanMode((on) => !on)}
+                >
+                  Plan
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  {busy ? "Working" : queuePaused ? "Paused" : planMode ? "Plan mode" : "Ready"}
+                </span>
+              </div>
               <div className="flex gap-2">
                 {busy && (
                   <Button

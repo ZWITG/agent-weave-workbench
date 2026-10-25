@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { resolveModel, type Settings } from "./ai-provider.server";
 import { appendFollowUps, unseenFollowUps } from "./continuous-work";
+import { filterToolsForMode, planInstructions, type RunMode } from "./plan-mode";
 
 type Db = SupabaseClient<Database>;
 type Agent = Database["public"]["Tables"]["agents"]["Row"];
@@ -54,8 +55,10 @@ export async function executeRun(opts: {
   agents: Agent[];
   input: string;
   settings: Settings | null;
+  mode?: RunMode;
 }) {
   const { db, userId, runId, stages, agents, input, settings } = opts;
+  const mode = opts.mode ?? "run";
   const delivered = new Set<number>();
   const readReplies = async () => {
     const { data, error } = await db
@@ -244,7 +247,7 @@ export async function executeRun(opts: {
 
     const instructions = `${systemPrompt || `You are ${name}.`}
 
-You are one agent in a coordinated team. Do your part thoroughly and hand off clear output. Whenever you discover a reusable fact, method or lesson, call save_knowledge so teammates gain it. Check search_knowledge before redoing work.${structured}${knowledgeBlock}`;
+You are one agent in a coordinated team. Do your part thoroughly and hand off clear output. Whenever you discover a reusable fact, method or lesson, call save_knowledge so teammates gain it. Check search_knowledge before redoing work.${structured}${knowledgeBlock}${mode === "plan" ? planInstructions : ""}`;
 
     await log(name, "start", `Working on task`);
     const seen = new Set<number>();
@@ -274,7 +277,7 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
           }
           return {};
         },
-        tools,
+        tools: filterToolsForMode(tools, mode),
         stopWhen: isStepCount(50),
         maxRetries: 0,
         ...(ai.providerOptions ? { providerOptions: ai.providerOptions } : {}),
@@ -321,6 +324,16 @@ You are one agent in a coordinated team. Do your part thoroughly and hand off cl
         ),
       );
       carry = outputs.join("\n\n");
+    }
+    // A plan run stops here for the owner's approval; replies then revise the plan.
+    if (mode === "plan") {
+      await db
+        .from("runs")
+        .update({ status: "awaiting_approval", plan: carry, finished_at: null })
+        .eq("id", runId)
+        .eq("status", "running");
+      await log("system", "plan", "Plan ready for approval");
+      return;
     }
     // Seal completion, then check the inbox: replies arriving at the boundary
     // are handled here; later replies reopen the run through sendRunReply.

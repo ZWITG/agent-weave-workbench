@@ -7,6 +7,8 @@ import { Play } from "lucide-react";
 import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createRun, executeRunFn } from "@/lib/engine.functions";
+import { statusLabel } from "@/lib/plan-mode";
 import { useAgents } from "./agents";
 import { useWorkflows } from "./workflows";
 import { GetApp } from "@/components/get-app";
@@ -43,7 +46,9 @@ export function StatusDot({ status }: { status: string }) {
       ? "bg-success"
       : status === "failed"
         ? "bg-destructive"
-        : "bg-primary animate-pulse";
+        : status === "awaiting_approval"
+          ? "bg-chart-4"
+          : "bg-primary animate-pulse";
   return <span className={`inline-block h-2 w-2 rounded-full ${c}`} />;
 }
 
@@ -57,6 +62,7 @@ function Dashboard() {
   const [wfId, setWfId] = useState("");
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [planFirst, setPlanFirst] = useState(false);
   const { config } = useCustomization();
   const quick = config.buttons.filter((b) => b.place === "dashboard");
 
@@ -98,7 +104,9 @@ function Dashboard() {
     }
     setBusy(true);
     try {
-      const { runId } = await create({ data: { workflowId: wfId, input } });
+      const { runId } = await create({
+        data: { workflowId: wfId, input, mode: planFirst ? "plan" : "run" },
+      });
       execute({ data: { runId } }).catch((e) => toast.error(e.message));
       navigate({ to: "/runs/$runId", params: { runId } });
     } catch (e) {
@@ -172,9 +180,17 @@ function Dashboard() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="e.g. Build a playable snake game with a neon theme"
             />
-            <Button onClick={start} disabled={busy}>
-              <Play className="h-4 w-4" /> Run workflow
-            </Button>
+            <div className="flex flex-wrap items-center gap-4">
+              <Button onClick={start} disabled={busy}>
+                <Play className="h-4 w-4" /> {planFirst ? "Make a plan" : "Run workflow"}
+              </Button>
+              <div className="flex items-center gap-2">
+                <Switch id="plan-first" checked={planFirst} onCheckedChange={setPlanFirst} />
+                <Label htmlFor="plan-first" className="text-sm text-muted-foreground">
+                  Plan first (agents research, then wait for your approval)
+                </Label>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -195,7 +211,9 @@ function Dashboard() {
                 {r.workflow_name} · {new Date(r.started_at).toLocaleString()}
               </div>
             </div>
-            <span className="font-mono text-xs uppercase text-muted-foreground">{r.status}</span>
+            <span className="font-mono text-xs uppercase text-muted-foreground">
+              {statusLabel(r.status)}
+            </span>
           </Link>
         ))}
         {!runs.length && <p className="p-4 text-sm text-muted-foreground">No runs yet.</p>}

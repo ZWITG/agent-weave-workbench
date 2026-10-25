@@ -230,7 +230,9 @@ export type Database = {
           finished_at: string | null;
           id: string;
           input: string;
+          mode: string;
           output: string | null;
+          plan: string | null;
           started_at: string;
           status: string;
           user_id: string;
@@ -241,7 +243,9 @@ export type Database = {
           finished_at?: string | null;
           id?: string;
           input?: string;
+          mode?: string;
           output?: string | null;
+          plan?: string | null;
           started_at?: string;
           status?: string;
           user_id?: string;
@@ -252,7 +256,9 @@ export type Database = {
           finished_at?: string | null;
           id?: string;
           input?: string;
+          mode?: string;
           output?: string | null;
+          plan?: string | null;
           started_at?: string;
           status?: string;
           user_id?: string;

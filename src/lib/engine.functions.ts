@@ -3,6 +3,7 @@ import { requireAppAuth } from "./app-auth";
 import { executeRun, type Stage } from "./engine.server";
 import { loadSettings } from "./ai-provider.server";
 import { z } from "zod";
+import { inputWithPlan, type RunMode } from "./plan-mode";
 
 export const sendRunReply = createServerFn({ method: "POST" })
   .middleware([requireAppAuth])
@@ -28,11 +29,13 @@ export const sendRunReply = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     // Compare-and-set prevents two replies from launching two continuations.
+    // A reply to a pending plan sends the run back to planning (mode stays "plan").
+    const from = run.status === "awaiting_approval" ? "awaiting_approval" : "completed";
     const { data: resumed, error: resumeError } = await db
       .from("runs")
       .update({ status: "running", finished_at: null })
       .eq("id", run.id)
-      .eq("status", "completed")
+      .eq("status", from)
       .select("id");
     if (resumeError) throw new Error(resumeError.message);
     return { resume: Boolean(resumed?.length) };
@@ -40,7 +43,7 @@ export const sendRunReply = createServerFn({ method: "POST" })
 
 export const createRun = createServerFn({ method: "POST" })
   .middleware([requireAppAuth])
-  .inputValidator((d: { workflowId: string; input: string }) => d)
+  .inputValidator((d: { workflowId: string; input: string; mode?: RunMode }) => d)
   .handler(async ({ data, context }) => {
     const db = context.supabase;
     const { data: wf, error } = await db
@@ -56,6 +59,7 @@ export const createRun = createServerFn({ method: "POST" })
         workflow_id: wf.id,
         workflow_name: wf.name,
         input: data.input,
+        mode: data.mode === "plan" ? "plan" : "run",
       })
       .select("id")
       .single();
@@ -82,10 +86,65 @@ export const executeRunFn = createServerFn({ method: "POST" })
       runId: run.id,
       stages: (wf?.stages ?? []) as unknown as Stage[],
       agents: agents ?? [],
-      input: run.output
-        ? `${run.input}\n\nPrevious work (continue and revise, do not start over):\n${run.output}`
-        : run.input,
+      input: inputWithPlan(run.input, run.plan, run.mode as RunMode, run.output),
       settings: await loadSettings(db, context.userId),
+      mode: run.mode as RunMode,
+    });
+    return { ok: true };
+  });
+
+export const approvePlan = createServerFn({ method: "POST" })
+  .middleware([requireAppAuth])
+  .inputValidator(
+    z.object({ runId: z.string().uuid(), plan: z.string().trim().min(1).max(60000).optional() }),
+  )
+  .handler(async ({ data, context }) => {
+    const db = context.supabase;
+    // Compare-and-set so a double click cannot start two executions.
+    const { data: approved, error } = await db
+      .from("runs")
+      .update({
+        status: "running",
+        mode: "run",
+        finished_at: null,
+        ...(data.plan ? { plan: data.plan } : {}),
+      })
+      .eq("id", data.runId)
+      .eq("user_id", context.userId)
+      .eq("status", "awaiting_approval")
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!approved?.length) throw new Error("This run is not waiting for approval.");
+    await db.from("run_logs").insert({
+      run_id: data.runId,
+      user_id: context.userId,
+      agent_name: "You",
+      kind: "info",
+      message: data.plan ? "Plan edited and approved" : "Plan approved",
+    });
+    return { resume: true };
+  });
+
+export const rejectPlan = createServerFn({ method: "POST" })
+  .middleware([requireAppAuth])
+  .inputValidator(z.object({ runId: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase;
+    const { data: rejected, error } = await db
+      .from("runs")
+      .update({ status: "failed", output: "Plan rejected", finished_at: new Date().toISOString() })
+      .eq("id", data.runId)
+      .eq("user_id", context.userId)
+      .eq("status", "awaiting_approval")
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!rejected?.length) throw new Error("This run is not waiting for approval.");
+    await db.from("run_logs").insert({
+      run_id: data.runId,
+      user_id: context.userId,
+      agent_name: "You",
+      kind: "info",
+      message: "Plan rejected",
     });
     return { ok: true };
   });

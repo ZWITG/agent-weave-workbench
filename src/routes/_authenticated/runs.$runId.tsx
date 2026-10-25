@@ -5,8 +5,10 @@ import { ArrowLeft, Download, FileCode } from "lucide-react";
 import { db as supabase } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { StatusDot } from "./dashboard";
+import { statusLabel } from "@/lib/plan-mode";
+import { Textarea } from "@/components/ui/textarea";
 import { useServerFn } from "@tanstack/react-start";
-import { sendRunReply, executeRunFn } from "@/lib/engine.functions";
+import { sendRunReply, executeRunFn, approvePlan, rejectPlan } from "@/lib/engine.functions";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -42,6 +44,7 @@ const kindColor: Record<string, string> = {
   file: "text-chart-4",
   user_message: "text-foreground",
   steering: "text-accent",
+  plan: "text-chart-4",
 };
 
 function RunPage() {
@@ -55,6 +58,12 @@ function RunPage() {
   const replyInput = useRef<HTMLTextAreaElement>(null);
   const sendReply = useServerFn(sendRunReply);
   const execute = useServerFn(executeRunFn);
+  const approve = useServerFn(approvePlan);
+  const reject = useServerFn(rejectPlan);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [planBusy, setPlanBusy] = useState(false);
+  const [planError, setPlanError] = useState<string | null>(null);
 
   const { data: run } = useQuery({
     queryKey: ["run", runId],
@@ -124,6 +133,29 @@ function RunPage() {
     URL.revokeObjectURL(url);
   };
 
+  const decidePlan = async (action: "approve" | "reject") => {
+    setPlanBusy(true);
+    setPlanError(null);
+    try {
+      if (action === "reject") {
+        await reject({ data: { runId } });
+      } else {
+        const edited = editing && draft.trim() && draft.trim() !== run?.plan ? draft : undefined;
+        await approve({ data: { runId, plan: edited } });
+        setEditing(false);
+        void execute({ data: { runId } }).catch((error: unknown) =>
+          setPlanError(error instanceof Error ? error.message : "Could not start run"),
+        );
+      }
+      await qc.invalidateQueries({ queryKey: ["logs", runId] });
+      await qc.invalidateQueries({ queryKey: ["run", runId] });
+    } catch (error) {
+      setPlanError(error instanceof Error ? error.message : "Could not update plan");
+    } finally {
+      setPlanBusy(false);
+    }
+  };
+
   if (!run) return <p className="text-muted-foreground">Loading run…</p>;
 
   return (
@@ -137,7 +169,7 @@ function RunPage() {
       <div className="mt-3 flex items-center gap-3">
         <StatusDot status={run.status} />
         <span className="font-mono text-xs uppercase text-muted-foreground">
-          {run.status} · {run.workflow_name}
+          {statusLabel(run.status)} · {run.workflow_name}
         </span>
       </div>
       <h1 className="mt-2 text-2xl font-bold">{run.input}</h1>
@@ -175,6 +207,55 @@ function RunPage() {
         </div>
       </div>
 
+      {run.status === "awaiting_approval" && run.plan && (
+        <div className="mt-4 rounded-lg border border-chart-4/60 bg-card p-5">
+          <div className="font-mono text-xs text-chart-4">PLAN · WAITING FOR YOUR APPROVAL</div>
+          {editing ? (
+            <Textarea
+              aria-label="Edit plan"
+              rows={14}
+              className="mt-3 font-mono text-sm"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+            />
+          ) : (
+            <MessageResponse className="mt-3 text-sm leading-relaxed">{run.plan}</MessageResponse>
+          )}
+          {planError && (
+            <p role="alert" className="mt-3 text-sm text-destructive">
+              {planError}
+            </p>
+          )}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button onClick={() => void decidePlan("approve")} disabled={planBusy}>
+              Approve &amp; run
+            </Button>
+            {editing ? (
+              <Button variant="secondary" onClick={() => setEditing(false)} disabled={planBusy}>
+                Cancel edit
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setDraft(run.plan ?? "");
+                  setEditing(true);
+                }}
+                disabled={planBusy}
+              >
+                Edit
+              </Button>
+            )}
+            <Button variant="ghost" onClick={() => void decidePlan("reject")} disabled={planBusy}>
+              Reject
+            </Button>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Or reply below to ask for changes — the agents will revise the plan.
+          </p>
+        </div>
+      )}
+
       <div className="mt-4">
         {replyError && (
           <p role="alert" className="mb-2 text-sm text-destructive">
@@ -211,7 +292,9 @@ function RunPage() {
             placeholder={
               run.status === "running"
                 ? "Send instructions while agents work…"
-                : "Continue working on this…"
+                : run.status === "awaiting_approval"
+                  ? "Ask for changes to the plan…"
+                  : "Continue working on this…"
             }
             disabled={run.status === "failed"}
           />
@@ -221,7 +304,9 @@ function RunPage() {
                 ? "Sending"
                 : run.status === "running"
                   ? "Agents working"
-                  : "Ready to continue"}
+                  : run.status === "awaiting_approval"
+                    ? "Waiting for your approval"
+                    : "Ready to continue"}
             </span>
             <PromptInputSubmit
               aria-label="Send instructions"
