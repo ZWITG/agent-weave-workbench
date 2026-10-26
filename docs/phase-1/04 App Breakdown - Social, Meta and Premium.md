@@ -450,12 +450,12 @@ Turn single lives into a family saga. Generational play is the long-term meta lo
 ### New features
 - Family tree view (pillar 4; free, not paywalled).
 - Dynasty Ambitions (multi-generation goals) and Legacy Points.
-- Family Name Standing (dynasty reputation), shaped by past lives' fame, crime and charity.
+- Family Name Standing (dynasty reputation), shaped by past lives' fame, crime and charity. It feeds the world-level **family name reputation**, history-book (Almanac) mentions and Echo events in [[04 App Breakdown - Core Life Systems]] (Module 11: World Legacy and History).
 - Heirlooms with provenance (who owned them, what happened).
 - Wider heir choice: children (biological, adopted, step-children with Bond ≥ 50), then grandchildren, then nieces and nephews ("distant heir").
 - Inheritable businesses and trusts for minors.
 - Will contests and family feuds over inheritance (uses module 1 grudges).
-- "Dynasty Chronicle": an auto-written family history across generations.
+- "Dynasty Chronicle": an auto-written family history across generations. Notable entries also appear in the shared World Timeline (Core Module 11).
 
 ### Detailed sub-features
 
@@ -1623,6 +1623,7 @@ Make Relivable playable by everyone and safe by default. Accessibility is pillar
 | Parenting styles and actions | ✅ | — | — | — | |
 | Continue as heir | ✅ up to Gen 4 | Up to Gen 8 (hard cap) | — | — | Dynasty saved at the free cap; completed with a Dynasty Recap at Gen 8 |
 | Family tree view, Dynasty Ambitions, Legacy Points, heirlooms | ✅ | Plus crest (cosmetic) | — | Crest designs | LP earned only, never sold |
+| World legacy: family name reputation, Almanac mentions, Echo events, world effects, World Timeline | ✅ | — | Themed Almanac storylines (LiveOps) | — | Core system, always free |
 | Wills, trusts, business succession | ✅ | — | — | — | |
 | Fame, all social platforms, verification, endorsements, scandals | ✅ | — | Fame storylines | Trend chapters | |
 | All pets incl. exotic, horses (boarding), zoo business | ✅ | — | "Wild Kingdom" storylines | Pet cosmetics | BitLife gates exotic pets and sells zoo |

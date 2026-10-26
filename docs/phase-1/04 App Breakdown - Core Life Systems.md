@@ -71,6 +71,9 @@ flowchart LR
     AS -->|will and inheritance| HE
     HE -->|continue as heir| CC
     CL <--> SOC["Social, Meta and Premium note"]
+    HE -->|notable lives| WL[11 World legacy and history]
+    WL -->|echoes, reputation, effects| CL
+    W --> WL
 ```
 
 ---
@@ -1463,6 +1466,152 @@ All modules (they read country rules), [[08 Technical Architecture]] (rules serv
 
 ---
 
+## Module 11: World Legacy and History ("Echoes")
+
+### Purpose
+Past lives should not vanish when they end. This module gives each player a **persistent world** that remembers the notable people it has produced. A great-grandfather who became a notorious killer ends up in a school history book. A grandmother whose company dominated an industry still shapes jobs and prices in her city. A president's reforms outlive her. Later lives meet these **Echoes** in textbooks, museums, news anniversaries, NPC remarks, job interviews and new storylines. This deepens pillar 1 ("Every choice remembered") across generations and gives players a reason to care about their reputation beyond one life.
+
+### BitLife equivalent (today)
+- Continuing as a child carries money and some assets forward. The documented guides describe **no persistent world memory**: a past life's crimes, fame or economic impact do not appear in later lives, history, news or NPC reactions.
+- Players ask for more consequences and storylines that remember earlier choices ([[03 Player Research and Wishlist]]).
+
+### Relivable redesign
+- **Your World:** every player has one world save per *world seed*. All dynasties in that world share one **World Ledger** of notable people and events. Starting a fresh world is always possible (Settings → New world), so the feature never traps anyone.
+- **Family name reputation** is visible and has consequences. It extends the dynasty's Family Name Standing ([[04 App Breakdown - Social, Meta and Premium]], Generations and Dynasty) into five axes the world reacts to.
+- **History-book mentions:** when a life crosses a notability threshold, a short neutral entry is written into the in-game history of its country. Later characters read it at school, in a library or museum, or in a quiz.
+- **Echo events:** storylets whose conditions read the World Ledger, so the past comes back as story: a true-crime podcast about your ancestor, a victim's descendant who wants answers, a scholarship named after your great-aunt, a statue someone wants pulled down.
+- **World effects:** major figures leave bounded, decaying effects on their country or city: an economic boom or crash, a stricter law, a landmark, a company that keeps existing as an employer.
+- **Fair and safe by design:** effects are capped and fade over time, so no past life can make the game unwinnable. Violent entries are factual and non-glorifying, and follow the content toggles.
+
+### New features (vs BitLife)
+1. Family name reputation with five axes: **Fame, Infamy, Wealth, Philanthropy, Power**.
+2. In-game **history books** per country (the "Almanac"), with entries written from life events.
+3. **World Ledger:** a persistent record of notable people, companies, landmarks and events in your world.
+4. **Echo events:** storylets triggered by the Ledger across generations and across dynasties.
+5. **World effects:** bounded economic, legal and civic effects that decay over time.
+6. **Landmarks and namesakes:** buildings, foundations, statues, streets and awards named after notable characters.
+7. **Persistent companies:** a founded company can outlive its founder and appear as an employer or rival in later lives.
+8. **"Your place in history"** card added to the Life Recap.
+9. **World Timeline** screen: a browsable history of your world, shareable as cards.
+10. **Escaping or embracing a name:** later characters can change their surname, publicly apologise, make amends, or lean into a famous or infamous legacy.
+
+### Detailed sub-features
+**A. Family name reputation (MVP)**
+- Five axes, each 0–100, stored per surname line in the World Ledger: Fame, Infamy, Wealth, Philanthropy, Power.
+- Fed by lives' outcomes: Fame and Notoriety meters, net worth, charity giving, public office, crimes made public.
+- Shown on the Dynasty tab and, in short form, on the character card ("The Okafor name: respected, wealthy").
+- Reactions it drives: interview and admission modifiers (±5–10%), dating-app interest, police scrutiny, school popularity, press attention, NPC opening lines ("Okafor? Like the senator?").
+- A child with an infamous surname can be bullied, sought out by true-crime fans, or recruited by crime NPCs. A famous surname opens doors and raises expectations.
+
+**B. History-book mentions (MVP)**
+- When a life hits a **notability trigger**, an Almanac entry is written for its country and decade (examples below).
+- MVP delivery: entries surface through 3 places: a **History class** school event (a chance to recognise an ancestor), a **Library/Museum** action card, and the Life Recap.
+- Entries are short, neutral and templated (localised), e.g. *"1987–1994: A series of killings in Porto was linked to Rui Matos, who died in prison in 2011."* No graphic detail, no victim names, no glorification.
+- Entries record a **notability tier**: Local (city), National (country), Global (world).
+
+**C. World Ledger (Launch)**
+- Stores notable people (name, life span, roles, tier, axes, key deeds), companies, landmarks, laws changed, and major events, with the world year.
+- Readable by any storylet via conditions (e.g. `ledger.person(role=serialKiller, tier>=national, sameCity=true)`).
+- Capped at about 250 entries per world. Lower-tier entries are summarised or archived first, keeping saves small ([[08 Technical Architecture]]).
+
+**D. Echo events (Launch)**
+- 120+ Echo storylets at launch, in families such as:
+  - *Bloodline:* discovering an ancestor, a DNA-test surprise, an inheritance claim, a portrait in the attic.
+  - *Public memory:* anniversaries in the news, documentaries, a biopic casting call (ties to actor and Movie Director careers), a museum exhibit.
+  - *Consequences:* a victim's descendant seeks contact or revenge, a lawsuit over an ancestor's fraud, a statue protest, a scholarship or ward named after an ancestor.
+  - *Cross-dynasty:* a character from another of your dynasties appears as a historical figure, a rival company's founder, or a descendant NPC.
+- Echo weight decays with generations unless the entry is National or Global tier.
+
+**E. World effects (Launch)**
+- Effects attach to a country or city with a magnitude and a half-life:
+  - *Economy:* a dominant company adds jobs in its industry (+10–20% job openings in that city); a fraud or crash raises unemployment (+2–5 points) and lowers housing prices for 5–15 years.
+  - *Law and policing:* a notorious crime spree adds a stricter-policing flag (higher arrest odds) for 10–20 years in that city; a reforming politician can change a country rule (e.g. free university) in your world's timeline.
+  - *Civic:* landmarks (a hospital wing, a stadium, a park) give small local bonuses (health, happiness) and appear in events.
+- All effects are **bounded** (no single effect beyond ±20% on any modifier) and **decay** unless renewed, and the Country profile lists active effects in plain language with their source ("Since 2034: stricter policing in Porto, after the Matos killings").
+
+**F. Persistent companies and landmarks (Launch)**
+- A company with valuation above a threshold, or a landmark funded by a character, becomes a Ledger entity that persists after death, run by NPC successors. Later lives can work there, buy shares, compete with it or run it again if they inherit control.
+
+**G. World Timeline and sharing (Launch / LiveOps)**
+- World Timeline screen: decade-by-decade history of the world with filters (my dynasties, crime, politics, business, culture), an accessible list mode, and share cards.
+- LiveOps: opt-in "visit a friend's world history" (read-only), themed Almanac seasons, and Creator Mode scenarios that start in a world with a pre-written history.
+
+### Key rules and data
+**Notability triggers (starting values to tune in the prototype)**
+| Trigger | Example threshold | Tier | Almanac entry | Main axes |
+|---|---|---|---|---|
+| Serial or mass violent crime | 3+ murders known to police, or 1 high-profile attack | National | Yes (neutral, non-graphic) | Infamy +40 |
+| Major fraud or market crash | Fraud ≥ $50M or a business collapse that triggers a city effect | National | Yes | Infamy +25, Wealth −20 |
+| Head of state or government | President, prime minister or monarch | National | Yes | Power +50, Fame +30 |
+| Mayor, governor, minister | Elected or appointed | Local / National | Yes | Power +20 |
+| Billionaire or industry leader | Net worth ≥ $1B or #1 company in an industry | National | Yes | Wealth +40, Fame +15 |
+| Major philanthropy | Lifetime giving ≥ $10M or a named foundation | Local / National | Yes | Philanthropy +40 |
+| Cultural icon | Fame ≥ 90 for 5+ years, major award, hit album or film | National / Global | Yes | Fame +40 |
+| Science or medicine breakthrough | Career milestone event (e.g. discovers a treatment) | Global | Yes | Fame +30, Philanthropy +10 |
+| Famous escape, heist or scandal | Event flag from Module 8 or Fame module | Local / National | Optional | Infamy +15 |
+
+**Memory and decay**
+- Reputation axes decay by about 15% per generation for Local entries, 7% for National, 0% for Global (legends stay legends).
+- A later character can actively shift the name: public apology and restitution (−Infamy over years), a surname change (cuts the link for strangers, but family and records still know), philanthropy, or leaning in (crime NPCs and fans).
+
+**Ledger entry (example)**
+```yaml
+id: led_person_000231
+type: person
+name: "Rui Matos"
+dynasty: dyn_matos
+lifespan: [1952, 2011]
+country: PT
+city: Porto
+tier: national
+roles: [violentCrime.serial]
+axes: { infamy: 40 }
+almanac_key: almanac.pt.crime.serial_1987   # localised template + filled facts
+effects:
+  - { scope: city:Porto, kind: policing_strictness, value: +0.12, start: 1995, half_life_years: 12 }
+content_tags: [violence]                        # hidden if the violent-crime toggle is off
+```
+
+**Example Echo events**
+- *History class (age 14):* "Today's lesson covers Porto in the 1990s. A name on the slide matches your great-grandfather's." Choices: stay quiet, tell your classmates, ask the teacher to skip it.
+- *The podcast (adult):* a true-crime host asks for an interview about your family. Choices: decline, cooperate for a fee, demand they stop. Outcomes shift Infamy and Bond with relatives.
+- *The scholarship:* the foundation your grandmother started offers you a place, if you keep the family's name clean.
+- *The company town:* your ancestor's factory is the city's biggest employer; the union asks you, the heir, to save it.
+
+### UI entry point
+- **Character card / Dynasty tab:** family name reputation (five axes, plain-language summary).
+- **School History class event, Library/Museum action card, news feed:** Almanac entries.
+- **Country profile:** active world effects with their source.
+- **World Timeline screen** (from the Dynasty tab and the Life Recap).
+- **Life Recap:** "Your place in history" card. See [[05 UX and Screen Map]].
+
+### Priority and access
+| Feature | Priority | Access |
+|---|---|---|
+| Family name reputation (five axes) with NPC, school, job and police reactions | MVP | Free |
+| History-book (Almanac) mentions via History class, Library/Museum card and Life Recap | MVP | Free |
+| "Your place in history" Life Recap card | MVP | Free |
+| World Ledger (people, companies, landmarks, events) | Launch | Free |
+| Echo events (120+ at launch) | Launch | Free |
+| World effects: economy, law and policing, civic | Launch | Free |
+| Persistent companies and landmarks | Launch | Free |
+| World Timeline screen and share cards | Launch | Free |
+| Cross-dynasty Echoes (other dynasties as historical figures) | LiveOps | Free |
+| Visit a friend's world history (read-only, opt-in) | LiveOps | Free |
+| Themed Almanac storylines | LiveOps | Pack storylines on a free system |
+
+### Dependencies
+Module 3 (storylet engine, memory flags, callbacks), Module 5 (careers: politics, business, crime, culture), Module 6 (business valuation, markets), Module 8 (crime records, Notoriety), Module 10 (country and era data, country profile), Generations and Dynasty and Fame in [[04 App Breakdown - Social, Meta and Premium]], save system and save-size budget in [[08 Technical Architecture]], content toggles and sensitive-content rules in [[09 Compliance and Ratings]].
+
+### Acceptance criteria
+- A life that crosses any notability trigger produces exactly one Almanac entry of the right tier, visible to a later character in the same world through at least one MVP entry point.
+- Family name reputation changes NPC reactions measurably (simulator: interview success differs by at least 5% between a high-Infamy and a neutral surname, all else equal).
+- No world effect exceeds ±20% on any modifier, every effect decays as specified, and the simulator bot shows no world becoming unplayable over 8 generations × 50 seeds.
+- With the violent-crime toggle off, no violent Almanac entry, Echo event or effect text is shown; entries are neutral and non-graphic in all locales (sensitivity review before release).
+- Ledger size stays within the save budget (about 250 entries) and a fresh world can be started at any time.
+
+---
+
 ## Cross-module data summary
 
 | Entity | Key fields | Owned by |
@@ -1478,6 +1627,8 @@ All modules (they read country rules), [[08 Technical Architecture]] (rules serv
 | Will | beneficiaries[], bequests[], trusts[], executor | Module 7 |
 | Case | crimeId, evidence, witnesses[], status, sentence | Module 8 |
 | Country rules | see Module 10 table, with era overrides | Module 10 |
+| World Ledger entry | id, type (person/company/landmark/event/law), dynasty, tier, axes{}, almanac_key, effects[], content_tags | Module 11 |
+| Name reputation | surname line, fame, infamy, wealth, philanthropy, power | Module 11 |
 
 Storage, sync and save-size budgets are in [[08 Technical Architecture]].
 
@@ -1573,6 +1724,11 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 | — | Era/historical mode | 10 | New |
 | — | Optional AI flavour text (rewording only) | 3 | New |
 | Screen-reader support (repeated regressions) | Accessible-by-default, decision modes for every mini-game | All | Improved |
+| Continue as child carries money and assets only | Family name reputation (Fame, Infamy, Wealth, Philanthropy, Power) that NPCs, schools, employers and police react to | 11 | New |
+| — | History-book (Almanac) mentions of notable ancestors, met in History class, museums and news | 11 | New |
+| — | World Ledger and Echo events: past lives return as story across generations and dynasties | 11 | New |
+| — | Bounded world effects (economy, policing, landmarks) and persistent companies | 11 | New |
+| — | World Timeline screen and "Your place in history" recap card | 11 | New |
 
 > [!info] Covered in the companion note
 > Relationships and romance, marriage and divorce, children, adoption/IVF/surrogacy, fame and social media, pets, Activities hub, vacations and nightlife, identity, licences, ribbons/badges and achievements, weekly challenges, Destiny Mode (editor), Life Recap, family tree and Dynasty Ambitions, async social. See [[04 App Breakdown - Social, Meta and Premium]].
@@ -1587,6 +1743,7 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 4. **Religion representation:** real traditions with expert review (recommended) or fictional faiths? Budget impact in [[09 Compliance and Ratings]].
 5. **Country scope at MVP:** 25 countries recommended; confirm the list against soft-launch and language markets.
 6. **Murder and drugs defaults:** confirm defaults per age signal and per store rating target ([[09 Compliance and Ratings]]).
+7. **World scope:** one shared world per player across all dynasties (recommended), or one world per dynasty? Shared worlds give richer Echoes; per-dynasty worlds are simpler to reason about. A fresh world can always be started.
 
 ## Related notes
 - [[_Concept Brief]] (source of truth)

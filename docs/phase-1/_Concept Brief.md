@@ -27,7 +27,7 @@ A text-first mobile life simulator that keeps everything players love about BitL
 
 ## Parity + "better" scope
 - **Parity (redesigned):** every BitLife system: stats (visible + hidden), life stages, school/university/grad school, jobs + special careers, business, investing, real estate, crime/heists/prison, relationships, marriage, children, adoption/IVF/surrogacy, fame/social media, pets, Activities, health/doctors, death/will/inheritance, generations, ribbons/achievements, weekly challenges, god/editor tools, time rewind.
-- **Better / new (from player research):** relationship percentages, parents who divorce/remarry with effects on kids, siblings and twins/triplets, school electives and teacher interactions, parties with guest lists, religion system, lawsuits with retaliation, deeper homelessness and military/police academy paths, heists that explain failure, traits, life chapters, era/historical mode, family tree + Dynasty Ambitions, avatar that ages, home customisation, optional on-device AI flavour text (never decides outcomes), async social (visit friends' lives, shared challenges), Creator Mode/UGC scenarios (later phase).
+- **Better / new (from player research):** relationship percentages, parents who divorce/remarry with effects on kids, siblings and twins/triplets, school electives and teacher interactions, parties with guest lists, religion system, lawsuits with retaliation, deeper homelessness and military/police academy paths, heists that explain failure, traits, life chapters, era/historical mode, family tree + Dynasty Ambitions, avatar that ages, home customisation, optional on-device AI flavour text (never decides outcomes), async social (visit friends' lives, shared challenges), Creator Mode/UGC scenarios (later phase), world legacy and history (family name reputation, history-book mentions of notable ancestors, Echo events and bounded world effects).
 
 ## Locked Phase 1 decisions (recommendations to the client)
 | Area | Decision | Why (see research) |
@@ -77,6 +77,7 @@ These resolve conflicts between the Phase 1 notes. Every note follows them.
 17. **Dynasty goals:** no Dynasty Ambition needs more than 4 generations; no weekly challenge task needs more than 3.
 18. **Phase 5 team:** 7.5–9.0 FTE (LiveOps run rate ≈ $66–99K/month, US reference ≈ $158K/month; [[11 Roadmap Team and Budget]] §4.6).
 19. **Name and codes:** the working title is **Relivable** everywhere; scenario seed codes use the `#RL-` prefix.
+20. **World legacy and history ("Echoes"):** past lives shape a persistent world. MVP ships family name reputation and history-book (Almanac) mentions; Launch adds the World Ledger, Echo events, bounded world effects, persistent companies and the World Timeline; LiveOps adds cross-dynasty Echoes and visiting friends' world histories. Always free. Spec: [[04 App Breakdown - Core Life Systems]] Module 11.
 
 ## Research sources
 All research notes live in `research_notes/Life sim game phase 1/` and `research_notes/BitLife complete feature guide/`, plus the report `reports/BitLife complete feature guide.md`. Research was gathered through web search (full reports and Reddit could not be reviewed directly), so figures are shown as estimates with sources.
@@ -84,6 +85,7 @@ All research notes live in `research_notes/Life sim game phase 1/` and `research
 ## Change log
 
 **2026-10-26**
+- **New feature: World Legacy and History ("Echoes").** Notable past lives (criminals, leaders, tycoons, philanthropists, icons) enter in-game history books, shape the family name's reputation, and leave decaying effects on the economy, policing and landmarks of their world. MVP: name reputation + history-book mentions; Launch: World Ledger, Echo events, world effects; LiveOps: cross-dynasty and shared histories. Added to both App Breakdown notes, the parity checklist and the feature matrix.
 - **Renamed to Relivable** (working title, pending trademark and store-name clearance). Scenario seed codes now use the `#RL-` prefix.
 - **Dynasty cap set to 8 generations** for every dynasty: free players reach Generation 4 (founder + 3 heirs), Plus extends to Generation 8, completed dynasties are saved and shown as a Dynasty Recap, and the number of dynasties is unlimited. No Dynasty Ambition needs more than 4 generations and no challenge task more than 3.
 - **Settled details applied across all notes:** Plus save slots 10 (free 3; Sparks no longer buy save slots); seasons about 13 weeks; trusts for minors at MVP; player-born-a-twin toggle at MVP with twin storylines at Launch; web shop at global launch (Phase 4); Phase 5 team 7.5–9.0 FTE with the LiveOps run rate re-costed to ≈ $66–99K/month (US reference ≈ $158K/month); Story Packs about every two months; daily-goal rewards paid in Sparks (the only soft currency).
