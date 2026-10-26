@@ -33,7 +33,7 @@ tags: [everlife, phase-1, moc]
 
 ## Other formats in this phase
 - **Feature matrix spreadsheet:** `EverLife Feature Matrix.xlsx` (every feature, BitLife equivalent, priority, phase, free/Plus, effort)
-- **Client pitch deck:** published as a private slide deck (link in the session summary)
+- **Client pitch deck:** [EverLife Phase 1 Pitch](https://claude.ai/artifact/TEn1vpqBdRUxMBjiAJW23Q) (12 slides with speaker notes; private until shared)
 - **Background research:** `research_notes/Life sim game phase 1/`, `research_notes/BitLife complete feature guide/` and `reports/BitLife complete feature guide.md` in the repo
 
 ## Phase map
