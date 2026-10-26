@@ -10,7 +10,7 @@ updated: 2026-10-26
 # 06 Monetization and Economy
 
 > [!summary] In one paragraph
-> EverLife is **free to play with no paywalled systems**. Every career, life stage and core system is free. Revenue comes from four honest sources: (1) **EverLife Plus**, a one-time ~$9.99 unlock (no ads, unlimited generations, Life Editor, unlimited Rewind); (2) **Story Packs** at $2.99–3.99 that add storylines but never lock careers; (3) an optional **Season Pass** at $4.99 (cosmetics + story chapters); (4) **opt-in rewarded ads**, frequency-capped. Small cosmetic packs and an optional web shop round it out. There are **no loot boxes, no premium currency, no pay-per-use undo, no interstitials and no subscriptions at launch**. Our base-case estimate is blended ARPDAU of about **$0.066**, below the hybrid-casual benchmark of $0.15–0.50 ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor blog). That gap is deliberate: we trade short-term ARPDAU for retention, reviews and organic sharing. Soft launch must test whether that trade pays off. Source of truth: [[_Concept Brief]] pillar 3 and the locked monetisation decision.
+> EverLife is **free to play with no paywalled systems**. Every career, life stage and core system is free. Revenue comes from four honest sources: (1) **EverLife Plus**, a one-time ~$9.99 unlock (no ads, unlimited generations, Destiny Mode editor, unlimited Rewind); (2) **Story Packs** at $2.99–3.99 that add storylines but never lock careers; (3) an optional **Season Pass** at $4.99 (cosmetics + story chapters); (4) **opt-in rewarded ads**, frequency-capped. Small cosmetic packs and an optional web shop round it out. There are **no loot boxes, no premium currency, no pay-per-use undo, no interstitials and no subscriptions at launch**. Our base-case estimate is blended ARPDAU of about **$0.066**, below the hybrid-casual benchmark of $0.15–0.50 ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor blog). That gap is deliberate: we trade short-term ARPDAU for retention, reviews and organic sharing. Soft launch must test whether that trade pays off. Source of truth: [[_Concept Brief]] pillar 3 and the locked monetisation decision.
 
 Related: [[00 Home]] · [[05 UX and Screen Map]] (Shop S70, Plus S71, ad modal S72) · [[07 Retention and LiveOps]] (season cadence, A/B tests) · [[08 Technical Architecture]] (RevenueCat, server validation) · [[09 Compliance and Ratings]] · [[10 Go-to-Market]] (UA economics) · [[12 Risks and KPIs]].
 
@@ -39,7 +39,7 @@ Why hybrid: it is now the default. 72% of developers are adopting it ([AdInMo](h
 
 | # | Item | Price (USD, tier) | Contents (shown to the player in full before purchase) | Type | Platform |
 |---|---|---|---|---|---|
-| P1 | **EverLife Plus** | **$9.99** | Removes **all** ads, including banners, ad-gated perks and future ad placements. Rewarded-ad perks are granted automatically. Unlimited generations (free tier: up to Generation 4 per dynasty, i.e. founder + 3 heirs; unlimited dynasties). **Destiny Mode** editor tools (edit your own and NPC stats and appearance any time, reveal hidden stats and facets). **Unlimited Rewind** (free: 1 per life + up to 2 via rewarded ad). 10 save slots (free: 3). Plus badge on the recap card. | Non-consumable | iOS, Android, web |
+| P1 | **EverLife Plus** | **$9.99** | Removes **all** ads, including banners, ad-gated perks and future ad placements. Rewarded-ad perks are granted automatically. Unlimited generations (free tier: up to Generation 4 per dynasty, i.e. founder + 3 heirs; unlimited dynasties). **Destiny Mode** editor tools (edit your own and NPC stats and appearance any time, reveal hidden stats and facets). **Unlimited Rewind** (free: 1 per life + 1 per day via opt-in rewarded ad). 10 save slots (free: 3). Plus badge on the recap card. | Non-consumable | iOS, Android, web |
 | P2 | **No Ads** | $2.99 | Removes all ads and auto-grants ad perks. Nothing else. | Non-consumable | iOS, Android, web |
 | P3 | **Plus Upgrade** (shown only to No-Ads owners) | $6.99 | Everything else in Plus. Total paid = $9.98, never more than Plus | Non-consumable | iOS, Android, web |
 | P4 | **Story Pack** (e.g. *Spotlight*: film and stage fame; *Night Shift*: hospital drama; *Old Money*: aristocratic family saga; *Frontier 1850*: era start; *The Uncanny*: light supernatural) | **$2.99** (small, ~60 storylets) / **$3.99** (large, ~120 storylets + 1 new scenario start) | New storylines, characters, scenario starts and Milestones. **Never** a career, a system, or a stat edge that free players lack. Careers referenced in packs exist in the base game | Non-consumable | iOS, Android, web |
@@ -90,16 +90,16 @@ $24.99 ── Complete Collection                ← top anchor; still < BitLife
 > 1. **Opt-in rewarded video only.** No interstitials, no app-open ads, no auto-playing video. **No banners at launch**; a single bottom banner on the Wealth tab only is a possible A/B test, and only if retention guardrails hold.
 > 2. **Never after an action.** No ad plays as a consequence of tapping an action, finishing a year, dying or closing a card. Ads play only after the player taps a button labelled "▶ Watch ad: [exact reward]".
 > 3. **Never after a purchase.** Any purchase (even $0.99) suppresses all ad *offers* for 7 days. No-Ads and Plus suppress them permanently and grant the perks automatically.
-> 4. **Caps:** max **4 rewarded views per session**, **8 per day**, with a **90 s cooldown** between views. The remaining count is shown on every offer ("3 of 8 left today").
+> 4. **Caps:** max **4 rewarded views per session**, **8 per day**, with a **90 s cooldown** between views. The remaining count is shown on every offer ("3 of 8 left today"). No ad offers appear inside a story (storylet, event card, death flow, recap) or an activity; they appear only on the hub between years or on reward screens.
 > 5. **Equal-weight decline.** The "No thanks" button is the same size, in the thumb zone, and labelled for screen readers. There are no hidden close buttons; an academic paper documents games putting ad close controls in unreachable zones ([CMS Conferences](https://openaccess.cms-conferences.org/publications/book/978-1-964867-13-7/article/978-1-964867-13-7_13)).
 > 6. **Content:** ad networks run with age-appropriate settings. No ads for under-16 or unknown-age users that use behavioural targeting (contextual only). Gambling, dating and alcohol ad categories are blocked. See [[09 Compliance and Ratings]].
-> 7. **No ads in the FTUE:** none before the first death.
+> 7. **No ads in the FTUE:** none during the first life (no offers before the first death).
 
 **Rewarded placements (what an ad can give):**
 
 | Placement | Reward | Cap | Notes |
 |---|---|---|---|
-| Extra Rewind | +1 Rewind for this life | 2 per life | Free players get 1 Rewind per life without an ad |
+| Extra Rewind | +1 Rewind | 1/day | Free players get 1 Rewind per life without an ad. Rewind is never sold per use; Plus is unlimited |
 | Second opinion | Reveal the odds band and hidden factors of one risky choice (heist, surgery, lawsuit) | 3/day | Information, not outcome manipulation |
 | Lucky break | Retry one *failed* non-death minor action (e.g. job interview) | 2/day | Never undoes a death |
 | Sparks bonus | +50 Sparks (soft currency, §5) | 3/day | – |
@@ -224,7 +224,7 @@ The naive LTV method is for pre-launch; a retention-curve fit replaces it in sof
 | 1 | Interstitial or forced ads after actions | BitLife: "40 second ad" after gifts and music lessons ([Google Play](https://play.google.com/store/apps/eventdetails/4831791308351315470)) | Rewarded opt-in only (§4) |
 | 2 | "Remove ads" that doesn't remove all ads | BitLife no-ads buyers still saw ads ([ComplaintsBoard](https://www.complaintsboard.com/bitlife-life-simulator-b150146)) | No-Ads/Plus remove every surface and auto-grant perks |
 | 3 | Paywalled careers and systems ("paywall creep") | Boss Mode job packs, $7.99 expansion packs ([BitLife Zendesk](https://bitlife.zendesk.com/hc/en-us/articles/5165069804948-What-is-Boss-Mode)) | All careers and systems free forever. Packs add stories only |
-| 4 | Pay-per-use undo | Time Machine $0.99/use ([BitLife feature guide](../../reports/BitLife%20complete%20feature%20guide.md)) | 1 free Rewind per life; unlimited with one-time Plus |
+| 4 | Pay-per-use undo | Time Machine $0.99/use ([BitLife feature guide](../../reports/BitLife%20complete%20feature%20guide.md)) | 1 free Rewind per life + 1 per day via opt-in rewarded ad; unlimited with one-time Plus; never sold per use |
 | 5 | Paid dark mode or accessibility | Bitizenship includes dark mode ([Pro Game Guides](https://progameguides.com/bitlife/bitlife-bitizen/)) | Free |
 | 6 | Paywalled generations with surprise caps | Non-Bitizens can continue only once ([BitLife Wiki](https://bitlife-life-simulator.fandom.com/wiki/Generations)) | Free tier runs to Generation 4 (founder + 3 heirs), with the cap shown on the Heir screen from generation 1; at the cap the dynasty is saved, never deleted |
 | 7 | "Future content included" promises later broken | Boss Mode did not cover later packs and Modes ([Gnostalgic](https://www.gnostalgic.org/bitlife.php)) | We never sell "all future content". Plus lists exactly what it includes, and that list only grows |

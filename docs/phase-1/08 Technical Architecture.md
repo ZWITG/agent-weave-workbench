@@ -301,7 +301,8 @@ flowchart LR
 
 | Step | Implementation |
 |---|---|
-| Catalogue | `everlife_plus` (non-consumable, ~$9.99), `season_<yyyy>_<n>` (non-consumable per season, ~$4.99), `pack_<id>` (non-consumable, ~$2.99–3.99), optional `support_tip`. **No consumable currency for gameplay power and no loot boxes** (see [[06 Monetization and Economy]]) |
+| Catalogue | The 9 products in [[06 Monetization and Economy]] §2, all **non-consumable**: `everlife_plus` (P1, $9.99), `no_ads` (P2, $2.99), `plus_upgrade` (P3, $6.99, offered only to No-Ads owners), `pack_<id>` (P4, $2.99 small / $3.99 large), `season_<yyyy>_<n>` (P5, $4.99 per season, non-renewing), `welcome_pack` (P6, $1.99, once per account, cosmetic), `cosmetic_<id>` (P7, $0.99–1.99), `bundle_founders` (P8, $14.99, 60-day launch window), `bundle_complete` (P9, $24.99). **No consumables, no purchasable currency (Sparks are earn-only), no per-use Rewind, no subscriptions and no loot boxes** |
+| Entitlements | `plus` (granted by P1, P3, P8, P9), `no_ads` (granted by P2 and by `plus`), `pack_<id>`, `season_<yyyy>_<n>`, `cosmetic_<id>`. `plus` implies `no_ads`: ad offers are hidden and their rewards auto-granted. Prices come from RevenueCat Offerings via Remote Config |
 | Client | RevenueCat Flutter SDK. StoreKit 2 on iOS, Play Billing on Android. Entitlements are cached locally (signed), so Plus works offline |
 | Server verification | RevenueCat validates StoreKit 2 JWS transactions via the **App Store Server API + Notifications v2**. `verifyReceipt` and Notifications v1 are deprecated ([Apple forums](https://developer.apple.com/forums/thread/731550)). Play purchase tokens go through the Play Developer API with RTDN |
 | Entitlement mirror | A RevenueCat webhook calls a Cloud Function, which writes `entitlements/{uid}` in Firestore. Security rules make it **server-write-only**. Used for support tooling and the web shop |

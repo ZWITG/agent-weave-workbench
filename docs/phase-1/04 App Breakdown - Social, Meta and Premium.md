@@ -510,7 +510,7 @@ flowchart TD
 - Heirlooms trigger callbacks: a descendant who sells Grandma's ring gets a Resentment memory from the aunt who wanted it.
 
 ### Key rules, data and examples
-- **Free cap:** Generation 4 (founder + 3 continuations) per dynasty, unlimited dynasties. Brief minimum is 3 generations, so this exceeds it. Final number is a client decision ([[06 Monetization and Economy]]).
+- **Free cap (decided):** Generation 4 (founder + 3 heirs) per dynasty, unlimited dynasties. Brief minimum is 3 generations, so this exceeds it. At the cap the dynasty is saved ([[06 Monetization and Economy]]).
 - **Plus:** unlimited generations.
 - **No save loss:** dynasties are cloud-saved to the account ([[08 Technical Architecture]]). The "deleted after 4 generations" complaint must be impossible: tested with 50-generation automated dynasties.
 - **Example:** The Okafor dynasty picks "Healers" and "Clean Name". Gen 1 nurse, Gen 2 surgeon, Gen 3 a vet (counts as medicine in the Ambition data). Gen 3's teenage shoplifting conviction breaks "Clean Name"; the Ambition card shows it as "Failed in Gen 3" with the event, and LP still count for the completed "Healers".
@@ -737,7 +737,7 @@ flowchart TB
     F[Life feed: this year's events] --> CC[Contextual action cards: 3-6 suggested now]
     CC --> AGE[Age +1 button, thumb zone]
   end
-  SB["Search bar: 'What do you want to do?'"] --> R[Results: actions, people, places, assets]
+  SB["Search bar, bottom of hub next to Age +1: 'What do you want to do?'"] --> R[Results: actions, people, places, assets]
   Hub --> CAT[Browse: 10 categories]
   CAT --> CARD[Action card]
   R --> CARD
@@ -833,7 +833,7 @@ flowchart TB
 
 ### UI entry point
 - **Life hub** (home): feed + contextual cards + Age +1 button in the thumb zone.
-- **Search bar** pinned at the top of the hub (and reachable from every screen with one tap).
+- **Search bar** pinned at the bottom of the hub, next to the Age +1 button in the thumb zone (and reachable from every screen with one tap).
 - **Browse** button opens the 10 categories. Full screen map: [[05 UX and Screen Map]].
 
 ### Priority and Free vs Plus
@@ -1207,7 +1207,7 @@ flowchart LR
   E -- Low --> F[Unlisted: shareable by link]
   E -- Medium/High --> G[Human review queue]
   F --> H[Players rate + report]
-  H -- Reports > threshold --> G
+  H -- Reports over threshold --> G
   G --> I{Approve?}
   I -- Yes --> J[Public listing + age tag]
   I -- No --> K[Rejected with reason; strikes]
@@ -1303,8 +1303,8 @@ flowchart TB
 | Ads | Opt-in rewarded ads only (capped) | No ads; rewarded-ad rewards granted automatically (e.g. daily bonus) |
 | Generations per dynasty | Up to Generation 4 (founder + 3 heirs) | Unlimited |
 | Destiny Mode (editor) | Preview only (view hidden facets of your own character in the tombstone) | Full |
-| Rewind | Limited free allowance | Unlimited |
-| Save slots | 3 active lives / dynasties at once | 12 |
+| Rewind | 1 per life + 1 per day via opt-in rewarded ad | Unlimited |
+| Save slots | 3 active lives / dynasties at once | 10 |
 | Profile frames and a Plus crest | — | Included |
 | Future Plus features | — | Included at no extra cost |
 | Careers, systems, countries, pets, challenges | **All free** | Same |
@@ -1320,13 +1320,13 @@ flowchart TB
 
 **Rewind (replaces BitLife's pay-per-use time rewind)**
 - Go back to any earlier birthday in the current life (or the last 5 years after death), with a timeline of key moments to pick from.
-- **Free allowance (recommendation, client decision):** **1 Rewind per life**, plus **1 extra a day** from an optional rewarded ad (capped). Never sold for money per use.
+- **Free allowance (decided):** **1 Rewind per life**, plus **1 extra a day** from an optional rewarded ad (capped). Never sold for money per use.
 - **Plus:** unlimited.
 - Rewinds are tagged "Assisted" for leaderboards; Life Recap can show "Rewinds used: 2" (optional, playful).
 - Deterministic replay: after a rewind the RNG stream changes (otherwise outcomes would repeat), so rewinding is not a guaranteed "retry until success" on the same roll. Tuned in prototype.
 
 **Season Pass**
-- Season length **8–10 weeks**; 4–5 seasons a year aligned with the event calendar (module 10).
+- Season length **about 13 weeks**; 4 seasons a year aligned with the event calendar (module 10; [[07 Retention and LiveOps]]).
 - **Free track:** about 40% of rewards (cosmetics, a storyline chapter, LP).
 - **Paid track (~$4.99):** cosmetics, bonus storyline chapters, a seasonal Title frame (cosmetic only), a profile frame.
 - Progress comes from playing (daily goals, challenges, life milestones), never from paid skips. No paid tier-skips (recommendation; [[06 Monetization and Economy]]).
@@ -1346,13 +1346,13 @@ flowchart TB
 
 **Cosmetics**
 - Avatar outfits and accessories (no body, identity or cultural items are paid; module 8), Life hub card themes, tombstone styles, recap frames, family crests, Season frames.
-- Direct pricing in real currency; earned cosmetics via challenges, daily goals and seasons. **No premium currency** (the brief rules out loot boxes; this note recommends no virtual currency either, to stay ahead of the EU Digital Fairness Act discussion on showing real-money prices).
+- Direct pricing in real currency; earned cosmetics via challenges, daily goals and seasons. **No premium or paid currency.** The only soft currency is **Sparks**, which is earn-only and never purchasable ([[06 Monetization and Economy]] §5), so every price stays in real money, ahead of the EU Digital Fairness Act discussion. Legacy Points are a separate dynasty score (module 4), not a currency for sale.
 
 **Ad rules (product rules, not just settings)**
 1. **Rewarded only.** No interstitials, no banners, no forced video, ever.
 2. **Opt-in only.** Every ad is behind a clearly labelled button ("Watch an ad for an extra Rewind").
-3. **Never mid-story.** Ad offers appear only on the Life hub between years or on the reward screen, never inside an activity, storylet, death flow or recap.
-4. **Daily cap:** 6 rewarded ads a day per player (Remote Config; initial proposal).
+3. **Never mid-story.** Ad offers appear only on the Life hub between years or on the reward screen, never inside an activity, storylet, death flow or recap. No ads during the first life, and no ad offers for 7 days after any purchase.
+4. **Caps:** max 4 rewarded ads per session, 8 per day, with a 90-second cooldown (Remote Config; [[06 Monetization and Economy]] §4).
 5. **Plus removes all ad offers** and grants their rewards automatically.
 6. **Age and consent:** no personalised ads for under-18 or unknown-age users; CMP consent in EU/UK; no ads in any child/teen mode ([[09 Compliance and Ratings]]).
 7. **Accessibility:** ads must be dismissible with screen readers; if an ad SDK fails accessibility, the reward is granted without the ad.
@@ -1639,8 +1639,8 @@ Make EverLife playable by everyone and safe by default. Accessibility is pillar 
 | Story Packs (themed storylines, scenario starts, eras' extra arcs) | — | — | ✅ | — | Never careers or systems |
 | Destiny Mode (editor) | Preview | ✅ | — | — | Replaces BitLife's paid editor |
 | Rewind (time rewind) | 1 per life + 1/day via opt-in ad | Unlimited | — | — | Never sold per use |
-| Save slots | 3 | 12 | — | — | Convenience |
-| Ads | Opt-in rewarded only, capped (6/day) | None (rewards auto-granted) | — | — | No interstitials or banners for anyone |
+| Save slots | 3 | 10 | — | — | Convenience |
+| Ads | Opt-in rewarded only, capped (4/session, 8/day, 90 s cooldown) | None (rewards auto-granted) | — | — | No interstitials or banners for anyone |
 | AI Storyteller on-device | ✅ | — | — | — | Opt-in |
 | AI Storyteller cloud fallback | — | ✅ (recommendation) | — | — | Cost control |
 | Dark mode, themes, text size, all accessibility | ✅ | — | — | — | BitLife once charged for dark mode |
@@ -1652,8 +1652,8 @@ Make EverLife playable by everyone and safe by default. Accessibility is pillar 
 
 | # | Decision | Recommendation in this note | Where it is decided |
 |---|---|---|---|
-| 1 | Free generation cap | Generation 4 (founder + 3 heirs); brief minimum is 3 | [[06 Monetization and Economy]] |
-| 2 | Free Rewind allowance | 1 per life + 1 a day via opt-in rewarded ad | [[06 Monetization and Economy]] |
+| 1 | Free generation cap | **Decided 2026-10-26:** Generation 4 (founder + 3 heirs); dynasty saved at the cap | [[06 Monetization and Economy]] |
+| 2 | Free Rewind allowance | **Decided 2026-10-26:** 1 per life + 1 a day via opt-in rewarded ad | [[06 Monetization and Economy]] |
 | 3 | Cloud AI fallback access | Plus only, with a per-user budget | [[06 Monetization and Economy]], [[08 Technical Architecture]] |
 | 4 | Ages 13–15 | Block (simplest for a 16+ rating) or separate softened build | [[09 Compliance and Ratings]] |
 | 5 | Polygamy / consensual non-monogamy; dowry and bride price | Out of scope for Phase 1 | This note (revisit at Launch) |

@@ -12,7 +12,7 @@ updated: 2026-10-26
 > [!abstract] What this note is
 > A module-by-module breakdown of every **core life system** in EverLife (working title): the systems that simulate one person from birth to death. For each module it gives the purpose, what BitLife does today, how EverLife redesigns it, what is new, a detailed sub-feature list, the rules, formulas and data behind it, where it lives in the UI, its priority and free/Plus status, its dependencies, and acceptance criteria.
 >
-> **Companion note:** relationships, romance, children, fame and social media, pets, Activities hub, achievements, challenges, editor tools, rewind, Life Recap and async social are covered in [[04 App Breakdown - Social, Meta and Premium]].
+> **Companion note:** relationships, romance, children, fame and social media, pets, Activities hub, achievements, challenges, Destiny Mode (editor), Rewind, Life Recap and async social are covered in [[04 App Breakdown - Social, Meta and Premium]].
 > **Source of truth:** [[_Concept Brief]]. Where this note proposes something the brief does not decide, it is marked **Proposal**.
 
 > [!warning] Evidence and number caveats
@@ -38,7 +38,7 @@ Proto items are always also MVP.
 | Tag | Meaning |
 |---|---|
 | **Free** | In the base game for everyone. All careers and all core systems are Free (pillar 3, "Fair forever"). |
-| **Plus** | Part of the one-time **EverLife Plus** unlock (~$9.99): no ads, unlimited generations, editor tools, rewind. Plus never unlocks a career, a country or a core system. |
+| **Plus** | Part of the one-time **EverLife Plus** unlock (~$9.99): no ads, unlimited generations, Destiny Mode (editor), unlimited Rewind. Plus never unlocks a career, a country or a core system. |
 | **Pack** | Optional **Story Pack** (~$2.99–3.99) or **Season Pass** content: extra storylines and cosmetics on top of a system that is already complete for free. A pack never locks a career or a mechanic. |
 | **Ad** | An optional, frequency-capped rewarded ad gives a small convenience. Never mid-action, never forced. See [[06 Monetization and Economy]]. |
 
@@ -144,7 +144,7 @@ Main menu → **New Life** sheet (three doors). Also from the death screen ("New
 | Curated scenario packs | LiveOps | Free rotation + Pack |
 
 ### Dependencies
-Module 2 (stats, traits), Module 10 (country/era data), the RNG/seed service and content versioning ([[08 Technical Architecture]]), the avatar system (Module 9 aging), and the editor tools and Cast library in [[04 App Breakdown - Social, Meta and Premium]].
+Module 2 (stats, traits), Module 10 (country/era data), the RNG/seed service and content versioning ([[08 Technical Architecture]]), the avatar system (Module 9 aging), and Destiny Mode (editor) and the Cast library in [[04 App Breakdown - Social, Meta and Premium]].
 
 ### Acceptance criteria
 - A player can start a random life in **2 taps or fewer** from the main menu, and a fully custom life in under 90 seconds.
@@ -168,7 +168,7 @@ Give the player a readable picture of who their character is, while keeping hidd
 
 ### EverLife redesign
 - **Four visible core stats** stay, as large, colour-blind-safe bars **with numbers** (for example "Health 72"), and a trend arrow showing the last year's change.
-- **Hidden stats are discoverable, not paywalled.** They start hidden, but the player learns them through play: a school report hints at Discipline, a coach says "you have real speed" (Athleticism), a fortune-teller event hints at Karma. Once discovered, a hidden stat appears on the **Character sheet** as a band ("High", "Average", "Low"). Exact numbers are shown with Plus editor tools, or free after the life ends (on the Life Recap).
+- **Hidden stats are discoverable, not paywalled.** They start hidden, but the player learns them through play: a school report hints at Discipline, a coach says "you have real speed" (Athleticism), a fortune-teller event hints at Karma. Once discovered, a hidden stat appears on the **Character sheet** as a band ("High", "Average", "Low"). Exact numbers are shown with Destiny Mode (Plus), or free after the life ends (on the Life Recap).
 - **Context meters** (Grades, Popularity, Fame, Respect, Notoriety, Stress, Fitness, Credit) appear on the hub only when relevant, so the screen stays clean.
 - **Relationship %** shown everywhere with a band label (see table below), per the player wishlist.
 - **Traits** replace invisible tendencies. They are named, explained, and change over a life.
@@ -270,7 +270,7 @@ Give the player a readable picture of who their character is, while keeping hidd
 - **Roll formula used across systems:** `successChance = clamp(base + Σ(weight_i × (stat_i − 50)/50) + traitMods + itemMods + luckMod, 2%, 98%)`. There is never a guaranteed 0% or 100% unless the content says so explicitly. The top 2–4 contributions are shown as the "Why" breakdown.
 
 ### UI entry point
-Hub top strip: the four core stats (tap to open **Character sheet**). Character sheet tabs: Stats · Traits · Meters · History ("Why did this change?"). The relationship % is shown on every NPC card ([[05 UX and Screen Map]]).
+Hub top strip: the four core stats (tap to open **Character sheet**). Character sheet tabs: Stats · Traits · Meters · History ("Why did this change?"). The Bond % is shown on every NPC card ([[05 UX and Screen Map]]).
 
 ### Priority and access
 | Feature | Priority | Access |
@@ -334,7 +334,7 @@ This is the heart of the game: the "Age +1" rhythm players love, rebuilt around 
 | Elder | 65+ | "Later Years" | Retirement, pension, wills, memoir, legacy goals |
 
 - **Dynamic chapter titles:** when a strong theme dominates a span of years, the chapter is renamed from a title template ("The Prison Years", "The Startup Years", "Life in Lisbon"). These feed Life Recap ([[04 App Breakdown - Social, Meta and Premium]]).
-- **Chapter goals:** each chapter offers 3 optional goals generated from the character's situation (for example "Get into a university of your choice", "Pay off your student loan", "Reconcile with your brother"). Completing them gives small Happiness boosts and counts toward dynasty goals. Goals are suggestions, never required.
+- **Chapter goals:** each chapter offers 3 optional goals generated from the character's situation (for example "Get into a university of your choice", "Pay off your student loan", "Reconcile with your brother"). Completing them gives small Happiness boosts and counts toward Dynasty Ambitions. Goals are suggestions, never required.
 
 ### Core loop
 ```mermaid
@@ -448,7 +448,7 @@ set_flags: [borrowed_bike_done]
 **Consequences and the Life Timeline**
 - Every year writes one timeline entry: age, year, chapter, main events, key choices, money delta, and an auto-generated one-line headline (template-based, optionally reworded by AI).
 - Life-defining moments are starred automatically (first job, marriage, prison, child born, death of a parent) and can be starred by the player. Starred moments feed Life Recap cards.
-- **Rewind (Plus):** jump to any past year from the timeline. Free players get a limited rewind (Proposal: 1 per life, see [[06 Monetization and Economy]]). No pay-per-use rewind exists. Ironman lives disable rewind.
+- **Rewind (Plus):** jump to any past year from the timeline. Free players get 1 Rewind per life plus 1 per day via an opt-in rewarded ad (see [[06 Monetization and Economy]]); Plus is unlimited. No pay-per-use rewind exists. Ironman lives disable rewind.
 
 ### Example events (original)
 | Age | Event | Choices | Consequence |
@@ -503,7 +503,7 @@ Make childhood and school a real part of the game rather than years to skip. Sch
 - An intelligence-test mini-game (v1.22). Private and boarding schools appear only in low-quality sources. Community college, dropping out and a high-school-equivalency exam are not documented in research.
 
 ### EverLife redesign
-- **School becomes a hub**, not a menu: the **School card** shows this year's classes, grades as letters, teachers with relationship %, clique standing, clubs and upcoming exams.
+- **School becomes a hub**, not a menu: the **School card** shows this year's classes, grades as letters, teachers with Bond %, clique standing, clubs and upcoming exams.
 - **Grades are explained:** each grade shows contributions (Smarts, study effort, attendance, teacher relationship, Stress).
 - **Major → graduate school → career requirements are one clear table in-game** ("Pathways" view), ending the guesswork that fan guides argue about.
 - **Admissions show their reasons** (GPA, test score, essay, extracurriculars, interview) and give a waitlist or second-chance path.
@@ -1275,9 +1275,9 @@ Health sets how long a life lasts and how it feels. This module covers illness, 
 - **Death check (each Age +1):** `qDeath = gompertz(age) × healthFactor × conditionFactor × lifestyleFactor × karmaFactor`, where `gompertz(age) = 0.00005 × e^(0.085 × age)` (about 0.4% at 52, 4.5% at 80, 10.5% at 90), `healthFactor = clamp(1 + (50 − Health)/40, 0.4, 3)`, `karmaFactor` 0.95–1.05. Accidents, crime, war and fatal illness stages are separate event-driven causes. Country life-expectancy data adjusts the base curve.
 - **Causes of death (examples):** old age, heart disease, cancer, stroke, untreated infection, accident (car, workplace, sports, home), natural disaster, violence (toggle-dependent wording), overdose (toggle-dependent, non-graphic), execution (country and toggle), war or deployment, extreme-sport accident, rare comic-but-gentle causes (for example "a falling coconut on a beach holiday": low frequency, original).
 - **Warning signs:** serious conditions show symptoms first; elder years show a frailty indicator so death rarely feels random.
-- **Funeral:** choose (or the family chooses) type: burial, cremation, natural burial, religious rites (Module 10), sea scattering. Attendance is computed from relationship % and fame; a **eulogy** is assembled from the strongest memories NPCs hold (original templates, optional AI rewording). Headstone or memorial text from a few templates or custom (moderated).
-- **Death screen:** age, cause, net worth, key achievements, chapter titles, top relationships, a badge for the life's dominant theme (social note), and buttons: **Life Recap**, **Continue as heir**, **New life**, **Rewind** (Plus or free limited rewind).
-- **Continue as heir:** choose among eligible heirs (biological, adopted and step-children; with the Proposal of grandchildren if no living children). The heir inherits per the will (Module 7), family memories (relatives remember the parent), legacy traits and heirlooms. **Free:** a limited number of generations (Proposal: continue up to 3 generations per family line, see [[06 Monetization and Economy]]). **Plus:** unlimited generations. The family tree and dynasty goals are in [[04 App Breakdown - Social, Meta and Premium]].
+- **Funeral:** choose (or the family chooses) type: burial, cremation, natural burial, religious rites (Module 10), sea scattering. Attendance is computed from Bond % and fame; a **eulogy** is assembled from the strongest memories NPCs hold (original templates, optional AI rewording). Headstone or memorial text from a few templates or custom (moderated).
+- **Death screen:** age, cause, net worth, key achievements, chapter titles, top relationships, the Life Title for the life's dominant theme (social note), and buttons: **Life Recap**, **Continue as heir**, **New life**, **Rewind** (Plus or free limited rewind).
+- **Continue as heir:** choose among eligible heirs (biological, adopted and step-children; with the Proposal of grandchildren if no living children). The heir inherits per the will (Module 7), family memories (relatives remember the parent), legacy traits and heirlooms. **Free:** up to Generation 4 per dynasty (founder + 3 heirs; the dynasty is saved at the cap, see [[06 Monetization and Economy]]). **Plus:** unlimited generations. The family tree and Dynasty Ambitions are in [[04 App Breakdown - Social, Meta and Premium]].
 
 ### Key rules, formulas and data
 - **Healthcare cost:** country data (free/universal, insurance-based, out-of-pocket). Example: US-like out-of-pocket surgery $8k–80k vs universal $0–500 with waiting time.
@@ -1308,7 +1308,7 @@ Hub **Health card** (Health stat, active conditions, fitness) → **Health scree
 | Plastic surgery | Launch | Free |
 | Aging avatar | MVP (basic stages), Launch (lifestyle layers) | Free; cosmetic styles via Season Pass |
 | Funeral, eulogy from memories | Launch | Free |
-| Continue as heir | MVP | Free (limited generations), Plus (unlimited) |
+| Continue as heir | MVP | Free (up to Generation 4), Plus (unlimited) |
 
 ### Dependencies
 Module 2 (Health, Looks, Willpower, Resilience, Stress), Module 3 (callbacks, memories for eulogies), Module 6 (medical costs, insurance), Module 7 (will, inheritance), Module 10 (healthcare systems, life expectancy, religious rites), generations and Life Recap in [[04 App Breakdown - Social, Meta and Premium]], sensitive-content review and helplines in [[09 Compliance and Ratings]].
@@ -1560,7 +1560,7 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 | — | Aging avatar with alt text | 9 | New |
 | Death causes, tombstone | Death screen + funeral + eulogy from memories | 9 | Improved |
 | Surrender (in-story suicide option) | Out-of-character "End this life" with support panel | 9 | Improved |
-| Continue as child; unlimited generations only for paid users | Continue as heir (limited free, unlimited with Plus) with memories and legacy traits | 9 | Improved |
+| Continue as child; unlimited generations only for paid users | Continue as heir (free to Generation 4, unlimited with Plus) with memories and legacy traits | 9 | Improved |
 | Countries and cities | Data-driven countries with profile screens | 10 | Improved |
 | Royalty with Respect meter | Fictional royal houses, duties, succession, abdication | 10 | Improved |
 | Arranged marriage, surrogacy legality, estate tax by country | All family, health, money and justice laws as country data | 10 | Improved |
@@ -1572,15 +1572,15 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 | Screen-reader support (repeated regressions) | Accessible-by-default, decision modes for every mini-game | All | Improved |
 
 > [!info] Covered in the companion note
-> Relationships and romance, marriage and divorce, children, adoption/IVF/surrogacy, fame and social media, pets, Activities hub, vacations and nightlife, identity, licences, ribbons/badges and achievements, weekly challenges, editor (God Mode equivalent), Life Recap, family tree and dynasty goals, async social. See [[04 App Breakdown - Social, Meta and Premium]].
+> Relationships and romance, marriage and divorce, children, adoption/IVF/surrogacy, fame and social media, pets, Activities hub, vacations and nightlife, identity, licences, ribbons/badges and achievements, weekly challenges, Destiny Mode (editor), Life Recap, family tree and Dynasty Ambitions, async social. See [[04 App Breakdown - Social, Meta and Premium]].
 
 ---
 
 ## Open questions for the client
 
 1. **Energy budget:** keep a per-year action budget (better choices, less spam) or default to unlimited "Classic" actions? Recommend testing both in the Phase 2 prototype.
-2. **Free generations limit:** how many free heir continuations (Proposal: 3 per family line) before Plus? Decision sits in [[06 Monetization and Economy]].
-3. **Free rewind:** one free rewind per life, or none outside Plus? Recommend one, to remove the most-resented BitLife paywall.
+2. **Free generations limit:** *decided 2026-10-26*: founder + 3 heirs (Generation 4) free, unlimited with Plus, dynasty saved at the cap ([[06 Monetization and Economy]]).
+3. **Free rewind:** *decided 2026-10-26*: 1 free Rewind per life + 1 per day via opt-in rewarded ad; never sold per use; unlimited with Plus.
 4. **Religion representation:** real traditions with expert review (recommended) or fictional faiths? Budget impact in [[09 Compliance and Ratings]].
 5. **Country scope at MVP:** 25 countries recommended; confirm the list against soft-launch and language markets.
 6. **Murder and drugs defaults:** confirm defaults per age signal and per store rating target ([[09 Compliance and Ratings]]).
