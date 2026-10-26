@@ -9,6 +9,7 @@ import 'engine/engine.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
+import 'sound.dart';
 
 /// Holds the current life, talks to the engine and saves on the device
 /// after every change (offline-first; cloud sync comes in Phase 3).
@@ -41,6 +42,7 @@ class GameController extends ChangeNotifier {
         .toList();
     engine = GameEngine(list);
     final prefs = await SharedPreferences.getInstance();
+    Sound.instance.enabled = prefs.getBool('relivable.sound') ?? true;
     final saved = prefs.getString(_saveKey);
     if (saved != null) {
       try {
@@ -102,6 +104,7 @@ class GameController extends ChangeNotifier {
   void ageUp() {
     if (life == null || pendingEvent != null) return;
     lastOutcome = null;
+    Sound.instance.ageUp();
     pendingEvent = engine!.ageUp(life!);
     _save();
     notifyListeners();
@@ -110,6 +113,7 @@ class GameController extends ChangeNotifier {
   void choose(Choice choice) {
     if (life == null || pendingEvent == null) return;
     lastOutcome = engine!.choose(life!, pendingEvent!, choice);
+    Sound.instance.outcome(lastOutcome!.tone);
     pendingEvent = null;
     _save();
     notifyListeners();
@@ -121,6 +125,7 @@ class GameController extends ChangeNotifier {
   }
 
   ActionResult runAction(GameAction action) {
+    Sound.instance.tap();
     final r = engine!.runAction(life!, action);
     _save();
     notifyListeners();
@@ -129,9 +134,19 @@ class GameController extends ChangeNotifier {
 
   /// Runs a person interaction from the People tab or the action search.
   ActionResult interact(Npc npc, Interaction interaction) {
+    Sound.instance.tap();
     final r = engine!.interact(life!, npc, interaction);
     _save();
     notifyListeners();
     return r;
+  }
+
+  bool get soundOn => Sound.instance.enabled;
+
+  Future<void> setSound(bool on) async {
+    Sound.instance.enabled = on;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('relivable.sound', on);
   }
 }

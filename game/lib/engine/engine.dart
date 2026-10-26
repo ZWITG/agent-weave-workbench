@@ -11,9 +11,37 @@ const sliceEndAge = 30;
 
 /// The result of choosing an option on an event card.
 class Outcome {
-  Outcome(this.text, this.notes);
+  Outcome(
+    this.text,
+    this.notes, {
+    this.headline = '',
+    this.tone = 'neutral',
+    this.category = 'life',
+    this.statDeltas = const {},
+    this.bondDeltas = const {},
+    this.moneyDelta = 0,
+    this.echoes = const [],
+  });
+
   final String text;
   final List<String> notes;
+
+  /// Short reaction ("That went well.", "Ouch.").
+  final String headline;
+
+  /// good, bad, mixed or neutral: drives colour and sound.
+  final String tone;
+  final String category;
+
+  /// Visible stat -> change.
+  final Map<String, int> statDeltas;
+
+  /// Person name -> Bond % change.
+  final Map<String, int> bondDeltas;
+  final int moneyDelta;
+
+  /// Lines about consequences ("Leo will remember this").
+  final List<String> echoes;
 }
 
 /// Pure-Dart game rules: no Flutter imports, so the simulator bot and unit
@@ -156,7 +184,65 @@ class GameEngine {
 
   Outcome choose(Life life, Storylet event, Choice choice) {
     life.lastSeen[event.id] = life.age;
+    final statsBefore = {for (final k in Stats.visible) k: life.stats[k]};
+    final bondsBefore = {for (final n in life.npcs) n.id: n.bond};
+    final npcsBefore = life.npcs.map((n) => n.id).toSet();
+    final moneyBefore = life.money;
     final notes = choice.effects.apply(life);
+    final statDeltas = <String, int>{
+      for (final k in Stats.visible)
+        if (life.stats[k] != statsBefore[k]) k: life.stats[k] - statsBefore[k]!,
+    };
+    final bondDeltas = <String, int>{
+      for (final n in life.npcs)
+        if (bondsBefore.containsKey(n.id) && n.bond != bondsBefore[n.id])
+          n.name: n.bond - bondsBefore[n.id]!,
+    };
+    final moneyDelta = life.money - moneyBefore;
+    final score =
+        statDeltas.values.fold<int>(0, (a, b) => a + b) +
+        bondDeltas.values.fold<int>(0, (a, b) => a + b) ~/ 3 +
+        (moneyDelta > 0 ? 3 : (moneyDelta < 0 ? -2 : 0));
+    final hasGood =
+        statDeltas.values.any((v) => v > 0) ||
+        bondDeltas.values.any((v) => v > 0) ||
+        moneyDelta > 0;
+    final hasBad =
+        statDeltas.values.any((v) => v < 0) ||
+        bondDeltas.values.any((v) => v < 0) ||
+        moneyDelta < 0;
+    final tone = hasGood && hasBad && score.abs() < 4
+        ? 'mixed'
+        : score > 0
+        ? 'good'
+        : score < 0
+        ? 'bad'
+        : 'neutral';
+    const headlines = {
+      'good': [
+        'That went well.',
+        'Good call.',
+        'Nicely done.',
+        'A moment to remember.',
+      ],
+      'bad': [
+        'Ouch.',
+        'That stung.',
+        'Not your finest hour.',
+        'Well, that happened.',
+      ],
+      'mixed': ['Win some, lose some.', 'A bit of both.', 'It\'s complicated.'],
+      'neutral': ['Life goes on.', 'So it goes.', 'Noted.'],
+    };
+    final hl = headlines[tone]!;
+    final echoes = <String>[
+      for (final n in life.npcs)
+        if (!npcsBefore.contains(n.id)) '${n.name} is now part of your life',
+      for (final id in choice.effects.npcMemory.keys)
+        if (life.npc(id) != null) '${life.npc(id)!.name} will remember this',
+      if (choice.effects.setFlags.isNotEmpty)
+        'This moment may come back years from now',
+    ];
     final text = fill(
       choice.outcome.isEmpty ? choice.label : choice.outcome,
       life,
@@ -166,7 +252,17 @@ class GameEngine {
       life.alive = false;
       life.causeOfDeath = 'Injuries';
     }
-    return Outcome(text, notes);
+    return Outcome(
+      text,
+      notes,
+      headline: hl[(life.seed + life.age) % hl.length],
+      tone: tone,
+      category: event.category,
+      statDeltas: statDeltas,
+      bondDeltas: bondDeltas,
+      moneyDelta: moneyDelta,
+      echoes: echoes,
+    );
   }
 
   /// Fills {mother}, {father}, {sibling}, {name}, {city}, {surname}.

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../engine/actions.dart';
 import '../engine/engine.dart';
 import '../engine/models.dart';
-import '../engine/relationships.dart';
 import '../engine/storylet.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'activities.dart';
+import 'outcome_card.dart';
 import 'people.dart';
 import 'widgets.dart';
 
@@ -105,7 +105,7 @@ class _HubScreenState extends State<HubScreen> {
         minChildSize: 0.35,
         maxChildSize: 0.95,
         snap: true,
-        builder: (context, scroll) => _ActionSearch(
+        builder: (context, scroll) => ActivitiesPanel(
           controller: c,
           scrollController: scroll,
           focusSearch: focusSearch,
@@ -383,7 +383,7 @@ class _LifeTab extends StatelessWidget {
                   event: controller.pendingEvent!,
                 )
               : controller.lastOutcome != null
-              ? _OutcomeCard(
+              ? OutcomeCard(
                   key: ValueKey(
                     'o${life.age}${controller.lastOutcome!.text.hashCode}',
                   ),
@@ -626,328 +626,6 @@ class _EventCard extends StatelessWidget {
   }
 }
 
-class _OutcomeCard extends StatelessWidget {
-  const _OutcomeCard({
-    super.key,
-    required this.controller,
-    required this.outcome,
-  });
-  final GameController controller;
-  final Outcome outcome;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      liveRegion: true,
-      child: NFCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SectionLabel('What happened', color: NF.blue),
-            const SizedBox(height: 10),
-            Text(outcome.text, style: NF.sora(16, height: 1.45)),
-            if (outcome.notes.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (final n in outcome.notes)
-                    Pill(n, bg: NF.surface2, fg: NF.text),
-                ],
-              ),
-            ],
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: controller.dismissOutcome,
-                child: const Text('OK'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------- Action search ----------------
-
-const _categoryIcons = <String, IconData>{
-  'School': Icons.school_rounded,
-  'Wellbeing': Icons.self_improvement_rounded,
-  'Health': Icons.medical_services_rounded,
-  'Family': Icons.home_rounded,
-  'Work': Icons.work_rounded,
-  'Social': Icons.celebration_rounded,
-  'Assets': Icons.directions_car_rounded,
-  'Crime': Icons.local_police_rounded,
-};
-
-/// The Activities panel: every action grouped by category, with search on top.
-class _ActionSearch extends StatefulWidget {
-  const _ActionSearch({
-    required this.controller,
-    required this.scrollController,
-    this.focusSearch = false,
-  });
-  final GameController controller;
-  final ScrollController scrollController;
-  final bool focusSearch;
-
-  @override
-  State<_ActionSearch> createState() => _ActionSearchState();
-}
-
-class _ActionSearchState extends State<_ActionSearch> {
-  String _q = '';
-
-  @override
-  Widget build(BuildContext context) {
-    final c = widget.controller;
-    final life = c.life!;
-    final all = c.engine!.actions;
-    final searching = _q.trim().isNotEmpty;
-    final results = all.where((a) => a.matches(_q)).toList()
-      ..sort(
-        (a, b) => (a.lockReason(life) == null ? 0 : 1).compareTo(
-          b.lockReason(life) == null ? 0 : 1,
-        ),
-      );
-    final categories = <String>[];
-    for (final a in all) {
-      if (!categories.contains(a.category)) categories.add(a.category);
-    }
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: ListView(
-        controller: widget.scrollController,
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        children: [
-          Row(
-            children: [
-              Text('Activities', style: NF.sora(22, weight: FontWeight.w700)),
-              const Spacer(),
-              Text('Age ${life.age}', style: NF.sora(13, color: NF.muted)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            autofocus: widget.focusSearch,
-            style: NF.sora(15),
-            onChanged: (v) => setState(() => _q = v),
-            decoration: InputDecoration(
-              hintText: 'Search: "job", "gym", "party", "money"…',
-              hintStyle: NF.sora(14, color: NF.muted),
-              prefixIcon: const Icon(Icons.search, color: NF.muted),
-              filled: true,
-              fillColor: NF.surface2,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (searching) ...[
-            for (final (n, i) in searchInteractions(life, _q).take(12)) ...[
-              _interactionTile(context, n, i),
-              const SizedBox(height: 8),
-            ],
-            if (results.isEmpty && searchInteractions(life, _q).isEmpty)
-              Text(
-                'Nothing matches "$_q" yet.',
-                style: NF.sora(14, color: NF.muted),
-              ),
-            for (final a in results) ...[
-              _actionTile(context, a),
-              const SizedBox(height: 8),
-            ],
-          ] else
-            for (final cat in categories) ...[
-              Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: NF.orange.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      _categoryIcons[cat] ?? Icons.auto_awesome_rounded,
-                      size: 17,
-                      color: NF.orange,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(cat, style: NF.sora(15, weight: FontWeight.w700)),
-                ],
-              ),
-              const SizedBox(height: 10),
-              _grid(context, all.where((a) => a.category == cat).toList()),
-              const SizedBox(height: 18),
-            ],
-        ],
-      ),
-    );
-  }
-
-  Widget _grid(BuildContext context, List<GameAction> actions) {
-    return LayoutBuilder(
-      builder: (context, box) {
-        final w = (box.maxWidth - 10) / 2;
-        return Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: [
-            for (final a in actions)
-              SizedBox(width: w, child: _actionCard(context, a)),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _actionCard(BuildContext context, GameAction a) {
-    final lock = a.lockReason(widget.controller.life!);
-    return Material(
-      color: lock == null ? NF.surface2 : NF.surface2.withValues(alpha: 0.5),
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: lock != null ? null : () => _run(context, a),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 72),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: lock == null ? NF.borderStrong : NF.border,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      a.label,
-                      style: NF.sora(
-                        14,
-                        weight: FontWeight.w600,
-                        color: lock == null ? NF.text : NF.muted,
-                      ),
-                    ),
-                  ),
-                  if (lock != null)
-                    const Icon(Icons.lock_outline, size: 16, color: NF.muted),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                lock ?? (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Tap to do'),
-                style: NF.sora(12, color: lock == null ? NF.blue : NF.orange),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _run(BuildContext context, GameAction a) {
-    final r = widget.controller.runAction(a);
-    Navigator.of(context).pop();
-    _showResult(context, r);
-  }
-
-  Widget _interactionTile(BuildContext context, Npc n, Interaction i) {
-    final c = widget.controller;
-    final lock = i.lockReason(c.life!, n);
-    return Material(
-      color: NF.surface2,
-      borderRadius: BorderRadius.circular(14),
-      child: ListTile(
-        minTileHeight: 56,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        leading: Avatar(initials: n.name.substring(0, 1), size: 34),
-        title: Text(
-          '${i.label} · ${n.name}',
-          style: NF.sora(
-            15,
-            weight: FontWeight.w600,
-            color: lock == null ? NF.text : NF.muted,
-          ),
-        ),
-        subtitle: Text(
-          lock ?? '${n.role} · Bond ${n.bond}% · ${i.hint(c.life!, n)}',
-          style: NF.sora(12, color: lock == null ? NF.muted : NF.orange),
-        ),
-        trailing: Icon(
-          lock == null ? Icons.chevron_right : Icons.lock_outline,
-          color: NF.muted,
-        ),
-        onTap: lock != null
-            ? null
-            : () {
-                final r = c.interact(n, i);
-                Navigator.of(context).pop();
-                _showResult(context, r);
-              },
-      ),
-    );
-  }
-
-  Widget _actionTile(BuildContext context, GameAction a) {
-    final c = widget.controller;
-    final lock = a.lockReason(c.life!);
-    return Material(
-      color: NF.surface2,
-      borderRadius: BorderRadius.circular(14),
-      child: ListTile(
-        minTileHeight: 56,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        leading: Icon(
-          _categoryIcons[a.category] ?? Icons.auto_awesome_rounded,
-          color: NF.orange,
-        ),
-        title: Text(
-          a.label,
-          style: NF.sora(
-            15,
-            weight: FontWeight.w600,
-            color: lock == null ? NF.text : NF.muted,
-          ),
-        ),
-        subtitle: Text(
-          lock ?? a.category,
-          style: NF.sora(12, color: lock == null ? NF.muted : NF.orange),
-        ),
-        trailing: Icon(
-          lock == null ? Icons.chevron_right : Icons.lock_outline,
-          color: NF.muted,
-        ),
-        onTap: lock != null ? null : () => _run(context, a),
-      ),
-    );
-  }
-}
-
-void _showResult(BuildContext context, ActionResult r) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        r.notes.isEmpty ? r.text : '${r.text}\n${r.notes.join(' · ')}',
-      ),
-      duration: const Duration(seconds: 4),
-    ),
-  );
-}
-
 // ---------------- Path tab ----------------
 
 class _PathTab extends StatelessWidget {
@@ -1050,6 +728,23 @@ class _MeTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       children: [
+        Material(
+          color: NF.surface,
+          borderRadius: BorderRadius.circular(16),
+          child: SwitchListTile(
+            title: Text(
+              'Sound effects',
+              style: NF.sora(15, weight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              'Age-up chime, choices and results',
+              style: NF.sora(12, color: NF.muted),
+            ),
+            value: controller.soundOn,
+            onChanged: controller.setSound,
+          ),
+        ),
+        const SizedBox(height: 16),
         const SectionLabel('Hidden stats'),
         const SizedBox(height: 10),
         for (final k in Stats.hidden) ...[
