@@ -32,6 +32,8 @@ class NF {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: bg,
       fontFamily: 'Sora',
+      // Plain ripple: avoids loading the ink_sparkle shader on the web.
+      splashFactory: InkRipple.splashFactory,
       colorScheme: const ColorScheme.dark(
         primary: blue,
         secondary: orange,
