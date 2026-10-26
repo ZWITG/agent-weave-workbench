@@ -3,8 +3,8 @@ name: Relivable game
 # Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
 # - tests the engine (including the 500-life simulator run)
 # - publishes the web build to GitHub Pages (play it on any phone)
-# - builds an installable Android APK and attaches it to the
-#   "relivable-prototype" pre-release.
+# - builds an installable Android APK and a Windows installer and attaches
+#   both to the "relivable-prototype" pre-release.
 
 on:
   push:
@@ -59,7 +59,39 @@ jobs:
             Latest Relivable Phase 2 prototype, built from ${{ github.sha }}.
             Play on any phone: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
             Android: download app-release.apk below and open it to install (allow installs from your browser when asked).
+            Windows: download RelivableSetup.exe below and run it (no admin rights needed), or unzip Relivable-portable.zip and open Relivable.exe.
           files: game/build/app/outputs/flutter-apk/app-release.apk
+          fail_on_unmatched_files: true
+
+  windows:
+    needs: build
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build Windows app
+        run: flutter build windows --release
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.1.${{ github.run_number }} /DSourceDir="$PWD\build\windows\x64\runner\Release" windows\installer\relivable.iss
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows\installer\Output\Relivable-portable.zip
+      - name: Add Windows files to the prototype pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: relivable-prototype
+          files: |
+            game/windows/installer/Output/RelivableSetup.exe
+            game/windows/installer/Output/Relivable-portable.zip
           fail_on_unmatched_files: true
 
   deploy:
