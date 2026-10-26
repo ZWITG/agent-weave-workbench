@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'models.dart';
+import 'more_actions.dart';
 
 class ActionResult {
   ActionResult(this.text, [this.notes = const []]);
@@ -55,7 +56,7 @@ class GameAction {
 
 String _signed(int v) => v > 0 ? '+$v' : '−${v.abs()}';
 
-ActionResult _statChange(Life life, String text, Map<String, int> deltas) {
+ActionResult statChange(Life life, String text, Map<String, int> deltas) {
   final notes = <String>[];
   deltas.forEach((k, v) {
     life.stats.add(k, v);
@@ -67,11 +68,13 @@ ActionResult _statChange(Life life, String text, Map<String, int> deltas) {
 }
 
 String? _inSchool(Life life) =>
-    life.education == 'primary' || life.education == 'secondary' || life.education == 'university'
-        ? null
-        : 'Only while in school';
+    life.education == 'primary' ||
+        life.education == 'secondary' ||
+        life.education == 'university'
+    ? null
+    : 'Only while in school';
 
-final allActions = <GameAction>[
+final _baseActions = <GameAction>[
   GameAction(
     id: 'study',
     label: 'Study harder',
@@ -79,8 +82,11 @@ final allActions = <GameAction>[
     keywords: ['study', 'homework', 'school', 'grades', 'learn'],
     minAge: 6,
     extraCheck: _inSchool,
-    run: (life, rng) => _statChange(life, 'You buried yourself in books for a while.',
-        {'smarts': 2 + rng.nextInt(4), 'happiness': -1, 'discipline': 2}),
+    run: (life, rng) => statChange(
+      life,
+      'You buried yourself in books for a while.',
+      {'smarts': 2 + rng.nextInt(4), 'happiness': -1, 'discipline': 2},
+    ),
   ),
   GameAction(
     id: 'read',
@@ -88,8 +94,11 @@ final allActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['read', 'book', 'library'],
     minAge: 4,
-    run: (life, rng) => _statChange(
-        life, 'You read a book you could not put down.', {'smarts': 1 + rng.nextInt(3), 'happiness': 1}),
+    run: (life, rng) => statChange(
+      life,
+      'You read a book you could not put down.',
+      {'smarts': 1 + rng.nextInt(3), 'happiness': 1},
+    ),
   ),
   GameAction(
     id: 'gym',
@@ -97,8 +106,11 @@ final allActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['gym', 'exercise', 'run', 'sport', 'fitness', 'workout'],
     minAge: 12,
-    run: (life, rng) => _statChange(life, 'You worked out until everything ached.',
-        {'health': 2 + rng.nextInt(3), 'looks': rng.nextInt(2), 'athleticism': 2}),
+    run: (life, rng) => statChange(
+      life,
+      'You worked out until everything ached.',
+      {'health': 2 + rng.nextInt(3), 'looks': rng.nextInt(2), 'athleticism': 2},
+    ),
   ),
   GameAction(
     id: 'meditate',
@@ -106,8 +118,11 @@ final allActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['meditate', 'calm', 'relax', 'stress', 'mindful'],
     minAge: 10,
-    run: (life, rng) => _statChange(
-        life, 'You sat in silence and felt a little lighter.', {'happiness': 2 + rng.nextInt(3), 'willpower': 1}),
+    run: (life, rng) => statChange(
+      life,
+      'You sat in silence and felt a little lighter.',
+      {'happiness': 2 + rng.nextInt(3), 'willpower': 1},
+    ),
   ),
   GameAction(
     id: 'doctor',
@@ -116,28 +131,13 @@ final allActions = <GameAction>[
     keywords: ['doctor', 'sick', 'health', 'hospital', 'checkup'],
     run: (life, rng) {
       if (life.age >= 18) life.money -= 80;
-      return _statChange(life,
-          life.age >= 18 ? 'A check-up cost you \$80. The doctor says to sleep more.' : 'Your parents took you for a check-up.',
-          {'health': 3 + rng.nextInt(4)});
-    },
-  ),
-  GameAction(
-    id: 'ask_money',
-    label: 'Ask parents for money',
-    category: 'Family',
-    keywords: ['money', 'allowance', 'parents', 'ask', 'mum', 'mom', 'dad'],
-    minAge: 6,
-    maxAge: 25,
-    run: (life, rng) {
-      final mum = life.npc('mother')!;
-      if (rng.nextInt(100) < mum.bond) {
-        final amount = 10 + rng.nextInt(life.age * 5 + 1);
-        life.money += amount;
-        mum.addBond(-2);
-        return ActionResult('{mother} slipped you \$$amount.', ['Money +\$$amount', 'Bond with ${mum.name} −2']);
-      }
-      mum.addBond(-4);
-      return ActionResult('{mother} said no. "Money doesn\'t grow on trees."', ['Bond with ${mum.name} −4']);
+      return statChange(
+        life,
+        life.age >= 18
+            ? 'A check-up cost you \$80. The doctor says to sleep more.'
+            : 'Your parents took you for a check-up.',
+        {'health': 3 + rng.nextInt(4)},
+      );
     },
   ),
   GameAction(
@@ -149,11 +149,18 @@ final allActions = <GameAction>[
     maxAge: 17,
     extraCheck: (life) => life.job != null ? 'You already have a job' : null,
     run: (life, rng) {
-      const jobs = ['café server', 'newspaper delivery', 'shop assistant', 'dog walker'];
+      const jobs = [
+        'café server',
+        'newspaper delivery',
+        'shop assistant',
+        'dog walker',
+      ];
       final job = jobs[rng.nextInt(jobs.length)];
       life.job = 'Part-time $job';
       life.salary = 1500 + rng.nextInt(1500);
-      return ActionResult('You got a job as a $job.', ['Income +\$${life.salary}/year']);
+      return ActionResult('You got a job as a $job.', [
+        'Income +\$${life.salary}/year',
+      ]);
     },
   ),
   GameAction(
@@ -162,22 +169,38 @@ final allActions = <GameAction>[
     category: 'Work',
     keywords: ['job', 'work', 'career', 'apply', 'employment', 'hire'],
     minAge: 18,
-    extraCheck: (life) => life.education == 'university' ? 'Finish university first' : null,
+    extraCheck: (life) =>
+        life.education == 'university' ? 'Finish university first' : null,
     run: (life, rng) {
       final smart = life.stats['smarts'];
       final degree = life.education == 'graduate';
       final options = degree
-          ? ['Junior analyst', 'Teacher', 'Nurse', 'Software developer', 'Sous-chef']
-          : ['Line cook', 'Warehouse worker', 'Receptionist', 'Barista', 'Delivery driver'];
+          ? [
+              'Junior analyst',
+              'Teacher',
+              'Nurse',
+              'Software developer',
+              'Sous-chef',
+            ]
+          : [
+              'Line cook',
+              'Warehouse worker',
+              'Receptionist',
+              'Barista',
+              'Delivery driver',
+            ];
       final chance = 45 + smart ~/ 2 + (degree ? 10 : 0);
       if (rng.nextInt(100) < chance) {
         final job = options[rng.nextInt(options.length)];
         life.job = job;
         life.salary = (degree ? 32000 : 21000) + rng.nextInt(9000);
-        return ActionResult('You were hired as a $job!', ['Salary \$${life.salary}/year']);
+        return ActionResult('You were hired as a $job!', [
+          'Salary \$${life.salary}/year',
+        ]);
       }
-      return ActionResult('You applied, interviewed, and heard nothing back.',
-          ['Why: Smarts ${life.stats['smarts']}${degree ? '' : ', no degree'}']);
+      return ActionResult('You applied, interviewed, and heard nothing back.', [
+        'Why: Smarts ${life.stats['smarts']}${degree ? '' : ', no degree'}',
+      ]);
     },
   ),
   GameAction(
@@ -191,7 +214,7 @@ final allActions = <GameAction>[
       final old = life.job;
       life.job = null;
       life.salary = 0;
-      return _statChange(life, 'You quit your job as $old.', {'happiness': 3});
+      return statChange(life, 'You quit your job as $old.', {'happiness': 3});
     },
   ),
   GameAction(
@@ -204,25 +227,13 @@ final allActions = <GameAction>[
     run: (life, rng) {
       life.money -= 200;
       final great = rng.nextInt(100) < 40 + life.stats['charisma'] ~/ 2;
-      return _statChange(
-          life,
-          great ? 'Your party was the talk of {city} for a week.' : 'Three people came. One left early.',
-          {'happiness': great ? 6 : -2, 'charisma': great ? 2 : 0});
-    },
-  ),
-  GameAction(
-    id: 'call_family',
-    label: 'Call your family',
-    category: 'Family',
-    keywords: ['call', 'family', 'mum', 'mom', 'dad', 'brother', 'visit'],
-    minAge: 18,
-    run: (life, rng) {
-      final notes = <String>[];
-      for (final n in life.npcs.where((n) => n.alive)) {
-        n.addBond(3);
-        notes.add('Bond with ${n.name} +3');
-      }
-      return ActionResult('You called home. Everyone talked at once.', notes);
+      return statChange(
+        life,
+        great
+            ? 'Your party was the talk of {city} for a week.'
+            : 'Three people came. One left early.',
+        {'happiness': great ? 6 : -2, 'charisma': great ? 2 : 0},
+      );
     },
   ),
   GameAction(
@@ -234,12 +245,22 @@ final allActions = <GameAction>[
     run: (life, rng) {
       final caught = rng.nextInt(100) < 30;
       if (caught) {
-        life.flags['caught_shoplifting'] = Memory(life.age, 'caught shoplifting');
-        return _statChange(life, 'Security caught you at the door. Your parents had to come and get you.',
-            {'happiness': -6, 'karma': -4});
+        life.flags['caught_shoplifting'] = Memory(
+          life.age,
+          'caught shoplifting',
+        );
+        return statChange(
+          life,
+          'Security caught you at the door. Your parents had to come and get you.',
+          {'happiness': -6, 'karma': -4},
+        );
       }
       life.money += 20 + rng.nextInt(60);
-      return _statChange(life, 'You walked out with a pocketful of things you didn\'t need.', {'karma': -3, 'happiness': 1});
+      return statChange(
+        life,
+        'You walked out with a pocketful of things you didn\'t need.',
+        {'karma': -3, 'happiness': 1},
+      );
     },
   ),
   GameAction(
@@ -248,8 +269,11 @@ final allActions = <GameAction>[
     category: 'Social',
     keywords: ['volunteer', 'charity', 'help', 'kind'],
     minAge: 13,
-    run: (life, rng) => _statChange(
-        life, 'You volunteered at a food bank in {city}.', {'happiness': 3, 'karma': 4}),
+    run: (life, rng) => statChange(
+      life,
+      'You volunteered at a food bank in {city}.',
+      {'happiness': 3, 'karma': 4},
+    ),
   ),
   GameAction(
     id: 'buy_car',
@@ -258,11 +282,17 @@ final allActions = <GameAction>[
     keywords: ['car', 'buy', 'drive', 'vehicle'],
     minAge: 18,
     cost: 4000,
-    extraCheck: (life) => life.flags.containsKey('owns_car') ? 'You already own a car' : null,
+    extraCheck: (life) =>
+        life.flags.containsKey('owns_car') ? 'You already own a car' : null,
     run: (life, rng) {
       life.money -= 4000;
       life.flags['owns_car'] = Memory(life.age, 'your first car');
-      return ActionResult('You bought a dented but lovable used car.', ['Money −\$4000']);
+      return ActionResult('You bought a dented but lovable used car.', [
+        'Money −\$4000',
+      ]);
     },
   ),
 ];
+
+/// Every action in the game: the starter set plus the expanded activities.
+final allActions = <GameAction>[..._baseActions, ...moreActions];

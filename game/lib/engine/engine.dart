@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'relationships.dart';
 import 'storylet.dart';
 import 'world_data.dart';
 
@@ -68,7 +69,9 @@ class GameEngine {
 
     final life = Life(
       seed: s,
-      firstName: firstName?.trim().isNotEmpty == true ? firstName!.trim() : pick(pool),
+      firstName: firstName?.trim().isNotEmpty == true
+          ? firstName!.trim()
+          : pick(pool),
       surname: surname,
       gender: g,
       country: country.name,
@@ -77,13 +80,20 @@ class GameEngine {
       stats: Stats.random(rng),
       npcs: npcs,
     );
-    life.feed.add(FeedEntry(
-      0,
-      'You were born in ${life.city}, ${life.country}, to ${npcs[0].name} and ${npcs[1].name}.',
-      kind: 'milestone',
-    ));
+    life.feed.add(
+      FeedEntry(
+        0,
+        'You were born in ${life.city}, ${life.country}, to ${npcs[0].name} and ${npcs[1].name}.',
+        kind: 'milestone',
+      ),
+    );
     if (life.npc('sibling') != null) {
-      life.feed.add(FeedEntry(0, 'Your big brother ${life.npc('sibling')!.name} is not impressed.'));
+      life.feed.add(
+        FeedEntry(
+          0,
+          'Your big brother ${life.npc('sibling')!.name} is not impressed.',
+        ),
+      );
     }
     return life;
   }
@@ -98,6 +108,10 @@ class GameEngine {
     if (!life.alive || life.age >= sliceEndAge) return null;
     life.age += 1;
     life.usedActions.clear();
+    life.interactionCounts.clear();
+    for (final line in yearlyRelationships(life, _rngFor(life, 17))) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+    }
     final rng = _rngFor(life);
 
     _schoolMilestones(life);
@@ -111,7 +125,13 @@ class GameEngine {
     if (life.stats['health'] <= 0) {
       life.alive = false;
       life.causeOfDeath = 'Illness';
-      life.feed.add(FeedEntry(life.age, 'Your body gave out. You died at ${life.age}.', kind: 'milestone'));
+      life.feed.add(
+        FeedEntry(
+          life.age,
+          'Your body gave out. You died at ${life.age}.',
+          kind: 'milestone',
+        ),
+      );
       return null;
     }
 
@@ -137,7 +157,10 @@ class GameEngine {
   Outcome choose(Life life, Storylet event, Choice choice) {
     life.lastSeen[event.id] = life.age;
     final notes = choice.effects.apply(life);
-    final text = fill(choice.outcome.isEmpty ? choice.label : choice.outcome, life);
+    final text = fill(
+      choice.outcome.isEmpty ? choice.label : choice.outcome,
+      life,
+    );
     life.feed.add(FeedEntry(life.age, text));
     if (life.stats['health'] <= 0) {
       life.alive = false;
@@ -195,5 +218,15 @@ class GameEngine {
     final text = fill(result.text, life);
     life.feed.add(FeedEntry(life.age, text, kind: 'action'));
     return ActionResult(text, result.notes);
+  }
+
+  // ---------- Person interactions (People tab, action search) ----------
+
+  ActionResult interact(Life life, Npc npc, Interaction i) {
+    final rng = _rngFor(life, i.key(npc).hashCode);
+    final r = runInteraction(life, npc, i, rng);
+    final text = fill(r.text, life);
+    life.feed.add(FeedEntry(life.age, text, kind: 'action'));
+    return ActionResult(text, r.notes);
   }
 }

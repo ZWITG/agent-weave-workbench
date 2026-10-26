@@ -1,239 +1,1646 @@
 [
-  {"id": "first_word", "minAge": 1, "maxAge": 2, "weight": 20, "category": "family",
-   "text": "You're learning to talk. {mother} and {father} lean in, waiting for your first word.",
-   "choices": [
-     {"label": "Say \"Mama\"", "outcome": "Your first word was \"Mama\". {mother} cried a little.", "effects": {"bond": {"mother": 6}, "stats": {"happiness": 2}}},
-     {"label": "Say \"Dada\"", "outcome": "Your first word was \"Dada\". {father} told everyone.", "effects": {"bond": {"father": 6}, "stats": {"happiness": 2}}},
-     {"label": "Say \"No\"", "outcome": "Your first word was \"No\". It set the tone.", "effects": {"stats": {"willpower": 4}}}
-   ]},
-  {"id": "toddler_crayons", "minAge": 2, "maxAge": 4, "weight": 12, "category": "family",
-   "text": "You found the crayons. The living-room wall looks very empty.",
-   "choices": [
-     {"label": "Draw a masterpiece", "outcome": "You drew a sun with a face on the wall. {father} took a photo before scrubbing it off.", "effects": {"stats": {"creativity": 5}, "bond": {"father": 2}}},
-     {"label": "Draw on paper instead", "outcome": "You drew on paper like a tiny professional.", "effects": {"stats": {"discipline": 3}, "bond": {"mother": 3}}},
-     {"label": "Eat a crayon", "outcome": "You ate the blue one. No regrets.", "effects": {"stats": {"health": -1, "happiness": 2}}}
-   ]},
-  {"id": "sibling_toy", "minAge": 3, "maxAge": 6, "weight": 14, "category": "family", "requires": {"npcs": ["sibling"]},
-   "text": "{sibling} grabbed your favourite toy and won't give it back.",
-   "choices": [
-     {"label": "Bite him", "outcome": "You bit {sibling}. You both got sent to your rooms.", "effects": {"bond": {"sibling": -6}, "stats": {"karma": -2}, "flags": {"bit_sibling": "biting {sibling} over a toy"}}},
-     {"label": "Tell {mother}", "outcome": "{mother} made {sibling} give it back. He sulked all day.", "effects": {"bond": {"sibling": -2, "mother": 2}}},
-     {"label": "Let him have it", "outcome": "You let {sibling} keep it. He shared his biscuits later.", "effects": {"bond": {"sibling": 6}, "stats": {"karma": 3}}}
-   ]},
-  {"id": "first_day_school", "minAge": 5, "maxAge": 5, "weight": 30, "category": "school",
-   "text": "Your first day of school. A boy in a dinosaur jumper is crying by the gate.",
-   "choices": [
-     {"label": "Hold his hand", "outcome": "You held his hand. His name is Tomás, and he is now your best friend.", "effects": {"stats": {"karma": 4, "happiness": 3}, "flags": {"friend_tomas": "befriending Tomás on day one"}}},
-     {"label": "Run to the swings", "outcome": "You ran straight to the swings and claimed them.", "effects": {"stats": {"happiness": 3, "athleticism": 2}}},
-     {"label": "Cry too", "outcome": "You cried too. Solidarity.", "effects": {"stats": {"happiness": -2}}}
-   ]},
-  {"id": "show_and_tell", "minAge": 6, "maxAge": 8, "weight": 12, "category": "school",
-   "text": "It's show-and-tell. Everyone else brought a pet or a trophy.",
-   "choices": [
-     {"label": "Bring a rock", "outcome": "You gave a passionate talk about a rock. The teacher loved it.", "effects": {"stats": {"smarts": 2, "charisma": 3}}},
-     {"label": "Bring {father}'s phone", "outcome": "You showed the class {father}'s photos. Some were embarrassing.", "effects": {"bond": {"father": -4}, "stats": {"happiness": 2}}},
-     {"label": "Pretend you forgot", "outcome": "You said you forgot. Nobody noticed.", "effects": {"stats": {"charisma": -1}}}
-   ]},
-  {"id": "tomas_birthday", "minAge": 7, "maxAge": 10, "weight": 16, "category": "friends", "requires": {"flags": ["friend_tomas"]}, "remembers": "friend_tomas",
-   "text": "Tomás invites you to his birthday. The same day, the coolest kid in class has a party too.",
-   "choices": [
-     {"label": "Go to Tomás's party", "outcome": "You went to Tomás's party. He didn't stop smiling.", "effects": {"stats": {"karma": 3, "happiness": 2}, "flags": {"loyal_to_tomas": "standing by Tomás"}}},
-     {"label": "Go to the cool party", "outcome": "The cool party was fun. Tomás saw the photos.", "effects": {"stats": {"happiness": 3, "karma": -3}, "flags": {"ditched_tomas": "ditching Tomás's birthday"}, "clearFlags": ["friend_tomas"]}}
-   ]},
-  {"id": "maths_test", "minAge": 8, "maxAge": 15, "weight": 10, "once": false, "cooldown": 4, "category": "school",
-   "text": "Big maths test tomorrow. You haven't opened the book.",
-   "choices": [
-     {"label": "Study all night", "outcome": "You studied all night and passed with a good mark.", "effects": {"stats": {"smarts": 4, "health": -1, "discipline": 2}}},
-     {"label": "Copy from your neighbour", "outcome": "You copied answers. You passed, barely.", "effects": {"stats": {"karma": -3}, "flags": {"cheated_test": "cheating on a maths test"}}},
-     {"label": "Wing it", "outcome": "You winged it. The result is not going on the fridge.", "effects": {"stats": {"smarts": -1, "happiness": -2}}}
-   ]},
-  {"id": "bully", "minAge": 9, "maxAge": 14, "weight": 12, "category": "school",
-   "text": "A kid called Duarte keeps knocking your books out of your hands in the corridor.",
-   "choices": [
-     {"label": "Stand up to him", "outcome": "You told Duarte to stop, loudly, in front of everyone. He did.", "effects": {"stats": {"willpower": 5, "happiness": 3}, "flags": {"stood_up_duarte": "standing up to Duarte"}}},
-     {"label": "Tell a teacher", "outcome": "You told a teacher. Duarte got detention and a reputation.", "effects": {"stats": {"happiness": 1}}},
-     {"label": "Take another route", "outcome": "You took the long way round for the rest of the year.", "effects": {"stats": {"happiness": -3}, "flags": {"avoided_duarte": "hiding from Duarte"}}}
-   ]},
-  {"id": "pet_request", "minAge": 7, "maxAge": 12, "weight": 10, "category": "family",
-   "text": "You've been begging for a pet for months. {mother} finally sighs: \"Fine. One.\"",
-   "choices": [
-     {"label": "A dog", "outcome": "You named the dog Biscoito. He chewed everything you owned.", "effects": {"stats": {"happiness": 6, "athleticism": 2}, "flags": {"dog_biscoito": "your dog Biscoito"}}},
-     {"label": "A cat", "outcome": "The cat chose you. Then ignored you. Perfect.", "effects": {"stats": {"happiness": 4}}},
-     {"label": "A goldfish", "outcome": "The goldfish lived for eleven glorious days.", "effects": {"stats": {"happiness": -1}}}
-   ]},
-  {"id": "dog_old", "minAge": 16, "maxAge": 22, "weight": 18, "category": "family", "requires": {"flags": ["dog_biscoito"]}, "remembers": "dog_biscoito",
-   "text": "Biscoito is old now. The vet says it's time.",
-   "choices": [
-     {"label": "Be there with him", "outcome": "You held Biscoito until the end. It was the right thing.", "effects": {"stats": {"happiness": -6, "karma": 3}, "clearFlags": ["dog_biscoito"], "flags": {"lost_biscoito": "saying goodbye to Biscoito"}}},
-     {"label": "Let your parents go", "outcome": "You couldn't face it. {mother} told you he went peacefully.", "effects": {"stats": {"happiness": -4}, "clearFlags": ["dog_biscoito"]}}
-   ]},
-  {"id": "school_clique", "minAge": 12, "maxAge": 15, "weight": 14, "category": "school",
-   "text": "Secondary school is all about groups. Three of them have noticed you.",
-   "choices": [
-     {"label": "The drama kids", "outcome": "You joined the drama kids. You learned to cry on cue.", "effects": {"stats": {"charisma": 4, "creativity": 3}, "flags": {"clique_drama": "the drama crowd"}}},
-     {"label": "The athletes", "outcome": "You joined the athletes. Training at 7 a.m. became your life.", "effects": {"stats": {"athleticism": 5, "health": 2}, "flags": {"clique_sport": "the sports team"}}},
-     {"label": "The coders", "outcome": "You joined the coding club and built a terrible game.", "effects": {"stats": {"smarts": 4, "creativity": 2}, "flags": {"clique_code": "the coding club"}}}
-   ]},
-  {"id": "elective", "minAge": 13, "maxAge": 15, "weight": 14, "category": "school",
-   "text": "Time to pick an elective for next year.",
-   "choices": [
-     {"label": "Cooking", "outcome": "You chose cooking. Your first omelette was a crime scene, the second was art.", "effects": {"stats": {"creativity": 3, "happiness": 2}, "flags": {"likes_cooking": "your love of cooking"}}},
-     {"label": "Music", "outcome": "You chose music and fell for the drums. Your family did not.", "effects": {"stats": {"creativity": 4}, "bond": {"father": -2}}},
-     {"label": "Economics", "outcome": "You chose economics and started reading the business news.", "effects": {"stats": {"smarts": 3}, "flags": {"likes_business": "your head for business"}}}
-   ]},
-  {"id": "first_crush", "minAge": 13, "maxAge": 16, "weight": 12, "category": "love",
-   "text": "You can't stop thinking about someone in your class. They just smiled at you.",
-   "choices": [
-     {"label": "Write them a note", "outcome": "You wrote a note. They wrote back \"maybe\". It was the best day of the year.", "effects": {"stats": {"happiness": 5, "charisma": 2}}},
-     {"label": "Tell your friends", "outcome": "You told your friends. By lunch, the whole school knew.", "effects": {"stats": {"happiness": -3}}},
-     {"label": "Keep it secret", "outcome": "You kept it secret. Some things are just for you.", "effects": {"stats": {"willpower": 2}}}
-   ]},
-  {"id": "party_teen", "minAge": 15, "maxAge": 17, "weight": 12, "category": "friends",
-   "text": "There's a party at a friend's house. Their parents are away. {mother} thinks you're at the library.",
-   "choices": [
-     {"label": "Go to the party", "outcome": "You went. It was loud, messy and unforgettable.", "effects": {"stats": {"happiness": 4, "charisma": 2}, "flags": {"snuck_out": "sneaking out to a party"}}},
-     {"label": "Actually go to the library", "outcome": "You went to the library. Your grades thanked you.", "effects": {"stats": {"smarts": 3, "discipline": 2}}},
-     {"label": "Ask {mother} for permission", "outcome": "{mother} said yes, if you're home by eleven. You were.", "effects": {"bond": {"mother": 5}, "stats": {"happiness": 2}}}
-   ]},
-  {"id": "caught_sneaking", "minAge": 16, "maxAge": 18, "weight": 20, "category": "family", "requires": {"flags": ["snuck_out"]}, "remembers": "snuck_out",
-   "text": "{mother} found the photos from that party. She knows you weren't at the library.",
-   "choices": [
-     {"label": "Apologise", "outcome": "You apologised properly. It took a while, but she forgave you.", "effects": {"bond": {"mother": 2}, "stats": {"karma": 2}, "clearFlags": ["snuck_out"]}},
-     {"label": "Argue back", "outcome": "You argued. Doors were slammed. Nobody won.", "effects": {"bond": {"mother": -8}, "stats": {"happiness": -3}}}
-   ]},
-  {"id": "driving_test", "minAge": 17, "maxAge": 19, "weight": 14, "category": "life",
-   "text": "Driving test day. The examiner has a clipboard and no sense of humour.",
-   "choices": [
-     {"label": "Drive carefully", "outcome": "You passed first time.", "effects": {"stats": {"happiness": 4}, "flags": {"licence": "your driving licence"}}},
-     {"label": "Show off a bit", "outcome": "You failed for \"unnecessary confidence\".", "effects": {"stats": {"happiness": -3}}}
-   ]},
-  {"id": "university_choice", "minAge": 18, "maxAge": 18, "weight": 40, "category": "school",
-   "text": "School is over. What's next?",
-   "choices": [
-     {"label": "Go to university", "outcome": "You enrolled at university in {city}.", "effects": {"education": "university", "money": -3000, "flags": {"went_uni": "starting university"}, "stats": {"smarts": 3}}},
-     {"label": "Start working", "outcome": "You decided to start working straight away.", "effects": {"stats": {"discipline": 3}, "flags": {"skipped_uni": "skipping university"}}},
-     {"label": "Take a gap year", "outcome": "You took a gap year and travelled with a backpack and no plan.", "effects": {"money": -1500, "stats": {"happiness": 6, "charisma": 2}}}
-   ]},
-  {"id": "uni_major", "minAge": 18, "maxAge": 19, "weight": 30, "category": "school", "requires": {"flags": ["went_uni"]},
-   "text": "You need to choose your major.",
-   "choices": [
-     {"label": "Culinary arts", "outcome": "You chose culinary arts. Your flatmates ate very well.", "effects": {"flags": {"major_culinary": "studying culinary arts"}, "stats": {"creativity": 3}}},
-     {"label": "Law", "outcome": "You chose law. The reading list is enormous.", "effects": {"flags": {"major_law": "studying law"}, "stats": {"smarts": 3}}},
-     {"label": "Computer science", "outcome": "You chose computer science and discovered coffee.", "effects": {"flags": {"major_cs": "studying computer science"}, "stats": {"smarts": 3}}}
-   ]},
-  {"id": "uni_graduate", "minAge": 21, "maxAge": 23, "weight": 40, "category": "school", "requires": {"flags": ["went_uni"]}, "remembers": "went_uni",
-   "text": "Graduation day. {mother} brought a sign with your name on it. It is very large.",
-   "choices": [
-     {"label": "Wave at {mother}", "outcome": "You graduated and waved at {mother} from the stage.", "effects": {"education": "graduate", "bond": {"mother": 5}, "stats": {"happiness": 6}, "clearFlags": ["went_uni"], "flags": {"degree": "your degree"}}},
-     {"label": "Pretend you don't know her", "outcome": "You graduated. You pretended not to see the sign. She noticed.", "effects": {"education": "graduate", "bond": {"mother": -5}, "stats": {"happiness": 3}, "clearFlags": ["went_uni"], "flags": {"degree": "your degree"}}}
-   ]},
-  {"id": "duarte_return", "minAge": 20, "maxAge": 28, "weight": 14, "category": "life", "requires": {"flags": ["stood_up_duarte"]}, "remembers": "stood_up_duarte",
-   "text": "Duarte, the kid who knocked your books over at school, is serving you coffee. He recognises you.",
-   "choices": [
-     {"label": "Be kind", "outcome": "You chatted. He apologised for school. You tipped well.", "effects": {"stats": {"karma": 4, "happiness": 2}}},
-     {"label": "Remind him", "outcome": "You reminded him. He went red and gave you a free pastry.", "effects": {"stats": {"happiness": 3, "karma": -1}}}
-   ]},
-  {"id": "tomas_wedding", "minAge": 24, "maxAge": 30, "weight": 16, "category": "friends", "requires": {"flags": ["loyal_to_tomas"]}, "remembers": "loyal_to_tomas",
-   "text": "Tomás is getting married. He asks you to be his best person: \"You were there on day one.\"",
-   "choices": [
-     {"label": "Say yes", "outcome": "You gave a speech about a boy in a dinosaur jumper. Nobody had dry eyes.", "effects": {"stats": {"happiness": 7, "charisma": 3}}},
-     {"label": "Say you're too busy", "outcome": "You said you were too busy. He understood. Mostly.", "effects": {"stats": {"karma": -3}, "clearFlags": ["loyal_to_tomas"]}}
-   ]},
-  {"id": "tomas_cold", "minAge": 22, "maxAge": 30, "weight": 10, "category": "friends", "requires": {"flags": ["ditched_tomas"]}, "remembers": "ditched_tomas",
-   "text": "You bump into Tomás in town. He's polite, but cold. He still remembers his birthday.",
-   "choices": [
-     {"label": "Apologise, finally", "outcome": "You apologised, years late. He laughed. \"We were eight.\" You got coffee.", "effects": {"stats": {"karma": 4, "happiness": 4}, "clearFlags": ["ditched_tomas"], "flags": {"loyal_to_tomas": "making up with Tomás"}}},
-     {"label": "Keep walking", "outcome": "You nodded and kept walking.", "effects": {"stats": {"happiness": -1}}}
-   ]},
-  {"id": "job_interview_record", "minAge": 19, "maxAge": 26, "weight": 18, "category": "work", "requires": {"flags": ["caught_shoplifting"]}, "remembers": "caught_shoplifting",
-   "text": "A job interview is going well, until they ask about the shoplifting incident.",
-   "choices": [
-     {"label": "Tell the truth", "outcome": "You told the truth. They appreciated it, and offered you a trial shift.", "effects": {"stats": {"karma": 3}, "job": "Trainee", "salary": 18000}},
-     {"label": "Deny it", "outcome": "You denied it. They had the record. The interview ended there.", "effects": {"stats": {"karma": -3, "happiness": -3}}}
-   ]},
-  {"id": "first_flat", "minAge": 19, "maxAge": 25, "weight": 14, "category": "life",
-   "text": "You found your first flat. It's tiny, and the shower has opinions.",
-   "choices": [
-     {"label": "Take it", "outcome": "You moved into your first flat. You ate cereal for dinner and loved it.", "effects": {"money": -1200, "stats": {"happiness": 5, "discipline": 2}, "flags": {"own_flat": "your first flat"}}},
-     {"label": "Stay at home a bit longer", "outcome": "You stayed home and saved money. {mother} kept doing your laundry.", "effects": {"money": 2000, "bond": {"mother": 2}, "stats": {"happiness": -1}}}
-   ]},
-  {"id": "inheritance_flat", "minAge": 23, "maxAge": 27, "weight": 24, "category": "family", "requires": {"npcs": ["sibling"]},
-   "text": "Your grandmother left the family flat in {city} to you and {sibling}. He wants to sell it now. You don't.",
-   "choices": [
-     {"label": "Sue him for it", "outcome": "You took {sibling} to court and won the flat. He stopped answering your calls.", "effects": {"bond": {"sibling": -40}, "money": 15000, "flags": {"sued_sibling": "suing {sibling} over the flat"}, "npcMemory": {"sibling": "You sued me for Gran's flat."}}},
-     {"label": "Sell and split it", "outcome": "You sold the flat and split the money. Nobody was thrilled, but nobody was hurt.", "effects": {"money": 30000, "bond": {"sibling": 4}}},
-     {"label": "Give him your share", "outcome": "You signed your half over to {sibling}. He hugged you for the first time in years.", "effects": {"bond": {"sibling": 25}, "stats": {"karma": 6}, "flags": {"generous_to_sibling": "giving {sibling} the flat"}}}
-   ]},
-  {"id": "sibling_door_baby", "minAge": 27, "maxAge": 30, "weight": 40, "category": "family", "requires": {"flags": ["sued_sibling"], "npcs": ["sibling"]}, "remembers": "sued_sibling",
-   "text": "{sibling}, the brother you sued over the flat, is at your door. He is holding a baby.",
-   "choices": [
-     {"label": "Let him in", "outcome": "You let him in. He said, \"She's called Rosa. I wanted her to know her family.\" You both cried.", "effects": {"bond": {"sibling": 30}, "stats": {"happiness": 6, "karma": 4}, "clearFlags": ["sued_sibling"], "flags": {"reconciled_sibling": "making peace with {sibling}"}}},
-     {"label": "Talk at the door", "outcome": "You talked at the door. It was stiff, but it was a start.", "effects": {"bond": {"sibling": 10}}},
-     {"label": "Close the door", "outcome": "You closed the door. Later you saw the stroller tracks in the rain.", "effects": {"bond": {"sibling": -10}, "stats": {"happiness": -4, "karma": -3}}}
-   ]},
-  {"id": "sibling_generous_thanks", "minAge": 27, "maxAge": 30, "weight": 20, "category": "family", "requires": {"flags": ["generous_to_sibling"], "npcs": ["sibling"]}, "remembers": "generous_to_sibling",
-   "text": "{sibling} turned Gran's flat into a little bakery. He wants to name a bread after you.",
-   "choices": [
-     {"label": "Accept the honour", "outcome": "There is now a sourdough named after you. It sells out daily.", "effects": {"stats": {"happiness": 6}, "bond": {"sibling": 5}}},
-     {"label": "Ask for free bread instead", "outcome": "You negotiated lifetime free bread. A wise deal.", "effects": {"stats": {"happiness": 4}}}
-   ]},
-  {"id": "cooking_dream", "minAge": 22, "maxAge": 30, "weight": 14, "category": "work", "requires": {"flags": ["likes_cooking"]}, "remembers": "likes_cooking",
-   "text": "A small restaurant in {city} needs a cook. The pay is bad. The kitchen smells amazing.",
-   "choices": [
-     {"label": "Take the job", "outcome": "You started as a line cook. Your hands burn and your heart sings.", "effects": {"job": "Line cook", "salary": 19000, "stats": {"happiness": 5}, "flags": {"cook_career": "your first kitchen job"}}},
-     {"label": "Keep it a hobby", "outcome": "You kept cooking as a hobby. Your friends are grateful.", "effects": {"stats": {"happiness": 1}}}
-   ]},
-  {"id": "open_restaurant", "minAge": 26, "maxAge": 30, "weight": 20, "category": "work", "requires": {"flags": ["cook_career"]}, "remembers": "cook_career",
-   "text": "You've saved a little and there's an empty shop on your street. A restaurant of your own?",
-   "choices": [
-     {"label": "Go for it", "outcome": "You opened your own restaurant. Your name is on the door.", "effects": {"money": -8000, "job": "Restaurant owner", "salary": 26000, "stats": {"happiness": 6, "health": -2}}},
-     {"label": "Not yet", "outcome": "You decided to wait. The shop became a phone repair store.", "effects": {"stats": {"happiness": -1}}}
-   ]},
-  {"id": "startup_idea", "minAge": 21, "maxAge": 30, "weight": 10, "category": "work", "requires": {"flags": ["likes_business"]}, "remembers": "likes_business",
-   "text": "A friend pitches you a start-up idea: an app for sharing leftovers with neighbours.",
-   "choices": [
-     {"label": "Invest your savings", "outcome": "You invested. The app was clever, and so were the competitors.", "effects": {"money": -3000, "flags": {"startup_investor": "investing in LeftOver"}, "stats": {"smarts": 2}}},
-     {"label": "Pass", "outcome": "You passed. You'll never know.", "effects": {}}
-   ]},
-  {"id": "startup_result", "minAge": 24, "maxAge": 30, "weight": 24, "category": "work", "requires": {"flags": ["startup_investor"]}, "remembers": "startup_investor",
-   "text": "News about LeftOver, the start-up you invested in, is everywhere this morning.",
-   "choices": [
-     {"label": "Open the news", "outcome": "LeftOver was bought by a supermarket chain. Your share came to $22,000.", "effects": {"money": 22000, "stats": {"happiness": 8}, "clearFlags": ["startup_investor"]}}
-   ]},
-  {"id": "health_scare", "minAge": 20, "maxAge": 30, "weight": 6, "category": "health",
-   "text": "You've been exhausted for weeks. A friend says you look grey.",
-   "choices": [
-     {"label": "See a doctor", "outcome": "You saw a doctor. Low iron. A month of supplements and you felt human again.", "effects": {"money": -100, "stats": {"health": 5}}},
-     {"label": "Push through", "outcome": "You pushed through. It got worse before it got better.", "effects": {"stats": {"health": -8, "happiness": -3}}}
-   ]},
-  {"id": "parent_birthday", "minAge": 20, "maxAge": 30, "weight": 8, "once": false, "cooldown": 5, "category": "family",
-   "text": "It's {father}'s birthday this weekend.",
-   "choices": [
-     {"label": "Cook him dinner", "outcome": "You cooked {father}'s favourite. He had seconds and thirds.", "effects": {"bond": {"father": 6}, "stats": {"happiness": 2}}},
-     {"label": "Send a message", "outcome": "You sent a message with three emojis. He replied \"thank you\" with a full stop.", "effects": {"bond": {"father": -2}}}
-   ]},
-  {"id": "love_meet", "minAge": 19, "maxAge": 29, "weight": 12, "category": "love", "requires": {"notFlags": ["partner"]},
-   "text": "Someone called Amara laughs at your joke in a queue. A real laugh.",
-   "choices": [
-     {"label": "Ask for her number", "outcome": "You asked for Amara's number. She wrote it on your hand.", "effects": {"stats": {"happiness": 6}, "flags": {"partner": "meeting Amara in a queue"}}},
-     {"label": "Smile and leave", "outcome": "You smiled and left. You thought about it all week.", "effects": {"stats": {"happiness": -1}}}
-   ]},
-  {"id": "love_move_in", "minAge": 22, "maxAge": 30, "weight": 18, "category": "love", "requires": {"flags": ["partner"]}, "remembers": "partner",
-   "text": "Amara asks if you want to move in together.",
-   "choices": [
-     {"label": "Yes", "outcome": "You moved in with Amara. You argue about dishes. You're very happy.", "effects": {"stats": {"happiness": 7}, "flags": {"living_together": "moving in with Amara"}}},
-     {"label": "Not yet", "outcome": "You said not yet. She said she understood. She went quiet for a week.", "effects": {"stats": {"happiness": -2}}}
-   ]},
-  {"id": "proposal", "minAge": 25, "maxAge": 30, "weight": 20, "category": "love", "requires": {"flags": ["living_together"]}, "remembers": "living_together",
-   "text": "You've found a ring. Amara has no idea.",
-   "choices": [
-     {"label": "Propose at dinner", "outcome": "You proposed over dinner. She said yes before you finished the question.", "effects": {"stats": {"happiness": 9}, "flags": {"engaged": "your engagement"}, "money": -1500}},
-     {"label": "Wait for the perfect moment", "outcome": "You decided to wait for the perfect moment. The ring is in your sock drawer.", "effects": {}}
-   ]},
-  {"id": "found_wallet", "minAge": 10, "maxAge": 30, "weight": 6, "category": "life",
-   "text": "You find a wallet on the pavement with $300 in it.",
-   "choices": [
-     {"label": "Hand it in", "outcome": "You handed it in. The owner sent a thank-you card.", "effects": {"stats": {"karma": 6, "happiness": 2}}},
-     {"label": "Keep the cash", "outcome": "You kept the cash and binned the wallet.", "effects": {"money": 300, "stats": {"karma": -6}}}
-   ]}
+ {
+  "id": "first_word",
+  "minAge": 1,
+  "maxAge": 2,
+  "weight": 20,
+  "category": "family",
+  "text": "You're learning to talk. {mother} and {father} lean in, waiting for your first word.",
+  "choices": [
+   {
+    "label": "Say \"Mama\"",
+    "outcome": "Your first word was \"Mama\". {mother} cried a little.",
+    "effects": {
+     "bond": {
+      "mother": 6
+     },
+     "stats": {
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Say \"Dada\"",
+    "outcome": "Your first word was \"Dada\". {father} told everyone.",
+    "effects": {
+     "bond": {
+      "father": 6
+     },
+     "stats": {
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Say \"No\"",
+    "outcome": "Your first word was \"No\". It set the tone.",
+    "effects": {
+     "stats": {
+      "willpower": 4
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "toddler_crayons",
+  "minAge": 2,
+  "maxAge": 4,
+  "weight": 12,
+  "category": "family",
+  "text": "You found the crayons. The living-room wall looks very empty.",
+  "choices": [
+   {
+    "label": "Draw a masterpiece",
+    "outcome": "You drew a sun with a face on the wall. {father} took a photo before scrubbing it off.",
+    "effects": {
+     "stats": {
+      "creativity": 5
+     },
+     "bond": {
+      "father": 2
+     }
+    }
+   },
+   {
+    "label": "Draw on paper instead",
+    "outcome": "You drew on paper like a tiny professional.",
+    "effects": {
+     "stats": {
+      "discipline": 3
+     },
+     "bond": {
+      "mother": 3
+     }
+    }
+   },
+   {
+    "label": "Eat a crayon",
+    "outcome": "You ate the blue one. No regrets.",
+    "effects": {
+     "stats": {
+      "health": -1,
+      "happiness": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "sibling_toy",
+  "minAge": 3,
+  "maxAge": 6,
+  "weight": 14,
+  "category": "family",
+  "requires": {
+   "npcs": [
+    "sibling"
+   ]
+  },
+  "text": "{sibling} grabbed your favourite toy and won't give it back.",
+  "choices": [
+   {
+    "label": "Bite him",
+    "outcome": "You bit {sibling}. You both got sent to your rooms.",
+    "effects": {
+     "bond": {
+      "sibling": -6
+     },
+     "stats": {
+      "karma": -2
+     },
+     "flags": {
+      "bit_sibling": "biting {sibling} over a toy"
+     }
+    }
+   },
+   {
+    "label": "Tell {mother}",
+    "outcome": "{mother} made {sibling} give it back. He sulked all day.",
+    "effects": {
+     "bond": {
+      "sibling": -2,
+      "mother": 2
+     }
+    }
+   },
+   {
+    "label": "Let him have it",
+    "outcome": "You let {sibling} keep it. He shared his biscuits later.",
+    "effects": {
+     "bond": {
+      "sibling": 6
+     },
+     "stats": {
+      "karma": 3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "first_day_school",
+  "minAge": 5,
+  "maxAge": 5,
+  "weight": 30,
+  "category": "school",
+  "text": "Your first day of school. A boy in a dinosaur jumper is crying by the gate.",
+  "choices": [
+   {
+    "label": "Hold his hand",
+    "outcome": "You held his hand. His name is Tomás, and he is now your best friend.",
+    "effects": {
+     "stats": {
+      "karma": 4,
+      "happiness": 3
+     },
+     "flags": {
+      "friend_tomas": "befriending Tomás on day one"
+     },
+     "addNpcs": [
+      {
+       "id": "tomas",
+       "role": "Best friend",
+       "name": "Tomás",
+       "circle": "Friends",
+       "bond": 72
+      }
+     ]
+    }
+   },
+   {
+    "label": "Run to the swings",
+    "outcome": "You ran straight to the swings and claimed them.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "athleticism": 2
+     }
+    }
+   },
+   {
+    "label": "Cry too",
+    "outcome": "You cried too. Solidarity.",
+    "effects": {
+     "stats": {
+      "happiness": -2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "show_and_tell",
+  "minAge": 6,
+  "maxAge": 8,
+  "weight": 12,
+  "category": "school",
+  "text": "It's show-and-tell. Everyone else brought a pet or a trophy.",
+  "choices": [
+   {
+    "label": "Bring a rock",
+    "outcome": "You gave a passionate talk about a rock. The teacher loved it.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "charisma": 3
+     }
+    }
+   },
+   {
+    "label": "Bring {father}'s phone",
+    "outcome": "You showed the class {father}'s photos. Some were embarrassing.",
+    "effects": {
+     "bond": {
+      "father": -4
+     },
+     "stats": {
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Pretend you forgot",
+    "outcome": "You said you forgot. Nobody noticed.",
+    "effects": {
+     "stats": {
+      "charisma": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "tomas_birthday",
+  "minAge": 7,
+  "maxAge": 10,
+  "weight": 16,
+  "category": "friends",
+  "requires": {
+   "flags": [
+    "friend_tomas"
+   ],
+   "npcs": [
+    "tomas"
+   ]
+  },
+  "remembers": "friend_tomas",
+  "text": "Tomás invites you to his birthday. The same day, the coolest kid in class has a party too.",
+  "choices": [
+   {
+    "label": "Go to Tomás's party",
+    "outcome": "You went to Tomás's party. He didn't stop smiling.",
+    "effects": {
+     "stats": {
+      "karma": 3,
+      "happiness": 2
+     },
+     "flags": {
+      "loyal_to_tomas": "standing by Tomás"
+     },
+     "bond": {
+      "tomas": 8
+     }
+    }
+   },
+   {
+    "label": "Go to the cool party",
+    "outcome": "The cool party was fun. Tomás saw the photos.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "karma": -3
+     },
+     "flags": {
+      "ditched_tomas": "ditching Tomás's birthday"
+     },
+     "clearFlags": [
+      "friend_tomas"
+     ],
+     "bond": {
+      "tomas": -12
+     },
+     "npcMemory": {
+      "tomas": {
+       "text": "skipping my birthday for the cool party",
+       "valence": -2,
+       "intensity": 3,
+       "tags": [
+        "absence",
+        "betrayal"
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "maths_test",
+  "minAge": 8,
+  "maxAge": 15,
+  "weight": 10,
+  "once": false,
+  "cooldown": 4,
+  "category": "school",
+  "text": "Big maths test tomorrow. You haven't opened the book.",
+  "choices": [
+   {
+    "label": "Study all night",
+    "outcome": "You studied all night and passed with a good mark.",
+    "effects": {
+     "stats": {
+      "smarts": 4,
+      "health": -1,
+      "discipline": 2
+     }
+    }
+   },
+   {
+    "label": "Copy from your neighbour",
+    "outcome": "You copied answers. You passed, barely.",
+    "effects": {
+     "stats": {
+      "karma": -3
+     },
+     "flags": {
+      "cheated_test": "cheating on a maths test"
+     }
+    }
+   },
+   {
+    "label": "Wing it",
+    "outcome": "You winged it. The result is not going on the fridge.",
+    "effects": {
+     "stats": {
+      "smarts": -1,
+      "happiness": -2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "bully",
+  "minAge": 9,
+  "maxAge": 14,
+  "weight": 12,
+  "category": "school",
+  "text": "A kid called Duarte keeps knocking your books out of your hands in the corridor.",
+  "choices": [
+   {
+    "label": "Stand up to him",
+    "outcome": "You told Duarte to stop, loudly, in front of everyone. He did.",
+    "effects": {
+     "stats": {
+      "willpower": 5,
+      "happiness": 3
+     },
+     "flags": {
+      "stood_up_duarte": "standing up to Duarte"
+     }
+    }
+   },
+   {
+    "label": "Tell a teacher",
+    "outcome": "You told a teacher. Duarte got detention and a reputation.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   },
+   {
+    "label": "Take another route",
+    "outcome": "You took the long way round for the rest of the year.",
+    "effects": {
+     "stats": {
+      "happiness": -3
+     },
+     "flags": {
+      "avoided_duarte": "hiding from Duarte"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "pet_request",
+  "minAge": 7,
+  "maxAge": 12,
+  "weight": 10,
+  "category": "family",
+  "text": "You've been begging for a pet for months. {mother} finally sighs: \"Fine. One.\"",
+  "choices": [
+   {
+    "label": "A dog",
+    "outcome": "You named the dog Biscoito. He chewed everything you owned.",
+    "effects": {
+     "stats": {
+      "happiness": 6,
+      "athleticism": 2
+     },
+     "flags": {
+      "dog_biscoito": "your dog Biscoito"
+     }
+    }
+   },
+   {
+    "label": "A cat",
+    "outcome": "The cat chose you. Then ignored you. Perfect.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     }
+    }
+   },
+   {
+    "label": "A goldfish",
+    "outcome": "The goldfish lived for eleven glorious days.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "dog_old",
+  "minAge": 16,
+  "maxAge": 22,
+  "weight": 18,
+  "category": "family",
+  "requires": {
+   "flags": [
+    "dog_biscoito"
+   ]
+  },
+  "remembers": "dog_biscoito",
+  "text": "Biscoito is old now. The vet says it's time.",
+  "choices": [
+   {
+    "label": "Be there with him",
+    "outcome": "You held Biscoito until the end. It was the right thing.",
+    "effects": {
+     "stats": {
+      "happiness": -6,
+      "karma": 3
+     },
+     "clearFlags": [
+      "dog_biscoito"
+     ],
+     "flags": {
+      "lost_biscoito": "saying goodbye to Biscoito"
+     }
+    }
+   },
+   {
+    "label": "Let your parents go",
+    "outcome": "You couldn't face it. {mother} told you he went peacefully.",
+    "effects": {
+     "stats": {
+      "happiness": -4
+     },
+     "clearFlags": [
+      "dog_biscoito"
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "id": "school_clique",
+  "minAge": 12,
+  "maxAge": 15,
+  "weight": 14,
+  "category": "school",
+  "text": "Secondary school is all about groups. Three of them have noticed you.",
+  "choices": [
+   {
+    "label": "The drama kids",
+    "outcome": "You joined the drama kids. You learned to cry on cue.",
+    "effects": {
+     "stats": {
+      "charisma": 4,
+      "creativity": 3
+     },
+     "flags": {
+      "clique_drama": "the drama crowd"
+     }
+    }
+   },
+   {
+    "label": "The athletes",
+    "outcome": "You joined the athletes. Training at 7 a.m. became your life.",
+    "effects": {
+     "stats": {
+      "athleticism": 5,
+      "health": 2
+     },
+     "flags": {
+      "clique_sport": "the sports team"
+     }
+    }
+   },
+   {
+    "label": "The coders",
+    "outcome": "You joined the coding club and built a terrible game.",
+    "effects": {
+     "stats": {
+      "smarts": 4,
+      "creativity": 2
+     },
+     "flags": {
+      "clique_code": "the coding club"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "elective",
+  "minAge": 13,
+  "maxAge": 15,
+  "weight": 14,
+  "category": "school",
+  "text": "Time to pick an elective for next year.",
+  "choices": [
+   {
+    "label": "Cooking",
+    "outcome": "You chose cooking. Your first omelette was a crime scene, the second was art.",
+    "effects": {
+     "stats": {
+      "creativity": 3,
+      "happiness": 2
+     },
+     "flags": {
+      "likes_cooking": "your love of cooking"
+     }
+    }
+   },
+   {
+    "label": "Music",
+    "outcome": "You chose music and fell for the drums. Your family did not.",
+    "effects": {
+     "stats": {
+      "creativity": 4
+     },
+     "bond": {
+      "father": -2
+     }
+    }
+   },
+   {
+    "label": "Economics",
+    "outcome": "You chose economics and started reading the business news.",
+    "effects": {
+     "stats": {
+      "smarts": 3
+     },
+     "flags": {
+      "likes_business": "your head for business"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "first_crush",
+  "minAge": 13,
+  "maxAge": 16,
+  "weight": 12,
+  "category": "love",
+  "text": "You can't stop thinking about someone in your class. They just smiled at you.",
+  "choices": [
+   {
+    "label": "Write them a note",
+    "outcome": "You wrote a note. They wrote back \"maybe\". It was the best day of the year.",
+    "effects": {
+     "stats": {
+      "happiness": 5,
+      "charisma": 2
+     }
+    }
+   },
+   {
+    "label": "Tell your friends",
+    "outcome": "You told your friends. By lunch, the whole school knew.",
+    "effects": {
+     "stats": {
+      "happiness": -3
+     }
+    }
+   },
+   {
+    "label": "Keep it secret",
+    "outcome": "You kept it secret. Some things are just for you.",
+    "effects": {
+     "stats": {
+      "willpower": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "party_teen",
+  "minAge": 15,
+  "maxAge": 17,
+  "weight": 12,
+  "category": "friends",
+  "text": "There's a party at a friend's house. Their parents are away. {mother} thinks you're at the library.",
+  "choices": [
+   {
+    "label": "Go to the party",
+    "outcome": "You went. It was loud, messy and unforgettable.",
+    "effects": {
+     "stats": {
+      "happiness": 4,
+      "charisma": 2
+     },
+     "flags": {
+      "snuck_out": "sneaking out to a party"
+     }
+    }
+   },
+   {
+    "label": "Actually go to the library",
+    "outcome": "You went to the library. Your grades thanked you.",
+    "effects": {
+     "stats": {
+      "smarts": 3,
+      "discipline": 2
+     }
+    }
+   },
+   {
+    "label": "Ask {mother} for permission",
+    "outcome": "{mother} said yes, if you're home by eleven. You were.",
+    "effects": {
+     "bond": {
+      "mother": 5
+     },
+     "stats": {
+      "happiness": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "caught_sneaking",
+  "minAge": 16,
+  "maxAge": 18,
+  "weight": 20,
+  "category": "family",
+  "requires": {
+   "flags": [
+    "snuck_out"
+   ]
+  },
+  "remembers": "snuck_out",
+  "text": "{mother} found the photos from that party. She knows you weren't at the library.",
+  "choices": [
+   {
+    "label": "Apologise",
+    "outcome": "You apologised properly. It took a while, but she forgave you.",
+    "effects": {
+     "bond": {
+      "mother": 2
+     },
+     "stats": {
+      "karma": 2
+     },
+     "clearFlags": [
+      "snuck_out"
+     ]
+    }
+   },
+   {
+    "label": "Argue back",
+    "outcome": "You argued. Doors were slammed. Nobody won.",
+    "effects": {
+     "bond": {
+      "mother": -8
+     },
+     "stats": {
+      "happiness": -3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "driving_test",
+  "minAge": 17,
+  "maxAge": 19,
+  "weight": 14,
+  "category": "life",
+  "text": "Driving test day. The examiner has a clipboard and no sense of humour.",
+  "choices": [
+   {
+    "label": "Drive carefully",
+    "outcome": "You passed first time.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     },
+     "flags": {
+      "licence": "your driving licence"
+     }
+    }
+   },
+   {
+    "label": "Show off a bit",
+    "outcome": "You failed for \"unnecessary confidence\".",
+    "effects": {
+     "stats": {
+      "happiness": -3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "university_choice",
+  "minAge": 18,
+  "maxAge": 18,
+  "weight": 40,
+  "category": "school",
+  "text": "School is over. What's next?",
+  "choices": [
+   {
+    "label": "Go to university",
+    "outcome": "You enrolled at university in {city}.",
+    "effects": {
+     "education": "university",
+     "money": -3000,
+     "flags": {
+      "went_uni": "starting university"
+     },
+     "stats": {
+      "smarts": 3
+     }
+    }
+   },
+   {
+    "label": "Start working",
+    "outcome": "You decided to start working straight away.",
+    "effects": {
+     "stats": {
+      "discipline": 3
+     },
+     "flags": {
+      "skipped_uni": "skipping university"
+     }
+    }
+   },
+   {
+    "label": "Take a gap year",
+    "outcome": "You took a gap year and travelled with a backpack and no plan.",
+    "effects": {
+     "money": -1500,
+     "stats": {
+      "happiness": 6,
+      "charisma": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "uni_major",
+  "minAge": 18,
+  "maxAge": 19,
+  "weight": 30,
+  "category": "school",
+  "requires": {
+   "flags": [
+    "went_uni"
+   ]
+  },
+  "text": "You need to choose your major.",
+  "choices": [
+   {
+    "label": "Culinary arts",
+    "outcome": "You chose culinary arts. Your flatmates ate very well.",
+    "effects": {
+     "flags": {
+      "major_culinary": "studying culinary arts"
+     },
+     "stats": {
+      "creativity": 3
+     }
+    }
+   },
+   {
+    "label": "Law",
+    "outcome": "You chose law. The reading list is enormous.",
+    "effects": {
+     "flags": {
+      "major_law": "studying law"
+     },
+     "stats": {
+      "smarts": 3
+     }
+    }
+   },
+   {
+    "label": "Computer science",
+    "outcome": "You chose computer science and discovered coffee.",
+    "effects": {
+     "flags": {
+      "major_cs": "studying computer science"
+     },
+     "stats": {
+      "smarts": 3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "uni_graduate",
+  "minAge": 21,
+  "maxAge": 23,
+  "weight": 40,
+  "category": "school",
+  "requires": {
+   "flags": [
+    "went_uni"
+   ]
+  },
+  "remembers": "went_uni",
+  "text": "Graduation day. {mother} brought a sign with your name on it. It is very large.",
+  "choices": [
+   {
+    "label": "Wave at {mother}",
+    "outcome": "You graduated and waved at {mother} from the stage.",
+    "effects": {
+     "education": "graduate",
+     "bond": {
+      "mother": 5
+     },
+     "stats": {
+      "happiness": 6
+     },
+     "clearFlags": [
+      "went_uni"
+     ],
+     "flags": {
+      "degree": "your degree"
+     }
+    }
+   },
+   {
+    "label": "Pretend you don't know her",
+    "outcome": "You graduated. You pretended not to see the sign. She noticed.",
+    "effects": {
+     "education": "graduate",
+     "bond": {
+      "mother": -5
+     },
+     "stats": {
+      "happiness": 3
+     },
+     "clearFlags": [
+      "went_uni"
+     ],
+     "flags": {
+      "degree": "your degree"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "duarte_return",
+  "minAge": 20,
+  "maxAge": 28,
+  "weight": 14,
+  "category": "life",
+  "requires": {
+   "flags": [
+    "stood_up_duarte"
+   ]
+  },
+  "remembers": "stood_up_duarte",
+  "text": "Duarte, the kid who knocked your books over at school, is serving you coffee. He recognises you.",
+  "choices": [
+   {
+    "label": "Be kind",
+    "outcome": "You chatted. He apologised for school. You tipped well.",
+    "effects": {
+     "stats": {
+      "karma": 4,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Remind him",
+    "outcome": "You reminded him. He went red and gave you a free pastry.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "karma": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "tomas_wedding",
+  "minAge": 24,
+  "maxAge": 30,
+  "weight": 16,
+  "category": "friends",
+  "requires": {
+   "flags": [
+    "loyal_to_tomas"
+   ],
+   "npcs": [
+    "tomas"
+   ]
+  },
+  "remembers": "loyal_to_tomas",
+  "text": "Tomás is getting married. He asks you to be his best person: \"You were there on day one.\"",
+  "choices": [
+   {
+    "label": "Say yes",
+    "outcome": "You gave a speech about a boy in a dinosaur jumper. Nobody had dry eyes.",
+    "effects": {
+     "stats": {
+      "happiness": 7,
+      "charisma": 3
+     },
+     "bond": {
+      "tomas": 12
+     }
+    }
+   },
+   {
+    "label": "Say you're too busy",
+    "outcome": "You said you were too busy. He understood. Mostly.",
+    "effects": {
+     "stats": {
+      "karma": -3
+     },
+     "clearFlags": [
+      "loyal_to_tomas"
+     ],
+     "bond": {
+      "tomas": -10
+     },
+     "npcMemory": {
+      "tomas": {
+       "text": "missing my wedding",
+       "valence": -3,
+       "intensity": 4,
+       "tags": [
+        "absence"
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "tomas_cold",
+  "minAge": 22,
+  "maxAge": 30,
+  "weight": 10,
+  "category": "friends",
+  "requires": {
+   "flags": [
+    "ditched_tomas"
+   ],
+   "npcs": [
+    "tomas"
+   ]
+  },
+  "remembers": "ditched_tomas",
+  "text": "You bump into Tomás in town. He's polite, but cold. He still remembers his birthday.",
+  "choices": [
+   {
+    "label": "Apologise, finally",
+    "outcome": "You apologised, years late. He laughed. \"We were eight.\" You got coffee.",
+    "effects": {
+     "stats": {
+      "karma": 4,
+      "happiness": 4
+     },
+     "clearFlags": [
+      "ditched_tomas"
+     ],
+     "flags": {
+      "loyal_to_tomas": "making up with Tomás"
+     },
+     "bond": {
+      "tomas": 15
+     },
+     "resolveGrudges": [
+      "tomas"
+     ]
+    }
+   },
+   {
+    "label": "Keep walking",
+    "outcome": "You nodded and kept walking.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "job_interview_record",
+  "minAge": 19,
+  "maxAge": 26,
+  "weight": 18,
+  "category": "work",
+  "requires": {
+   "flags": [
+    "caught_shoplifting"
+   ]
+  },
+  "remembers": "caught_shoplifting",
+  "text": "A job interview is going well, until they ask about the shoplifting incident.",
+  "choices": [
+   {
+    "label": "Tell the truth",
+    "outcome": "You told the truth. They appreciated it, and offered you a trial shift.",
+    "effects": {
+     "stats": {
+      "karma": 3
+     },
+     "job": "Trainee",
+     "salary": 18000
+    }
+   },
+   {
+    "label": "Deny it",
+    "outcome": "You denied it. They had the record. The interview ended there.",
+    "effects": {
+     "stats": {
+      "karma": -3,
+      "happiness": -3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "first_flat",
+  "minAge": 19,
+  "maxAge": 25,
+  "weight": 14,
+  "category": "life",
+  "text": "You found your first flat. It's tiny, and the shower has opinions.",
+  "choices": [
+   {
+    "label": "Take it",
+    "outcome": "You moved into your first flat. You ate cereal for dinner and loved it.",
+    "effects": {
+     "money": -1200,
+     "stats": {
+      "happiness": 5,
+      "discipline": 2
+     },
+     "flags": {
+      "own_flat": "your first flat"
+     }
+    }
+   },
+   {
+    "label": "Stay at home a bit longer",
+    "outcome": "You stayed home and saved money. {mother} kept doing your laundry.",
+    "effects": {
+     "money": 2000,
+     "bond": {
+      "mother": 2
+     },
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "inheritance_flat",
+  "minAge": 23,
+  "maxAge": 27,
+  "weight": 24,
+  "category": "family",
+  "requires": {
+   "npcs": [
+    "sibling"
+   ]
+  },
+  "text": "Your grandmother left the family flat in {city} to you and {sibling}. He wants to sell it now. You don't.",
+  "choices": [
+   {
+    "label": "Sue him for it",
+    "outcome": "You took {sibling} to court and won the flat. He stopped answering your calls.",
+    "effects": {
+     "bond": {
+      "sibling": -40
+     },
+     "money": 15000,
+     "flags": {
+      "sued_sibling": "suing {sibling} over the flat"
+     },
+     "npcMemory": {
+      "sibling": {
+       "text": "suing me for Gran's flat",
+       "valence": -3,
+       "intensity": 5,
+       "tags": [
+        "money",
+        "betrayal"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "label": "Sell and split it",
+    "outcome": "You sold the flat and split the money. Nobody was thrilled, but nobody was hurt.",
+    "effects": {
+     "money": 30000,
+     "bond": {
+      "sibling": 4
+     }
+    }
+   },
+   {
+    "label": "Give him your share",
+    "outcome": "You signed your half over to {sibling}. He hugged you for the first time in years.",
+    "effects": {
+     "bond": {
+      "sibling": 25
+     },
+     "stats": {
+      "karma": 6
+     },
+     "flags": {
+      "generous_to_sibling": "giving {sibling} the flat"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "sibling_door_baby",
+  "minAge": 27,
+  "maxAge": 30,
+  "weight": 40,
+  "category": "family",
+  "requires": {
+   "flags": [
+    "sued_sibling"
+   ],
+   "npcs": [
+    "sibling"
+   ]
+  },
+  "remembers": "sued_sibling",
+  "text": "{sibling}, the brother you sued over the flat, is at your door. He is holding a baby.",
+  "choices": [
+   {
+    "label": "Let him in",
+    "outcome": "You let him in. He said, \"She's called Rosa. I wanted her to know her family.\" You both cried.",
+    "effects": {
+     "bond": {
+      "sibling": 30
+     },
+     "stats": {
+      "happiness": 6,
+      "karma": 4
+     },
+     "clearFlags": [
+      "sued_sibling"
+     ],
+     "flags": {
+      "reconciled_sibling": "making peace with {sibling}"
+     },
+     "resolveGrudges": [
+      "sibling"
+     ],
+     "npcMemory": {
+      "sibling": {
+       "text": "letting me and Rosa in",
+       "valence": 3,
+       "intensity": 4,
+       "tags": [
+        "repair"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "label": "Talk at the door",
+    "outcome": "You talked at the door. It was stiff, but it was a start.",
+    "effects": {
+     "bond": {
+      "sibling": 10
+     }
+    }
+   },
+   {
+    "label": "Close the door",
+    "outcome": "You closed the door. Later you saw the stroller tracks in the rain.",
+    "effects": {
+     "bond": {
+      "sibling": -10
+     },
+     "stats": {
+      "happiness": -4,
+      "karma": -3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "sibling_generous_thanks",
+  "minAge": 27,
+  "maxAge": 30,
+  "weight": 20,
+  "category": "family",
+  "requires": {
+   "flags": [
+    "generous_to_sibling"
+   ],
+   "npcs": [
+    "sibling"
+   ]
+  },
+  "remembers": "generous_to_sibling",
+  "text": "{sibling} turned Gran's flat into a little bakery. He wants to name a bread after you.",
+  "choices": [
+   {
+    "label": "Accept the honour",
+    "outcome": "There is now a sourdough named after you. It sells out daily.",
+    "effects": {
+     "stats": {
+      "happiness": 6
+     },
+     "bond": {
+      "sibling": 5
+     }
+    }
+   },
+   {
+    "label": "Ask for free bread instead",
+    "outcome": "You negotiated lifetime free bread. A wise deal.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "cooking_dream",
+  "minAge": 22,
+  "maxAge": 30,
+  "weight": 14,
+  "category": "work",
+  "requires": {
+   "flags": [
+    "likes_cooking"
+   ]
+  },
+  "remembers": "likes_cooking",
+  "text": "A small restaurant in {city} needs a cook. The pay is bad. The kitchen smells amazing.",
+  "choices": [
+   {
+    "label": "Take the job",
+    "outcome": "You started as a line cook. Your hands burn and your heart sings.",
+    "effects": {
+     "job": "Line cook",
+     "salary": 19000,
+     "stats": {
+      "happiness": 5
+     },
+     "flags": {
+      "cook_career": "your first kitchen job"
+     }
+    }
+   },
+   {
+    "label": "Keep it a hobby",
+    "outcome": "You kept cooking as a hobby. Your friends are grateful.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "open_restaurant",
+  "minAge": 26,
+  "maxAge": 30,
+  "weight": 20,
+  "category": "work",
+  "requires": {
+   "flags": [
+    "cook_career"
+   ]
+  },
+  "remembers": "cook_career",
+  "text": "You've saved a little and there's an empty shop on your street. A restaurant of your own?",
+  "choices": [
+   {
+    "label": "Go for it",
+    "outcome": "You opened your own restaurant. Your name is on the door.",
+    "effects": {
+     "money": -8000,
+     "job": "Restaurant owner",
+     "salary": 26000,
+     "stats": {
+      "happiness": 6,
+      "health": -2
+     }
+    }
+   },
+   {
+    "label": "Not yet",
+    "outcome": "You decided to wait. The shop became a phone repair store.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "startup_idea",
+  "minAge": 21,
+  "maxAge": 30,
+  "weight": 10,
+  "category": "work",
+  "requires": {
+   "flags": [
+    "likes_business"
+   ]
+  },
+  "remembers": "likes_business",
+  "text": "A friend pitches you a start-up idea: an app for sharing leftovers with neighbours.",
+  "choices": [
+   {
+    "label": "Invest your savings",
+    "outcome": "You invested. The app was clever, and so were the competitors.",
+    "effects": {
+     "money": -3000,
+     "flags": {
+      "startup_investor": "investing in LeftOver"
+     },
+     "stats": {
+      "smarts": 2
+     }
+    }
+   },
+   {
+    "label": "Pass",
+    "outcome": "You passed. You'll never know.",
+    "effects": {}
+   }
+  ]
+ },
+ {
+  "id": "startup_result",
+  "minAge": 24,
+  "maxAge": 30,
+  "weight": 24,
+  "category": "work",
+  "requires": {
+   "flags": [
+    "startup_investor"
+   ]
+  },
+  "remembers": "startup_investor",
+  "text": "News about LeftOver, the start-up you invested in, is everywhere this morning.",
+  "choices": [
+   {
+    "label": "Open the news",
+    "outcome": "LeftOver was bought by a supermarket chain. Your share came to $22,000.",
+    "effects": {
+     "money": 22000,
+     "stats": {
+      "happiness": 8
+     },
+     "clearFlags": [
+      "startup_investor"
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "id": "health_scare",
+  "minAge": 20,
+  "maxAge": 30,
+  "weight": 6,
+  "category": "health",
+  "text": "You've been exhausted for weeks. A friend says you look grey.",
+  "choices": [
+   {
+    "label": "See a doctor",
+    "outcome": "You saw a doctor. Low iron. A month of supplements and you felt human again.",
+    "effects": {
+     "money": -100,
+     "stats": {
+      "health": 5
+     }
+    }
+   },
+   {
+    "label": "Push through",
+    "outcome": "You pushed through. It got worse before it got better.",
+    "effects": {
+     "stats": {
+      "health": -8,
+      "happiness": -3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "parent_birthday",
+  "minAge": 20,
+  "maxAge": 30,
+  "weight": 8,
+  "once": false,
+  "cooldown": 5,
+  "category": "family",
+  "text": "It's {father}'s birthday this weekend.",
+  "choices": [
+   {
+    "label": "Cook him dinner",
+    "outcome": "You cooked {father}'s favourite. He had seconds and thirds.",
+    "effects": {
+     "bond": {
+      "father": 6
+     },
+     "stats": {
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Send a message",
+    "outcome": "You sent a message with three emojis. He replied \"thank you\" with a full stop.",
+    "effects": {
+     "bond": {
+      "father": -2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "love_meet",
+  "minAge": 19,
+  "maxAge": 29,
+  "weight": 12,
+  "category": "love",
+  "requires": {
+   "notFlags": [
+    "partner"
+   ]
+  },
+  "text": "Someone called Amara laughs at your joke in a queue. A real laugh.",
+  "choices": [
+   {
+    "label": "Ask for her number",
+    "outcome": "You asked for Amara's number. She wrote it on your hand.",
+    "effects": {
+     "stats": {
+      "happiness": 6
+     },
+     "flags": {
+      "partner": "meeting Amara in a queue"
+     },
+     "addNpcs": [
+      {
+       "id": "amara",
+       "role": "Partner",
+       "name": "Amara",
+       "circle": "Partner",
+       "bond": 66,
+       "ageOffset": -1
+      }
+     ]
+    }
+   },
+   {
+    "label": "Smile and leave",
+    "outcome": "You smiled and left. You thought about it all week.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "love_move_in",
+  "minAge": 22,
+  "maxAge": 30,
+  "weight": 18,
+  "category": "love",
+  "requires": {
+   "flags": [
+    "partner"
+   ],
+   "npcs": [
+    "amara"
+   ]
+  },
+  "remembers": "partner",
+  "text": "Amara asks if you want to move in together.",
+  "choices": [
+   {
+    "label": "Yes",
+    "outcome": "You moved in with Amara. You argue about dishes. You're very happy.",
+    "effects": {
+     "stats": {
+      "happiness": 7
+     },
+     "flags": {
+      "living_together": "moving in with Amara"
+     },
+     "bond": {
+      "amara": 10
+     }
+    }
+   },
+   {
+    "label": "Not yet",
+    "outcome": "You said not yet. She said she understood. She went quiet for a week.",
+    "effects": {
+     "stats": {
+      "happiness": -2
+     },
+     "bond": {
+      "amara": -6
+     },
+     "npcMemory": {
+      "amara": {
+       "text": "you not being ready to move in",
+       "valence": -1,
+       "intensity": 2,
+       "tags": [
+        "commitment"
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "proposal",
+  "minAge": 25,
+  "maxAge": 30,
+  "weight": 20,
+  "category": "love",
+  "requires": {
+   "flags": [
+    "living_together"
+   ],
+   "npcs": [
+    "amara"
+   ]
+  },
+  "remembers": "living_together",
+  "text": "You've found a ring. Amara has no idea.",
+  "choices": [
+   {
+    "label": "Propose at dinner",
+    "outcome": "You proposed over dinner. She said yes before you finished the question.",
+    "effects": {
+     "stats": {
+      "happiness": 9
+     },
+     "flags": {
+      "engaged": "your engagement"
+     },
+     "money": -1500,
+     "bond": {
+      "amara": 15
+     }
+    }
+   },
+   {
+    "label": "Wait for the perfect moment",
+    "outcome": "You decided to wait for the perfect moment. The ring is in your sock drawer.",
+    "effects": {}
+   }
+  ]
+ },
+ {
+  "id": "found_wallet",
+  "minAge": 10,
+  "maxAge": 30,
+  "weight": 6,
+  "category": "life",
+  "text": "You find a wallet on the pavement with $300 in it.",
+  "choices": [
+   {
+    "label": "Hand it in",
+    "outcome": "You handed it in. The owner sent a thank-you card.",
+    "effects": {
+     "stats": {
+      "karma": 6,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Keep the cash",
+    "outcome": "You kept the cash and binned the wallet.",
+    "effects": {
+     "money": 300,
+     "stats": {
+      "karma": -6
+     }
+    }
+   }
+  ]
+ }
 ]

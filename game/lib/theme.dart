@@ -16,15 +16,19 @@ class NF {
   static const orange = Color(0xFFFFB86B);
   static const danger = Color(0xFFFF8A8A);
 
-  static TextStyle sora(double size, {FontWeight weight = FontWeight.w400, Color color = text, double? height}) =>
-      TextStyle(
-        fontFamily: 'Sora',
-        fontSize: size,
-        fontWeight: weight,
-        fontVariations: [FontVariation('wght', weight.value.toDouble())],
-        color: color,
-        height: height,
-      );
+  static TextStyle sora(
+    double size, {
+    FontWeight weight = FontWeight.w400,
+    Color color = text,
+    double? height,
+  }) => TextStyle(
+    fontFamily: 'Sora',
+    fontSize: size,
+    fontWeight: weight,
+    fontVariations: [FontVariation('wght', weight.value.toDouble())],
+    color: color,
+    height: height,
+  );
 
   static ThemeData theme() {
     final base = ThemeData(
@@ -44,17 +48,33 @@ class NF {
       ),
     );
     return base.copyWith(
-      textTheme: base.textTheme.apply(bodyColor: text, displayColor: text, fontFamily: 'Sora'),
+      textTheme: base.textTheme.apply(
+        bodyColor: text,
+        displayColor: text,
+        fontFamily: 'Sora',
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: nav,
         indicatorColor: surface2,
-        labelTextStyle: WidgetStateProperty.resolveWith((s) => sora(12,
-            weight: s.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w400,
-            color: s.contains(WidgetState.selected) ? orange : muted)),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (s) => sora(
+            12,
+            weight: s.contains(WidgetState.selected)
+                ? FontWeight.w700
+                : FontWeight.w400,
+            color: s.contains(WidgetState.selected) ? orange : muted,
+          ),
+        ),
         iconTheme: WidgetStateProperty.resolveWith(
-            (s) => IconThemeData(color: s.contains(WidgetState.selected) ? orange : muted)),
+          (s) => IconThemeData(
+            color: s.contains(WidgetState.selected) ? orange : muted,
+          ),
+        ),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(backgroundColor: surface, showDragHandle: true),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: surface,
+        showDragHandle: true,
+      ),
       dialogTheme: const DialogThemeData(backgroundColor: surface),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: surface2,

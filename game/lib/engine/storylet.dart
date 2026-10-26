@@ -111,10 +111,10 @@ class Choice {
   final Effects effects;
 
   factory Choice.fromJson(Map<String, dynamic> j) => Choice(
-        label: j['label'],
-        outcome: j['outcome'] ?? '',
-        effects: Effects.fromJson(Map<String, dynamic>.from(j['effects'] ?? {})),
-      );
+    label: j['label'],
+    outcome: j['outcome'] ?? '',
+    effects: Effects.fromJson(Map<String, dynamic>.from(j['effects'] ?? {})),
+  );
 }
 
 class Effects {
@@ -125,6 +125,8 @@ class Effects {
     this.setFlags = const {},
     this.clearFlags = const [],
     this.npcMemory = const {},
+    this.addNpcs = const [],
+    this.resolveGrudges = const [],
     this.education,
     this.job,
     this.salary,
@@ -138,23 +140,34 @@ class Effects {
   final Map<String, String> setFlags;
   final List<String> clearFlags;
 
-  /// npc id -> memory text the NPC keeps.
-  final Map<String, String> npcMemory;
+  /// npc id -> memory the NPC keeps: a string, or
+  /// {"text", "valence" (-3..3), "intensity" (1..5), "tags": [...]}.
+  final Map<String, dynamic> npcMemory;
+
+  /// New people entering the life: {"id", "role", "name", "circle", "bond", "ageOffset"}.
+  final List<Map<String, dynamic>> addNpcs;
+
+  /// NPC ids whose negative memories fade and resentment drops (reconciliation).
+  final List<String> resolveGrudges;
   final String? education;
   final String? job;
   final int? salary;
 
   factory Effects.fromJson(Map<String, dynamic> j) => Effects(
-        stats: Map<String, int>.from(j['stats'] ?? {}),
-        bond: Map<String, int>.from(j['bond'] ?? {}),
-        money: j['money'] ?? 0,
-        setFlags: Map<String, String>.from(j['flags'] ?? {}),
-        clearFlags: List<String>.from(j['clearFlags'] ?? []),
-        npcMemory: Map<String, String>.from(j['npcMemory'] ?? {}),
-        education: j['education'],
-        job: j['job'],
-        salary: j['salary'],
-      );
+    stats: Map<String, int>.from(j['stats'] ?? {}),
+    bond: Map<String, int>.from(j['bond'] ?? {}),
+    money: j['money'] ?? 0,
+    setFlags: Map<String, String>.from(j['flags'] ?? {}),
+    clearFlags: List<String>.from(j['clearFlags'] ?? []),
+    npcMemory: Map<String, dynamic>.from(j['npcMemory'] ?? {}),
+    addNpcs: ((j['addNpcs'] as List?) ?? [])
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList(),
+    resolveGrudges: List<String>.from(j['resolveGrudges'] ?? []),
+    education: j['education'],
+    job: j['job'],
+    salary: j['salary'],
+  );
 
   /// Applies the effects and returns short change notes for the outcome
   /// screen ("Happiness +5", "Bond with Leo −10").
@@ -162,13 +175,18 @@ class Effects {
     final notes = <String>[];
     stats.forEach((k, v) {
       life.stats.add(k, v);
-      if (v != 0 && Stats.visible.contains(k)) notes.add('${_cap(k)} ${_signed(v)}');
+      if (v != 0 && Stats.visible.contains(k)) {
+        notes.add('${_cap(k)} ${_signed(v)}');
+      }
     });
     bond.forEach((id, v) {
       final npc = life.npc(id);
       if (npc != null && v != 0) {
+        final before = npc.bond;
         npc.addBond(v);
-        notes.add('Bond with ${npc.name} ${_signed(v)}');
+        npc.lastContactAge = life.age;
+        final d = npc.bond - before;
+        if (d != 0) notes.add('Bond with ${npc.name} ${_signed(d)}');
       }
     });
     if (money != 0) {
@@ -179,7 +197,47 @@ class Effects {
     for (final f in clearFlags) {
       life.flags.remove(f);
     }
-    npcMemory.forEach((id, text) => life.npc(id)?.memories.add(text));
+    for (final a in addNpcs) {
+      if (life.npc(a['id']) != null) continue;
+      final n = Npc(
+        id: a['id'],
+        role: a['role'],
+        name: a['name'],
+        circle: a['circle'] ?? 'Friends',
+        birthYear: life.year - life.age + ((a['ageOffset'] as int?) ?? 0),
+        bond: (a['bond'] as int?) ?? 60,
+      )..lastContactAge = life.age;
+      life.npcs.add(n);
+      notes.add('${n.name} joined your ${n.circle.toLowerCase()}');
+    }
+    for (final id in resolveGrudges) {
+      final npc = life.npc(id);
+      if (npc == null) continue;
+      for (final m in npc.memories.where((m) => m.negative)) {
+        m.intensity = 0;
+      }
+      npc.addFacets(resentment: -40);
+    }
+    npcMemory.forEach((id, m) {
+      final npc = life.npc(id);
+      if (npc == null) return;
+      final mem = m is String
+          ? NpcMemory(
+              age: life.age,
+              text: m,
+              valence: -2,
+              intensity: 4,
+              tags: ['story'],
+            )
+          : NpcMemory(
+              age: life.age,
+              text: m['text'],
+              valence: m['valence'] ?? -1,
+              intensity: ((m['intensity'] as num?) ?? 2).toDouble(),
+              tags: List<String>.from(m['tags'] ?? []),
+            );
+      npc.remember(mem);
+    });
     if (education != null) life.education = education!;
     if (job != null) {
       life.job = job == 'none' ? null : job;

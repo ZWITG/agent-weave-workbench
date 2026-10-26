@@ -14,7 +14,8 @@ class RecapScreen extends StatelessWidget {
     final life = controller.life!;
     final engine = controller.engine!;
     final closest = [...life.npcs]..sort((a, b) => b.bond.compareTo(a.bond));
-    final memories = life.flags.values.toList()..sort((a, b) => a.age.compareTo(b.age));
+    final memories = life.flags.values.toList()
+      ..sort((a, b) => a.age.compareTo(b.age));
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -29,9 +30,16 @@ class RecapScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SectionLabel(life.alive ? 'Life recap · first 30 years' : 'Life recap'),
+                      SectionLabel(
+                        life.alive
+                            ? 'Life recap · first 30 years'
+                            : 'Life recap',
+                      ),
                       const SizedBox(height: 12),
-                      Text(life.fullName, style: NF.sora(28, weight: FontWeight.w700)),
+                      Text(
+                        life.fullName,
+                        style: NF.sora(28, weight: FontWeight.w700),
+                      ),
                       Text(
                         life.alive
                             ? '${life.birthYear}–${life.year} · ${life.city}, ${life.country}'
@@ -39,20 +47,33 @@ class RecapScreen extends StatelessWidget {
                         style: NF.sora(14, color: NF.muted),
                       ),
                       const SizedBox(height: 20),
-                      Text('${life.job ?? 'No job'} · \$${life.money} in the bank',
-                          style: NF.sora(15, color: NF.soft)),
+                      Text(
+                        '${life.job ?? 'No job'} · \$${life.money} in the bank',
+                        style: NF.sora(15, color: NF.soft),
+                      ),
                       if (closest.isNotEmpty)
-                        Text('Closest to ${closest.first.name} (${closest.first.bond}%)',
-                            style: NF.sora(15, color: NF.soft)),
+                        Text(
+                          'Closest to ${closest.first.name} (${closest.first.bond}%)',
+                          style: NF.sora(15, color: NF.soft),
+                        ),
                       const SizedBox(height: 20),
-                      const SectionLabel('Moments that mattered', color: NF.blue),
+                      const SectionLabel(
+                        'Moments that mattered',
+                        color: NF.blue,
+                      ),
                       const SizedBox(height: 8),
-                      if (memories.isEmpty) Text('A quiet life.', style: NF.sora(14, color: NF.muted)),
+                      if (memories.isEmpty)
+                        Text(
+                          'A quiet life.',
+                          style: NF.sora(14, color: NF.muted),
+                        ),
                       for (final m in memories.take(6))
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
-                          child: Text('Age ${m.age} · ${engine.fill(m.label, life)}',
-                              style: NF.sora(14, color: NF.soft)),
+                          child: Text(
+                            'Age ${m.age} · ${engine.fill(m.label, life)}',
+                            style: NF.sora(14, color: NF.soft),
+                          ),
                         ),
                     ],
                   ),
@@ -67,7 +88,11 @@ class RecapScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
-                  style: orangeButton().copyWith(minimumSize: const WidgetStatePropertyAll(Size.fromHeight(56))),
+                  style: orangeButton().copyWith(
+                    minimumSize: const WidgetStatePropertyAll(
+                      Size.fromHeight(56),
+                    ),
+                  ),
                   onPressed: controller.endLife,
                   child: const Text('Live another life'),
                 ),

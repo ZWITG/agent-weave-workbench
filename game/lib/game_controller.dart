@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'engine/actions.dart';
 import 'engine/engine.dart';
 import 'engine/models.dart';
+import 'engine/relationships.dart';
 import 'engine/storylet.dart';
 
 /// Holds the current life, talks to the engine and saves on the device
@@ -47,7 +48,9 @@ class GameController extends ChangeNotifier {
         life = Life.fromJson(Map<String, dynamic>.from(j['life']));
         final pid = j['pending'] as String?;
         if (pid != null) {
-          pendingEvent = engine!.storylets.where((s) => s.id == pid).firstOrNull;
+          pendingEvent = engine!.storylets
+              .where((s) => s.id == pid)
+              .firstOrNull;
         }
       } catch (_) {
         life = null;
@@ -64,11 +67,17 @@ class GameController extends ChangeNotifier {
       return;
     }
     await prefs.setString(
-        _saveKey, jsonEncode({'life': life!.toJson(), 'pending': pendingEvent?.id}));
+      _saveKey,
+      jsonEncode({'life': life!.toJson(), 'pending': pendingEvent?.id}),
+    );
   }
 
   void startLife({String? firstName, String? gender, String? country}) {
-    life = engine!.newLife(firstName: firstName, gender: gender, countryName: country);
+    life = engine!.newLife(
+      firstName: firstName,
+      gender: gender,
+      countryName: country,
+    );
     pendingEvent = null;
     lastOutcome = null;
     _save();
@@ -84,7 +93,11 @@ class GameController extends ChangeNotifier {
   }
 
   bool get sliceFinished =>
-      life != null && (!life!.alive || (life!.age >= sliceEndAge && pendingEvent == null && lastOutcome == null));
+      life != null &&
+      (!life!.alive ||
+          (life!.age >= sliceEndAge &&
+              pendingEvent == null &&
+              lastOutcome == null));
 
   void ageUp() {
     if (life == null || pendingEvent != null) return;
@@ -114,24 +127,11 @@ class GameController extends ChangeNotifier {
     return r;
   }
 
-  /// Spend time with someone: once per person per year.
-  String? spendTimeLock(Npc npc) {
-    if (!npc.alive) return 'Not possible';
-    if (life!.usedActions.contains('time_${npc.id}')) return 'Done this year';
-    return null;
-  }
-
-  String spendTime(Npc npc) {
-    life!.usedActions.add('time_${npc.id}');
-    final gain = 3 + (life!.seed + life!.age + npc.id.length) % 5;
-    npc.addBond(gain);
-    life!.stats.add('happiness', 1);
-    final text = life!.age < 13
-        ? 'You played with ${npc.name}. Bond +$gain.'
-        : 'You spent the afternoon with ${npc.name}. Bond +$gain.';
-    life!.feed.add(FeedEntry(life!.age, text, kind: 'action'));
+  /// Runs a person interaction from the People tab or the action search.
+  ActionResult interact(Npc npc, Interaction interaction) {
+    final r = engine!.interact(life!, npc, interaction);
     _save();
     notifyListeners();
-    return text;
+    return r;
   }
 }

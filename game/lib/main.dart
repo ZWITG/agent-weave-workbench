@@ -26,21 +26,29 @@ class RelivableApp extends StatelessWidget {
         listenable: controller,
         builder: (context, _) {
           if (controller.loading) {
-            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
           if (controller.engine == null) {
             return Scaffold(
               body: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text('Something went wrong loading the game.\n${controller.loadError ?? ''}',
-                      textAlign: TextAlign.center),
+                  child: Text(
+                    'Something went wrong loading the game.\n${controller.loadError ?? ''}',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             );
           }
-          if (controller.life == null) return NewLifeScreen(controller: controller);
-          if (controller.sliceFinished) return RecapScreen(controller: controller);
+          if (controller.life == null) {
+            return NewLifeScreen(controller: controller);
+          }
+          if (controller.sliceFinished) {
+            return RecapScreen(controller: controller);
+          }
           return HubScreen(controller: controller);
         },
       ),
