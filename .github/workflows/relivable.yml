@@ -2,7 +2,8 @@ name: Relivable game
 
 # Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
 # - tests the engine (including the 500-life simulator run)
-# - publishes the web build to GitHub Pages (play it on any phone)
+# - publishes the web build to the gh-pages branch, served by GitHub Pages
+#   (play it on any phone)
 # - builds an installable Android APK and a Windows installer and attaches
 #   both to the "relivable-prototype" pre-release.
 
@@ -14,12 +15,10 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: relivable-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -43,9 +42,14 @@ jobs:
       - run: flutter test
       - name: Build web
         run: flutter build web --release --no-web-resources-cdn --base-href "/${{ github.event.repository.name }}/"
-      - uses: actions/upload-pages-artifact@v3
+      - name: Publish web build to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: game/build/web
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: game/build/web
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: Relivable web build
       - name: Build Android APK
         run: flutter build apk --release
       - name: Publish APK to the prototype pre-release
@@ -93,13 +97,3 @@ jobs:
             game/windows/installer/Output/RelivableSetup.exe
             game/windows/installer/Output/Relivable-portable.zip
           fail_on_unmatched_files: true
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
