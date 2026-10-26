@@ -2,11 +2,14 @@
 title: "12 Risks and KPIs"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, risks, kpis, stage-gates, metrics]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, risks, kpis, stage-gates, metrics]
 ---
 
 # 12 Risks and KPIs
+
+*Purpose:* Lists the main project risks with owners and mitigations, defines the KPI framework and North Star, and sets the stage-gate criteria for each phase.
 
 > [!summary]
 > - **The top 3 risks:** content throughput (writing is the critical path), retention below top-decile (which makes paid UA uneconomic), and a rating or age-law squeeze on the teen audience.
@@ -39,7 +42,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 | R14 | **Remote content judged a "hidden feature"** under Apple 2.5.19 ([letsdatascience](https://letsdatascience.com/news/apple-revises-app-review-guidelines-for-ai-deepfakes-and-hid-76fdff63)) | 1 | 3 | 🟠 3 | Bundles stay inside reviewed systems. Review notes describe the model. New systems ship via store builds | Producer | Review rejection citing 2.5.19 |
 | R15 | **Localisation cost and quality**: 1.2M words. Gendered grammar breaks variables | 2 | 2 | 🟠 4 | ICU from day 1. Pseudo-loc. Glossary. MT + post-edit for low-risk strings. LQA sampling. Per-word rates must be quoted (gap) | Loc Manager | Quote > $0.12/word. LQA fail rate > 3% |
 | R16 | **Sensitive-content harm or PR incident** (suicide, abuse, mental health) | 1 | 3 | 🟠 3 | Not a player action. Content notes, helplines, sensitivity review, skip with no penalty ([[09 Compliance and Ratings]] §11) | Narrative Lead | Player reports. Press inquiry |
-| R17 | **Platform fee and policy volatility** (US link-out 0% → proposed 15%; Google 10–25% tiers; EU DMA fees from Oct 2026) ([MacRumors](https://macrumors.com/2026/08/19/ec-epic-apple-app-store-changes)) | 3 | 1 | 🟠 3 | Model margins at standard store fees. Treat the web shop as upside only | Product Owner | Rate-card publications |
+| R17 | **Platform fee and policy volatility** (US link-out 0% → Apple-proposed 15%, pending court approval; Google settlement rates about 10–20% plus a Play Billing fee; EU single DMA fee model from 1 Oct 2026) ([MacRumors](https://macrumors.com/2026/08/19/ec-epic-apple-app-store-changes)) | 3 | 1 | 🟠 3 | Model margins at standard store fees. Treat the web shop as upside only | Product Owner | Rate-card publications |
 | R18 | **EU Digital Fairness Act / CPC action** on virtual currency and design ([Lewis Silkin](https://www.lewissilkin.com/insights/2026/10/15/eu-consumer-protection-network-launches-action-involving-nine-video-games-compani-102o5do)) | 1 | 2 | 🟢 2 | No premium currency, no paid randomness, real-money prices, no dark patterns | Counsel | DFA draft text |
 | R19 | **Key-person risk** (tech lead or narrative lead) | 2 | 3 | 🔴 6 | Documented engine (pure Dart pkg), style bible, pairing, contract back-up writers | Producer | Resignation / extended absence |
 | R20 | **Budget overrun** (scope creep from "parity + better") | 2 | 2 | 🟠 4 | Gates with scope levers (cut era mode or async social to Phase 5). 5–10% contingency. Monthly burn review | Producer | Burn > plan by 10% for 2 months |

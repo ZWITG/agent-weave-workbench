@@ -1,15 +1,18 @@
 ---
-title: Player Research and Wishlist
+title: "03 Player Research and Wishlist"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, player-research, personas, wishlist, pain-points]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, player-research, personas, wishlist, pain-points]
 ---
 
-# Player Research and Wishlist
+# 03 Player Research and Wishlist
+
+*Purpose:* Summarises what life-sim players love, hate and keep asking for, turns that into four target personas, and maps every pain point to a Relivable answer.
 
 > [!warning] Method and limits (read first)
-> - **Reddit was mostly blocked.** The search tool refuses reddit.com as a domain, and only one Redlib mirror snippet (June 2023 r/bitlife and r/BitLifeApp posts) got through. This is **not** a scrape of r/BitLife, and there are **no upvote counts**.
+> - **Reddit could not be accessed directly.** Only one mirror of June 2023 r/bitlife and r/BitLifeApp posts was reachable. This is **not** a scrape of r/BitLife, and there are **no upvote counts**.
 > - **Evidence base:** Google Play and App Store reviews, AppleVis forum threads (a blind and low-vision community with long BitLife threads, 2019–2024), the BitLife Fandom wiki, Change.org topic pages, ComplaintsBoard, Metacritic, GameFAQs, Common Sense Media and a few reviews. Content-farm and "unblocked" pages were excluded or flagged.
 > - **Ranking method:** themes are ranked by **how often they appeared independently across sources**, not by votes or survey share. Treat ranks as directional.
 > - **Sample skew:** AppleVis is over-represented, which inflates accessibility signals relative to the general audience.

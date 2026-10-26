@@ -2,11 +2,14 @@
 title: "08 Technical Architecture"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, tech, architecture, flutter, firebase, storylets, content-pipeline]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, tech, architecture, flutter, firebase, storylets, content-pipeline]
 ---
 
 # 08 Technical Architecture
+
+*Purpose:* Describes how Relivable is built and run: the stack, architecture, storylet engine and schema, saves and purchases, content pipeline and quality gates.
 
 > [!summary] Decision in one paragraph
 > Relivable is built in **Flutter (Dart)**, with **Shorebird** for Dart code patches, a **pure-Dart deterministic storylet engine**, an **offline-first local save** synced to **Firebase** (Auth, Firestore, Remote Config, Cloud Storage/CDN, Analytics, Crashlytics, Cloud Functions), and **RevenueCat** for purchases with server-side StoreKit 2 / Play verification. Content (events, strings, art atlases) ships as **signed remote bundles**, so new storylets go live without an app update. AI is **optional**: it only rewords text, runs on-device first (Apple Foundation Models), and falls back to a moderated cloud proxy. **Unity 6 LTS is the documented alternative.** We would switch to it only if the Phase 2 spike shows the art direction needs heavy 2D animation, or if the team we hire is Unity-native.
@@ -26,7 +29,7 @@ updated: 2026-10-26
 | **2D avatar / animation** (medium) | ✅ Layered paper-doll sprites via Flame/Rive. Fine for illustrated cards | ✅✅ Best-in-class 2D/particles/animation | ✅ Strong 2D | ⚠️ Skia + Reanimated possible ([Expo](https://expo.dev/blog/build-2d-game-style-physics-with-matter-js-and-react-native-skia)) |
 | **Ads / IAP SDK maturity** (high) | ✅ RevenueCat Flutter SDK, AdMob/AppLovin MAX plugins (wrappers lag native slightly) | ✅✅ Most mature mobile ad/IAP pipeline ([tech-insider](https://tech-insider.org/godot-vs-unity-2026/)) | ⚠️ Thin plugin ecosystem | ✅ Good app SDKs, weaker game ad mediation |
 | **OTA code updates** (medium) | ✅ Shorebird (Dart patches, rollback, signing) ([Bitrise](https://bitrise.io/blog/post/codepush-alternatives)) | ⚠️ Content only (Addressables). No code push | ⚠️ PCK content only | ⚠️ EAS Update covers JS/assets. **CodePush retired 31 Mar 2025** ([Capgo](https://capgo.app/blog/best-live-updates-system-for-mobile-app/)) |
-| **Licence cost** | Free (BSD) | Free under **$200K** revenue/funding (12 mo), then **$2,200/seat/yr** Pro. Runtime Fee cancelled ([Unity](https://unity.com/pricing-updates)) | Free (MIT) | Free (MIT) |
+| **Licence cost** | Free (BSD) | Free under **$200K** revenue/funding (12 mo), then **$2,310/seat/yr** Pro (raised from $2,200 on 12 Jan 2026; $210/seat/mo if paid monthly). Runtime Fee cancelled ([Unity](https://unity.com/pricing-updates); [80.lv](https://80.lv/articles/unity-announces-its-upcoming-2026-price-changes)) | Free (MIT) | Free (MIT) |
 | **Hiring pool / rates** (high) | Large app-developer pool. Small *game* pool | Deepest mobile *game* pool. BitLife's studio hires Unity/C# ([Stillfront job](https://stillfrontgroup.teamtailor.com/jobs/7180715-senior-unity3d-developer)) | Smaller pool | Very large app pool |
 | **Binary size / cold start** (medium) | Good (AOT-compiled). Engine adds a few MB *(estimate)* | Heavier runtime. Slower cold start on low-end Android *(estimate)* | Light | Good with Hermes |
 | **Verdict** | **Chosen**: best accessibility-by-default for a UI-heavy text game, cheaper hiring, Shorebird | **Alternative**: pick it if visuals or animation become the hook | Not recommended until mobile TalkBack works | Viable for text, but weaker game tooling and no code-push parity |
@@ -308,7 +311,7 @@ flowchart LR
 | Entitlement mirror | A RevenueCat webhook calls a Cloud Function, which writes `entitlements/{uid}` in Firestore. Security rules make it **server-write-only**. Used for support tooling and the web shop |
 | Restore | Automatic on sign-in on any device, plus a visible "Restore purchases" in Settings and on the paywall. Purchases are tied to the **account**, not the device (Pillar 3) |
 | Refunds / revocation | Webhook `CANCELLATION`/`REFUND` revokes the entitlement. Story content already played stays readable, but the remaining pack beats lock *(policy, to confirm with legal)* |
-| Web shop (optional) | US link-outs currently carry a **0% Apple commission** pending a court-approved rate (Apple proposed 15%). EU link-out is 15% from 1 Oct 2026. Google allows alternative billing from 30 Jun 2026 at 10–25% ([iPhone in Canada](https://www.iphoneincanada.ca/2026/08/14/apple-proposes-15-cut-purchases-outside-app-store/); [MacRumors](https://macrumors.com/2026/08/19/ec-epic-apple-app-store-changes); [MacRumors](https://macrumors.com/2026/06/24/google-play-store-fee-change/)). Web purchases still grant entitlements through RevenueCat, keyed to the Firebase UID. Phase 4+ |
+| Web shop (Phase 4, where allowed) | US link-outs currently carry a **0% Apple commission** pending a court-approved rate (Apple proposed 15%). EU link-out is 15% from 1 Oct 2026. Google allows alternative billing from 30 Jun 2026 (reported service fees about 10–20%, details still settling; see [[06 Monetization and Economy]] §7) ([iPhone in Canada](https://www.iphoneincanada.ca/2026/08/14/apple-proposes-15-cut-purchases-outside-app-store/); [MacRumors](https://macrumors.com/2026/08/19/ec-epic-apple-app-store-changes); [MacRumors](https://macrumors.com/2026/06/24/google-play-store-fee-change/)). Web purchases still grant entitlements through RevenueCat, keyed to the Firebase UID. Launches in Phase 4 (US first) |
 | Cost | RevenueCat is free up to **$2.5K monthly tracked revenue**, then **1%** ([RevenueCat](https://www-docs.revenuecat.com/pricing)) |
 | Anti-fraud | Server-side validation plus App Check is enough for a single-player game. Local stat tampering is low-stakes unless leaderboards exist (research inference) |
 

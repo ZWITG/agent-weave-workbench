@@ -1,15 +1,18 @@
 ---
-title: Market and Competitors
+title: "02 Market and Competitors"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, market, competitors, swot, positioning]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, market, competitors, swot, positioning]
 ---
 
-# Market and Competitors
+# 02 Market and Competitors
+
+*Purpose:* Sizes the text life-sim market, tracks BitLife's revenue trend and maps the competitors, so the client can see where Relivable fits and why the gap exists.
 
 > [!note] Method and confidence
-> All figures come from web-search snippets gathered 2026-10-25. Page fetching was blocked, so primary reports (Sensor Tower, AppMagic) could not be opened in full. Several Sensor Tower numbers come from short auto-generated quarterly blog posts, so they are approximate. **No public source isolates "life sim" as a mobile category.** Market size below is built from adjacent anchors, and every derived number is marked *(estimate)* or *(inference)*. This note is consistent with [[_Concept Brief]] and feeds [[01 Executive Summary]] and [[10 Go-to-Market]].
+> All figures come from web-search results gathered 2026-10-25 and spot-checked 2026-10-26; primary reports (Sensor Tower, AppMagic) were not reviewed in full. Several Sensor Tower numbers come from short auto-generated quarterly blog posts, so they are approximate. **No public source isolates "life sim" as a mobile category.** Market size below is built from adjacent anchors, and every derived number is marked *(estimate)* or *(inference)*. This note is consistent with [[_Concept Brief]] and feeds [[01 Executive Summary]] and [[10 Go-to-Market]].
 
 > [!warning] IP stance
 > Relivable is *inspired by the genre*. It is not affiliated with BitLife, Candywriter or Stillfront. Competitor names here are used only for analysis. Relivable's store listing, text, characters and assets will be original, and store metadata will not use competitor trademarks.
@@ -39,7 +42,7 @@ The text-life-sim niche is essentially BitLife plus a long tail of clones. BitLi
 | Q2 2025 | — | -2% | CEO calls BitLife a "cornerstone franchise"; account system enables a webshop | [Seeking Alpha](https://seekingalpha.com/article/4802930-stillfront-group-ab-publ-stlff-q2-2025-earnings-call-transcript) |
 | **Q1 2026** | **SEK 95M** | **-19%** | Organic decline | [Yahoo Finance Q1 2026](https://finance.yahoo.com/markets/stocks/articles/stillfront-group-ab-stlff-q1-070405250.html) |
 | **Q2 2026** | **SEK 109M** (prior year 141M) | **-19%** | "Stricter user acquisition approach and challenging comparison numbers" | [Stillfront Q2 2026](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/) |
-| **Q3 2026** | **~SEK 100M** | **-2%** | Like-for-like on UA strategy; figure from the call transcript only | [Yahoo Finance Q3 2026 call](https://finance.yahoo.com/quote/SFS.XC/earnings/SFS.XC-Q3-2026-earnings_call-537398.html) |
+| **Q3 2026** | **~SEK 100M** | **-2%** | Like-for-like on UA strategy. The -2% is confirmed by coverage of the 23 Oct 2026 report (group net revenue SEK 1,291M, -1% organic); the SEK figure comes from the call transcript only | [Yahoo Finance Q3 2026 call](https://finance.yahoo.com/quote/SFS.XC/earnings/SFS.XC-Q3-2026-earnings_call-537398.html); [Stillfront Q3 2026 report](https://www.inderes.fi/en/releases/stillfronts-interim-report-q3-2026-continued-key-franchise-growth-and-stable-organic-revenue); [Gamigion](https://www.gamigion.com/stillfront-q3-new-ceo-78-growth-next/) |
 
 ```mermaid
 xychart-beta
@@ -63,7 +66,7 @@ xychart-beta
 
 | Name | Model | Pricing (latest found) | Strengths | Weaknesses | What we **take** / **avoid** |
 |---|---|---|---|---|---|
-| **BitLife** (Candywriter / Stillfront) | F2P, ads + one-time IAPs + paid packs/Modes | Remove Ads $2.99; Bitizenship $7.99; God Mode $9.99; bundle $15.99; Boss Mode $20.99; expansions $7.99; Time Machine $0.99/use ([App Store](https://apps.apple.com/app/1374403536)) | Huge breadth; instantly readable loop; weekly challenges; 50M+ installs; 2–4 week update cadence | Paywall creep; ads after no-ads purchase; lost purchases; repetitive random events; VoiceOver regressions; nested menus | **Take:** one-tap year, breadth, challenges, generations. **Avoid:** fragmented SKUs, per-use rewind, gated generations, ads in paid tiers |
+| **BitLife** (Candywriter / Stillfront) | F2P, ads + one-time IAPs + paid packs/Modes | Remove Ads $2.99; Bitizenship $7.99; God Mode $9.99; bundle $15.99; Boss Mode $20.99; expansions $7.99; Time Machine $0.99/use; rated 18+ (US App Store, checked 26 Oct 2026) ([App Store](https://apps.apple.com/app/1374403536)) | Huge breadth; instantly readable loop; weekly challenges; 50M+ installs; 2–4 week update cadence | Paywall creep; ads after no-ads purchase; lost purchases; repetitive random events; VoiceOver regressions; nested menus | **Take:** one-tap year, breadth, challenges, generations. **Avoid:** fragmented SKUs, per-use rewind, gated generations, ads in paid tiers |
 | **DogLife / CatLife** (Candywriter) | F2P spin-offs on the same engine | Separate purchases, no transfer ([App Store](https://apps.apple.com/us/app/-/id1589129140)) | Cheap reskin reach | "The same game with a cat veneer" ([TryHardGuides](https://tryhardguides.com/catlife-has-just-released-for-apple-and-android-devices/)) | **Take:** themed scenarios. **Avoid:** splitting purchases across apps; we use in-game scenario packs instead |
 | **Alter Ego** (Choose Multiple) | Paid premium | $4.99 iOS; free web demo ([App Store](https://apps.apple.com/us/app/id329703516)) | Authored depth: 1,000+ questions, ~220K words, serious tone | Thin breadth (no pets, surgery); continuity bugs | **Take:** authored storylines and consequence. **Avoid:** premium-only paywall at the door |
 | **Another Life** | F2P, ads + currency IAP | LifePoints $0.99–16.99; Remove Ads $4.99 ([App Store](https://apps.apple.com/app/id1501803368)) | Swipe choices, modes, challenges | "An extension of BitLife"; currency obscures price | **Take:** fast swipe micro-choices. **Avoid:** premium currency |
@@ -71,10 +74,10 @@ xychart-beta
 | **Life Simulator 3 / SimLife / Life is a Game** | F2P ads + IAP | Unknown or small | "More professions and complexity" | Weak interface, slow years, tiny scale (e.g. 197 ratings) | **Avoid:** cluttered UI; shows clones alone can't displace the leader |
 | **100 Years – Life Simulator** | F2P ads | Unknown | Genre reach | Rating fell from 4.58 to 4.4 on ad frequency ([Marlvel](https://marlvel.ai/api/llm/apps/games/100-years-life-simulator)) | **Avoid:** ad-heavy design |
 | **Infinite Life Simulation** (and Lifespans, Altworld) | F2P + subscription; LLM-driven | Pro $0.99/mo; Lifetime $9.99 ([App Store](https://apps.apple.com/us/app/id6503607456)) | "Type any action"; NPCs remember and hold grudges | Unvalidated (self-reported claims); LLM inconsistency, moderation exposure | **Take:** memory as the headline. **Avoid:** letting the LLM decide outcomes or accept unmoderated free text |
-| **The Sims Mobile** (EA) | F2P | Closed Jan 20, 2026 ([Outlook Respawn](https://respawn.outlookindia.com/gaming/gaming-news/ea-shuts-the-sims-mobile-moves-ahead-with-project-rene)) | Avatars, home building | Gone; EA's Project Rene has no date | **Take:** light avatar and home layer to claim the vacancy |
+| **The Sims Mobile** (EA) | F2P | Closed Jan 20, 2026 ([EA](https://www.ea.com/games/the-sims/news/final-update); [Outlook Respawn](https://respawn.outlookindia.com/gaming/gaming-news/ea-shuts-the-sims-mobile-moves-ahead-with-project-rene)) | Avatars, home building | Gone; EA's Project Rene has no date | **Take:** light avatar and home layer to claim the vacancy |
 | **Pocket Love** (HyperBeard) | F2P, timers + IAP | Unknown | Cute couple and home décor | Timers; narrow scope | **Take:** home customisation as cosmetic spend |
 | **Episode / Choices** | F2P, chapter currency + premium choices | Currency-based | Weekly authored chapters; UGC precedent (Episode) | Episode US weekly revenue slid from ~$312K to $223K in Q1 2025 ([Sensor Tower](https://sensortower.com/blog/2025-q1-ios-top-5-interactive%20story%20games-revenue-us-6019ed6a241bc16eb869f511)) | **Take:** content cadence, Creator Mode later. **Avoid:** paid premium choices |
-| **inZOI** (Krafton, PC) / **Proxi** (upcoming) | Premium PC / TBD | — | AI-driven NPC behaviour and memory | inZOI's generative-AI announcement drew negative reviews ([Wikipedia](https://en.wikipedia.org/wiki/InZOI)) | **Take:** AI only as optional flavour, with opt-out |
+| **inZOI** (Krafton, PC) / **Proxi** (upcoming) | Premium PC / not yet announced | — | AI-driven NPC behaviour and memory | inZOI's generative-AI announcement drew negative reviews ([Wikipedia](https://en.wikipedia.org/wiki/InZOI)) | **Take:** AI only as optional flavour, with opt-out |
 
 ## 4. Positioning map
 

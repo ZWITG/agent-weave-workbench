@@ -1,13 +1,15 @@
 ---
-title: UX and Screen Map
+title: "05 UX and Screen Map"
 project: Relivable
 phase: 1
-status: draft
-tags: [relivable, phase-1, ux, ui, accessibility, screens, ftue]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, ux, ui, accessibility, screens, ftue]
 ---
 
 # 05 UX and Screen Map
+
+*Purpose:* Defines how Relivable looks and feels: the screen inventory, navigation, wireframes, first-time experience, visual direction and accessibility spec.
 
 > [!summary] In one paragraph
 > Relivable keeps BitLife's one-thumb, one-year-per-tap rhythm, but rebuilds everything around it. There is a **thumb-zone Life Hub**, **card-based events**, a **bottom command bar** ("What do you want to do?") instead of nested Activities menus, **no silent failures** (every locked action says why and when it unlocks), and **accessibility as a release gate**. This note is the screen inventory, navigation map, wireframes, FTUE, visual direction and accessibility spec. Its source of truth is [[_Concept Brief]] (pillars 2 and 5). The systems behind each screen are in [[04 App Breakdown - Core Life Systems]] and [[04 App Breakdown - Social, Meta and Premium]], and the implementation (Flutter `Semantics`, remote content) is in [[08 Technical Architecture]].
@@ -133,8 +135,8 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S59 | Challenges hub | F | Daily goals, weekly challenge, season | Daily goals (3), weekly challenge card, season track, archive | Me / push → S06 with seed |
 | S60 | Death | F | The end of a life | Epitaph, cause, age, net worth, Life Title earned, **View Life Recap**, Rewind, Continue as heir | Death event → S61/S17/S62 |
 | S61 | **Life Recap** | F (story pager) | Shareable, Wrapped-style recap | 6–8 vertical 9:16 story cards, share/export, "Try my life" seed code | S60 / S57 → share sheet / S62 |
-| S62 | Heir selection | F | Continue the dynasty | Eligible heirs (children, including adopted), inheritance preview, generation counter (free cap shown clearly) | S60 → S10 (new character) |
-| S63 | Dynasty view | F | Multi-generation family legacy | Generations strip, Dynasty Ambitions, family crest, total wealth over time | S05 / S22 |
+| S62 | Heir selection | F | Continue the dynasty | Eligible heirs (children, including adopted), inheritance preview, generation counter "Gen 3 of 4" free / "of 8" with Plus (caps shown clearly) | S60 → S10 (new character) |
+| S63 | Dynasty view | F | Multi-generation family legacy | Generations strip (up to 8), Dynasty Ambitions, family crest, total wealth over time; **Dynasty Recap** when a dynasty completes at Generation 8 | S05 / S22 |
 
 ### 3.7 Shop, settings and support
 

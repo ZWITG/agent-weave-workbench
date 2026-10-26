@@ -2,11 +2,14 @@
 title: "11 Roadmap Team and Budget"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, roadmap, team, budget, content-plan, gantt]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, roadmap, team, budget, content-plan, gantt]
 ---
 
 # 11 Roadmap, Team and Budget
+
+*Purpose:* Lays out the phased roadmap, the team needed in each phase, the budget estimates and the content-volume plan, ending with the Phase 2 checklist.
 
 > [!summary] Headline (estimates, not quotes)
 > | Phase | Duration | Team (avg FTE) | Budget, low to high *(excl. UA)* | US-team reference |
@@ -15,7 +18,7 @@ updated: 2026-10-26
 > | 3 MVP + Soft launch | ~5 months build + soft-launch start (Jan – Jun 2027) | 4.4 | **$82K – $264K** (labour $60K – $210K) | ~$440K |
 > | 4 Global launch | ~4 months (Jun – Oct 2027) | 9 – 10.5 | **$400K – $700K** | ~$884K – $1.08M |
 > | **Cumulative to launch** | **~11 months** (brief range 9–14) | — | **≈ $505K – $1.03M** | **≈ $1.43M – $1.62M** |
-> | 5 LiveOps | Ongoing from Oct 2027 | 6 – 8 | **$54K – $90K / month** | ~$136K / month |
+> | 5 LiveOps | Ongoing from Oct 2027 | 7.5 – 9.0 | **$66K – $99K / month** | ~$158K / month |
 >
 > These figures are the resolved budget used across the vault ([[_Concept Brief]], resolved decisions 2026-10-26): prototype ~$25–60K; MVP labour ~$60–210K (US reference ~$385K); total to global launch ≈ $505K (low) – $1.03M (high), US team ≈ $1.43–1.62M, excluding UA. **Writing, not engineering, is the critical path** (§6). UA and marketing budgets are in [[10 Go-to-Market]] §10.
 
@@ -57,7 +60,7 @@ gantt
   Global launch                     :milestone, crit, l1, 2027-10-12, 0d
   section Phase 5 LiveOps
   Weekly challenges + seasons       :p5a, 2027-10-12, 2028-06-30
-  Story packs (quarterly)           :p5b, 2027-12-01, 2028-06-30
+  Story packs (every 2 months)      :p5b, 2027-12-01, 2028-06-30
   Async social                      :p5c, 2028-01-10, 2028-04-28
   Creator Mode (UGC) beta           :p5d, 2028-03-01, 2028-06-30
 ```
@@ -74,8 +77,8 @@ gantt
 | **1 Planning** (done) | Gate 1: client sign-off | This vault: [[01 Executive Summary]], app breakdowns ([[04 App Breakdown - Core Life Systems]], [[04 App Breakdown - Social, Meta and Premium]]), [[05 UX and Screen Map]], [[06 Monetization and Economy]], [[07 Retention and LiveOps]], tech, compliance, GTM, budget, risks. Pitch deck outline | Scope, budget and stack approved. Name clearance started |
 | **2 Prototype** (8 wk) | Gate 2: prototype | Storylet engine (pure Dart pkg) + validator + **sim bot v1**. Redesigned hub, command bar, event cards. **Birth to age 30** vertical slice. **150 events** with ≥ 15 callback arcs. VoiceOver/TalkBack spike report. Flutter-vs-Unity switch decision. Apple/IARC questionnaire dry-run. 5–8 moderated + 30–50 unmoderated playtests | Playtest "fun" and clarity scores at target. Tick ≤ 50 ms. Screen-reader pass. Writers producing ≥ 6 events/writer-day |
 | **3 MVP + Soft launch** (~5 mo) | Gate 3: MVP → soft launch | Full life cycle (birth → death → heir). Core careers, school/university, relationships, crime/prison, health, assets, death/inheritance. **1,500+ events**. Cloud save + sync, RevenueCat (Plus + 1 pack), capped rewarded ads, analytics taxonomy, Crashlytics. Age screen + age-signal APIs, CMP, privacy docs, account deletion. Life Recap v1. Weekly challenge v1. EN only | Crash-free ≥ 99.5% in beta. FTUE ≥ 85% completion. All compliance items for Phase 3 done ([[09 Compliance and Ratings]] §12) |
-| **4 Global launch** (~4 mo) | Gate 4: soft-launch go/no-go → launch | Parity + "better" features (parents divorce/remarry, twins, electives, parties, religion, lawsuits, heists that explain failure, traits, life chapters, family tree/dynasty, aging avatar). **3,000+ events**. **5 languages**. Season Pass v1. Web shop (US) optional. External accessibility audit. Localised ASO. Creator wave | Soft-launch KPI gates met ([[10 Go-to-Market]] §3.3). Audit pass. Rating confirmed |
-| **5 LiveOps** (ongoing) | Quarterly reviews | Weekly challenges (52/yr), monthly themed events, a quarterly **Story Pack**, seasons, era/historical mode, **async social** (visit friends' lives, shared challenges), **Creator Mode/UGC** beta with moderation, optional AI NPC chat | Retention and monetization KPIs. Content cadence held for 3 straight months |
+| **4 Global launch** (~4 mo) | Gate 4: soft-launch go/no-go → launch | Parity + "better" features (parents divorce/remarry, twins, electives, parties, religion, lawsuits, heists that explain failure, traits, life chapters, family tree/dynasty, aging avatar). **3,000+ events**. **5 languages**. Season Pass v1. Web shop (US first, where store rules allow). External accessibility audit. Localised ASO. Creator wave | Soft-launch KPI gates met ([[10 Go-to-Market]] §3.3). Audit pass. Rating confirmed |
+| **5 LiveOps** (ongoing) | Quarterly reviews | Weekly challenges (52/yr), monthly themed events, a **Story Pack** about every two months, seasons of about 13 weeks, era/historical mode, **async social** (visit friends' lives, shared challenges), **Creator Mode/UGC** beta with moderation, optional AI NPC chat | Retention and monetization KPIs. Content cadence held for 3 straight months |
 
 ---
 
@@ -97,7 +100,7 @@ FTE = full-time equivalent averaged over the phase. "C" = contract. Rates are in
 | Community manager | (founder) | — | 0.5 | 0.5 | Discord, creators |
 | UA / marketing lead | — | — | 0.5 | 0.5–1.0 | Can be an agency |
 | Data analyst | — | — | (0.25 C) | 0.25 | Dashboards, LTV model |
-| **Total (costed)** | **≈ 3.0** | **≈ 4.4** | **≈ 9.0 – 10.5** | **≈ 6 – 8** | |
+| **Total (costed)** | **≈ 3.0** | **≈ 4.4** | **≈ 9.0 – 10.5** | **≈ 7.5 – 9.0** | |
 
 ---
 
@@ -168,14 +171,14 @@ Add the GTM budget ([[10 Go-to-Market]] §10): about **$46–103K** for soft lau
 
 ### 4.6 Phase 5: LiveOps run rate (per month)
 
-| Line item | Low (LatAm, 6 FTE) | High (EE, 8 FTE) | US ref (7 FTE) |
+| Line item | Low (LatAm, 7.5 FTE) | High (EE, 9.0 FTE) | US ref (8.25 FTE, midpoint) |
 |---|---|---|---|
-| Labour (960–1,280 h) | $48K | $77K | $123K |
+| Labour (1,200–1,440 h) | $60K | $86K | $145K |
 | Services (Firebase, Crowdin, MMP, CI, ASO tool) | $1K | $3K | $3K |
 | RevenueCat | 1% of tracked revenue above $2.5K/mo | same | same |
 | Cloud AI (if enabled) | ~$0.27 per opted-in cloud-AI user per month ([tech note §3](../../research_notes/Life%20sim%20game%20phase%201/tech_compliance_budget.md)) | same | same |
 | Localisation of new content (~20–30K words/mo × 4) | $5K | $10K | $10K |
-| **Total (excl. UA and revenue-share fees)** | **≈ $54K** | **≈ $90K** | **≈ $136K** |
+| **Total (excl. UA and revenue-share fees)** | **≈ $66K** | **≈ $99K** | **≈ $158K** |
 
 ---
 
@@ -188,7 +191,7 @@ Add the GTM budget ([[10 Go-to-Market]] §10): about **$46–103K** for soft lau
 | Firebase (Auth, Firestore, Storage/CDN, Functions, Analytics, Crashlytics, Remote Config) | $0 | $0–25 | $25–100 | **$25–300** | Free quotas: 50K reads/day, 20K writes/day. Blaze needed for Storage since Feb 2026 ([Verdent](https://www.verdent.ai/guides/devtools/firebase-pricing)). At 100K MAU: an inference |
 | RevenueCat | $0 | $0 | $0 | **1% of MTR above $2.5K** | [RevenueCat](https://www-docs.revenuecat.com/pricing) |
 | Crowdin (TMS) | — | $59 | $59–450 | $59–450 | [Capterra](https://www.capterra.com/compare/162858-163509/Lokalise-vs-Crowdin). Lokalise alternative $144–999 ([Locize](https://www.locize.com/compare/lokalise-alternatives)) |
-| Shorebird (code push) | free tier | TBD | TBD | TBD | Pricing **not researched, verify** |
+| Shorebird (code push) | free tier | quote needed | quote needed | quote needed | Paid tiers scale with patch installs; pricing not yet researched, get a quote in Phase 2 |
 | GitHub + Actions / Codemagic (iOS builds) | $20–50 | $50–150 | $100–200 | $100–200 | Estimate |
 | Firebase Test Lab | $0–50 | $50–150 | $150–300 | $100–200 | Estimate |
 | Figma | $15–45 | $30–90 | $60–180 | $45–90 | Estimate |
@@ -197,7 +200,7 @@ Add the GTM budget ([[10 Go-to-Market]] §10): about **$46–103K** for soft lau
 | ASO tool (AppTweak/Sensor Tower lite) | — | — | $100–700 | $100–700 | Estimate |
 | Cloud AI (Flash-Lite / nano class) + moderation | $0–20 (spike) | $0–50 | $50–300 | ~$0.27 × opted-in cloud users | $0.10/$0.40 per 1M tokens ([Simon Willison](https://www.simonwillison.net/2025/Jul/22/gemini-25-flash-lite)). Moderation free ([OpenAI](https://developers.openai.com/api/docs/models/omni-moderation-latest.md)) |
 | Discord | $0 | $0 | $0–50 | $0–50 | Server boosts optional |
-| *Unity Pro (only if alternative chosen)* | $0 | $0 | $0 | ~$183/seat/mo after $200K revenue | $2,200/seat/yr ([Unity](https://unity.com/pricing-updates)) |
+| *Unity Pro (only if alternative chosen)* | $0 | $0 | $0 | ~$193/seat/mo after $200K revenue/funding | $2,310/seat/yr prepaid or $210/seat/mo, since 12 Jan 2026 ([Unity](https://unity.com/pricing-updates)) |
 | **Approx. total / month** | **≈ $70–250** | **≈ $250–600** | **≈ $1–3.5K** | **≈ $1–4K + 1% MTR + AI** | |
 
 ---
@@ -212,7 +215,7 @@ Add the GTM budget ([[10 Go-to-Market]] §10): about **$46–103K** for soft lau
 | 2 Prototype | 150 | **150** | 15 | 2 | 0 | ~15K | 1.25 | ~3–4/day (lead also designs systems) |
 | 3 MVP | 1,350 | **1,500** | 120 | 15 | 12 | ~150K | 1.6 | **~8/day** ⚠️ |
 | 4 Launch | 1,500+ | **3,000+** | 300 | 40 | 26 banked | ~300K | 3.0 | ~6–7/day + translation queries |
-| 5 LiveOps (per quarter) | 450–900 (1 Story Pack of ~80–120 events + seasonal 40–60 + challenge content + free updates) | ~4,800–6,600 after 12 months | +60/qtr | +8/qtr | 13/qtr | +45–90K/qtr | 2.5–3.0 | ~4–6/day |
+| 5 LiveOps (per quarter) | 450–900 (1–2 Story Packs of ~60–120 events each + seasonal 40–60 + challenge content + free updates) | ~4,800–6,600 after 12 months | +60/qtr | +8/qtr | 13/qtr | +45–90K/qtr | 2.5–3.0 | ~4–6/day |
 
 **Mix at global launch (3,000 events, target):**
 

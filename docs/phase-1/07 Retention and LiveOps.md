@@ -1,13 +1,15 @@
 ---
-title: Retention and LiveOps
+title: "07 Retention and LiveOps"
 project: Relivable
 phase: 1
-status: draft
-tags: [relivable, phase-1, retention, liveops, ab-testing, remote-config, community]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, retention, liveops, ab-testing, remote-config, community]
 ---
 
 # 07 Retention and LiveOps
+
+*Purpose:* Explains why players come back: the game loops, retention targets, the Year 1 LiveOps calendar, content cadence, A/B tests and community operations.
 
 > [!summary] In one paragraph
 > Relivable retains through **story**, not pressure. The year-by-year core loop has to make each life feel different (memory, chapters, consequences). A short session loop is built around 3 daily goals and a one-year-a-day streak with free freezes. The meta loop of dynasties, Life Titles, weekly challenges and quarterly seasons gives a reason to come back for months. We target **top-decile retention: D1 40% / D7 13% / D30 5%** against a market median of about 22% / 4% / 0.7% ([GameAnalytics 2026 via gamedevreports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)). LiveOps runs a weekly challenge every Monday, two weekend events a month, a Story Pack every two months and four seasons a year. All of it is delivered as data through remote config and storylet bundles, so no app update is needed. Source of truth: [[_Concept Brief]] (pillars 1 and 4, Phase 5 LiveOps).
@@ -93,7 +95,7 @@ Sources: GameAnalytics 2026 benchmarks (2025 data) ([gamedevreports](https://gam
 | Average session length | 6–10 min |
 | Lives completed by D7 (D7 retained users) | ≥ 4 |
 | Recap share rate (shares ÷ completed lives) | ≥ 4% |
-| Push opt-in (asked after first life) | iOS ≥ 55%, Android ≥ 80% |
+| Push opt-in (asked after first life) | iOS ≥ 50%, Android ≥ 80% |
 | Streak ≥ 7 days (share of D7 retained) | ≥ 30% |
 | Weekly challenge participation (share of WAU) | ≥ 25% |
 | DAU/MAU | ≥ 22% |
@@ -110,8 +112,8 @@ Push opt-in benchmarks: about 81% on Android and 51% on iOS ([Pushwoosh](https:/
 | **Streaks with freeze** | The streak counts days with **at least 1 year lived** (one Age +1). Milestones at 7/30/100/365 days give Sparks + a cosmetic | **1 free auto-freeze every week**; bank up to 2 more with Sparks (200). Repair within 48 h by completing 2 daily goals, for free. **Never sold for money** | Life 2 | Duolingo: 10-day streak users churn less, and relaxing the streak to "one lesson a day" improved retention ([Business of Apps](https://www.businessofapps.com/news/duolingos-streak-feature-drives-record-17-million-daus)); losing long streaks drives users away ([Indie Hackers](https://www.indiehackers.com/post/a-streak-feature-increases-retention-ed65a9d3de)) |
 | **Weekly challenges** | New seeded challenge every **Monday 15:00 UTC**, runs 7 days: a scenario start + 3–5 tasks ("Become a surgeon, adopt twins, never commit a crime"). Reward: 200 Sparks, a unique Milestone, a cosmetic | **Completable with the free base game**. Never needs a Story Pack. Past challenges sit in the Challenge Archive (Sparks, not cash) | Life 3 or day 3 | BitLife players say challenges are "very hard for those who don't have expansion packs" ([Sensor Tower review dump](https://app.sensortower.com/api/ios/apps/1374403536?country=GB)) |
 | **Weekend events** | 2 per month, Fri–Sun. Boosted storylet weights for a theme ("Crime Wave Weekend": heist events ×3, special heist outcomes) + a community counter ("Players solved 1.2M heists") | No paid component. Free reward for participation | Day 3 | Weekend timing peaks ([Sensor Tower Royal Match calendar](https://sensortower.com/blog/what-royal-matchs-calendar-teaches-about-live-ops-in-2026)) |
-| **Seasonal events** | 4 seasons a year, about 13 weeks each. Each has a themed storyline (8 chapters released weekly), a free track (~20 rewards) and a premium track ($4.99, ~30 cosmetics + 2 bonus chapters) | Main storyline free for all. Premium is cosmetic + bonus story only | Life 3 | Half of top-grossing titles used a season pass in 2021, and casual games adopted them ([Sensor Tower](https://sensortower.com/blog/state-of-mobile-game-monetization-2022)). BitLife ended its Seasons/pass system in Aug 2026 ([BitLife What's New](https://bitlifeapp.com/whats-new)), which leaves the format open |
-| **Dynasty Ambitions** | Long goals across generations ("3 generations of doctors", "Family net worth $100M"), plus Legacy Points per [[04 App Breakdown - Social, Meta and Premium]] | Free tier: up to Generation 4 per dynasty, shown clearly. No goal needs more than 3 generations | First heir | Pillar 4 |
+| **Seasonal events** | 4 seasons a year, about 13 weeks each. Each has a themed storyline (8 chapters released weekly), a free track (~20 rewards) and a premium track ($4.99, ~30 cosmetics + 2 bonus chapters) | Main storyline free for all. Premium is cosmetic + bonus story only | Life 3 | Half of top-grossing titles used a season pass in 2021, and casual games adopted them ([Sensor Tower](https://sensortower.com/blog/state-of-mobile-game-monetization-2022)). BitLife's Seasons/pass system reportedly ended in Aug 2026 ([BitLife What's New](https://bitlifeapp.com/whats-new)), which would leave the format open |
+| **Dynasty Ambitions** | Long goals across generations ("3 generations of doctors", "Family net worth $100M"), plus Legacy Points per [[04 App Breakdown - Social, Meta and Premium]] | Free tier: up to Generation 4 per dynasty, shown clearly; Plus up to Generation 8, the hard cap for every dynasty. No Ambition needs more than 4 generations, so all are completable free | First heir | Pillar 4 |
 | **Life Titles and Milestones** | End-of-life title (one per life) + ~300 Milestones at launch, with locked hints | Hints are always shown (no silent mystery) | Life 1 death | BitLife ribbons drive community decoding ([Gamezebo](https://www.gamezebo.com/walkthroughs/bitlife-guide-how-to-get-the-model-bitizen-ribbon/)) |
 | **Life Recap sharing** | Wrapped-style 9:16 cards + "Try my life" seed | Free | Life 1 death | Wrapped credited with a 21% rise in app downloads ([Idomoo](https://www.idomoo.com/blog/why-spotify-wrapped-works-and-how-you-can-do-it-too/)) |
 | **Friend seeds and async visits** (Phase 5) | Play a friend's seed and compare outcomes; visit a friend's shared life snapshot | Free | Account linked | Change.org multiplayer petition ([Change.org](https://www.change.org/topic/bitlife-en-us)) |
@@ -187,7 +189,7 @@ Tool: **Firebase Remote Config + A/B Testing**, with BigQuery export ([Firebase]
 | T7 | Soft | Plus price | $9.99 vs $12.99 (per geo) | Net revenue per DAU | Store rating −0.1, conversion −30% |
 | T8 | Soft | Welcome Pack timing | After life 1 vs age 18 in life 1 | First-purchase conversion by D7 | D1/D7 −1 pp |
 | T9 | Soft / global | Rewarded cap | 8/day vs 10/day | Ad ARPDAU | D7 −1 pp, session length −5% |
-| T10 | Global | Free generation cap | Gen 4 vs Gen 6 | D30, Plus conversion | D30 −0.5 pp |
+| T10 | Global | Generation-cap messaging (cap itself fixed: free Gen 4, Plus Gen 8) | Cap shown on the Heir screen from Gen 1 vs a dynasty progress bar on the Dynasty tab | D30, Plus conversion | D30 −0.5 pp |
 | T11 | Global | Season premium contents | +2 story chapters vs +4 cosmetics instead | Pass conversion | Free track completion −10% |
 | T12 | Global | Recap share CTA | "Share story" vs "Challenge a friend" (seed) | K-factor proxy: installs from shared links per 1,000 lives | – |
 | T13 | Global | Storylet weighting | Memory-callback weight ×1.0 vs ×1.5 | Lives per user D30, freshness KPI | Session length −5% |
@@ -203,7 +205,7 @@ Everything below can change without an app release. Each key has a default in th
 | Group | Keys (examples) |
 |---|---|
 | **Content** | `content_bundle_version`, `storylet_weight_overrides` (per event tag), `event_active_window`, `season_id`, `season_chapter_unlock_dates[]`, `weekly_challenge_seed`, `weekend_event_id` |
-| **Economy** | `sparks_rewards{daily_goal, life_complete, challenge, ad}`, `sink_prices{archive_challenge, streak_freeze, save_slot}`, `free_generation_cap`, `free_rewinds_per_life`, `free_save_slots` |
+| **Economy** | `sparks_rewards{daily_goal, life_complete, challenge, ad}`, `sink_prices{archive_challenge, streak_freeze, crest_parts}`, `free_generation_cap` (4), `dynasty_generation_cap` (8, fixed), `free_rewinds_per_life`, `free_save_slots` (3; Plus 10) |
 | **Ads** | `ads_enabled`, `rewarded_cap_session`, `rewarded_cap_day`, `rewarded_cooldown_s`, `rewarded_placements_enabled[]`, `ad_free_days_after_purchase` (7), `ftue_ad_block_until_first_death` (true) |
 | **Store** | RevenueCat `offering_id` per segment/geo, `founders_bundle_end_date`, `welcome_pack_trigger` |
 | **Retention** | `daily_goal_pool_id`, `daily_reset_hour_local`, `streak_rule`, `streak_free_freeze_per_week`, `comeback_threshold_days` |

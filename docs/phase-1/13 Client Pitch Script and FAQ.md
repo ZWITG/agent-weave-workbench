@@ -1,15 +1,18 @@
 ---
-title: Client Pitch Script and FAQ
+title: "13 Client Pitch Script and FAQ"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, pitch, faq, client]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, pitch, faq, client]
 ---
 
-# Client Pitch Script and FAQ
+# 13 Client Pitch Script and FAQ
+
+*Purpose:* The presenter's talk track for the 12-slide client pitch and prepared answers to the questions clients are most likely to ask.
 
 > [!note] How to use this note
-> A 12-slide, **~11-minute** talk track (10–12 minute window), followed by 18 likely client questions with crisp answers. Every number on a slide comes from [[01 Executive Summary]], [[02 Market and Competitors]] or [[03 Player Research and Wishlist]], where the sources are cited. **Say "estimate" or "target" out loud whenever a slide shows one.** The deck structure follows publisher and investor guidance: lead with the game, then proof, comps, model, budget and a clear ask; avoid unrealistic comps and math errors ([WN Hub](https://wnhub.io/news/analytics/item-2953); [80.lv](https://80.lv/articles/pitch-perfect-how-to-prepare-your-game-for-investors-and-publishers/); [Positech](https://www.positech.co.uk/cliffsblog/2015/01/06/how-to-pitch-your-indie-game-to-a-vc-investor/)).
+> A 12-slide, **~11-minute** talk track (10–12 minute window), followed by 20 likely client questions with crisp answers. Every number on a slide comes from [[01 Executive Summary]], [[02 Market and Competitors]] or [[03 Player Research and Wishlist]], where the sources are cited. **Say "estimate" or "target" out loud whenever a slide shows one.** The deck structure follows publisher and investor guidance: lead with the game, then proof, comps, model, budget and a clear ask; avoid unrealistic comps and math errors ([WN Hub](https://wnhub.io/news/analytics/item-2953); [80.lv](https://80.lv/articles/pitch-perfect-how-to-prepare-your-game-for-investors-and-publishers/); [Positech](https://www.positech.co.uk/cliffsblog/2015/01/06/how-to-pitch-your-indie-game-to-a-vc-investor/)).
 
 > [!warning] Language guardrails for the presenter
 > - Say "inspired by the text life-sim genre". Never say "BitLife clone", "BitLife 2" or imply any link with BitLife, Candywriter or Stillfront.
@@ -48,7 +51,7 @@ updated: 2026-10-26
 
 ### Slide 4 — What players are telling us (1:00)
 **On screen:** the ranked top five complaints (ads, paywall creep, lost purchases, repetition, accessibility regressions), each with one short real quote.
-**Say:** "We read app-store reviews, accessibility forums, wikis and petitions. Reddit was largely blocked to our tools, so this is ranked by how often each theme appears across sources, not by votes. The pattern is unmistakable. Players love the loop and resent the monetisation. One player lost 90% of their paid packs on a new phone and dropped the rating from five stars to one. Others paid to remove ads and still saw ads. Blind players even ran a petition to make the game accessible again after an update broke VoiceOver."
+**Say:** "We read app-store reviews, accessibility forums, wikis and petitions. We could not access Reddit directly, so this is ranked by how often each theme appears across sources, not by votes. The pattern is unmistakable. Players love the loop and resent the monetisation. One player lost 90% of their paid packs on a new phone and dropped the rating from five stars to one. Others paid to remove ads and still saw ads. Blind players even ran a petition to make the game accessible again after an update broke VoiceOver."
 
 ### Slide 5 — Relivable in one line + five pillars (1:15)
 **On screen:** the one-liner and five pillar tiles.
@@ -72,7 +75,7 @@ updated: 2026-10-26
 
 ### Slide 10 — Roadmap and budget (1:00)
 **On screen:** a five-phase timeline with budget bands, clearly labelled *estimates*.
-**Say:** "Phase 2 is a 8-week prototype for about $25–60K: birth to age 30, 150 events, the new hub, real playtests. Phase 2 runs from 9 November to 8 January. Phase 3 is MVP and soft launch in about five months, with MVP labour of roughly $60–210K, or about $385K with a US team, and soft launch in the Philippines from 17 May 2027, then Ireland and the Netherlands. We target global launch on 12 October 2027, about eleven months from start, at roughly $505K to $1.03M in total, or about $1.4–1.6M with a US team. These exclude user acquisition. The critical path is writing, not code, so we staff and tool for content throughput." See [[11 Roadmap Team and Budget]].
+**Say:** "Phase 2 is an 8-week prototype for about $25–60K: birth to age 30, 150 events, the new hub, real playtests. Phase 2 runs from 9 November to 8 January. Phase 3 is MVP and soft launch in about five months, with MVP labour of roughly $60–210K, or about $385K with a US team, and soft launch in the Philippines from 17 May 2027, then Ireland and the Netherlands. We target global launch on 12 October 2027, about eleven months from start, at roughly $505K to $1.03M in total, or about $1.4–1.6M with a US team. These exclude user acquisition. The critical path is writing, not code, so we staff and tool for content throughput." See [[11 Roadmap Team and Budget]].
 
 ### Slide 11 — KPIs and risk (0:45)
 **On screen:** target row D1 40% / D7 13% / D30 5% (soft-launch gates 35% / 10% / 3.5%), payback D90–D180, against benchmark medians of 22% / ~4% / <1%. Top three risks with mitigations.
@@ -80,7 +83,7 @@ updated: 2026-10-26
 
 ### Slide 12 — The ask (0:45)
 **On screen:** three bullets.
-**Say:** "We're asking for three things today. First, approve the Phase 2 prototype: six to eight weeks, roughly $25–60K, with a go/no-go playtest gate. Second, confirm the age-rating stance and team model. Third, let us start the trademark search and open the community channels now. The genre has had one answer for eight years. We'd like to build the better one. Thank you."
+**Say:** "We're asking for three things today. First, approve the Phase 2 prototype: eight weeks, roughly $25–60K, with a go/no-go playtest gate. Second, confirm the age-rating stance and team model. Third, let us start the trademark search and open the community channels now. The genre has had one answer for eight years. We'd like to build the better one. Thank you."
 
 ## Likely client questions
 
@@ -129,7 +132,7 @@ We do have one paywall. It's optional, one-time and honest: **Relivable Plus (~$
 - **Story Packs** (~$2.99–3.99) that add storylines and never lock careers.
 - Cosmetics: a $1.99 Welcome Pack and $0.99–1.99 sets. Two bundles of Plus and Story Packs at $14.99 and $24.99.
 - No premium currency. Our only soft currency, Sparks, is earned in play and never sold.
-- **Web-shop link-outs** where allowed, currently 0% Apple fee in the US.
+- **Web-shop link-outs** from global launch (Phase 4) where allowed. The US Apple fee is currently 0%; Apple has proposed 15%, pending court approval.
 
 Base case: ~$0.07 blended global ARPDAU (≥ $0.20 in Tier-1 markets) and 2–4% payers *(estimates to validate; see [[06 Monetization and Economy]])*.
 
@@ -150,7 +153,7 @@ Our research found Unity the lowest-risk default for games in general. Relivable
 Rendering performance isn't the deciding factor for 2D layered avatars. Unity 6 remains our documented alternative if the client wants heavier 2D animation; the stay-or-switch decision is made at the end of Phase 2 against the spike criteria. See [[08 Technical Architecture]].
 
 **13. What if AI backfires?**
-We designed for that. AI is **optional, off by default for minors, on-device first, and only rewords text**. It never decides outcomes, so the game is fully playable and balanced without it. Every output passes moderation, with an in-app report button, as Google Play requires. We don't headline AI in marketing; we headline memory, which the deterministic engine delivers on its own. The inZOI backlash and the Peridot shutdown are our cautionary examples. Worst case, we switch AI off remotely with no gameplay loss.
+We designed for that. AI is **optional, off by default, on-device first, and only rewords text**. It never decides outcomes, so the game is fully playable and balanced without it. Every output passes moderation, with an in-app report button, as Google Play requires. We don't headline AI in marketing; we headline memory, which the deterministic engine delivers on its own. The inZOI backlash and the Peridot shutdown are our cautionary examples. Worst case, we switch AI off remotely with no gameplay loss.
 
 **14. What does AI cost us?**
 On-device (Apple Foundation Models) costs nothing per call. Cloud fallback on a small model is about $0.27 per active user per month at our assumed usage *(estimate)*. That's why we cache it and gate the cloud version to premium players.

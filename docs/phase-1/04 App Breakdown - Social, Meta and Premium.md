@@ -2,17 +2,19 @@
 title: "04 App Breakdown - Social, Meta and Premium"
 project: Relivable
 phase: 1
-status: draft
-tags: [relivable, phase-1, app-breakdown, relationships, family, dynasty, fame, pets, activities, identity, achievements, challenges, social, ugc, premium, ai, accessibility, safety]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, app-breakdown, relationships, family, dynasty, fame, pets, activities, identity, achievements, challenges, social, ugc, premium, ai, accessibility, safety]
 ---
 
 # 04 App Breakdown: Social, Meta and Premium
 
+*Purpose:* Specifies the people, dynasty, meta, social, premium, AI and accessibility layers of Relivable, module by module, with rules, priorities and acceptance criteria.
+
 > [!abstract] What this note covers
 > This is the second half of the app breakdown. [[04 App Breakdown - Core Life Systems]] covers stats, life stages, school, careers, money, health, crime and death. This note covers everything about **people** (relationships, love, children, generations, fame, pets), the **Activities hub redesign**, **identity**, the **meta layer** (achievements, Life Titles, Life Recap, challenges), **async social and Creator Mode**, **premium and editor tools**, the **optional AI Storyteller**, and **settings, accessibility and safety**.
 >
-> It stays consistent with the [[_Concept Brief]]. Where it adds a number or a rule the brief does not set, it says so and marks it as a recommendation for the client to confirm.
+> It follows the [[_Concept Brief]]. Where it adds a number or a rule that the brief does not set, it marks it as a recommendation for the client to confirm.
 
 > [!info] How to read each module
 > Every module uses the same template: **Purpose → BitLife equivalent → Relivable redesign → New features → Detailed sub-features → Key rules, data and examples → UI entry point → Priority and Free vs Plus → Dependencies → Acceptance criteria.**
@@ -22,13 +24,13 @@ updated: 2026-10-26
 > - **Launch** = needed for the Phase 4 global launch (parity + "better" features, 5 languages).
 > - **LiveOps** = Phase 5 and later (seasons, story packs, async social, Creator Mode).
 >
-> **Free vs Plus:** "Free" means every player gets it. "Plus" means the one-time **Relivable Plus** unlock (about $9.99, per the brief). "Pack" means an optional Story Pack (about $2.99–3.99). "Season" means the optional Season Pass (about $4.99). Pricing and economy detail live in [[06 Monetization and Economy]].
+> **Free vs Plus:** "Free" means every player gets it. "Plus" means the one-time **Relivable Plus** unlock (about $9.99). "Pack" means an optional Story Pack (about $2.99–3.99). "Season" means the optional Season Pass (about $4.99). Pricing and economy detail live in [[06 Monetization and Economy]].
 
 > [!warning] The one rule that overrides everything in this note
 > **No career or core system is ever paywalled.** Plus, Packs and Seasons may sell convenience, cosmetics, extra *storylines* and editor/rewind tools. They never sell a career, a life system, a relationship type, a country, a pet species, or anything a weekly challenge needs. The "Premium boundary" table at the end lists every feature against this rule.
 
 > [!note] Research basis and confidence
-> BitLife facts below come from `reports/BitLife complete feature guide.md` and `research_notes/BitLife complete feature guide/*.md`. Player wishes come from `research_notes/Life sim game phase 1/reddit_player_wishlist.md`. All research came from web-search snippets because page fetching was blocked, so BitLife numbers (prices, ages, thresholds) are "last documented" values from fan guides, not verified late-2026 values. Relivable numbers in this note are **design proposals** to be tuned in the Phase 2 prototype and the soft launch.
+> BitLife facts below come from `reports/BitLife complete feature guide.md` and `research_notes/BitLife complete feature guide/*.md`. Player wishes come from `research_notes/Life sim game phase 1/reddit_player_wishlist.md`. The research was gathered through web search rather than full page reads, so BitLife numbers (prices, ages, thresholds) are "last documented" values from fan guides, not verified late-2026 values. Relivable numbers in this note are **design proposals** to be tuned in the Phase 2 prototype and the soft launch.
 
 ## Contents
 
@@ -408,8 +410,8 @@ Children are how a life continues into the next one. Parenting must be about rea
 - Life feed cards for milestones ("Ren passed the driving test. Buy a car?").
 
 ### Priority and Free vs Plus
-- **MVP:** natural conception, IVF, adoption, multiples, parenting cards (basic 3 age bands), child memories, custody (joint/primary), child support.
-- **Launch:** surrogacy legality by country, fostering, egg freezing/donation, ligation/reversal, parenting styles, twins at birth for the player, family secrets.
+- **MVP:** natural conception, IVF, adoption, multiples, parenting cards (basic 3 age bands), child memories, custody (joint/primary), child support, and a **player-born-a-twin toggle** at life setup.
+- **Launch:** surrogacy legality by country, fostering, egg freezing/donation, ligation/reversal, parenting styles, **twin-specific storylines** for player twins, family secrets.
 - **Free** in full.
 
 ### Dependencies
@@ -420,7 +422,7 @@ Children are how a life continues into the next one. Parenting must be about rea
 - Every fertility route shows its cost and success odds before you confirm.
 - A child's adult traits can be traced to at least one parenting choice or event, shown in the child's "How they grew up" summary.
 - After any divorce with minor children, a custody result and a support amount (or "none") are visible in both parents' finance and family views.
-- The player can be born as a twin or triplet in at least 1.5% of random lives, and twin storylets fire for them.
+- The player can be born as a twin or triplet in at least 1.5% of random lives, or by choosing the twin toggle at setup (MVP); twin-specific storylets fire for them from Launch.
 - There is no player-selectable action that physically harms a child; verified by content validator rules.
 
 ---
@@ -432,7 +434,7 @@ Turn single lives into a family saga. Generational play is the long-term meta lo
 
 ### BitLife equivalent
 - At death you can continue as an eligible child, including adopted children (since about v1.14).
-- **Free players can continue only once; up to 8 generations need the paid VIP unlock.** Players complain about this ("to continue a family tree... you have to pay").
+- **Free players can continue only once; unlimited generations need the paid Bitizenship membership.** Players complain about this ("to continue a family tree... you have to pay").
 - A will can leave money to one child, a partner or charity, or split it; estate tax follows real-life countries.
 - Heirs inherit houses and cars; if the heir is under 18, assets are auctioned and the heir keeps the cash. As of 2022, startup businesses could not pass to heirs.
 - **Heirlooms** come from a daily attic mini-game, count toward net worth and pass to the heir.
@@ -440,13 +442,13 @@ Turn single lives into a family saga. Generational play is the long-term meta lo
 
 ### Relivable redesign
 - **Dynasties are first-class objects:** each family line has a name, a crest, a tree, goals, a reputation and a history that survive across lives.
-- **Free players get at least 3 generations per dynasty** (brief requirement). Recommendation: free dynasties run to **Generation 4** (the founder plus 3 heir continuations). Plus raises the cap to **Generation 8**, the hard limit for every dynasty. Reaching the cap never deletes anything: the dynasty is saved, its tree stays viewable and shareable, and it can be continued to Generation 8 after buying Plus.
+- **Every dynasty is capped at 8 generations.** Free players reach **Generation 4** (the founder plus 3 heir continuations); Plus extends a dynasty to **Generation 8**. Reaching a cap never deletes anything: at the free cap the dynasty is saved, its tree stays viewable and shareable, and it can be continued to Generation 8 after buying Plus. At Generation 8 the dynasty is **completed**, saved and shown as a **Dynasty Recap**, and the player starts a new dynasty. There is no limit on the number of dynasties.
 - **Better inheritance:** businesses, investments, property and heirlooms all pass on. Heirs under 18 get a **trust** run by a guardian NPC instead of a forced auction.
 - **Family tree view** with zoom, search, filters, and an accessible list mode.
 - **Dynasty Ambitions and Legacy Points** reward multi-generation goals.
 
 ### New features
-- Family tree view (brief pillar 4; free, not paywalled).
+- Family tree view (pillar 4; free, not paywalled).
 - Dynasty Ambitions (multi-generation goals) and Legacy Points.
 - Family Name Standing (dynasty reputation), shaped by past lives' fame, crime and charity.
 - Heirlooms with provenance (who owned them, what happened).
@@ -465,9 +467,10 @@ flowchart TD
   T --> W[Will executes: estate tax by country, bequests, trusts]
   W --> H{Eligible heirs?}
   H -- None --> E[Dynasty ends: Chronicle closes, tree saved]
-  H -- Yes --> C{Generation cap reached? Free: Gen 4}
-  C -- "No, or Plus" --> P[Pick heir: card per heir with age, stats, traits, inheritance, relationships]
-  C -- "Yes, free" --> S[Dynasty saved and paused; can continue after Plus; start a new dynasty free]
+  H -- Yes --> C{Generation cap reached?}
+  C -- "No" --> P[Pick heir: card per heir with age, stats, traits, inheritance, relationships]
+  C -- "Free cap: Gen 4" --> S[Dynasty saved and paused; can continue to Gen 8 after Plus; start a new dynasty free]
+  C -- "Hard cap: Gen 8" --> R[Dynasty completed: saved, Dynasty Recap shown; start a new dynasty]
   P --> N[Heir's life resumes at current age with memories of the parent]
 ```
 
@@ -501,6 +504,7 @@ flowchart TD
   - "Clean Name": 4 generations with no criminal convictions.
   - "Infamous": 3 generations reach crime-family rank.
   - "Big Family": 25 living descendants at once.
+- **Ambition length rule:** no Ambition needs more than 4 generations, so every Ambition can be completed on the free tier and well inside the 8-generation cap.
 - **LP** come from finished lives (Life Title rarity, Ambition progress, achievements). LP buy **dynasty perks** that are small, thematic and capped so they never feel pay-to-win: a family crest design, a starting heirloom, a +5 starting Family Name Standing, a "family recipe" storylet, a home-town connection. **LP are earned only, never sold.**
 
 **Heirlooms**
@@ -510,9 +514,9 @@ flowchart TD
 - Heirlooms trigger callbacks: a descendant who sells Grandma's ring gets a Resentment memory from the aunt who wanted it.
 
 ### Key rules, data and examples
-- **Free cap (decided):** Generation 4 (founder + 3 heirs) per dynasty, unlimited dynasties. Brief minimum is 3 generations, so this exceeds it. At the cap the dynasty is saved ([[06 Monetization and Economy]]).
-- **Plus:** up to 8 generations.
-- **No save loss:** dynasties are cloud-saved to the account ([[08 Technical Architecture]]). The "deleted after 4 generations" complaint must be impossible: tested with 50-generation automated dynasties.
+- **Free cap (decided):** Generation 4 (founder + 3 heirs) per dynasty, unlimited dynasties. At the free cap the dynasty is saved and can be resumed with Plus ([[06 Monetization and Economy]]).
+- **Plus:** up to Generation 8, the hard cap for every dynasty. At Generation 8 the dynasty is completed, saved and shown as a Dynasty Recap.
+- **No save loss:** dynasties are cloud-saved to the account ([[08 Technical Architecture]]). The "deleted after 4 generations" complaint must be impossible: tested with automated dynasties run to the 8-generation cap, plus a 50-generation stress test of the save format.
 - **Example:** The Okafor dynasty picks "Healers" and "Clean Name". Gen 1 nurse, Gen 2 surgeon, Gen 3 a vet (counts as medicine in the Ambition data). Gen 3's teenage shoplifting conviction breaks "Clean Name"; the Ambition card shows it as "Failed in Gen 3" with the event, and LP still count for the completed "Healers".
 
 ### UI entry point
@@ -523,7 +527,7 @@ flowchart TD
 ### Priority and Free vs Plus
 - **MVP:** continue as heir, will, estate tax, trusts, business succession, free cap at Gen 4, basic family tree (list + simple tree).
 - **Launch:** full zoomable tree, Ambitions, LP perks, heirloom provenance, Chronicle, will contests, distant heirs.
-- **Free:** everything up to Gen 4, tree, Ambitions, LP. **Plus:** up to 8 generations.
+- **Free:** everything up to Gen 4, tree, Ambitions, LP. **Plus:** up to Generation 8 (hard cap; completed dynasties get a Dynasty Recap).
 
 ### Dependencies
 - Modules 1–3 (bonds, marriage, children), 8 (avatars), 9 (Life Recap, titles), 11 (sharing), 12 (Plus entitlement).
@@ -532,9 +536,10 @@ flowchart TD
 ### Acceptance criteria
 - A free player can play a dynasty from Gen 1 through Gen 4 with no paywall prompt before the Gen 4 life ends.
 - At the free cap, the dynasty is saved, its tree and recaps stay viewable, and buying Plus resumes it from the heir picker with no data loss.
+- At Generation 8, no heir picker is shown: the dynasty is marked completed, a Dynasty Recap is generated, and a new dynasty can be started immediately.
 - Businesses, investments, property and heirlooms appear in the heir's assets after inheritance; minors receive a trust, never a forced auction.
 - The family tree has a list mode that VoiceOver/TalkBack read fully in a logical order.
-- An automated 50-generation dynasty loads in under 2 seconds on the minimum-spec device and passes save/restore.
+- An automated 8-generation dynasty (and a 50-generation stress-test save) loads in under 2 seconds on the minimum-spec device and passes save/restore.
 
 ---
 
@@ -1056,7 +1061,7 @@ Give players a reason to come back every day and week, create shared community m
 - **Weekly challenges** since 22 February 2020 (v1.31): themed task lists tied to holidays, films or YouTubers; each rewards a one-off in-game item. Start time conflicts across sources (Saturday 3pm EST or Sunday, about 5 days).
 - Past challenges are in a **paid vault** (about $4.99).
 - A player review asked to make challenges easier for players without expansion packs.
-- Limited events in 2026: a scavenger hunt (June–July), an anniversary sweepstakes (September), Halloween challenges (October). The Seasons pass ended in August 2026.
+- Limited events in 2026: a scavenger hunt (June–July), an anniversary sweepstakes (September), Halloween challenges (October). The Seasons pass reportedly ended in August 2026.
 - BitLife had a Scenario Creator (v1.18), but research could not confirm how scenario starts work today; there is no share code system.
 
 ### Relivable redesign
@@ -1078,7 +1083,7 @@ Give players a reason to come back every day and week, create shared community m
 
 **Weekly challenges**
 - **Schedule (proposal):** new challenge every **Monday 15:00 UTC**, runs 7 days, plus a weekend "Bonus Task" Friday–Sunday. Set in Remote Config ([[07 Retention and LiveOps]]).
-- **Structure:** 4–6 tasks, mix of easy (1–2), medium (2–3), hard (1). Example "The Long Way Home": (1) be born in a coastal country, (2) emigrate twice, (3) own a boat, (4) reconcile with an estranged parent, (5) die in your home town.
+- **Structure:** 3–5 tasks, mix of easy (1–2), medium (1–2), hard (1). Example "The Long Way Home": (1) be born in a coastal country, (2) emigrate twice, (3) own a boat, (4) reconcile with an estranged parent, (5) die in your home town.
 - **Rules:**
   - Every task completable with free content (validator bot runs ≥ 500 attempts and must succeed in ≥ 5% with a scripted strategy).
   - No task requires Plus, a Pack, a Season or a purchase.
@@ -1088,9 +1093,9 @@ Give players a reason to come back every day and week, create shared community m
 - **Rewards:** a themed cosmetic (avatar item, card theme, tombstone style), a Collection entry, Legacy Points, and a Title-style "Challenge badge". No power items, no premium currency.
 
 **Daily goals**
-- 3 goals a day, refreshed at local midnight: small, narrative and quick (1–5 minutes). Examples: "Make a new friend", "Go on a date", "Visit a grandparent", "Age up 5 years without committing a crime".
-- **Reward:** small LP or cosmetic tokens (earned-only "Keepsake Stars" used for the cosmetics shelf; not sold, see [[06 Monetization and Economy]]).
-- **Streak:** a day counts if you complete 1 goal. **1 free streak freeze per week**; a missed day can be repaired by completing 2 goals the next day. No paid streak repairs.
+- 3 goals a day, refreshed at 04:00 local time: small, narrative and quick (1–5 minutes). Examples: "Make a new friend", "Go on a date", "Visit a grandparent", "Age up 5 years without committing a crime".
+- **Reward:** +20 Sparks per goal and +50 for all three (Sparks are the only soft currency: earn-only, never sold; see [[06 Monetization and Economy]] §5).
+- **Streak:** a day counts if you live at least 1 year (one Age +1); "complete 1 goal" is the A/B alternative ([[07 Retention and LiveOps]] T6). **1 free streak freeze per week**; a missed day can be repaired by completing 2 goals the next day. No paid streak repairs.
 
 **Seasonal events**
 
@@ -1108,14 +1113,14 @@ Give players a reason to come back every day and week, create shared community m
 
 **Scenario seeds and share codes**
 - A **seed** captures: content version, country/city, birth year (era), family setup (parents' wealth, marriage health, siblings, twins), player identity, starting traits, the RNG seed, and optional rule modifiers ("no money from parents", "start as an orphan").
-- **Share code format (proposal):** `EL-` + 10 characters in Crockford Base32 (no I, L, O, U), e.g. `EL-7K3Q-MX92-HT`. It maps to a server record (so codes stay short) with an offline fallback "long code" for sharing without network.
-- **Entry points:** New Life → "Enter code"; Life Recap's last card ("Try this life"); deep links `relivable://seed/EL-7K3Q-MX92-HT` and a web link that opens the app or the store.
+- **Share code format (proposal):** `#RL-` + 10 characters in Crockford Base32 (no I, L, O, U), e.g. `#RL-7K3Q-MX92-HT`; short codes for challenges and pitch materials may use 4 characters (e.g. `#RL-7Q2K`). It maps to a server record (so codes stay short) with an offline fallback "long code" for sharing without network.
+- **Entry points:** New Life → "Enter code"; Life Recap's last card ("Try this life"); deep links `relivable://seed/RL-7K3Q-MX92-HT` (the `#` is display-only and is dropped in links) and a web link that opens the app or the store.
 - **Determinism:** same seed + same content version + same choices = same outcomes. If content updated, the code shows "made with v1.4; your game uses v1.6: results may differ".
 - **Safety:** seeds include no free text except a name (filtered); seeds created by under-18 accounts are shareable only with friends.
 
 ### Key rules, data and examples
 - **Fairness metric:** challenge completion rate for non-payers within ±5 percentage points of payers in soft-launch analytics; if not, the challenge is flagged and tuned.
-- **Example:** Weekly challenge "Small Town Saint" — seed `EL-2PB4-QW7C-9N` (born 1962, rural Ohio, poor family). Tasks: become a nurse, adopt a child, volunteer 10 years, die with Karma ≥ 80. Leaderboard ranks by completion time in in-game years and by Chaos Index (lowest wins this week).
+- **Example:** Weekly challenge "Small Town Saint" — seed `#RL-2PB4-QW7C-9N` (born 1962, rural Ohio, poor family). Tasks: become a nurse, adopt a child, volunteer 10 years, die with Karma ≥ 80. Leaderboard ranks by completion time in in-game years and by Chaos Index (lowest wins this week).
 
 ### UI entry point
 - **Challenges tab** (or "Today" panel on the main menu): daily goals, weekly challenge, events, Archive.
@@ -1220,7 +1225,7 @@ flowchart LR
 ### Key rules, data and examples
 - **No free-text chat between players** at Launch. All social signals are preset (postcards, gifts) to keep the rating and moderation load manageable ([[09 Compliance and Ratings]]).
 - **Data minimisation:** friends see in-game data only; real name, email and location are never shown.
-- **Example:** Jess visits her friend Omar's Life Museum and sees his "The Outlaw" life (crime details hidden because Jess's account is 16–17 standard mode). She sends a "Chaos!" postcard and starts his seed `EL-9DX2-RQ4M-7A`. Her run finishes 4 in-game years faster; the friends leaderboard updates.
+- **Example:** Jess visits her friend Omar's Life Museum and sees his "The Outlaw" life (crime details hidden because Jess's account is 16–17 standard mode). She sends a "Chaos!" postcard and starts his seed `#RL-9DX2-RQ4M-7A`. Her run finishes 4 in-game years faster; the friends leaderboard updates.
 
 ### UI entry point
 - **Friends** section in the main menu (Profile → Friends), Life Museum from any friend's card.
@@ -1255,7 +1260,7 @@ Earn revenue in a way that players call fair: one optional premium unlock, opt-i
 - **Job-pack bundle** (about $20.99): all current and future job packs, but **not** expansion packs.
 - **Expansion packs and Modes** (about $7.99–12 each): Landlord, Investor, C.U.L.T., Black Market, Secret Agent, Zoo, Casino, Outdoors, Political, Vampire, Ultimate Fighter, Movie Director.
 - **Time rewind** sold **per use** (~$0.99), with an "unlimited" SKU in some stores.
-- **Challenge vault** (~$4.99). **Seasons/pass** ended August 2026.
+- **Challenge vault** (~$4.99). **Seasons/pass** reportedly ended in August 2026 (per BitLife's own What's New page; not independently confirmed).
 - Complaints: ads after buying no-ads, paywall creep, lost purchases after phone changes, a 2019 subscription test pulled after backlash.
 
 ### Relivable redesign
@@ -1301,7 +1306,7 @@ flowchart TB
 | Item | Free | Plus |
 |---|---|---|
 | Ads | Opt-in rewarded ads only (capped) | No ads; rewarded-ad rewards granted automatically (e.g. daily bonus) |
-| Generations per dynasty | Up to Generation 4 (founder + 3 heirs) | Unlimited |
+| Generations per dynasty | Up to Generation 4 (founder + 3 heirs) | Up to Generation 8 (hard cap for every dynasty) |
 | Destiny Mode (editor) | Preview only (view hidden facets of your own character in the tombstone) | Full |
 | Rewind | 1 per life + 1 per day via opt-in rewarded ad | Unlimited |
 | Save slots | 3 active lives / dynasties at once | 10 |
@@ -1359,7 +1364,7 @@ flowchart TB
 
 **Account-based restore**
 - Sign in with Apple, Google or email (anonymous play allowed, with a prompt to link before the first purchase and after the first finished life).
-- Entitlements stored server-side (RevenueCat + server-side StoreKit 2 / Play verification, per the brief); a **"Restore purchases"** button in Settings and in the Store; restores on new devices and after reinstall.
+- Entitlements stored server-side (RevenueCat + server-side StoreKit 2 / Play verification); a **"Restore purchases"** button in Settings and in the Store; restores on new devices and after reinstall.
 - Cross-platform: entitlements bought on one platform unlock on the other where store rules allow (to confirm per platform policy in [[06 Monetization and Economy]]).
 - Support flow: in-app "My purchases" list with order IDs and a one-tap support ticket.
 
@@ -1375,8 +1380,8 @@ flowchart TB
 
 ### Priority and Free vs Plus
 - **MVP:** Plus (no ads, up to 8 generations, Destiny Mode core, unlimited Rewind), rewarded ads with rules, account restore, cosmetics shelf (small).
-- **Launch:** full Destiny Mode, first Season Pass, 2–3 Story Packs, cross-platform entitlements.
-- **LiveOps:** seasons cadence, new packs each quarter, web shop where allowed.
+- **Launch:** full Destiny Mode, first Season Pass, 2–3 Story Packs, cross-platform entitlements, web shop where store rules allow ([[06 Monetization and Economy]] §7).
+- **LiveOps:** season cadence and a new Story Pack about every two months. (The web shop launches at Launch, Phase 4, where allowed.)
 
 ### Dependencies
 - RevenueCat, Firebase Auth, server validation, Remote Config ([[08 Technical Architecture]]); pricing, economy and revenue model ([[06 Monetization and Economy]]); retention design ([[07 Retention and LiveOps]]); loot-box, ads and minors compliance ([[09 Compliance and Ratings]]).
@@ -1397,7 +1402,7 @@ Add variety and warmth to text (fighting the "repetitive" complaint) without let
 
 ### BitLife equivalent
 - None. The research found no AI features in BitLife.
-- Market context: new LLM-driven "type any action" life sims exist with little validation; inZOI's AI NPCs (PC) showed both interest and backlash, which is why the brief requires AI to be optional.
+- Market context: new LLM-driven "type any action" life sims exist with little validation; inZOI's AI NPCs (PC) showed both interest and backlash, which is why AI in Relivable is optional.
 
 ### Relivable redesign
 - **Opt-in, off by default.** A clear explanation and toggle in Settings and in a one-time prompt after the first finished life.
@@ -1451,7 +1456,7 @@ flowchart LR
 - **Under-18 / unknown age:** on-device rewording allowed in standard mode with strict filters; cloud fallback disabled (recommendation).
 
 ### Key rules, data and examples
-- **Never decides outcomes** (brief rule): AI cannot change stats, odds, choices, effects, saves or achievements.
+- **Never decides outcomes** (core rule): AI cannot change stats, odds, choices, effects, saves or achievements.
 - **Example:** Canonical: "Your brother Theo asks you to repay the $800 you borrowed. [Repay] [Ask for more time] [Refuse]" → Warm style: "Theo catches you after dinner, a little awkward. 'About that $800...' [Repay] [Ask for more time] [Refuse]". Facts (Theo, $800, the three choices) unchanged.
 
 ### UI entry point
@@ -1477,7 +1482,7 @@ flowchart LR
 ## 14. Settings, accessibility and safety
 
 ### Purpose
-Make Relivable playable by everyone and safe by default. Accessibility is pillar 5 and a known BitLife weakness (repeated VoiceOver regressions, unlabeled buttons, menus hard to navigate). Safety settings support the target rating (Apple 16+, Google Mature 17+, per the brief) and 2026 age laws.
+Make Relivable playable by everyone and safe by default. Accessibility is pillar 5 and a known BitLife weakness (repeated VoiceOver regressions, unlabeled buttons, menus hard to navigate). Safety settings support the target rating (Apple 16+, Google Mature 17+; see [[_Concept Brief]]) and 2026 age laws.
 
 ### BitLife equivalent
 - Settings include restore purchases; dark mode was once a paid VIP perk.
@@ -1587,8 +1592,8 @@ Make Relivable playable by everyone and safe by default. Accessibility is pillar
 |---|---|---|---|
 | 1 Relationships | Bonds, %, interactions, memory, grudges | NPC goals, introductions, caregiver arcs | Seasonal social storylets |
 | 2 Love & marriage | Dating, app, wedding, prenup, divorce, affairs | Parents divorce/remarry, regimes, arranged marriage | Romance Story Packs (storylines) |
-| 3 Children & family | Conception, IVF, adoption, multiples, parenting, custody | Surrogacy by country, fostering, styles, born a twin | Family events |
-| 4 Generations & Dynasty | Heirs, wills, trusts, free cap Gen 4 | Tree view, Ambitions, LP, heirloom provenance | Dynasty events |
+| 3 Children & family | Conception, IVF, adoption, multiples, parenting, custody, born-a-twin toggle | Surrogacy by country, fostering, styles, twin storylines | Family events |
+| 4 Generations & Dynasty | Heirs, wills, trusts for minors, free cap Gen 4, hard cap Gen 8 | Tree view, Ambitions, LP, heirloom provenance | Dynasty events |
 | 5 Fame | Fame, 3 platforms, verification, scandals | 5 platforms, PR, cancel/comeback | Trend events |
 | 6 Pets | Common pets, aging, death | Exotic, horses, zoo business | Pet events, Wild Kingdom pack |
 | 7 Activities hub | Hub, cards, search, all parity items | Parties, religion, road trips | Seasonal cards |
@@ -1596,7 +1601,7 @@ Make Relivable playable by everyone and safe by default. Accessibility is pillar
 | 9 Achievements & Recap | 150 achievements, 25 Titles, basic Recap | 250, 40 Titles, full Recap | Seasonal Titles, Year in Review |
 | 10 Challenges | Weekly, daily, local seeds, Archive | Server codes, events, community goals | Full calendar |
 | 11 Social & UGC | — | Friends, Museum, leaderboards, gifting | Cameos, shared trees, Creator Mode, real-time tests |
-| 12 Premium | Plus, rewarded ads, restore | Seasons, packs, cross-platform | Cadence, web shop |
+| 12 Premium | Plus, rewarded ads, restore | Seasons, packs, cross-platform, web shop (where allowed) | Cadence |
 | 13 AI Storyteller | — | iOS on-device | Android, NPC flavour |
 | 14 Settings & safety | Accessibility, filters, age modes, data rights | All filters, parent guide | Ongoing audits |
 
@@ -1616,7 +1621,7 @@ Make Relivable playable by everyone and safe by default. Accessibility is pillar
 | Parents who divorce/remarry, step-families | ✅ | — | — | — | |
 | Fertility, IVF, surrogacy, adoption, fostering, custody, child support | ✅ | — | — | — | |
 | Parenting styles and actions | ✅ | — | — | — | |
-| Continue as heir | ✅ up to Gen 4 | Up to 8 generations | — | — | Brief: at least 3 free; dynasty saved at cap |
+| Continue as heir | ✅ up to Gen 4 | Up to Gen 8 (hard cap) | — | — | Dynasty saved at the free cap; completed with a Dynasty Recap at Gen 8 |
 | Family tree view, Dynasty Ambitions, Legacy Points, heirlooms | ✅ | Plus crest (cosmetic) | — | Crest designs | LP earned only, never sold |
 | Wills, trusts, business succession | ✅ | — | — | — | |
 | Fame, all social platforms, verification, endorsements, scandals | ✅ | — | Fame storylines | Trend chapters | |
@@ -1652,7 +1657,7 @@ Make Relivable playable by everyone and safe by default. Accessibility is pillar
 
 | # | Decision | Recommendation in this note | Where it is decided |
 |---|---|---|---|
-| 1 | Free generation cap | **Decided 2026-10-26:** Generation 4 (founder + 3 heirs); dynasty saved at the cap | [[06 Monetization and Economy]] |
+| 1 | Free generation cap | **Decided 2026-10-26:** Generation 4 (founder + 3 heirs) free, Generation 8 with Plus (hard cap for all); dynasty saved at each cap | [[06 Monetization and Economy]] |
 | 2 | Free Rewind allowance | **Decided 2026-10-26:** 1 per life + 1 a day via opt-in rewarded ad | [[06 Monetization and Economy]] |
 | 3 | Cloud AI fallback access | Plus only, with a per-user budget | [[06 Monetization and Economy]], [[08 Technical Architecture]] |
 | 4 | Ages 13–15 | Block (simplest for a 16+ rating) or separate softened build | [[09 Compliance and Ratings]] |

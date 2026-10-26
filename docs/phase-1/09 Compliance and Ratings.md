@@ -2,11 +2,14 @@
 title: "09 Compliance and Ratings"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, compliance, age-rating, privacy, coppa, gdpr, accessibility, ai-policy, ip]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, compliance, age-rating, privacy, coppa, gdpr, accessibility, ai-policy, ip]
 ---
 
 # 09 Compliance and Ratings
+
+*Purpose:* Lists the age-rating, privacy, age-law, accessibility, monetisation, AI and IP rules that apply to Relivable, our position on each, and the compliance checklist.
 
 > [!danger] Not legal advice: verify with counsel
 > This note is a **planning summary built from secondary sources** (law-firm alerts, press, vendor blogs) gathered by web search on 2026-10-25. Statutes, store policies and court rulings in this area changed several times in 2025–2026 and are still moving (Texas litigation, Utah/Louisiana amendments, the EU Digital Fairness Act, Google fee rate cards). **Before launch, qualified counsel in the US, EU/UK and Brazil must confirm every item.** Budget about **$15–50K** for legal and privacy counsel (estimate; see [[11 Roadmap Team and Budget]]).
@@ -32,7 +35,7 @@ Related: [[_Concept Brief]] · [[06 Monetization and Economy]] · [[08 Technical
 ## 2. Age rating plan
 
 ### 2.1 Comparable: BitLife
-- **Apple:** listed **17+** under the old system, with descriptors for mild alcohol/tobacco/drug references, profanity/crude humour, **simulated gambling**, cartoon violence, sexual content and nudity, and frequent/intense mature themes ([App Store](https://apps.apple.com/jp/app/bitlife-life-simulator/id1374403536?l=en-US)). Its current listing reportedly shows **18+** under the new tiers ([App Store](https://apps.apple.com/app/bitlife/id1374403536)).
+- **Apple:** listed **17+** under the old system, with descriptors for mild alcohol/tobacco/drug references, profanity/crude humour, **simulated gambling**, cartoon violence, sexual content and nudity, and frequent/intense mature themes ([App Store](https://apps.apple.com/jp/app/bitlife-life-simulator/id1374403536?l=en-US)). Its current US listing shows **18+** under the new tiers (checked 26 Oct 2026) ([App Store](https://apps.apple.com/app/bitlife/id1374403536)).
 - **Google Play:** Mature 17+ ([Prima Games](https://primagames.com/tips/is-bitlife-for-kids-bitlife-kids-warning-guide)). **PEGI 16** per the Welsh government ([Hwb](https://hwb.gov.wales/keeping-safe-online/in-the-know/bitlife)). Common Sense Media says 14+ ([CSM](https://www.commonsensemedia.org/app-reviews/bitlife-life-simulator)). Candywriter's terms say the game is not directed to under-16s ([Qustodio](https://www.qustodio.com/blog/is-bitlife-safe-for-kids/)).
 
 ### 2.2 Target ratings
@@ -67,9 +70,9 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 ## 4. US 2026 app-store age laws and age-signal APIs
 
-| Law | Status (per research, Oct 2026) | Developer duties (summary) | Exposure |
+| Law | Status (checked 26 Oct 2026) | Developer duties (summary) | Exposure |
 |---|---|---|---|
-| **Texas SB 2420** (App Store Accountability Act) | Signed 27 May 2025, effective 1 Jan 2026. A preliminary injunction (23 Dec 2025) was **stayed by the Fifth Circuit**, and on **6 Jul 2026 SCOTUS declined to vacate the stay**, so it is **enforceable pending appeal** ([JURIST](https://www.jurist.org/news/2025/12/us-federal-court-blocks-texas-app-store-age-verification-law/); [CCIA](https://ccianet.org/news/2026/05/appeals-court-pauses-injunction-on-texas-app-store-law-that-likely-violates-first-amendment/); [Wikipedia](https://en.wikipedia.org/wiki/Computer_%26_Communications_Industry_Association_v._Paxton)) | Assign age ratings to the app **and IAPs**. Use the store's age category and parental-consent signals. Limit and delete verification data | AG enforcement. One guide cites up to **$10K per violation** ([Reed Smith](https://www.reedsmith.com/our-insights/blogs/viewpoints/102kddh/texas-law-requires-age-verification-for-app-stores-and-developers/)). "Developer" is undefined |
+| **Texas SB 2420** (App Store Accountability Act) | Signed 27 May 2025, effective 1 Jan 2026. A preliminary injunction (23 Dec 2025) was **stayed by the Fifth Circuit**, and on **6 Jul 2026 SCOTUS declined to vacate the stay**, so it is **enforceable while the Fifth Circuit merits appeal continues** ([Bloomberg Law](https://news.bloomberglaw.com/us-law-week/supreme-court-lets-stand-texas-age-verification-law-tech-opposed); [JURIST](https://www.jurist.org/news/2025/12/us-federal-court-blocks-texas-app-store-age-verification-law/); [CCIA](https://ccianet.org/news/2026/05/appeals-court-pauses-injunction-on-texas-app-store-law-that-likely-violates-first-amendment/); [Wikipedia](https://en.wikipedia.org/wiki/Computer_%26_Communications_Industry_Association_v._Paxton)) | Assign age ratings to the app **and IAPs**. Use the store's age category and parental-consent signals. Limit and delete verification data | AG enforcement. One guide cites up to **$10K per violation** ([Reed Smith](https://www.reedsmith.com/our-insights/blogs/viewpoints/102kddh/texas-law-requires-age-verification-for-app-stores-and-developers/)). "Developer" is undefined |
 | **Utah SB 142, amended by HB 498 (2026)** | Store and developer duties from **6 May 2026**. **Private right of action from 31 Dec 2026** ([Stoel Rives](https://www.stoel.com/insights/publications/utahs-app-store-accountability-act-goes-into-effect); [HB 498](https://le.utah.gov/Session/2026/bills/introduced/HB0498S02.pdf)) | Age-rate. **Notify stores of significant changes**. Use store age and consent signals for Utah users | Private lawsuits from 2027 |
 | **Louisiana HB 570, amended by HB 977 (2026)** | Effective **1 Jul 2026**. **Explicitly rejects a developer good-faith safe harbor** ([Bass Berry](https://www.bassberry.com/news/apps-and-minors-new-compliance-frontiers-and-risks-in-louisiana-utah-and-texas/); [FPF chart](https://fpf.org/wp-content/uploads/2026/06/FPF-Legislation-TX-UT-LA-App-Store-Accountability-Act-Comparison-Chart.pdf)) | Similar to Texas and Utah | Stricter, with no good-faith defence |
 | California AB 1043 (Digital Age Assurance Act, 2027) | **Status not found (gap)** | — | Monitor |
@@ -82,7 +85,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 | Android | **Play Age Signals API**: bands **0–12, 13–15, 16–17, 18+**. Real data only where laws apply. Expanding to all markets by end of 2026 (AU/CA from mid-Aug 2026) ([BetaNews](https://betanews.com/article/google-play-age-signals-api-global-rollout/); [DEV](https://dev.to/mr_manushukla/google-play-age-signals-api-a-2026-android-integration-guide-for-age-ranges-without-collecting-ids-5cde)) | Flutter wrapper exists: `age_range_signals` ([pub.dev](https://pub.dev/documentation/age_range_signals/latest/)) |
 | Both | **Neutral age screen** at first launch (year of birth picker with no default and no hint at the "right" answer) | Store the **band only** and discard the birth year. Re-check when a platform signal arrives |
 | Significant-change notices | Release checklist item: if an update changes content or rating, notify the stores (Utah) | Owner: Producer |
-| Consent revocation | Handle parental-consent revocation signals: lock the account and stop processing | State-law requirement per research |
+| Consent revocation | Handle parental-consent revocation signals: lock the account and stop processing | State-law requirement (to confirm with counsel) |
 
 ---
 
@@ -127,13 +130,13 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 ## 8. Loot boxes, simulated gambling and pricing transparency
 
-| Jurisdiction | Rule (per research) | Relivable |
+| Jurisdiction | Rule (secondary sources, Oct 2026) | Relivable |
 |---|---|---|
 | **Belgium** | Paid loot boxes are treated as gambling (up to **€800K and 5 years**, doubled where minors are involved). A 2025 Antwerp ruling is reported ([Promise Legal](https://blog.promise.legal/loot-box-laws-by-jurisdiction-indie-game-studios/)) | No paid randomness, so not affected |
 | **Brazil, ECA Digital** | Signed Sep 2025, effective ~Mar 2026. **Bans loot-box sales to minors**, defined by mechanics. Fines up to **10% of revenue**. A June 2026 court ordered Riot to pay damages and disclose probabilities ([Programming Insider](https://programminginsider.com/loot-boxes-regulation-and-where-the-line-sits-in-2026/); [Sheep Esports](https://www.sheepesports.com/articles/brazil-court-orders-riot-games-to-pay-eur2-5m-over-league-of-legends-loot-boxes/en)) | PT-BR is a launch language, so **no paid random items anywhere** |
 | **Netherlands** | The 2022 court ruling overturned the ban, but sources conflict. The minister is pushing for an EU-wide ban ([GamblingNews](https://www.gamblingnews.com/news/dutch-minister-pushes-for-eu-wide-loot-box-ban-to-shield-consumers/)) | Soft-launch market. Not affected |
 | **UK** | Not gambling under the 2005 Act. ASA enforces loot-box disclosure in ads ([Promise Legal 2026](https://blog.promise.legal/lootbox-regulation-2026-game-studios/)) | Ads must not imply random paid rewards |
-| **EU Digital Fairness Act** | Proposal scheduled for **Q4 2026**. Under discussion: real-money price shown next to virtual currency, loot-box limits, and child-protective defaults. The CPC network says virtual-currency transactions fall under consumer law, and launched an action against nine games companies in Oct 2026 ([Freshfields](https://technologyquotient.freshfields.com/post/102ltio/the-eus-proposed-digital-fairness-act-a-game-developers-guide-to-potential-imp); [Lewis Silkin](https://www.lewissilkin.com/insights/2026/10/15/eu-consumer-protection-network-launches-action-involving-nine-video-games-compani-102o5do)) | **Already compliant by design:** no premium currency, prices shown in real money, exact contents listed for every SKU |
+| **EU Digital Fairness Act** | Proposal expected in **November 2026** (tentative dates reported by [MLex](https://www.mlex.com/mlex/articles/2529049); not yet officially confirmed). Under discussion: real-money price shown next to virtual currency, loot-box limits, and child-protective defaults. The CPC network says virtual-currency transactions fall under consumer law, and launched an action against nine games companies in Oct 2026 ([Freshfields](https://technologyquotient.freshfields.com/post/102ltio/the-eus-proposed-digital-fairness-act-a-game-developers-guide-to-potential-imp); [Lewis Silkin](https://www.lewissilkin.com/insights/2026/10/15/eu-consumer-protection-network-launches-action-involving-nine-video-games-compani-102o5do)) | **Already compliant by design:** no premium currency, prices shown in real money, exact contents listed for every SKU |
 | **Simulated gambling** (casino, lottery in-game) | Drives the rating descriptor | In-game money only. **No purchase of in-game cash** (removes the "pay to gamble" vector). Hidden for under-18 and unknown users |
 
 ---

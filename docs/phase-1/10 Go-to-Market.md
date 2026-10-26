@@ -2,11 +2,14 @@
 title: "10 Go-to-Market"
 project: Relivable
 phase: 1
-tags: [relivable, phase-1, gtm, aso, ua, soft-launch, creators, community, pr]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, gtm, aso, ua, soft-launch, creators, community, pr]
 ---
 
 # 10 Go-to-Market
+
+*Purpose:* Plans how Relivable reaches players: positioning, community, soft launch, store optimisation, creators, paid acquisition and PR, with budgets and KPI gates.
 
 > [!summary] GTM in one paragraph
 > Relivable launches **organic-first**. BitLife's own revenue fell **19% YoY in H1 2026** when Stillfront tightened paid UA ([Stillfront Q2 2026](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)), and our illustrative unit economics (LTV about $2–2.50 against a US iOS CPI of about $2–3) make paid UA marginal until retention proves top-decile ([monetization research §6](../../research_notes/Life%20sim%20game%20phase%201/monetization_retention.md)). The engine of growth is therefore **shareable stories**: Life Recap cards, scenario seeds and weekly challenges, amplified by a **creator program** (chaotic-playthrough YouTubers and TikTokers plus local-language creators, the BitLife/Goodgame playbook) and an **official Discord opened now** (about 12 months before global launch). Soft launch runs in the **Philippines + Ireland/Netherlands (+ Canada if budget allows)** with hard KPI gates. Global launch adds 5 languages, localised ASO and a coordinated creator wave.
@@ -21,8 +24,8 @@ Related: [[_Concept Brief]] · [[01 Executive Summary]] · [[06 Monetization and
 > **For** players who love living wild, whole lives on their phone, **Relivable is** the life simulator where **every choice is remembered**: your bully shows up at your wedding, your kids inherit your grudges, and your story is worth sharing. **Unlike** BitLife, every career and system is free, ads are opt-in, there is no pay-per-undo, your purchases follow your account, and it works fully with a screen reader.
 
 ### 1.2 Why now (market context)
-- **The category leader is mature and UA-dependent.** BitLife made SEK 95M (Q1), 109M (Q2) and about 100M (Q3) in 2026, with organic growth of −19%, −19% and −2% ([Yahoo Q1](https://finance.yahoo.com/markets/stocks/articles/stillfront-group-ab-stlff-q1-070405250.html); [Stillfront Q2](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/); [Q3 call](https://finance.yahoo.com/quote/SFS.XC/earnings/SFS.XC-Q3-2026-earnings_call-537398.html)). It still earns about US$38–42M a year annualised (research inference), so demand is proven.
-- **Visual competitors have left.** The Sims Mobile servers closed **20 Jan 2026**, and Life by You was cancelled ([SimsCommunity](https://simscommunity.info/2025/10/20/the-sims-mobile-shutting-down/)).
+- **The category leader is mature and UA-dependent.** BitLife made SEK 95M (Q1), 109M (Q2) and about 100M (Q3) in 2026, with organic growth of −19%, −19% and −2% ([Yahoo Q1](https://finance.yahoo.com/markets/stocks/articles/stillfront-group-ab-stlff-q1-070405250.html); [Stillfront Q2](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/); [Q3 call](https://finance.yahoo.com/quote/SFS.XC/earnings/SFS.XC-Q3-2026-earnings_call-537398.html); [Stillfront Q3 2026 report](https://www.inderes.fi/en/releases/stillfronts-interim-report-q3-2026-continued-key-franchise-growth-and-stable-organic-revenue)). It still earns about US$38–42M a year annualised (research inference), so demand is proven.
+- **Visual competitors have left.** The Sims Mobile servers closed **20 Jan 2026**, and Life by You was cancelled ([EA](https://www.ea.com/games/the-sims/news/final-update); [SimsCommunity](https://simscommunity.info/2025/10/20/the-sims-mobile-shutting-down/)).
 - **Trust gaps are documented:** paywall creep, ads after buying "no ads", lost purchases, VoiceOver regressions ([ComplaintsBoard](https://www.complaintsboard.com/bitlife-life-simulator-b150146); [Google Play review](https://play.google.com/store/apps/eventdetails/4831791308351315470); [AppleVis](https://www.applevis.com/comment/135452)).
 
 ### 1.3 Messaging pillars → proof → where used

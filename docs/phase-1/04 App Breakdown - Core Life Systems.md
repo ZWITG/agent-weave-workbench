@@ -2,21 +2,23 @@
 title: "04 App Breakdown - Core Life Systems"
 project: Relivable
 phase: 1
-status: draft
-tags: [relivable, phase-1, app-breakdown, game-design, core-systems, parity]
+status: review
 updated: 2026-10-26
+tags: [relivable, phase-1, app-breakdown, game-design, core-systems, parity]
 ---
 
 # 04 App Breakdown: Core Life Systems
+
+*Purpose:* Specifies every system that simulates one life from birth to death, module by module, with rules, priorities and acceptance criteria for the build team.
 
 > [!abstract] What this note is
 > A module-by-module breakdown of every **core life system** in Relivable (working title): the systems that simulate one person from birth to death. For each module it gives the purpose, what BitLife does today, how Relivable redesigns it, what is new, a detailed sub-feature list, the rules, formulas and data behind it, where it lives in the UI, its priority and free/Plus status, its dependencies, and acceptance criteria.
 >
 > **Companion note:** relationships, romance, children, fame and social media, pets, Activities hub, achievements, challenges, Destiny Mode (editor), Rewind, Life Recap and async social are covered in [[04 App Breakdown - Social, Meta and Premium]].
-> **Source of truth:** [[_Concept Brief]]. Where this note proposes something the brief does not decide, it is marked **Proposal**.
+> **Source of truth:** [[_Concept Brief]]. Where this note proposes something the brief does not decide, it is marked **Proposal** for the client to confirm.
 
 > [!warning] Evidence and number caveats
-> - "BitLife equivalent" descriptions come from the research report and notes (`reports/BitLife complete feature guide.md`, `research_notes/BitLife complete feature guide/`), which were built from **search-result snippets of fan guides**, not from the live 2026 build. Treat them as "last documented" behaviour.
+> - "BitLife equivalent" descriptions come from the research report and notes (`reports/BitLife complete feature guide.md`, `research_notes/BitLife complete feature guide/`), which were built from **web-search summaries of fan guides**, not from the live 2026 build. Treat them as "last documented" behaviour.
 > - Every number in Relivable's rules (stat ranges, odds, formulas, prices in game currency) is a **starting design value for tuning** in the Phase 2 prototype and the life-simulator bot (see [[08 Technical Architecture]]). None of them is final balance.
 > - **IP-clean:** all event text, clique names, trait names, mini-game designs and example storylets in this note are original. No BitLife text, ribbon names, faction names or UI copy is reused. BitLife features are described only so the client can see parity.
 
@@ -38,7 +40,7 @@ Proto items are always also MVP.
 | Tag | Meaning |
 |---|---|
 | **Free** | In the base game for everyone. All careers and all core systems are Free (pillar 3, "Fair forever"). |
-| **Plus** | Part of the one-time **Relivable Plus** unlock (~$9.99): no ads, up to 8 generations, Destiny Mode (editor), unlimited Rewind. Plus never unlocks a career, a country or a core system. |
+| **Plus** | Part of the one-time **Relivable Plus** unlock (~$9.99): no ads, dynasties up to Generation 8 (free: Generation 4), Destiny Mode (editor), unlimited Rewind. Plus never unlocks a career, a country or a core system. |
 | **Pack** | Optional **Story Pack** (~$2.99–3.99) or **Season Pass** content: extra storylines and cosmetics on top of a system that is already complete for free. A pack never locks a career or a mechanic. |
 | **Ad** | An optional, frequency-capped rewarded ad gives a small convenience. Never mid-action, never forced. See [[06 Monetization and Economy]]. |
 
@@ -68,7 +70,7 @@ flowchart LR
     HE --> AS
     AS -->|will and inheritance| HE
     HE -->|continue as heir| CC
-    CL <--> SOC[[Social, Meta and Premium note]]
+    CL <--> SOC["Social, Meta and Premium note"]
 ```
 
 ---
@@ -108,7 +110,7 @@ Get the player into a life in under 15 seconds (random) or let them craft a very
 | Family | Parent generation (random NPCs, Cast library people, or "none: born into foster care"), parents' jobs and wealth band, relationship status of parents (together, married, separated, never together), number and ages of siblings, twins/triplets toggle, adoption at birth, family religion (or none), family values (strict, relaxed, chaotic) |
 | Traits | 2 starting traits + 1 flaw (picked or rolled), optional "Hidden trait" roll revealed later in life |
 | Talents | Optional starting talent hint (music, sport, art, maths, languages): this raises the cap of one hidden stat; it is not a guaranteed skill |
-| Seed | Seed code (for example `EL-7KQ2-M9XR`), generated or entered; Daily Seed; challenge seed; QR scan |
+| Seed | Seed code (for example `#RL-7KQ2-M9XR`), generated or entered; Daily Seed; challenge seed; QR scan |
 | Rules | Difficulty presets: Gentle (fewer harsh random events), Standard, Harsh (more misfortune, tighter money); Ironman toggle (no rewind for this life; earns an Ironman badge); content filters for this life (inherits global settings) |
 | Review | Summary card, life forecast line, edit links per step, "Start life" button |
 
@@ -136,7 +138,7 @@ Main menu → **New Life** sheet (three doors). Also from the death screen ("New
 | Feature | Priority | Access |
 |---|---|---|
 | Random life, basic custom (name, gender, country, city) | Proto | Free |
-| Family setup presets, twins/triplets, traits | MVP | Free |
+| Family setup presets, player-born-a-twin/triplet toggle, traits (twin-specific storylines at Launch) | MVP | Free |
 | Seeds (code, share, enter), Daily Seed | MVP | Free |
 | Era mode start year | Launch | Free |
 | Cast library (20 slots) | MVP | Free; unlimited slots with Plus |
@@ -999,7 +1001,8 @@ Hub **Home card** (current home, condition, hosting) → **Assets screen** (Home
 | Home customisation (rooms, upgrades) | Launch | Free; extra cosmetic décor via Season Pass |
 | Boats, aircraft, jewelry, collectibles | Launch | Free |
 | Heirlooms with owner history | Launch | Free |
-| Trusts, estate planning, will contests | Launch | Free |
+| Trusts for minors (heirs under 18) | MVP | Free |
+| Wider estate planning (lifetime gifts, charitable trusts), will contests | Launch | Free |
 | Disasters and insurance | Launch | Free |
 
 ### Dependencies
@@ -1009,7 +1012,7 @@ Module 6 (cash, loans, taxes, economy), Module 8 (will contests, theft), Module 
 - Every listing shows all attributes players asked for (pool, garden, bedrooms, condition) and the full yearly cost before purchase.
 - Landlord and flipping are available to free players and produce profit or loss outcomes with explained reasons.
 - An heir under 18 inherits through a trust and receives the assets at the set age (no forced auction).
-- Heirlooms keep their full owner history across at least 10 generations in saves.
+- Heirlooms keep their full owner history across all 8 generations of a dynasty in saves.
 - Asset happiness gains have diminishing returns, verified in the simulator (top-1% asset owners are not automatically the happiest lives).
 
 ---
@@ -1277,7 +1280,7 @@ Health sets how long a life lasts and how it feels. This module covers illness, 
 - **Warning signs:** serious conditions show symptoms first; elder years show a frailty indicator so death rarely feels random.
 - **Funeral:** choose (or the family chooses) type: burial, cremation, natural burial, religious rites (Module 10), sea scattering. Attendance is computed from Bond % and fame; a **eulogy** is assembled from the strongest memories NPCs hold (original templates, optional AI rewording). Headstone or memorial text from a few templates or custom (moderated).
 - **Death screen:** age, cause, net worth, key achievements, chapter titles, top relationships, the Life Title for the life's dominant theme (social note), and buttons: **Life Recap**, **Continue as heir**, **New life**, **Rewind** (Plus or free limited rewind).
-- **Continue as heir:** choose among eligible heirs (biological, adopted and step-children; with the Proposal of grandchildren if no living children). The heir inherits per the will (Module 7), family memories (relatives remember the parent), legacy traits and heirlooms. **Free:** up to Generation 4 per dynasty (founder + 3 heirs; the dynasty is saved at the cap, see [[06 Monetization and Economy]]). **Plus:** up to 8 generations. The family tree and Dynasty Ambitions are in [[04 App Breakdown - Social, Meta and Premium]].
+- **Continue as heir:** choose among eligible heirs (biological, adopted and step-children; with the Proposal of grandchildren if no living children). The heir inherits per the will (Module 7), family memories (relatives remember the parent), legacy traits and heirlooms. **Free:** up to Generation 4 per dynasty (founder + 3 heirs; the dynasty is saved at the cap, see [[06 Monetization and Economy]]). **Plus:** up to Generation 8, the hard cap for every dynasty; at Generation 8 the dynasty is completed, saved and shown as a Dynasty Recap, and a new dynasty can start. The family tree and Dynasty Ambitions are in [[04 App Breakdown - Social, Meta and Premium]].
 
 ### Key rules, formulas and data
 - **Healthcare cost:** country data (free/universal, insurance-based, out-of-pocket). Example: US-like out-of-pocket surgery $8k–80k vs universal $0–500 with waiting time.
@@ -1579,7 +1582,7 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 ## Open questions for the client
 
 1. **Energy budget:** keep a per-year action budget (better choices, less spam) or default to unlimited "Classic" actions? Recommend testing both in the Phase 2 prototype.
-2. **Free generations limit:** *decided 2026-10-26*: founder + 3 heirs (Generation 4) free, up to Generation 8 with Plus, dynasty saved at the cap ([[06 Monetization and Economy]]).
+2. **Free generations limit:** *decided 2026-10-26*: founder + 3 heirs (Generation 4) free, up to Generation 8 with Plus (hard cap for every dynasty); the dynasty is saved at each cap and completed with a Dynasty Recap at Generation 8 ([[06 Monetization and Economy]]).
 3. **Free rewind:** *decided 2026-10-26*: 1 free Rewind per life + 1 per day via opt-in rewarded ad; never sold per use; unlimited with Plus.
 4. **Religion representation:** real traditions with expert review (recommended) or fictional faiths? Budget impact in [[09 Compliance and Ratings]].
 5. **Country scope at MVP:** 25 countries recommended; confirm the list against soft-launch and language markets.
