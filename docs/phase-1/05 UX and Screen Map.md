@@ -26,7 +26,7 @@ Related: [[00 Home]] · [[06 Monetization and Economy]] (shop/paywall screens) �
 | P4 | **Max 2 taps to any action** | From the Life Hub, every action is reachable in **at most 2 taps**: (a) a contextual suggestion card, which is 1 tap; (b) a category sheet then the action, which is 2 taps; or (c) the command bar, then typing, then a result, which is 2 taps plus text. Confirmation steps count only for irreversible or money-spending actions. | BitLife spreads activities across School, Relationships and "More", unlocked by age ([AppleVis](https://www.applevis.com/apps/ios/games/bitlife)) |
 | P5 | **Search / command bar** | A persistent bottom pill ("What do you want to do?") opens a sheet with fuzzy search over every action, person, asset and setting. It accepts synonyms ("ask out" → Romance > Ask on a date), shows recent and suggested actions, and lists locked results with their reasons. | Pillar 2 of [[_Concept Brief]] |
 | P6 | **Show the numbers** | Every bar shows its number (Happiness 72) and every relationship shows a percentage, plus a short "why it changed" line. | Players ask for percentages on relationship bars ([AppleVis](https://www.applevis.com/comment/110061)) |
-| P7 | **Consequences are visible** | When a choice will be remembered, the card shows a small "◆ Remembered" marker. When the memory resurfaces years later, the card links back to the original moment in the Life Log. | Pillar 1, and the "repetitive / passive" criticism ([Blackscreen Gaming](https://blog.blackscreengaming.com/audio-games/bitlife-review/01/25/2019/)) |
+| P7 | **Consequences are visible** | When a choice will be remembered, the card shows a small "◆ Remembered" marker. When the memory resurfaces years later, the card links back to the original moment in the Life Timeline. | Pillar 1, and the "repetitive / passive" criticism ([Blackscreen Gaming](https://blog.blackscreengaming.com/audio-games/bitlife-review/01/25/2019/)) |
 | P8 | **Monetisation never interrupts** | No interstitials, no ad after an action, no purchase prompt mid-event. The shop is reachable from the Me tab and from end-of-life only. | Ad complaints are the top quit reason ([Google Play reviews](https://play.google.com/store/apps/eventdetails/4831791308351315470)); see [[06 Monetization and Economy]] |
 | P9 | **Accessible by default** | Every control has a label, text scales without truncation, colour is never the only signal, every animation has a reduced-motion version, and no timed choices. Accessibility QA blocks a release. | Pillar 5; BitLife's VoiceOver regressions ([AppleVis](https://applevis.com/comment/134996)) |
 | P10 | **One-handed, interruptible** | The game saves after every year and every choice. Sessions can stop mid-card and resume in the same place. Nothing requires two hands. | Commute or queue play; Hoober's finding that grips change constantly |
@@ -46,7 +46,7 @@ Related: [[00 Home]] · [[06 Monetization and Economy]] (shop/paywall screens) �
 | **People** | two heads | Family, partner, friends, exes, coworkers, pets, family tree |
 | **Path** | signpost | School/university, job/career, business, military/police academy, freelance |
 | **Wealth** | coin-stack | Bank, investing, real estate, vehicles, belongings, home customisation |
-| **Me** | person-badge | Stats detail, traits, life chapters, health, Life Log, milestones, challenges, shop, settings |
+| **Me** | person-badge | Stats detail, traits, life chapters, health, Life Timeline, milestones, challenges, shop, settings |
 
 **Persistent bottom cluster** (above the tab bar): `[ 🔍 What do you want to do? ]  [ AGE +1 ]`. The Age button is the largest target on screen, at least 64×64 pt, on the right for right-hand use. It mirrors to the left with the **Left-hand layout** setting.
 
@@ -66,7 +66,7 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S04 | Accessibility quick-setup | M | Detects OS settings and confirms them | Text-size preview, reduced motion, colour-vision mode, left-hand layout; auto-skipped if OS defaults are fine (with a "Change later" note) | S03 → S06 |
 | S05 | Lives menu (title) | F | Continue, new life, saved lives | Continue card (avatar, age, year), New Life, Saved Lives (slots), Dynasty, Challenges | Launch → S06/S10/S40 |
 | S06 | New Life | F | Start a life in 1 tap | **Roll a random life** (primary), Custom life, Scenario seed (import code), Era picker (later phase) | S05 → S07 or S10 |
-| S07 | Character creator | F | Custom life | Name, gender, country/city, birth era, avatar base, optional traits (Plus: full Life Editor) | S06 → S10 |
+| S07 | Character creator | F | Custom life | Name, gender, country/city, birth era, avatar base, optional traits (Plus: full Destiny Mode) | S06 → S10 |
 | S08 | Account and sync | F | Link Apple/Google/email to the anonymous account, restore purchases, device list | Sign-in buttons, last sync time, **Restore purchases** (always visible), export save | Me → Settings → S08; prompted after the first life ends |
 | S09 | Sign-in prompt | M | Save-protection prompt | "Protect this life and your purchases on every device" | After first death or first purchase → S08 or dismiss |
 
@@ -87,8 +87,8 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 
 | # | Screen | Type | Purpose | Key components | Entry → Exit |
 |---|---|---|---|---|---|
-| S20 | People list | T | Everyone in your life | Segments (Family, Partner, Friends, Work, Exes, Pets), relationship %, mood icon, "needs attention" dot | Tab → S21 |
-| S21 | **Relationship detail** | F | One NPC: state, memories, actions | Portrait, relationship %, trend sparkline, traits, **shared memories** (from NPC memory), actions (Spend time, Talk, Gift, Ask for money, Argue, Romance…) | S20 / hub card → S11 (event) |
+| S20 | People list | T | Everyone in your life | Segments (Family, Partner, Friends, Work, Exes, Pets), Bond % (relationship), mood icon, "needs attention" dot | Tab → S21 |
+| S21 | **Relationship detail** | F | One NPC: state, memories, actions | Portrait, Bond % (relationship percentage), trend sparkline, traits, **shared memories** (from NPC memory), actions (Spend time, Talk, Gift, Ask for money, Argue, Romance…) | S20 / hub card → S11 (event) |
 | S22 | Family tree | F | Generations and branches | Zoomable tree, deceased greyed with a dagger marker plus the word "Deceased", tap a node → S21 | People → S22 |
 | S23 | Romance / dating | F | Dating app, hookups, proposals, wedding | Filtered match cards, date planner, ring/venue pickers | S15/S21 → S11 |
 | S24 | Children and family planning | F | Kids, adoption, IVF, surrogacy | Child cards, options with costs and legal-in-country flags | People → S11 |
@@ -128,10 +128,10 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S54 | Legal / lawsuits (new) | F | Sue and be sued | Case cards, lawyer choice, odds band, retaliation risk | S15 → S11 |
 | S55 | Fame and social media | F | Followers, posts, verification, brand deals | Per-platform follower counts, post composer (choice-based), fame % | S15 → S11 |
 | S56 | Faith (new) | F | Religion system | Faith, attendance, family reactions | S15 → S11 |
-| S57 | **Life Log (memory journal)** | F | Timeline of everything that happened, plus "remembered" moments | Year-by-year list, filters (People, Money, Crime…), ◆ markers, jump-to-year | Me / any "◆" link |
-| S58 | Milestones and Life Seals | F | Achievements and the end-of-life title collection | Grid with locked hints ("Live past 100"), progress | Me / S60 |
+| S57 | **Life Timeline (memory journal)** | F | Timeline of everything that happened, plus "remembered" moments | Year-by-year list, filters (People, Money, Crime…), ◆ markers, jump-to-year | Me / any "◆" link |
+| S58 | Milestones and Life Titles | F | Achievements and the end-of-life title collection | Grid with locked hints ("Live past 100"), progress | Me / S60 |
 | S59 | Challenges hub | F | Daily goals, weekly challenge, season | Daily goals (3), weekly challenge card, season track, archive | Me / push → S06 with seed |
-| S60 | Death | F | The end of a life | Epitaph, cause, age, net worth, Life Seal earned, **View Life Recap**, Rewind, Continue as heir | Death event → S61/S17/S62 |
+| S60 | Death | F | The end of a life | Epitaph, cause, age, net worth, Life Title earned, **View Life Recap**, Rewind, Continue as heir | Death event → S61/S17/S62 |
 | S61 | **Life Recap** | F (story pager) | Shareable, Wrapped-style recap | 6–8 vertical 9:16 story cards, share/export, "Try my life" seed code | S60 / S57 → share sheet / S62 |
 | S62 | Heir selection | F | Continue the dynasty | Eligible heirs (children, including adopted), inheritance preview, generation counter (free cap shown clearly) | S60 → S10 (new character) |
 | S63 | Dynasty view | F | Multi-generation family legacy | Generations strip, dynasty goals, family crest, total wealth over time | S05 / S22 |
@@ -146,7 +146,7 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S73 | Settings | F | App settings | Text size, theme (light/dark/system), motion, haptics, colour-vision mode, left-hand layout, AI flavour text on/off, content filters, notifications, language | Me → S73 |
 | S74 | Notification preferences | F | Push categories | Toggles per category, quiet hours | S73 / after first life ends |
 | S75 | Help and report | F | FAQ, contact, bug report, report AI text | Searchable FAQ, auto-attached log (with consent) | S73 / card overflow menu |
-| S76 | Editor tools (Plus) | F | Edit stats and people (our original "Life Editor") | Stat sliders incl. revealed hidden stats, NPC editor | Me → S76 (Plus) or S71 |
+| S76 | Editor tools (Plus) | F | Edit stats and people ("Destiny Mode", our original name) | Stat sliders incl. revealed hidden stats, NPC editor | Me → S76 (Plus) or S71 |
 | S77 | Scenario seed share/import | M | Share or play a seeded life | Seed code + QR, preview of the starting conditions | S61 / S06 |
 
 **Total: 60+ screens.** About 15 are needed for the Phase 2 prototype: S01, S05, S06, S10–S16, S20, S21, S30, S50, S57 and S60–S61 (see [[11 Roadmap Team and Budget]]).
@@ -204,7 +204,7 @@ flowchart TD
     WEALTH --> S44[Vehicles]
 
     ME --> S51[Health]
-    ME --> S57[Life Log]
+    ME --> S57[Life Timeline]
     ME --> S58[Milestones]
     ME --> S59[Challenges hub] --> S06
     ME --> S70[Shop] --> S71[Plus details]
@@ -403,7 +403,7 @@ All careers are free, including special careers. The ladder always shows the nex
 │   ╰─────╯ ╰─────╯ ╰─────╯  ages     │
 │     5       30      79             │
 │                                    │
-│   LIFE SEAL: "The Quiet Healer"    │
+│   LIFE TITLE: "The Quiet Healer"    │
 │   Your archetype: Steady Caregiver │  ← novel stat (Wrapped's "Listening Age" idea)
 │   Top 4% of lives for kindness     │
 │                                    │
@@ -418,7 +418,7 @@ All careers are free, including special careers. The ladder always shows the nex
 │▓└────────────────────────────────┘▓│
 └────────────────────────────────────┘
 ```
-Card sequence: (1) Born → (2) Childhood moment → (3) Biggest choice ◆ → (4) Love & family → (5) Career peak → (6) Scandal or proudest moment → (7) Life Seal + archetype → (8) Epitaph + share. Story cards do not auto-advance when Reduce Motion or VoiceOver/TalkBack is on. Cards export with an app link and seed QR. Spotify Wrapped's story-format slides with a share button are the model ([The Hustle](https://thehustle.co/12062021-spotify-wrapped)); Wrapped 2025 was reportedly shared 500M+ times on day one ([RouteNote](https://routenote.com/blog/spotify-wrapped-2025-record-breaking-launch/)).
+Card sequence: (1) Born → (2) Childhood moment → (3) Biggest choice ◆ → (4) Love & family → (5) Career peak → (6) Scandal or proudest moment → (7) Life Title + archetype → (8) Epitaph + share. Story cards do not auto-advance when Reduce Motion or VoiceOver/TalkBack is on. Cards export with an app link and seed QR. Spotify Wrapped's story-format slides with a share button are the model ([The Hustle](https://thehustle.co/12062021-spotify-wrapped)); Wrapped 2025 was reportedly shared 500M+ times on day one ([RouteNote](https://routenote.com/blog/spotify-wrapped-2025-record-breaking-launch/)).
 
 ---
 
@@ -453,7 +453,7 @@ No forced tutorial screens, no account wall, no shop, no ads and no push prompt 
 | 5 | Education tab section, command bar | "Type anything" |
 | 8 | Hobbies, pets (ask parents), first electives | – |
 | 12 | Mind & Body, Faith | – |
-| 13 | Phone and social media, Life Log tip | "Every big moment is saved in your Life Log" |
+| 13 | Phone and social media, Life Timeline tip | "Every big moment is saved in your Life Timeline" |
 | 14 | Part-time jobs, Job board | – |
 | 16 | Driving licence, dating, parties | "Parties: pick your guest list" |
 | 18 | Full careers, crime and heists, Wealth tab full, nightlife, fertility, exotic pets | Wealth tab tour (3 steps, skippable) |
@@ -525,7 +525,7 @@ Line length is 30–45 characters per line on phones and line height 1.4. No all
 | Event card in | Slides up from the button tapped, slight scale | 220 ms ease-out | 120 ms opacity fade |
 | Card flip to outcome | 3D flip on Y axis | 300 ms | Crossfade |
 | Stat delta | Number ticks up/down, chip pulses once | 400 ms | Static delta label "▲ +3" |
-| ◆ Memory created | Diamond sparkles into Life Log icon | 500 ms | Static marker + toast |
+| ◆ Memory created | Diamond sparkles into Life Timeline icon | 500 ms | Static marker + toast |
 | Life Recap | Story pager parallax | per card | No parallax, manual advance |
 | Death | Gentle desaturate and fade to epitaph | 800 ms | Cut to epitaph |
 
@@ -621,7 +621,7 @@ There is a haptics toggle (On / Important only / Off), and the game respects the
 | 11 | Players want to choose which stats appear in the HUD ([AppleVis](https://www.applevis.com/comment/98871)) | – | Long-press or settings to pin any 4 stats (including revealed hidden stats) to the Hub | S10, S73 |
 | 12 | Maze/escape minigames inaccessible ([AppleVis](https://applevis.com/comment/94502)) | Blocks progress | Text alternative + skip | S53 |
 | 13 | House listings don't show amenities such as a pool ([AppleVis](https://www.applevis.com/comment/98871)) | Poor decisions | Structured listing cards with amenities and condition | S43 |
-| 14 | "Passive decision-making", repetitive random events ([Blackscreen Gaming](https://blog.blackscreengaming.com/audio-games/bitlife-review/01/25/2019/)) | Churn after several lives | Memory markers, chapter banners, consequence callbacks linked from the Life Log | S11, S57 |
+| 14 | "Passive decision-making", repetitive random events ([Blackscreen Gaming](https://blog.blackscreengaming.com/audio-games/bitlife-review/01/25/2019/)) | Churn after several lives | Memory markers, chapter banners, consequence callbacks linked from the Life Timeline | S11, S57 |
 | 15 | Tombstone summary is static and not shareable | Missed virality | Wrapped-style Life Recap with export and seed codes | S61, S77 |
 | 16 | Pay-per-use undo ([AppleVis](https://www.applevis.com/comment/98823)) | Feels exploitative | 1 free Rewind per life; unlimited with one-time Plus; never sold per use | S17 |
 
