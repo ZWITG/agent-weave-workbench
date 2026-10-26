@@ -1476,7 +1476,7 @@ Past lives should not vanish when they end. This module gives each player a **pe
 - Players ask for more consequences and storylines that remember earlier choices ([[03 Player Research and Wishlist]]).
 
 ### Relivable redesign
-- **Your World:** every player has one world save per *world seed*. All dynasties in that world share one **World Ledger** of notable people and events. Starting a fresh world is always possible (Settings → New world), so the feature never traps anyone.
+- **One world, one history:** every player has exactly **one persistent world**. Every life and every dynasty they ever play happens in it, and they all write to one continuous **World Ledger** of notable people and events. The history is never reset or forked: it only grows. A life only meets history dated before its own current year, so era-mode lives and new dynasties fit into the same timeline without contradictions. What keeps an infamous past from trapping players is that effects are bounded and fade, and that later characters can change their name or make amends (see below).
 - **Family name reputation** is visible and has consequences. It extends the dynasty's Family Name Standing ([[04 App Breakdown - Social, Meta and Premium]], Generations and Dynasty) into five axes the world reacts to.
 - **History-book mentions:** when a life crosses a notability threshold, a short neutral entry is written into the in-game history of its country. Later characters read it at school, in a library or museum, or in a quiz.
 - **Echo events:** storylets whose conditions read the World Ledger, so the past comes back as story: a true-crime podcast about your ancestor, a victim's descendant who wants answers, a scholarship named after your great-aunt, a statue someone wants pulled down.
@@ -1512,7 +1512,7 @@ Past lives should not vanish when they end. This module gives each player a **pe
 **C. World Ledger (Launch)**
 - Stores notable people (name, life span, roles, tier, axes, key deeds), companies, landmarks, laws changed, and major events, with the world year.
 - Readable by any storylet via conditions (e.g. `ledger.person(role=serialKiller, tier>=national, sameCity=true)`).
-- Capped at about 250 entries per world. Lower-tier entries are summarised or archived first, keeping saves small ([[08 Technical Architecture]]).
+- Capped at about 250 active entries in the player's world. Lower-tier entries are summarised or archived first, keeping saves small ([[08 Technical Architecture]]).
 
 **D. Echo events (Launch)**
 - 120+ Echo storylets at launch, in families such as:
@@ -1588,6 +1588,7 @@ content_tags: [violence]                        # hidden if the violent-crime to
 ### Priority and access
 | Feature | Priority | Access |
 |---|---|---|
+| One world per player with one continuous, never-reset history | MVP | Free |
 | Family name reputation (five axes) with NPC, school, job and police reactions | MVP | Free |
 | History-book (Almanac) mentions via History class, Library/Museum card and Life Recap | MVP | Free |
 | "Your place in history" Life Recap card | MVP | Free |
@@ -1608,7 +1609,7 @@ Module 3 (storylet engine, memory flags, callbacks), Module 5 (careers: politics
 - Family name reputation changes NPC reactions measurably (simulator: interview success differs by at least 5% between a high-Infamy and a neutral surname, all else equal).
 - No world effect exceeds ±20% on any modifier, every effect decays as specified, and the simulator bot shows no world becoming unplayable over 8 generations × 50 seeds.
 - With the violent-crime toggle off, no violent Almanac entry, Echo event or effect text is shown; entries are neutral and non-graphic in all locales (sensitivity review before release).
-- Ledger size stays within the save budget (about 250 entries) and a fresh world can be started at any time.
+- There is one world per player: every new life and dynasty reads and writes the same Ledger, which is never reset; a life only sees entries dated before its current in-game year; the Ledger stays within the save budget (about 250 active entries).
 
 ---
 
@@ -1743,7 +1744,7 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 4. **Religion representation:** real traditions with expert review (recommended) or fictional faiths? Budget impact in [[09 Compliance and Ratings]].
 5. **Country scope at MVP:** 25 countries recommended; confirm the list against soft-launch and language markets.
 6. **Murder and drugs defaults:** confirm defaults per age signal and per store rating target ([[09 Compliance and Ratings]]).
-7. **World scope:** one shared world per player across all dynasties (recommended), or one world per dynasty? Shared worlds give richer Echoes; per-dynasty worlds are simpler to reason about. A fresh world can always be started.
+7. **World scope:** *decided 2026-10-26*: one world per player with one continuous history shared by every life and dynasty; it is never reset.
 
 ## Related notes
 - [[_Concept Brief]] (source of truth)

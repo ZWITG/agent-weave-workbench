@@ -54,7 +54,7 @@ flowchart LR
 What a client reviewer should confirm before signing off Phase 1 (Gate 1). Items are gathered from every note's open questions and decisions, with duplicates merged.
 
 **Confirm the settled baseline**
-- [ ] The pillars, scope, locked decisions and the 20 resolved decisions in [[_Concept Brief]], including the 8-generation dynasty cap (free to Generation 4, Plus to Generation 8) and the new World Legacy and History feature.
+- [ ] The pillars, scope, locked decisions and the 20 resolved decisions in [[_Concept Brief]], including the 8-generation dynasty cap (free to Generation 4, Plus to Generation 8) and the new World Legacy and History feature (one world per player, one continuous history).
 - [ ] The 9-product store catalogue and ad rules in [[06 Monetization and Economy]].
 - [ ] The Phase 2 approval: 8 weeks, ~$25–60K, with go/no-go playtest gates ([[01 Executive Summary]], [[12 Risks and KPIs]]).
 
@@ -71,5 +71,4 @@ What a client reviewer should confirm before signing off Phase 1 (Gate 1). Items
 - [ ] **Cloud AI fallback:** Plus-only with a per-user budget, or not offered ([[04 App Breakdown - Social, Meta and Premium]], [[08 Technical Architecture]]).
 - [ ] **Story Pack refunds:** what stays readable after a refund, to confirm with legal ([[08 Technical Architecture]]).
 - [ ] **Scope exclusions:** polygamy, dowry and bride price out of scope for now; fantastical rare animals optional; creator revenue sharing out of scope; real-time multiplayer evaluated after soft launch ([[04 App Breakdown - Social, Meta and Premium]], [[07 Retention and LiveOps]]).
-- [ ] **World scope for Echoes:** one shared world per player across all dynasties (recommended) or one world per dynasty ([[04 App Breakdown - Core Life Systems]], Module 11).
 - [ ] **UX questions for Phase 2 playtests:** optional swipe input, command-bar style, 3 vs 5 suggestion cards, Recap auto-play ([[05 UX and Screen Map]]).
