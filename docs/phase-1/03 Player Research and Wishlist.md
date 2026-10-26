@@ -1,8 +1,8 @@
 ---
 title: Player Research and Wishlist
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, player-research, personas, wishlist, pain-points]
+tags: [relivable, phase-1, player-research, personas, wishlist, pain-points]
 updated: 2026-10-26
 ---
 
@@ -37,7 +37,7 @@ The personas are *hypotheses* built from recurring voices in the sources, not su
 | Goals | Outrageous moments, funny outcomes, something to post | A lasting family legacy; mastering systems; "beating" a life | The old magic without nickel-and-diming; fresh content | A full, independent experience; a game where nobody else has to read the buttons |
 | Frustrations | 40-second ads for small actions; repetitive events; nothing to share but a tombstone | Unlimited generations paywalled; saves lost after updates or device change; opaque meters | Paywall creep; Boss Mode "future packs" promise not covering new packs; ads after buying no-ads | Unlabelled buttons; updates that break VoiceOver; minigames with no skip; hard-to-dismiss ads |
 | Evidence | [Google Play](https://play.google.com/store/apps/eventdetails/4831791308351315470); [Metacritic](https://www.metacritic.com/game/bitlife-life-simulator/user-reviews/) | [BitLife Wiki: Generations](https://bitlife-life-simulator.fandom.com/wiki/Generations); [DroidWin](https://droidwin.com/bitlife-crashing-when-opening-menu-how-to-fix/) | [Change.org](https://www.change.org/p/stop-the-greed-of-bitlife-devs); [gnostalgic.org](https://www.gnostalgic.org/bitlife.php) | [AppleVis](https://applevis.com/comment/92141); [AppleVis](https://applevis.com/comment/94502) |
-| EverLife hook | Life Recap cards, scenario seeds, storylets that surprise | Free generations, dynasty tree and goals, cloud saves, visible percentages | "Fair forever": one Plus unlock, all careers free, restore anywhere | Accessible by default; a11y QA is a release gate |
+| Relivable hook | Life Recap cards, scenario seeds, storylets that surprise | Free generations, dynasty tree and goals, cloud saves, visible percentages | "Fair forever": one Plus unlock, all careers free, restore anywhere | Accessible by default; a11y QA is a release gate |
 | Value to the business | Virality and installs | Retention and Plus conversion | Win-back and word of mouth | Loyal advocacy; EAA readiness; credibility |
 
 ## 3. Top complaints (ranked by frequency across sources)
@@ -54,7 +54,7 @@ The personas are *hypotheses* built from recurring voices in the sources, not su
 | 8 | **Challenges unfair to free players** | Weekly challenges "very hard for those who don't have expansion packs" ([AppleVis](https://applevis.com/comment/98850)) |
 
 > [!note] Context
-> Despite these complaints, BitLife holds 4.4 stars from about 1.29M Google Play reviews. Players love the core loop; their anger is about how it is monetised and maintained. That is EverLife's opening.
+> Despite these complaints, BitLife holds 4.4 stars from about 1.29M Google Play reviews. Players love the core loop; their anger is about how it is monetised and maintained. That is Relivable's opening.
 
 ## 4. Top requested features (ranked by frequency across sources)
 
@@ -76,7 +76,7 @@ The personas are *hypotheses* built from recurring voices in the sources, not su
 
 ## 5. Features players love in rival games
 
-| Rival | Loved feature | EverLife adoption |
+| Rival | Loved feature | Relivable adoption |
 |---|---|---|
 | Alter Ego | Authored, multi-ending depth: "220,000 words" ([AppleVis](https://applevis.com/apps/ios/games/alter-ego)) | Storylet arcs and life chapters, with longer Ink/Yarn scenes where warranted |
 | InstLife | Tabbed stats; make art or music and sell it; offline mode ([AppleVis](https://applevis.com/comment/97255)) | Skill-to-income loops; a tabbed stats sheet; offline-first single player |
@@ -85,9 +85,9 @@ The personas are *hypotheses* built from recurring voices in the sources, not su
 | Family Life | Idle multi-generation guidance ([Gameluster](https://gameluster.com/?p=32010)) | Dynasty Ambitions across generations |
 | AI newcomers | NPCs that "remember and hold grudges" ([App Store](https://apps.apple.com/us/app/id6503607456)) | Deterministic NPC memory, with optional AI rewording only |
 
-## 6. How EverLife answers each pain and request
+## 6. How Relivable answers each pain and request
 
-| # | Pain / request | EverLife answer | Pillar | Detailed in |
+| # | Pain / request | Relivable answer | Pillar | Detailed in |
 |---|---|---|---|---|
 | P1 | Intrusive ads; ads after paying | Opt-in rewarded ads only, frequency-capped, never mid-story; Plus removes **every** ad, with a QA test case for each placement | 3 | [[06 Monetization and Economy]] |
 | P2 | Paywall creep | All careers and core systems free forever; one ~$9.99 Plus unlock; Story Packs add storylines and never lock careers; dark mode free | 3 | [[06 Monetization and Economy]] |

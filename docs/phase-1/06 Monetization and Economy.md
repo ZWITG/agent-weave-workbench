@@ -1,16 +1,16 @@
 ---
 title: Monetization and Economy
-project: EverLife
+project: Relivable
 phase: 1
 status: draft
-tags: [everlife, phase-1, monetization, economy, pricing, ads, revenue-model, regulation]
+tags: [relivable, phase-1, monetization, economy, pricing, ads, revenue-model, regulation]
 updated: 2026-10-26
 ---
 
 # 06 Monetization and Economy
 
 > [!summary] In one paragraph
-> EverLife is **free to play with no paywalled systems**. Every career, life stage and core system is free. Revenue comes from four honest sources: (1) **EverLife Plus**, a one-time ~$9.99 unlock (no ads, unlimited generations, Destiny Mode editor, unlimited Rewind); (2) **Story Packs** at $2.99–3.99 that add storylines but never lock careers; (3) an optional **Season Pass** at $4.99 (cosmetics + story chapters); (4) **opt-in rewarded ads**, frequency-capped. Small cosmetic packs and an optional web shop round it out. There are **no loot boxes, no premium currency, no pay-per-use undo, no interstitials and no subscriptions at launch**. Our base-case estimate is blended ARPDAU of about **$0.066**, below the hybrid-casual benchmark of $0.15–0.50 ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor blog). That gap is deliberate: we trade short-term ARPDAU for retention, reviews and organic sharing. Soft launch must test whether that trade pays off. Source of truth: [[_Concept Brief]] pillar 3 and the locked monetisation decision.
+> Relivable is **free to play with no paywalled systems**. Every career, life stage and core system is free. Revenue comes from four honest sources: (1) **Relivable Plus**, a one-time ~$9.99 unlock (no ads, up to 8 generations, Destiny Mode editor, unlimited Rewind); (2) **Story Packs** at $2.99–3.99 that add storylines but never lock careers; (3) an optional **Season Pass** at $4.99 (cosmetics + story chapters); (4) **opt-in rewarded ads**, frequency-capped. Small cosmetic packs and an optional web shop round it out. There are **no loot boxes, no premium currency, no pay-per-use undo, no interstitials and no subscriptions at launch**. Our base-case estimate is blended ARPDAU of about **$0.066**, below the hybrid-casual benchmark of $0.15–0.50 ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor blog). That gap is deliberate: we trade short-term ARPDAU for retention, reviews and organic sharing. Soft launch must test whether that trade pays off. Source of truth: [[_Concept Brief]] pillar 3 and the locked monetisation decision.
 
 Related: [[00 Home]] · [[05 UX and Screen Map]] (Shop S70, Plus S71, ad modal S72) · [[07 Retention and LiveOps]] (season cadence, A/B tests) · [[08 Technical Architecture]] (RevenueCat, server validation) · [[09 Compliance and Ratings]] · [[10 Go-to-Market]] (UA economics) · [[12 Risks and KPIs]].
 
@@ -23,7 +23,7 @@ Related: [[00 Home]] · [[05 UX and Screen Map]] (Shop S70, Plus S71, ad modal S
 
 | Layer | What | Who it serves | Share of revenue (base case est.) |
 |---|---|---|---|
-| **One-time premium** | EverLife Plus $9.99 (+ No-Ads $2.99 entry) | Committed players who want everything without ads | ~35% |
+| **One-time premium** | Relivable Plus $9.99 (+ No-Ads $2.99 entry) | Committed players who want everything without ads | ~35% |
 | **Content** | Story Packs $2.99–3.99, released about every 2 months | Players who want *more stories*, not more power | ~15% |
 | **Seasonal** | Season Pass $4.99 per quarter (non-renewing) | Engaged weekly players | ~5% |
 | **Cosmetic** | Avatar, home, recap themes $0.99–1.99, Welcome Pack $1.99 | Expressive players and sharers | ~2% |
@@ -39,7 +39,7 @@ Why hybrid: it is now the default. 72% of developers are adopting it ([AdInMo](h
 
 | # | Item | Price (USD, tier) | Contents (shown to the player in full before purchase) | Type | Platform |
 |---|---|---|---|---|---|
-| P1 | **EverLife Plus** | **$9.99** | Removes **all** ads, including banners, ad-gated perks and future ad placements. Rewarded-ad perks are granted automatically. Unlimited generations (free tier: up to Generation 4 per dynasty, i.e. founder + 3 heirs; unlimited dynasties). **Destiny Mode** editor tools (edit your own and NPC stats and appearance any time, reveal hidden stats and facets). **Unlimited Rewind** (free: 1 per life + 1 per day via opt-in rewarded ad). 10 save slots (free: 3). Plus badge on the recap card. | Non-consumable | iOS, Android, web |
+| P1 | **Relivable Plus** | **$9.99** | Removes **all** ads, including banners, ad-gated perks and future ad placements. Rewarded-ad perks are granted automatically. Up to 8 generations (free tier: up to Generation 4 per dynasty, i.e. founder + 3 heirs; unlimited dynasties). **Destiny Mode** editor tools (edit your own and NPC stats and appearance any time, reveal hidden stats and facets). **Unlimited Rewind** (free: 1 per life + 1 per day via opt-in rewarded ad). 10 save slots (free: 3). Plus badge on the recap card. | Non-consumable | iOS, Android, web |
 | P2 | **No Ads** | $2.99 | Removes all ads and auto-grants ad perks. Nothing else. | Non-consumable | iOS, Android, web |
 | P3 | **Plus Upgrade** (shown only to No-Ads owners) | $6.99 | Everything else in Plus. Total paid = $9.98, never more than Plus | Non-consumable | iOS, Android, web |
 | P4 | **Story Pack** (e.g. *Spotlight*: film and stage fame; *Night Shift*: hospital drama; *Old Money*: aristocratic family saga; *Frontier 1850*: era start; *The Uncanny*: light supernatural) | **$2.99** (small, ~60 storylets) / **$3.99** (large, ~120 storylets + 1 new scenario start) | New storylines, characters, scenario starts and Milestones. **Never** a career, a system, or a stat edge that free players lack. Careers referenced in packs exist in the base game | Non-consumable | iOS, Android, web |
@@ -50,12 +50,12 @@ Why hybrid: it is now the default. 72% of developers are adopting it ([AdInMo](h
 | P9 | **Complete Collection** (evergreen anchor) | $24.99 | Plus + all currently released Story Packs (value shown) | Non-consumable bundle | iOS, Android, web |
 | – | **Not sold:** careers, life stages, dark mode, accessibility, per-use Rewind, extra event rerolls, stat boosts, premium currency, random rewards, subscriptions (at launch) | – | – | – | – |
 
-> [!note] Future option (not at launch): "EverLife Club"
+> [!note] Future option (not at launch): "Relivable Club"
 > A $2.99/month or $19.99/year cosmetic-only membership (monthly cosmetic drop + Season Pass included) could be tested in year 2. Subscriptions inside games grew from 4% to 7% of revenue in three-model games, Jan 2025 to early 2026 ([gamedevreports](https://gamedevreports.substack.com/p/weekly-gaming-reports-recap-june-e95)). We will **not** gate gameplay behind it. Candywriter's 2019 test of a Bitizenship subscription in CA/AU drew a "nearly unanimously negative" reaction and was dropped ([BitLife Wiki](https://bitlife-life-simulator.fandom.com/wiki/Bitizenship)). The brief positions us as "no subscriptions" at launch.
 
 **Regional pricing:** use the store price tiers with purchasing-power adjustment (e.g. Philippines Plus ≈ PHP 249, Brazil ≈ BRL 29.90). Prices are tested in soft launch through remote-config offerings (RevenueCat Offerings; see [[08 Technical Architecture]]).
 
-**Entitlements:** every purchase is tied to the EverLife account (anonymous-first, linkable to Apple/Google/email) and validated server-side (StoreKit 2 JWS / Play Developer API through RevenueCat). Ownership syncs across iOS, Android and web. **Restore Purchases** is always visible in Shop and Settings. Lost purchases are a top BitLife complaint ([Google Play review](https://play.google.com/store/apps/eventdetails/4831791308351315470)).
+**Entitlements:** every purchase is tied to the Relivable account (anonymous-first, linkable to Apple/Google/email) and validated server-side (StoreKit 2 JWS / Play Developer API through RevenueCat). Ownership syncs across iOS, Android and web. **Restore Purchases** is always visible in Shop and Settings. Lost purchases are a top BitLife complaint ([Google Play review](https://play.google.com/store/apps/eventdetails/4831791308351315470)).
 
 ---
 
@@ -67,7 +67,7 @@ $0.99–1.99 ── cosmetic sets / Welcome Pack  ← first-spend door, cosmetic
 $2.99 ── No Ads / small Story Pack          ← "supporter" price, matches BitLife Remove Ads $2.99
 $3.99 ── large Story Pack
 $4.99 ── Season Pass                         ← impulse, recurring per quarter
-$9.99 ── EverLife Plus                       ← core unlock; under BitLife's $15.99 Bitizenship+God Mode bundle
+$9.99 ── Relivable Plus                       ← core unlock; under BitLife's $15.99 Bitizenship+God Mode bundle
 $14.99 ── Founder's Bundle (launch)          ← decoy/anchor that makes Plus+packs feel complete
 $24.99 ── Complete Collection                ← top anchor; still < BitLife "own everything" (≈$80+ est.)
 ```
@@ -115,7 +115,7 @@ Why rewarded only: player surveys show 76% of US gamers prefer opt-in rewarded a
 ## 5. In-game soft currency: **Sparks** (earn-only)
 
 > [!info] Design decision
-> EverLife has **one soft currency, Sparks, which cannot be bought with real money** and has no premium currency. That keeps prices in real money (ahead of the EU Digital Fairness Act's expected virtual-currency price-display rules, [Freshfields](https://technologyquotient.freshfields.com/post/102ltio/the-eus-proposed-digital-fairness-act-a-game-developers-guide-to-potential-imp)) and removes any "buy currency → gamble/convert" path. In-life money (the character's $ cash) is a **simulation value only** and is never sold either.
+> Relivable has **one soft currency, Sparks, which cannot be bought with real money** and has no premium currency. That keeps prices in real money (ahead of the EU Digital Fairness Act's expected virtual-currency price-display rules, [Freshfields](https://technologyquotient.freshfields.com/post/102ltio/the-eus-proposed-digital-fairness-act-a-game-developers-guide-to-potential-imp)) and removes any "buy currency → gamble/convert" path. In-life money (the character's $ cash) is a **simulation value only** and is never sold either.
 >
 > **Legacy Points (LP)** are a separate, dynasty-scoped progression track defined in [[04 App Breakdown - Social, Meta and Premium]] §4. LP are earned only and buy small dynasty perks. Sparks are account-wide and cosmetic. Neither can be bought, and they do not convert into each other.
 

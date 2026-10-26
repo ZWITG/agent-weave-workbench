@@ -1,9 +1,9 @@
 ---
 title: "04 App Breakdown - Social, Meta and Premium"
-project: EverLife
+project: Relivable
 phase: 1
 status: draft
-tags: [everlife, phase-1, app-breakdown, relationships, family, dynasty, fame, pets, activities, identity, achievements, challenges, social, ugc, premium, ai, accessibility, safety]
+tags: [relivable, phase-1, app-breakdown, relationships, family, dynasty, fame, pets, activities, identity, achievements, challenges, social, ugc, premium, ai, accessibility, safety]
 updated: 2026-10-26
 ---
 
@@ -15,20 +15,20 @@ updated: 2026-10-26
 > It stays consistent with the [[_Concept Brief]]. Where it adds a number or a rule the brief does not set, it says so and marks it as a recommendation for the client to confirm.
 
 > [!info] How to read each module
-> Every module uses the same template: **Purpose → BitLife equivalent → EverLife redesign → New features → Detailed sub-features → Key rules, data and examples → UI entry point → Priority and Free vs Plus → Dependencies → Acceptance criteria.**
+> Every module uses the same template: **Purpose → BitLife equivalent → Relivable redesign → New features → Detailed sub-features → Key rules, data and examples → UI entry point → Priority and Free vs Plus → Dependencies → Acceptance criteria.**
 >
 > **Priority labels** follow the phase plan in the [[_Concept Brief]]:
 > - **MVP** = needed for the Phase 3 soft launch (full life cycle, about 1,500+ events).
 > - **Launch** = needed for the Phase 4 global launch (parity + "better" features, 5 languages).
 > - **LiveOps** = Phase 5 and later (seasons, story packs, async social, Creator Mode).
 >
-> **Free vs Plus:** "Free" means every player gets it. "Plus" means the one-time **EverLife Plus** unlock (about $9.99, per the brief). "Pack" means an optional Story Pack (about $2.99–3.99). "Season" means the optional Season Pass (about $4.99). Pricing and economy detail live in [[06 Monetization and Economy]].
+> **Free vs Plus:** "Free" means every player gets it. "Plus" means the one-time **Relivable Plus** unlock (about $9.99, per the brief). "Pack" means an optional Story Pack (about $2.99–3.99). "Season" means the optional Season Pass (about $4.99). Pricing and economy detail live in [[06 Monetization and Economy]].
 
 > [!warning] The one rule that overrides everything in this note
 > **No career or core system is ever paywalled.** Plus, Packs and Seasons may sell convenience, cosmetics, extra *storylines* and editor/rewind tools. They never sell a career, a life system, a relationship type, a country, a pet species, or anything a weekly challenge needs. The "Premium boundary" table at the end lists every feature against this rule.
 
 > [!note] Research basis and confidence
-> BitLife facts below come from `reports/BitLife complete feature guide.md` and `research_notes/BitLife complete feature guide/*.md`. Player wishes come from `research_notes/Life sim game phase 1/reddit_player_wishlist.md`. All research came from web-search snippets because page fetching was blocked, so BitLife numbers (prices, ages, thresholds) are "last documented" values from fan guides, not verified late-2026 values. EverLife numbers in this note are **design proposals** to be tuned in the Phase 2 prototype and the soft launch.
+> BitLife facts below come from `reports/BitLife complete feature guide.md` and `research_notes/BitLife complete feature guide/*.md`. Player wishes come from `research_notes/Life sim game phase 1/reddit_player_wishlist.md`. All research came from web-search snippets because page fetching was blocked, so BitLife numbers (prices, ages, thresholds) are "last documented" values from fan guides, not verified late-2026 values. Relivable numbers in this note are **design proposals** to be tuned in the Phase 2 prototype and the soft launch.
 
 ## Contents
 
@@ -73,7 +73,7 @@ Make the people in a life feel like people. Relationships are the main source of
 - Stepfamilies (v1.24), multiple friends and enemies (v1.28), relationship counselling (v1.31), and co-worker, supervisor and HR interactions (Office update).
 - Gaps in the research: no complete per-relative interaction list could be confirmed, and no source documented friend-making or bullying mechanics in detail.
 
-### EverLife redesign
+### Relivable redesign
 - **Bond % is visible.** A number next to every bar ("Mum · 72%"), as players asked on AppleVis. The bar also has a label (Estranged, Cold, Distant, Warm, Close, Devoted) so screen-reader users and colour-blind players get the same information.
 - **Hidden facets explain the number.** Bond % is a weighted blend of Trust, Respect, Affection and (for partners) Attraction, minus Resentment. Players see a one-line "why" on long-press ("Trust is low because you skipped her wedding in 2031").
 - **NPC memory and grudges.** NPCs remember significant events with the player and with each other, and those memories surface in later storylets. A grudge is a strong negative memory that has not been resolved.
@@ -199,7 +199,7 @@ Romance is one of the most played and most shared parts of a life sim. It must b
 - You can marry into royalty. Relationship counselling exists.
 - No source confirmed polygamy, dowry, custody or child support. Players asked for **parents who divorce and remarry**, with lasting effects on the child.
 
-### EverLife redesign
+### Relivable redesign
 - **Attraction is two-way and explainable.** Each NPC has preferences (age range, gender(s), values, lifestyle, looks weight, wealth weight). A match screen shows "Why you click" and "Possible friction" instead of hiding the maths.
 - **Relationship stages** are explicit: Crush → Dating → Exclusive → Living together → Engaged → Married (or Civil partnership where the country has it) → Separated → Divorced/Widowed. Each stage has its own card set and yearly events.
 - **One app, all orientations.** A single in-game dating app (original name **Kindling**) filters by gender(s) sought, so same-sex dating is not a separate feature.
@@ -336,7 +336,7 @@ Children are how a life continues into the next one. Parenting must be about rea
 - A "Fertile" ribbon for many children. Continue as any eligible child, adopted children included.
 - No sources were found on child-rearing interactions, custody or child support. Players asked for **being born a twin/triplet or with siblings**, child support, and buying cars for children who pass their driving test.
 
-### EverLife redesign
+### Relivable redesign
 - **Family planning is a conversation with your partner**, not a menu: "Try for a baby", "Not yet", "Never", with partner reactions and arguments when you disagree.
 - **Fertility is a hidden stat** that declines with age and is affected by health and habits. The doctor can test it and say "Fertility: below average" so it is not a mystery.
 - **Parenting styles and actions shape children's traits**, and the child remembers how you raised them (module 1 memory).
@@ -432,15 +432,15 @@ Turn single lives into a family saga. Generational play is the long-term meta lo
 
 ### BitLife equivalent
 - At death you can continue as an eligible child, including adopted children (since about v1.14).
-- **Free players can continue only once; unlimited generations need the paid VIP unlock.** Players complain about this ("to continue a family tree... you have to pay").
+- **Free players can continue only once; up to 8 generations need the paid VIP unlock.** Players complain about this ("to continue a family tree... you have to pay").
 - A will can leave money to one child, a partner or charity, or split it; estate tax follows real-life countries.
 - Heirs inherit houses and cars; if the heir is under 18, assets are auctioned and the heir keeps the cash. As of 2022, startup businesses could not pass to heirs.
 - **Heirlooms** come from a daily attic mini-game, count toward net worth and pass to the heir.
 - One review says saves were deleted after 4 generations. There is no visual family tree.
 
-### EverLife redesign
+### Relivable redesign
 - **Dynasties are first-class objects:** each family line has a name, a crest, a tree, goals, a reputation and a history that survive across lives.
-- **Free players get at least 3 generations per dynasty** (brief requirement). Recommendation: free dynasties run to **Generation 4** (the founder plus 3 heir continuations). Plus removes the cap. Reaching the cap never deletes anything: the dynasty is saved, its tree stays viewable and shareable, and it can be continued later after buying Plus.
+- **Free players get at least 3 generations per dynasty** (brief requirement). Recommendation: free dynasties run to **Generation 4** (the founder plus 3 heir continuations). Plus raises the cap to **Generation 8**, the hard limit for every dynasty. Reaching the cap never deletes anything: the dynasty is saved, its tree stays viewable and shareable, and it can be continued to Generation 8 after buying Plus.
 - **Better inheritance:** businesses, investments, property and heirlooms all pass on. Heirs under 18 get a **trust** run by a guardian NPC instead of a forced auction.
 - **Family tree view** with zoom, search, filters, and an accessible list mode.
 - **Dynasty Ambitions and Legacy Points** reward multi-generation goals.
@@ -511,7 +511,7 @@ flowchart TD
 
 ### Key rules, data and examples
 - **Free cap (decided):** Generation 4 (founder + 3 heirs) per dynasty, unlimited dynasties. Brief minimum is 3 generations, so this exceeds it. At the cap the dynasty is saved ([[06 Monetization and Economy]]).
-- **Plus:** unlimited generations.
+- **Plus:** up to 8 generations.
 - **No save loss:** dynasties are cloud-saved to the account ([[08 Technical Architecture]]). The "deleted after 4 generations" complaint must be impossible: tested with 50-generation automated dynasties.
 - **Example:** The Okafor dynasty picks "Healers" and "Clean Name". Gen 1 nurse, Gen 2 surgeon, Gen 3 a vet (counts as medicine in the Ambition data). Gen 3's teenage shoplifting conviction breaks "Clean Name"; the Ambition card shows it as "Failed in Gen 3" with the event, and LP still count for the completed "Healers".
 
@@ -523,7 +523,7 @@ flowchart TD
 ### Priority and Free vs Plus
 - **MVP:** continue as heir, will, estate tax, trusts, business succession, free cap at Gen 4, basic family tree (list + simple tree).
 - **Launch:** full zoomable tree, Ambitions, LP perks, heirloom provenance, Chronicle, will contests, distant heirs.
-- **Free:** everything up to Gen 4, tree, Ambitions, LP. **Plus:** unlimited generations.
+- **Free:** everything up to Gen 4, tree, Ambitions, LP. **Plus:** up to 8 generations.
 
 ### Dependencies
 - Modules 1–3 (bonds, marriage, children), 8 (avatars), 9 (Life Recap, titles), 11 (sharing), 12 (Plus entitlement).
@@ -549,7 +549,7 @@ Fame is one of the most dramatic and shareable arcs (influencer lives, scandals,
 - A weekly challenge required verified accounts on every platform with 2M+ followers.
 - The research found no reliable source on viral-post mechanics, the current platform list, or adult-content platforms.
 
-### EverLife redesign
+### Relivable redesign
 - **Two separate meters:** **Fame** (0–100, how widely known you are, from any source) and **Followers** (per platform). A famous surgeon can have few followers; an influencer can have huge followers and modest fame.
 - **Original fictional platforms** with distinct strengths, so posting strategy matters.
 - **Posts are choices with visible risk:** each post type shows its expected reach band and controversy risk.
@@ -649,7 +649,7 @@ Pets bring warmth, humour and grief. They are a low-stakes emotional system that
 - The **Zoo** expansion pack (paid, 2024) adds small, medium and large zoos.
 - Pet death, vet visits and pet interactions could not be verified in the research. A "Cat Lady" ribbon exists for owning many cats.
 
-### EverLife redesign
+### Relivable redesign
 - **All pet species are free**, including exotic animals and horses (BitLife gates some behind premium).
 - **Pets are characters** with Bond, Health, Age, Temperament and memories (simplified module 1 model).
 - **Horses do not need a multimillion estate:** you can board a horse at a stable for a yearly fee, or own land with stables.
@@ -729,7 +729,7 @@ Replace BitLife's long, nested Activities list with a hub that shows the **right
 - Accessibility feedback: actions hidden across several menus; ads that interrupted activities (black market, praying) even after buying ad removal.
 - Player requests: parties with guest lists, religion system, lawsuits with retaliation, road trips.
 
-### EverLife redesign
+### Relivable redesign
 
 ```mermaid
 flowchart TB
@@ -779,7 +779,7 @@ flowchart TB
 
 ### Full mapping of BitLife Activities items
 
-| BitLife item | EverLife card(s) | Category | Contextual trigger | Search keywords | Age | Redesign notes |
+| BitLife item | Relivable card(s) | Category | Contextual trigger | Search keywords | Age | Redesign notes |
 |---|---|---|---|---|---|---|
 | Doctor | Visit doctor, Specialist, Hospital, Get a check-up | Health & Body | Illness or injury, yearly check-up after 40 | doctor, sick, cure, check-up | Any (parent takes child) | Diagnosis shown with treatment options, cost, success odds; insurance and free-healthcare countries from country data. |
 | Witch doctor (alternative healer) | Alternative healer | Health & Body | Untreated illness + low money or remote area | healer, folk cure | 18+ | Kept for parity as "Alternative healer"; risk shown; written respectfully, not mocking any culture. |
@@ -846,7 +846,7 @@ flowchart TB
 - Storylet engine, country data, health, money, crime, law ([[04 App Breakdown - Core Life Systems]]); modules 1–6, 8; localisation pipeline ([[08 Technical Architecture]]); UX patterns ([[05 UX and Screen Map]]).
 
 ### Acceptance criteria
-- Every BitLife Activities item in the mapping table has a working EverLife card or an explicitly moved home (e.g. "End this life" in the life menu).
+- Every BitLife Activities item in the mapping table has a working Relivable card or an explicitly moved home (e.g. "End this life" in the life menu).
 - Any available action can be reached in at most 2 taps from the Life hub via contextual cards or search, measured in usability tests.
 - 100% of locked actions show a reason and an unlock hint; no action silently disappears.
 - Search returns the correct top result for at least 90% of a 300-phrase test set per launch language.
@@ -866,7 +866,7 @@ Let every player see themselves in the game and live any identity respectfully. 
 - A critical opinion piece said they/them pronouns were pulled in 1.38.1 and replaced with zie/zir. One guide says surrogacy is unavailable after a sex change.
 - Appearance editing is tied to the paid editor and limited to ages 21–44.
 
-### EverLife redesign
+### Relivable redesign
 - **Identity is part of the person from creation**, not an activity hidden in a menu. Players can set gender identity, pronouns and orientation at character creation and change them in life through storylets and the Identity card.
 - **Pronouns are a first-class text system:** he/him, she/her, they/them, and custom sets, with grammar handled by the localisation pipeline. No feature is removed or blocked because of the player's gender history.
 - **Inclusive avatar** that ages with the character (brief "better" list), with wide options, free for everyone.
@@ -946,7 +946,7 @@ Give every life a memorable ending and every player a reason to start another on
 - **Tombstone:** age, net worth, achievements and one ribbon.
 - No recap or sharing feature in the official game.
 
-### EverLife redesign
+### Relivable redesign
 - **Achievements** (hundreds) with tiers, clear requirements shown in-game (no guessing), progress bars, and hidden "secret" ones with hints.
 - **Life Titles** replace ribbons: each finished life earns **one main Title** and up to **two minor Titles**, chosen by a transparent theme score. Titles are original names and every requirement is published in-game.
 - **Life Recap**: a Spotify-Wrapped-style, 9:16 story sequence at the end of each life (and a yearly "Dynasty Recap"), with one-tap sharing and a deep link.
@@ -1032,7 +1032,7 @@ Give every life a memorable ending and every player a reason to start another on
 ### Priority and Free vs Plus
 - **MVP:** 150 achievements, 25 Titles with transparent scoring, tombstone, basic Life Recap (6 cards, image export), collections (careers, countries, Titles).
 - **Launch:** 250 achievements, 40 Titles, full Recap (video, Archetype, Chaos Index, privacy toggles), Dynasty Recap, all collections, platform achievement sync.
-- **LiveOps:** seasonal Titles, yearly "EverLife Year in Review" for each player.
+- **LiveOps:** seasonal Titles, yearly "Relivable Year in Review" for each player.
 - **Free.** Seasons/cosmetics can add **recap frames and tombstone styles** (module 12), never Titles or achievements.
 
 ### Dependencies
@@ -1059,7 +1059,7 @@ Give players a reason to come back every day and week, create shared community m
 - Limited events in 2026: a scavenger hunt (June–July), an anniversary sweepstakes (September), Halloween challenges (October). The Seasons pass ended in August 2026.
 - BitLife had a Scenario Creator (v1.18), but research could not confirm how scenario starts work today; there is no share code system.
 
-### EverLife redesign
+### Relivable redesign
 - **Weekly challenges are fair for free players, by rule:** every task must be completable with free content, validated by the life simulator bot before publishing.
 - **Past challenges are free to replay** in the **Challenge Archive** (completion counts for collections; the original time-limited reward becomes a lower-tier "Archive" variant).
 - **Daily goals** (3 small goals a day) with a forgiving streak.
@@ -1101,7 +1101,7 @@ Give players a reason to come back every day and week, create shared community m
 | Lunar New Year | Jan/Feb | Family reunion storylets, red-envelope gifting (in-game) |
 | Pride | June | Community storylines, Pride events (respectful, co-written) |
 | Summer | Jul–Aug | Travel, road trips, summer romance |
-| EverLife anniversary | Launch month | Retrospective, community "Together" goal |
+| Relivable anniversary | Launch month | Retrospective, community "Together" goal |
 
 - Every event has a **free track** (storylets, challenges, cosmetics) and optional Season Pass rewards (module 12).
 - Events add **storylet pools** remotely (no app update), with a time window, then move to an "evergreen" pool or the Archive.
@@ -1109,7 +1109,7 @@ Give players a reason to come back every day and week, create shared community m
 **Scenario seeds and share codes**
 - A **seed** captures: content version, country/city, birth year (era), family setup (parents' wealth, marriage health, siblings, twins), player identity, starting traits, the RNG seed, and optional rule modifiers ("no money from parents", "start as an orphan").
 - **Share code format (proposal):** `EL-` + 10 characters in Crockford Base32 (no I, L, O, U), e.g. `EL-7K3Q-MX92-HT`. It maps to a server record (so codes stay short) with an offline fallback "long code" for sharing without network.
-- **Entry points:** New Life → "Enter code"; Life Recap's last card ("Try this life"); deep links `everlife://seed/EL-7K3Q-MX92-HT` and a web link that opens the app or the store.
+- **Entry points:** New Life → "Enter code"; Life Recap's last card ("Try this life"); deep links `relivable://seed/EL-7K3Q-MX92-HT` and a web link that opens the app or the store.
 - **Determinism:** same seed + same content version + same choices = same outcomes. If content updated, the code shows "made with v1.4; your game uses v1.6: results may differ".
 - **Safety:** seeds include no free text except a name (filtered); seeds created by under-18 accounts are shareable only with friends.
 
@@ -1150,7 +1150,7 @@ Turn a single-player game into a shared one without the cost and safety risk of 
 - The largest BitLife Discord is unofficial (~3,200 members).
 - A Scenario Creator existed in v1.18; no UGC sharing found.
 
-### EverLife redesign
+### Relivable redesign
 - **Async first:** friends, visits to friends' lives (read-only snapshots), shared family trees, challenge leaderboards and small gifts. No live chat, no free-text messages between players in Phase 1 (safety and rating).
 - **Real-time later (optional):** "Watch Party" style shared viewing or turn-based co-op are LiveOps experiments, decided after soft-launch data.
 - **Creator Mode (later phase):** a constrained scenario editor with moderation, starting with seeds + rules and growing to custom storylets.
@@ -1258,13 +1258,13 @@ Earn revenue in a way that players call fair: one optional premium unlock, opt-i
 - **Challenge vault** (~$4.99). **Seasons/pass** ended August 2026.
 - Complaints: ads after buying no-ads, paywall creep, lost purchases after phone changes, a 2019 subscription test pulled after backlash.
 
-### EverLife redesign
+### Relivable redesign
 
 ```mermaid
 flowchart TB
   FREE["Free game: every career, every core system, all countries, all pets, family tree, challenges, Archive, dark mode"]
   ADS["Opt-in rewarded ads (capped, never mid-story)"]
-  PLUS["EverLife Plus ~$9.99 one-time"]
+  PLUS["Relivable Plus ~$9.99 one-time"]
   SEASON["Season Pass ~$4.99 (optional, cosmetic + bonus storylines)"]
   PACK["Story Packs ~$2.99-3.99 (storylines, scenario starts)"]
   COS["Cosmetics (direct price, no loot boxes)"]
@@ -1274,18 +1274,18 @@ flowchart TB
   FREE --> PACK
   FREE --> COS
   PLUS -. includes .-> P1["No ad offers: ad rewards granted automatically"]
-  PLUS -. includes .-> P2["Unlimited generations"]
+  PLUS -. includes .-> P2["Up to 8 generations"]
   PLUS -. includes .-> P3["Destiny Mode (editor)"]
   PLUS -. includes .-> P4["Unlimited Rewind"]
 ```
 
 - **Free game is complete:** no career, life system, country, pet species, activity or challenge is paid.
-- **EverLife Plus (one-time, ~$9.99):** no ads at all, unlimited generations, **Destiny Mode** (editor), unlimited **Rewind**, plus convenience (extra save slots, extra profile frames). Includes all future Plus features at no extra cost; the list of what Plus includes is published and versioned.
+- **Relivable Plus (one-time, ~$9.99):** no ads at all, up to 8 generations, **Destiny Mode** (editor), unlimited **Rewind**, plus convenience (extra save slots, extra profile frames). Includes all future Plus features at no extra cost; the list of what Plus includes is published and versioned.
 - **Rewind is included, never pay-per-use.** Free players get 1 per life + 1 per day via an opt-in rewarded ad (below); Plus is unlimited.
 - **Season Pass (~$4.99, optional):** cosmetic rewards and bonus storylines on a seasonal track; a **free track** exists for everyone.
 - **Story Packs (~$2.99–3.99):** themed storyline sets and scenario starts. **Never** careers, systems or anything a challenge needs.
 - **Cosmetics:** avatar outfits, card themes, tombstone styles, recap frames, family crest designs, sold at direct prices. **No loot boxes, no paid random rewards, no premium currency.**
-- **Account-based purchases:** every purchase is tied to the EverLife account and restores on any device and platform where store rules allow.
+- **Account-based purchases:** every purchase is tied to the Relivable account and restores on any device and platform where store rules allow.
 
 ### New features
 - Rewind included (no consumable undo).
@@ -1296,7 +1296,7 @@ flowchart TB
 
 ### Detailed sub-features
 
-**EverLife Plus contents**
+**Relivable Plus contents**
 
 | Item | Free | Plus |
 |---|---|---|
@@ -1365,7 +1365,7 @@ flowchart TB
 
 ### Key rules, data and examples
 - **Store copy promise (recommendation):** "All careers free. No forced ads. One-time Plus. Your purchases follow your account."
-- **Example:** Leila plays free for 3 weeks, finishes a Gen 4 dynasty and sees "Your dynasty is saved. Plus unlocks unlimited generations, Destiny Mode and unlimited Rewind — $9.99 once." She buys on iPhone; months later she switches to Android, signs in with her account, and Plus is active.
+- **Example:** Leila plays free for 3 weeks, finishes a Gen 4 dynasty and sees "Your dynasty is saved. Plus extends it to 8 generations, Destiny Mode and unlimited Rewind — $9.99 once." She buys on iPhone; months later she switches to Android, signs in with her account, and Plus is active.
 
 ### UI entry point
 - **Store** (Profile → Store): the 9-product catalogue in [[06 Monetization and Economy]] §2 (Plus, No Ads + Plus Upgrade, Story Packs, Season Pass, Welcome Pack, cosmetic sets, Founder's Bundle, Complete Collection), "My purchases", Restore.
@@ -1374,7 +1374,7 @@ flowchart TB
 - Natural upsell moments only: free generation cap, Rewind allowance used, a locked Destiny action. No pop-ups at app launch.
 
 ### Priority and Free vs Plus
-- **MVP:** Plus (no ads, unlimited generations, Destiny Mode core, unlimited Rewind), rewarded ads with rules, account restore, cosmetics shelf (small).
+- **MVP:** Plus (no ads, up to 8 generations, Destiny Mode core, unlimited Rewind), rewarded ads with rules, account restore, cosmetics shelf (small).
 - **Launch:** full Destiny Mode, first Season Pass, 2–3 Story Packs, cross-platform entitlements.
 - **LiveOps:** seasons cadence, new packs each quarter, web shop where allowed.
 
@@ -1399,7 +1399,7 @@ Add variety and warmth to text (fighting the "repetitive" complaint) without let
 - None. The research found no AI features in BitLife.
 - Market context: new LLM-driven "type any action" life sims exist with little validation; inZOI's AI NPCs (PC) showed both interest and backlash, which is why the brief requires AI to be optional.
 
-### EverLife redesign
+### Relivable redesign
 - **Opt-in, off by default.** A clear explanation and toggle in Settings and in a one-time prompt after the first finished life.
 - **Rewords only.** The storylet engine decides events, choices and effects. The AI may only rephrase the event text, choice labels (keeping meaning), NPC dialogue flavour and Life Recap captions.
 - **On-device first** (Apple Foundation Models on supported iPhones, iOS 26+; Android on-device models where available, to be researched), with a **cloud small-model fallback** behind a server proxy.
@@ -1477,14 +1477,14 @@ flowchart LR
 ## 14. Settings, accessibility and safety
 
 ### Purpose
-Make EverLife playable by everyone and safe by default. Accessibility is pillar 5 and a known BitLife weakness (repeated VoiceOver regressions, unlabeled buttons, menus hard to navigate). Safety settings support the target rating (Apple 16+, Google Mature 17+, per the brief) and 2026 age laws.
+Make Relivable playable by everyone and safe by default. Accessibility is pillar 5 and a known BitLife weakness (repeated VoiceOver regressions, unlabeled buttons, menus hard to navigate). Safety settings support the target rating (Apple 16+, Google Mature 17+, per the brief) and 2026 age laws.
 
 ### BitLife equivalent
 - Settings include restore purchases; dark mode was once a paid VIP perk.
 - Accessibility: fully accessible around 2020, broke in later updates; a 2022 petition followed a VoiceOver regression; later reports say VoiceOver reads nothing; minigames (prison escape, burglary maze) hard for screen-reader users (players asked for a skip option); ads hard to dismiss with VoiceOver.
 - Rating 17+ / Mature 17+ / PEGI 16; terms say not directed to under-16s. No content filters found in research.
 
-### EverLife redesign
+### Relivable redesign
 - **Accessibility is a release gate,** not a feature: automated and manual screen-reader tests on every build ([[08 Technical Architecture]]).
 - **All display options are free** (dark mode, themes, text size, contrast).
 - **Content filters** let players soften or hide themes, with safer defaults by age mode.
@@ -1609,14 +1609,14 @@ Make EverLife playable by everyone and safe by default. Accessibility is pillar 
 
 | Feature | Free | Plus | Pack | Season | Notes |
 |---|---|---|---|---|---|
-| All careers, including special and "pack-style" careers (mafia, politics, actor, musician, athlete, astronaut, spy, landlord, investor, director, fighter, clergy, zookeeper) | ✅ | — | — | — | BitLife sells many of these; EverLife never does |
+| All careers, including special and "pack-style" careers (mafia, politics, actor, musician, athlete, astronaut, spy, landlord, investor, director, fighter, clergy, zookeeper) | ✅ | — | — | — | BitLife sells many of these; Relivable never does |
 | All core systems (school, jobs, business, investing, real estate, crime, prison, health, death, inheritance) | ✅ | — | — | — | See [[04 App Breakdown - Core Life Systems]] |
 | Relationships, Bond %, memory, grudges | ✅ | Edit facets (Destiny) | — | — | |
 | Dating, Kindling app, marriage, prenup, divorce, affairs, arranged marriage | ✅ | — | Romance storylines | Seasonal romance chapters | |
 | Parents who divorce/remarry, step-families | ✅ | — | — | — | |
 | Fertility, IVF, surrogacy, adoption, fostering, custody, child support | ✅ | — | — | — | |
 | Parenting styles and actions | ✅ | — | — | — | |
-| Continue as heir | ✅ up to Gen 4 | Unlimited generations | — | — | Brief: at least 3 free; dynasty saved at cap |
+| Continue as heir | ✅ up to Gen 4 | Up to 8 generations | — | — | Brief: at least 3 free; dynasty saved at cap |
 | Family tree view, Dynasty Ambitions, Legacy Points, heirlooms | ✅ | Plus crest (cosmetic) | — | Crest designs | LP earned only, never sold |
 | Wills, trusts, business succession | ✅ | — | — | — | |
 | Fame, all social platforms, verification, endorsements, scandals | ✅ | — | Fame storylines | Trend chapters | |

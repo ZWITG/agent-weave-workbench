@@ -1,8 +1,8 @@
 ---
 title: "11 Roadmap Team and Budget"
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, roadmap, team, budget, content-plan, gantt]
+tags: [relivable, phase-1, roadmap, team, budget, content-plan, gantt]
 updated: 2026-10-26
 ---
 
@@ -27,7 +27,7 @@ Related: [[00 Home]] · [[01 Executive Summary]] · [[08 Technical Architecture]
 
 ```mermaid
 gantt
-  title EverLife roadmap (target dates, gated, see 12 Risks and KPIs)
+  title Relivable roadmap (target dates, gated, see 12 Risks and KPIs)
   dateFormat YYYY-MM-DD
   axisFormat %b %y
   section Phase 1 Planning
@@ -239,7 +239,7 @@ Add the GTM budget ([[10 Go-to-Market]] §10): about **$46–103K** for soft lau
 ## 7. Phase 2 next-steps checklist
 
 - [ ] **Gate 1 sign-off:** client approves scope, stack (Flutter, with the Unity switch criteria), budget envelope and rating target (16+)
-- [ ] Start **trademark / store-name clearance** for "EverLife" plus 3 backup names ([[09 Compliance and Ratings]] §10)
+- [ ] Start **trademark / store-name clearance** for "Relivable" plus 3 backup names ([[09 Compliance and Ratings]] §10)
 - [ ] Reserve social handles. **Open the Discord** (T-12) ([[10 Go-to-Market]] §2)
 - [ ] Hire or contract: tech lead (Flutter + Dart), Flutter UI engineer (0.5), narrative lead, contract writer (0.25), UX/UI + 2D designer (0.25)
 - [ ] Set up the repo, CI (GitHub Actions), Firebase project (dev/stage/prod), Crashlytics, RevenueCat sandbox, Crowdin trial

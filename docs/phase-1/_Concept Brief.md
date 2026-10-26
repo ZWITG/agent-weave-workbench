@@ -1,20 +1,20 @@
 ---
 title: Concept Brief (source of truth for all Phase 1 notes)
-project: EverLife (working title)
+project: Relivable (working title)
 phase: 1 - Planning
 status: draft
 updated: 2026-10-26
-tags: [everlife, phase-1, brief]
+tags: [relivable, phase-1, brief]
 ---
 
-# EverLife — Concept Brief
+# Relivable — Concept Brief
 
 > Every planning note in this vault must stay consistent with this brief. If a note needs to deviate, it says so and why.
 
 ## One-liner
 A text-first mobile life simulator that keeps everything players love about BitLife (birth-to-death, "Age +1", wild choices, generations) but redesigns it around **memory, clarity, fairness and sharing**.
 
-**Working title:** EverLife (needs trademark/App Store name check before any public use).
+**Working title:** Relivable (needs trademark/App Store name check before any public use).
 
 ## Five pillars
 1. **Every choice remembered**: a storylet engine with NPC memory, consequences that come back years later, life chapters, traits.
@@ -36,7 +36,7 @@ A text-first mobile life simulator that keeps everything players love about BitL
 | Backend | Firebase (Auth, Firestore cloud saves, Remote Config, Analytics, Crashlytics) + RevenueCat; server-side StoreKit 2 / Play verification | Lost purchases/saves are a top BitLife complaint |
 | AI | Optional, on-device first (Apple Foundation Models), cloud small-model fallback; rewords text only; moderation + report button | Cost ~$0.27/user/month in cloud; inZOI backlash shows AI must be optional |
 | Rating | Target Apple 16+ / Google Mature 17+ (crime, drugs, romance) with age signals APIs | BitLife is 17+; 2026 US app-store age laws |
-| Monetisation | Free + opt-in rewarded ads only (4/session, 8/day, 90 s cooldown) + **EverLife Plus** one-time $9.99 (no ads with ad rewards auto-granted, unlimited generations, Destiny Mode editor, unlimited Rewind) + **No Ads** $2.99 (upgrade to Plus $6.99) + optional cosmetic/story **Season Pass** $4.99 + small **Story Packs** ($2.99 / $3.99) that add storylines, never lock careers + cosmetic Welcome Pack $1.99 and sets $0.99–1.99 + $14.99 / $24.99 bundles (9 products, see [[06 Monetization and Economy]] §2). One earn-only soft currency (Sparks); no premium currency, no loot boxes, no per-use Rewind, no subscriptions at launch. Optional web shop where allowed. | Anti-paywall positioning; BitLife's 2019 subscription test backlash |
+| Monetisation | Free + opt-in rewarded ads only (4/session, 8/day, 90 s cooldown) + **Relivable Plus** one-time $9.99 (no ads with ad rewards auto-granted, up to 8 generations, Destiny Mode editor, unlimited Rewind) + **No Ads** $2.99 (upgrade to Plus $6.99) + optional cosmetic/story **Season Pass** $4.99 + small **Story Packs** ($2.99 / $3.99) that add storylines, never lock careers + cosmetic Welcome Pack $1.99 and sets $0.99–1.99 + $14.99 / $24.99 bundles (9 products, see [[06 Monetization and Economy]] §2). One earn-only soft currency (Sparks); no premium currency, no loot boxes, no per-use Rewind, no subscriptions at launch. Optional web shop where allowed. | Anti-paywall positioning; BitLife's 2019 subscription test backlash |
 | Launch languages | English, then Spanish, Brazilian Portuguese, German, French | BitLife's separate ES/BR apps show demand |
 | Soft launch | Philippines + Ireland/Netherlands (+ Canada if budget) | Cheaper than CA/AU; 2026 practice |
 
@@ -57,11 +57,11 @@ A text-first mobile life simulator that keeps everything players love about BitL
 These resolve conflicts between the Phase 1 notes. Every note follows them.
 
 1. **Action search bar** sits at the **bottom** of the Life hub, next to the Age +1 button (thumb zone).
-2. **Store catalogue** is the 9 products in [[06 Monetization and Economy]] §2: EverLife Plus $9.99; No Ads $2.99 with a $6.99 Plus Upgrade; Story Packs $2.99 / $3.99; Season Pass $4.99 per season; Welcome Pack $1.99 (cosmetic); cosmetic sets $0.99–1.99; Founder's Bundle $14.99; Complete Collection $24.99.
+2. **Store catalogue** is the 9 products in [[06 Monetization and Economy]] §2: Relivable Plus $9.99; No Ads $2.99 with a $6.99 Plus Upgrade; Story Packs $2.99 / $3.99; Season Pass $4.99 per season; Welcome Pack $1.99 (cosmetic); cosmetic sets $0.99–1.99; Founder's Bundle $14.99; Complete Collection $24.99.
 3. **End-of-life awards** are called **Life Titles**.
 4. **Currency:** one earn-only soft currency, **Sparks**, never purchasable; no premium or paid currency. **Legacy Points** are a separate dynasty score.
 5. **Ads:** opt-in rewarded only. Caps: 4 per session, 8 per day, 90-second cooldown. None during the first life, none during stories or activities, none for 7 days after a purchase. Plus removes ad offers and grants their rewards.
-6. **Free generations:** founder + 3 heirs (Generation 4) free; unlimited with Plus; the dynasty is saved at the cap.
+6. **Generations:** every dynasty is capped at **8 generations**. Free players reach Generation 4 (founder + 3 heirs); Plus extends a dynasty to Generation 8. At the cap the dynasty is completed, saved and shown as a Dynasty Recap, and the player can start a new dynasty. There is no limit on the number of dynasties.
 7. **Rewind:** 1 free per life + 1 per day via an opt-in rewarded ad; never sold per use; unlimited with Plus.
 8. **Tech:** Flutter as chosen in this brief; Unity 6 stays the alternative, decided at the end of Phase 2.
 9. **Timeline:** Phase 2 runs 9 Nov 2026 – 8 Jan 2027; soft launch 17 May 2027 (Philippines, then Ireland/Netherlands, Canada optional); global launch target 12 Oct 2027.

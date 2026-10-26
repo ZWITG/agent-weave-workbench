@@ -1,8 +1,8 @@
 ---
 title: "09 Compliance and Ratings"
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, compliance, age-rating, privacy, coppa, gdpr, accessibility, ai-policy, ip]
+tags: [relivable, phase-1, compliance, age-rating, privacy, coppa, gdpr, accessibility, ai-policy, ip]
 updated: 2026-10-26
 ---
 
@@ -17,7 +17,7 @@ Related: [[_Concept Brief]] · [[06 Monetization and Economy]] · [[08 Technical
 
 ## 1. Position in one table
 
-| Question | EverLife position |
+| Question | Relivable position |
 |---|---|
 | Who is it for? | A **general-audience, mature-themed** game for **16+** (store rating). It is **not directed to children** |
 | Under-13s | **Blocked** through a neutral age screen plus platform age signals. No child mode in Phase 3/4 |
@@ -106,7 +106,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 ## 6. GDPR, UK Children's Code and CCPA/CPRA
 
-| Regime | Key rule | EverLife action |
+| Regime | Key rule | Relivable action |
 |---|---|---|
 | **GDPR** | Digital consent age defaults to **16**. Member states may lower it to 13. Examples: **13** in DK, SE, PT and the UK; **14** in ES; **15** in FR and GR; **16** in DE and RO (2021 survey) ([Library of Congress](https://blogs.loc.gov/law/2021/06/new-report-on-childrens-online-privacy-and-data-protection-published/)) | Use a per-country consent-age table in Remote Config. A **CMP** (IAB TCF v2.2) gates ad and analytics SDKs. **DPIA** before soft launch. Data-subject rights: export and deletion in-app. Use an EU data region where possible |
 | **UK Age Appropriate Design Code** | Applies to services *likely to be accessed* by under-18s. Its 15 standards include best-interests default, **geolocation off**, and **no nudge techniques**. ICO games guidance (Feb 2023): risk assessment, age established with reasonable certainty ([Bird & Bird](https://twobirds.com/insights/2020/uk/icos-publishes-age-appropriate-design-code); [Inside Privacy](https://www.insideprivacy.com/?p=14337)) | **High-privacy defaults for all under-18s**. No streak-loss guilt notifications, no countdown pressure offers, no dark-pattern paywalls ([[07 Retention and LiveOps]]: forgiving streaks, opt-in push) |
@@ -119,7 +119,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 ## 7. European Accessibility Act (EAA)
 
 - In force **28 Jun 2025** for e-commerce services, including via mobile apps. One law firm argues **in-app purchases can bring an app into scope**. That is an interpretation, not official guidance ([Travers Smith](https://www.traverssmith.com/knowledge/knowledge-container/a-new-milestone-for-accessibility-the-european-accessibility-act-now-applies/)).
-- **Microenterprise exemption:** service providers with fewer than 10 staff and ≤ €2M turnover or balance sheet ([CCPC](https://www.ccpc.ie/business/enforcement/accessibility/european-accessibility-act-guidelines-for-microenterprises/)). EverLife's team may qualify early on, but **we comply anyway**, because accessibility is Pillar 5 and a marketing differentiator.
+- **Microenterprise exemption:** service providers with fewer than 10 staff and ≤ €2M turnover or balance sheet ([CCPC](https://www.ccpc.ie/business/enforcement/accessibility/european-accessibility-act-guidelines-for-microenterprises/)). Relivable's team may qualify early on, but **we comply anyway**, because accessibility is Pillar 5 and a marketing differentiator.
 - **Target:** WCAG 2.2 AA-equivalent and EN 301 549 for the **purchase flow, paywall, settings, account and support** at minimum, and the whole game in practice. Publish an accessibility statement.
 - **Proof:** an external accessibility audit in Phase 4 (budgeted in [[11 Roadmap Team and Budget]]), plus the manual VoiceOver/TalkBack release gate ([[08 Technical Architecture]] §9). BitLife's regressions show accessibility breaks silently ([AppleVis](https://www.applevis.com/comment/135452)).
 
@@ -127,7 +127,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 ## 8. Loot boxes, simulated gambling and pricing transparency
 
-| Jurisdiction | Rule (per research) | EverLife |
+| Jurisdiction | Rule (per research) | Relivable |
 |---|---|---|
 | **Belgium** | Paid loot boxes are treated as gambling (up to **€800K and 5 years**, doubled where minors are involved). A 2025 Antwerp ruling is reported ([Promise Legal](https://blog.promise.legal/loot-box-laws-by-jurisdiction-indie-game-studios/)) | No paid randomness, so not affected |
 | **Brazil, ECA Digital** | Signed Sep 2025, effective ~Mar 2026. **Bans loot-box sales to minors**, defined by mechanics. Fines up to **10% of revenue**. A June 2026 court ordered Riot to pay damages and disclose probabilities ([Programming Insider](https://programminginsider.com/loot-boxes-regulation-and-where-the-line-sits-in-2026/); [Sheep Esports](https://www.sheepesports.com/articles/brazil-court-orders-riot-games-to-pay-eur2-5m-over-league-of-legends-loot-boxes/en)) | PT-BR is a launch language, so **no paid random items anywhere** |
@@ -140,7 +140,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 ## 9. AI content rules
 
-| Rule | Requirement | EverLife control |
+| Rule | Requirement | Relivable control |
 |---|---|---|
 | **Apple Guideline 1.2** (UGC; per Oct 2026 coverage, it explicitly covers AI content-creation apps) | Filtering, reporting with timely response, blocking, published contact info ([ithinkdiff](https://www.ithinkdiff.com/app-store-rules-ai-deepfakes-nudify-apps/)) | Moderation on every cloud output. **Report button** on AI text. Support email and in-app contact. A 48 h response SLA *(target)* |
 | **Apple Guideline 5.1.2(i)** (Nov 2025) | Disclose and get **explicit permission** before sharing personal data with third-party AI ([TechCrunch](https://techcrunch.com/2025/11/13/apples-new-app-review-guidelines-clamp-down-on-apps-sharing-personal-data-with-third-party-ai)) | A first-use consent sheet naming the provider. On-device mode needs no third-party sharing. No PII in prompts (in-game names only) |
@@ -158,8 +158,8 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 | Area | Do | Don't |
 |---|---|---|
-| Name | Clear "EverLife" (or the final name) through USPTO/EUIPO/WIPO trademark and App Store / Play name searches **before any public use** ([[_Concept Brief]]) | Use "Bit-" prefixes or "-Life" constructions confusingly close to BitLife's family (BitLife, DogLife, CatLife) without clearance |
-| Product terms | Original names: e.g. *EverLife Plus*, *Destiny Mode*, *Rewind*, *Life Timeline*, *Bond %*, *Life Titles*, *Life Recap*, *Story Packs*, *Season Pass*, *Dynasty Ambitions*, *Wellbeing*, *Sparks* | Use **Bitizenship, God Mode, Boss Mode, Time Machine, Ribbons, Bitizen** or BitLife's pack names |
+| Name | Clear "Relivable" (or the final name) through USPTO/EUIPO/WIPO trademark and App Store / Play name searches **before any public use** ([[_Concept Brief]]) | Use "Bit-" prefixes or "-Life" constructions confusingly close to BitLife's family (BitLife, DogLife, CatLife) without clearance |
+| Product terms | Original names: e.g. *Relivable Plus*, *Destiny Mode*, *Rewind*, *Life Timeline*, *Bond %*, *Life Titles*, *Life Recap*, *Story Packs*, *Season Pass*, *Dynasty Ambitions*, *Wellbeing*, *Sparks* | Use **Bitizenship, God Mode, Boss Mode, Time Machine, Ribbons, Bitizen** or BitLife's pack names |
 | Text | Write every storylet from scratch, with **writer originality attestations** and plagiarism spot-checks (n-gram similarity against public BitLife text, wikis and guides) | Copy, paraphrase or "reword with AI" BitLife event text, death messages or ribbon descriptions |
 | Visual / trade dress | A distinct palette, typography, iconography, card layout, illustrated avatars and an icon that doesn't echo BitLife's | Mimic BitLife's stat-bar colours and layout, emoji-style icon, or screen composition |
 | Store metadata | Generic sub-genre keywords ("life simulator", "life sim", "choices", "story game") | Use competitor trademarks in the keyword field, title or ads (store policy prohibits it; verify the current rule) |
@@ -187,7 +187,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 
 | # | Item | Owner | Phase | Status |
 |---|---|---|---|---|
-| 1 | Trademark and store-name clearance for "EverLife" (or alternatives) | Client + IP counsel | **2** | ☐ |
+| 1 | Trademark and store-name clearance for "Relivable" (or alternatives) | Client + IP counsel | **2** | ☐ |
 | 2 | IP policy: writer originality attestation, banned-terms list, plagiarism check in CI | Narrative Lead | 2 | ☐ |
 | 3 | Apple age questionnaire dry-run + IARC dry-run on the prototype content set | Producer | 2 | ☐ |
 | 4 | Content flag taxonomy + toggles spec + sensitivity guidelines | Narrative Lead + UX | 2 | ☐ |

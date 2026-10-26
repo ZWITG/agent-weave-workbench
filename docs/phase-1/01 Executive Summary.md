@@ -1,15 +1,15 @@
 ---
 title: Executive Summary
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, executive-summary, client]
+tags: [relivable, phase-1, executive-summary, client]
 updated: 2026-10-26
 ---
 
-# EverLife — Executive Summary
+# Relivable — Executive Summary
 
 > [!note] Status and scope
-> One-page client summary of the Phase 1 plan. Source of truth: [[_Concept Brief]]. Details sit in the linked notes. **EverLife** is a working title and needs a trademark and App Store name check before public use. EverLife is an original game *inspired by the text life-sim genre*. It is not affiliated with, endorsed by or derived from BitLife or Candywriter, and it will ship with no copied text, names, UI or assets.
+> One-page client summary of the Phase 1 plan. Source of truth: [[_Concept Brief]]. Details sit in the linked notes. **Relivable** is a working title and needs a trademark and App Store name check before public use. Relivable is an original game *inspired by the text life-sim genre*. It is not affiliated with, endorsed by or derived from BitLife or Candywriter, and it will ship with no copied text, names, UI or assets.
 
 ## The opportunity
 Text life sims are a proven, profitable mobile niche, and the category leader has no real challenger. BitLife launched in 2018. It has 50M+ Google Play installs and about 1.3M reviews averaging 4.4 ([Google Play](https://play.google.com/store/apps/eventdetails/4830152244864270285)). It brought Candywriter about $26M of revenue at a 59% EBIT margin in 2019 ([PocketGamer.biz](https://www.pocketgamer.biz/news/73190/stillfront-group-acquires-bitlife-developer-candywriter/)). Today it earns roughly SEK 95–110M (about US$9–11M) per quarter for Stillfront ([Stillfront Q2 2026](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)).
@@ -22,7 +22,7 @@ The leader is also mature and losing goodwill:
 At the same time, the two big visual competitors have left. The Sims Mobile closed in January 2026, and Life by You was cancelled in 2024 ([SimsCommunity](https://simscommunity.info/2025/10/20/the-sims-mobile-shutting-down/)). See [[02 Market and Competitors]].
 
 ## The product
-EverLife is a text-first life simulator for iOS and Android phones (tablets supported). It keeps everything players love about the genre: birth to death, a one-tap year, wild choices and generations. It is rebuilt around **memory, clarity, fairness and sharing**, and it reaches parity with every system players expect from a modern life sim, then adds the features they keep asking for. See [[04 App Breakdown - Core Life Systems]] and [[04 App Breakdown - Social, Meta and Premium]].
+Relivable is a text-first life simulator for iOS and Android phones (tablets supported). It keeps everything players love about the genre: birth to death, a one-tap year, wild choices and generations. It is rebuilt around **memory, clarity, fairness and sharing**, and it reaches parity with every system players expect from a modern life sim, then adds the features they keep asking for. See [[04 App Breakdown - Core Life Systems]] and [[04 App Breakdown - Social, Meta and Premium]].
 
 | Pillar | What the player feels | Proof point it answers |
 |---|---|---|
@@ -40,9 +40,9 @@ EverLife is a text-first life simulator for iOS and Android phones (tablets supp
 5. **Regulation rewards fair design.** Loot-box rules (Belgium, Brazil, the coming EU Digital Fairness Act) and US app-store age laws favour transparent, non-random monetisation. See [[09 Compliance and Ratings]].
 
 ## Business model (headline)
-EverLife is free to play, with no loot boxes and no pay-per-use undo. Revenue comes from:
+Relivable is free to play, with no loot boxes and no pay-per-use undo. Revenue comes from:
 - **Opt-in rewarded ads**, capped (4 per session, 8 per day, 90-second cooldown), never forced mid-story, none in the first life or for 7 days after a purchase.
-- **EverLife Plus**, a one-time ~$9.99 unlock: no ads (ad rewards auto-granted), unlimited generations (free: founder + 3 heirs), Destiny Mode editor, unlimited Rewind (free: 1 per life + 1 per day via ad). A $2.99 No Ads option upgrades to Plus for $6.99.
+- **Relivable Plus**, a one-time ~$9.99 unlock: no ads (ad rewards auto-granted), up to 8 generations (free: founder + 3 heirs), Destiny Mode editor, unlimited Rewind (free: 1 per life + 1 per day via ad). A $2.99 No Ads option upgrades to Plus for $6.99.
 - An optional cosmetic and story **Season Pass**, ~$4.99.
 - Small **Story Packs**, ~$2.99–3.99, that add storylines and never lock careers.
 - Cosmetics ($1.99 Welcome Pack, $0.99–1.99 sets) and two bundles ($14.99 Founder's Bundle, $24.99 Complete Collection). The only soft currency, **Sparks**, is earn-only and never sold.
@@ -66,7 +66,7 @@ Life Simulator is among the top-earning hybrid-casual subgenres, with US Android
 2. **Confirm three decisions.**
    - Age-rating stance: target Apple 16+ / Google Mature 17+, or fund a softened teen mode.
    - Team model: hybrid/offshore or US.
-   - Start the trademark and name search for "EverLife".
+   - Start the trademark and name search for "Relivable".
 3. **Open community channels now.** An official Discord and a creator shortlist ahead of soft launch. See [[10 Go-to-Market]].
 
 ## Key KPI targets (*targets and estimates, to validate in soft launch*)

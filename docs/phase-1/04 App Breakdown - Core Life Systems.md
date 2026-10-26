@@ -1,23 +1,23 @@
 ---
 title: "04 App Breakdown - Core Life Systems"
-project: EverLife
+project: Relivable
 phase: 1
 status: draft
-tags: [everlife, phase-1, app-breakdown, game-design, core-systems, parity]
+tags: [relivable, phase-1, app-breakdown, game-design, core-systems, parity]
 updated: 2026-10-26
 ---
 
 # 04 App Breakdown: Core Life Systems
 
 > [!abstract] What this note is
-> A module-by-module breakdown of every **core life system** in EverLife (working title): the systems that simulate one person from birth to death. For each module it gives the purpose, what BitLife does today, how EverLife redesigns it, what is new, a detailed sub-feature list, the rules, formulas and data behind it, where it lives in the UI, its priority and free/Plus status, its dependencies, and acceptance criteria.
+> A module-by-module breakdown of every **core life system** in Relivable (working title): the systems that simulate one person from birth to death. For each module it gives the purpose, what BitLife does today, how Relivable redesigns it, what is new, a detailed sub-feature list, the rules, formulas and data behind it, where it lives in the UI, its priority and free/Plus status, its dependencies, and acceptance criteria.
 >
 > **Companion note:** relationships, romance, children, fame and social media, pets, Activities hub, achievements, challenges, Destiny Mode (editor), Rewind, Life Recap and async social are covered in [[04 App Breakdown - Social, Meta and Premium]].
 > **Source of truth:** [[_Concept Brief]]. Where this note proposes something the brief does not decide, it is marked **Proposal**.
 
 > [!warning] Evidence and number caveats
 > - "BitLife equivalent" descriptions come from the research report and notes (`reports/BitLife complete feature guide.md`, `research_notes/BitLife complete feature guide/`), which were built from **search-result snippets of fan guides**, not from the live 2026 build. Treat them as "last documented" behaviour.
-> - Every number in EverLife's rules (stat ranges, odds, formulas, prices in game currency) is a **starting design value for tuning** in the Phase 2 prototype and the life-simulator bot (see [[08 Technical Architecture]]). None of them is final balance.
+> - Every number in Relivable's rules (stat ranges, odds, formulas, prices in game currency) is a **starting design value for tuning** in the Phase 2 prototype and the life-simulator bot (see [[08 Technical Architecture]]). None of them is final balance.
 > - **IP-clean:** all event text, clique names, trait names, mini-game designs and example storylets in this note are original. No BitLife text, ribbon names, faction names or UI copy is reused. BitLife features are described only so the client can see parity.
 
 ---
@@ -38,7 +38,7 @@ Proto items are always also MVP.
 | Tag | Meaning |
 |---|---|
 | **Free** | In the base game for everyone. All careers and all core systems are Free (pillar 3, "Fair forever"). |
-| **Plus** | Part of the one-time **EverLife Plus** unlock (~$9.99): no ads, unlimited generations, Destiny Mode (editor), unlimited Rewind. Plus never unlocks a career, a country or a core system. |
+| **Plus** | Part of the one-time **Relivable Plus** unlock (~$9.99): no ads, up to 8 generations, Destiny Mode (editor), unlimited Rewind. Plus never unlocks a career, a country or a core system. |
 | **Pack** | Optional **Story Pack** (~$2.99–3.99) or **Season Pass** content: extra storylines and cosmetics on top of a system that is already complete for free. A pack never locks a career or a mechanic. |
 | **Ad** | An optional, frequency-capped rewarded ad gives a small convenience. Never mid-action, never forced. See [[06 Monetization and Economy]]. |
 
@@ -84,7 +84,7 @@ Get the player into a life in under 15 seconds (random) or let them craft a very
 - Paid God Mode edits appearance and stats, including hidden ones, mostly at creation. Appearance edits are limited to certain ages.
 - Era/historical starts, trait picking and shareable seeds are not documented.
 
-### EverLife redesign
+### Relivable redesign
 - **One screen, three doors:** a single "New Life" sheet with three large buttons in the thumb zone: **Surprise me** (fully random, one tap), **Build a life** (custom), **Play a seed** (enter or scan a code, or pick today's Daily Seed).
 - **Progressive custom builder:** a short vertical stepper (Identity → Place and time → Family → Traits → Review). Every step has a dice button that re-rolls just that step, so a player can customise one thing and randomise the rest.
 - **Live preview card:** the baby avatar, family summary and a one-line "life forecast" ("Born in Porto, 1987, to a nurse and a taxi driver. Modest means, close family.") update as choices change.
@@ -166,7 +166,7 @@ Give the player a readable picture of who their character is, while keeping hidd
 - Relationship bars without numbers. Players ask for percentages.
 - No trait system is documented.
 
-### EverLife redesign
+### Relivable redesign
 - **Four visible core stats** stay, as large, colour-blind-safe bars **with numbers** (for example "Health 72"), and a trend arrow showing the last year's change.
 - **Hidden stats are discoverable, not paywalled.** They start hidden, but the player learns them through play: a school report hints at Discipline, a coach says "you have real speed" (Athleticism), a fortune-teller event hints at Karma. Once discovered, a hidden stat appears on the **Character sheet** as a band ("High", "Average", "Low"). Exact numbers are shown with Destiny Mode (Plus), or free after the life ends (on the Life Recap).
 - **Context meters** (Grades, Popularity, Fame, Respect, Notoriety, Stress, Fitness, Credit) appear on the hub only when relevant, so the screen stays clean.
@@ -306,7 +306,7 @@ This is the heart of the game: the "Age +1" rhythm players love, rebuilt around 
 - Events are mostly self-contained. Players criticise the game for "passive decision-making" and repetition after many lives.
 - No documented NPC memory, life chapters or life timeline. A "Lazy" ribbon punishes spamming Age.
 
-### EverLife redesign
+### Relivable redesign
 - **Age +1 stays one tap**, the biggest button in the thumb zone, so the classic rhythm is untouched.
 - **Year summary card:** after Age +1, a compact card lists what happened (events, stat changes, money in and out, relationship changes) instead of a stack of pop-ups. Choice events still stop and ask.
 - **Optional finer time steps (Proposal):** in certain chapters the player can switch to **Seasons** (4 steps per year) for more control: university semesters, a political campaign, prison, a pregnancy, a business launch year, a sports season. Seasons are always optional, never required.
@@ -502,7 +502,7 @@ Make childhood and school a real part of the game rather than years to skip. Sch
 - University paid by parents, student loans or scholarships; graduate schools (law, medical, business, dental, pharmacy, nursing, vet) with requirements that guides disagree on (Smarts 80–85+ advised).
 - An intelligence-test mini-game (v1.22). Private and boarding schools appear only in low-quality sources. Community college, dropping out and a high-school-equivalency exam are not documented in research.
 
-### EverLife redesign
+### Relivable redesign
 - **School becomes a hub**, not a menu: the **School card** shows this year's classes, grades as letters, teachers with Bond %, clique standing, clubs and upcoming exams.
 - **Grades are explained:** each grade shows contributions (Smarts, study effort, attendance, teacher relationship, Stress).
 - **Major → graduate school → career requirements are one clear table in-game** ("Pathways" view), ending the guesswork that fan guides argue about.
@@ -586,7 +586,7 @@ Make childhood and school a real part of the game rather than years to skip. Sch
 | Film/Conservatory | 2.5 | — | Portfolio/audition (Creativity or Musicality 70+) | 2–3 years |
 
 > [!note] Why this table matters
-> The research shows fan guides disagree about which majors qualify for which grad school. EverLife puts **its own** requirements in a single in-game Pathways view, so players never need an external wiki. The values above are design proposals, not taken from BitLife.
+> The research shows fan guides disagree about which majors qualify for which grad school. Relivable puts **its own** requirements in a single in-game Pathways view, so players never need an external wiki. The values above are design proposals, not taken from BitLife.
 
 ### Key rules, formulas and data
 - **Grade per subject (0–100 → letter):** `grade = 0.45 × Smarts + 0.25 × effort + 0.10 × teacherRel + 0.10 × Discipline − 0.10 × Stress + noise(±8)`. Effort is set by study actions (0, 50 or 100). Letter bands: A 85+, B 70–84, C 55–69, D 40–54, F under 40. Countries with other systems (for example 1–6 or 0–20 scales) show a local display layer.
@@ -646,14 +646,14 @@ Module 2 (Smarts, Discipline, Charisma, Creativity, Athleticism), Module 3 (stor
 ## Module 5: Careers and jobs
 
 ### Purpose
-Work is the main way most lives earn money, status and story. EverLife's position: **every career is free**, including all "special" careers that BitLife sells as job packs (pillar 3).
+Work is the main way most lives earn money, status and story. Relivable's position: **every career is free**, including all "special" careers that BitLife sells as job packs (pillar 3).
 
 ### BitLife equivalent (today)
 - Free ordinary jobs: work harder, ask for a raise, request hours, resign; promotions more likely with tenure; interviews (v1.21); retirement plans, work hours and Stress (v1.22); co-worker and supervisor relationships and HR reports (Office update). Pension historically after about 20 years in one job.
 - Age gates: freelance from about 13–14, part-time from 14 (more at 16), full careers at 18.
 - **Special careers mostly paid**: ten job packs (Actor, Astronaut, Athlete, Business, Mafia, Musician, Politician, Street Hustler, Model, Dealer) bundled in **Boss Mode** (about $20.99) or sold one by one. Secret Agent, Zoo, Movie Director, Ultimate Fighter, Political and others are separate paid packs or Modes. Royalty is by birth or marriage.
 
-### EverLife redesign
+### Relivable redesign
 - **One Career screen** with a clear ladder for each job (rank, salary range, requirements for the next rank, performance bar).
 - **Performance is a visible meter** (0–100) with the factors that move it.
 - **All special careers are free**, each with a signature mechanic so it feels distinct, not just a renamed office job.
@@ -763,7 +763,7 @@ Module 4 (degrees, licences), Module 6 (salary, taxes, business), Module 8 (crim
 ## Module 6: Money, business and investing
 
 ### Purpose
-Make money feel like a system with trade-offs, not a number that only goes up. Reviews say BitLife's money system is "painfully easy to beat". EverLife adds living costs, budgets, taxes, credit and market cycles so that wealth has texture, while keeping it quick to manage.
+Make money feel like a system with trade-offs, not a number that only goes up. Reviews say BitLife's money system is "painfully easy to beat". Relivable adds living costs, budgets, taxes, credit and market cycles so that wealth has texture, while keeping it quick to manage.
 
 ### BitLife equivalent (today)
 - Bank balance and net worth; salary paid automatically; taxes in some form.
@@ -772,7 +772,7 @@ Make money feel like a system with trade-offs, not a number that only goes up. R
 - Free casino (blackjack, horse racing; status unclear) and a paid **Casino** pack with 8 more games. Lottery tickets.
 - Loans and mortgages exist; budgeting and credit scores are not documented.
 
-### EverLife redesign
+### Relivable redesign
 - **Money screen** with four tabs: **Overview** (net worth, cash flow chart), **Budget**, **Accounts and debts**, **Investments**. Business and Assets link out.
 - **Annual cash flow is shown on every year summary** (income, taxes, living costs, debt payments, savings), so players understand why money changes.
 - **Business and investing are free**, fully featured, and use fictional companies and coins.
@@ -906,7 +906,7 @@ Give players things to own, care about, show off and pass on. Assets connect mon
 - **Heirlooms** from a daily attic mini-game (v1.21) that count toward net worth and pass to heirs.
 - Will in Activities: leave money to one child, a partner or charity, or split; estate tax where real countries have it; heirs inherit houses and cars, but if the heir is under 18 the assets are auctioned and the heir gets cash.
 
-### EverLife redesign
+### Relivable redesign
 - **Assets screen** with a visual card per asset (condition bar, value trend, yearly cost) and clear listings (bedrooms, garden, pool, area, condition, neighbourhood, commute).
 - **Landlord and flipping are free.**
 - **Home customisation:** rooms and style upgrades with real effects (Happiness, value, party capacity), shown on a simple illustrated home card.
@@ -1017,7 +1017,7 @@ Module 6 (cash, loans, taxes, economy), Module 8 (will contests, theft), Module 
 ## Module 8: Crime, justice and prison
 
 ### Purpose
-Crime is one of the most-played "wild" sides of the genre. EverLife keeps it, makes it fair and explainable, and builds a full justice system around it (arrest, trial, lawyers, appeals, parole, lawsuits), which players asked for. All mature detail follows the content settings and rating gates.
+Crime is one of the most-played "wild" sides of the genre. Relivable keeps it, makes it fair and explainable, and builds a full justice system around it (arrest, trial, lawyers, appeals, parole, lawsuits), which players asked for. All mature detail follows the content settings and rating gates.
 
 ### BitLife equivalent (today)
 - Activities → Crimes: shoplifting, porch theft, pickpocketing, burglary, car theft, drug dealing, murder, hiring a hitman, embezzlement (v1.31); bank robbery (18+) with disguise, weapon and getaway choices; train robbery that only works when a train runs and only succeeds once (players complain it always says "too early").
@@ -1026,7 +1026,7 @@ Crime is one of the most-played "wild" sides of the genre. EverLife keeps it, ma
 - Emigrating to flee justice exists. Lawsuits appear only with a valid grievance.
 - Sentence lengths, trials and parole are not documented in research.
 
-### EverLife redesign
+### Relivable redesign
 - **Crime card** groups crimes by type with **risk shown as a band** and the factors behind it. Nothing fails without a reason.
 - **Heists have a planning phase** (crew, intel, tools, timing, escape route) and an **after-action report** that explains failure ("Your lookout left early: crew loyalty 31 vs needed 45").
 - **A real justice pipeline:** investigation → arrest → charge → bail → plea or trial → sentence → prison → parole or appeal → release with a record.
@@ -1192,7 +1192,7 @@ Health sets how long a life lasts and how it feels. This module covers illness, 
 - Death from old age, illness, accidents, crime, substance abuse, military accidents, and an always-available **surrender** option. A tombstone shows age, net worth, achievements and one ribbon. Continue as a child: **unlimited generations only for paying players** (others can continue once).
 - No mental-health or therapy system was documented.
 
-### EverLife redesign
+### Relivable redesign
 - **Health screen** with a body overview: conditions (active, chronic, past), fitness, addictions, mental wellbeing, appearance, and doctors/insurance.
 - **Illness is a journey**, not a pop-up: symptoms → see a doctor → diagnosis (may need tests) → treatment choices with side effects and costs → recovery or management.
 - **Mental health handled with care:** conditions are treatable and named with respect; support options are always shown; helpline links are surfaced when relevant.
@@ -1277,7 +1277,7 @@ Health sets how long a life lasts and how it feels. This module covers illness, 
 - **Warning signs:** serious conditions show symptoms first; elder years show a frailty indicator so death rarely feels random.
 - **Funeral:** choose (or the family chooses) type: burial, cremation, natural burial, religious rites (Module 10), sea scattering. Attendance is computed from Bond % and fame; a **eulogy** is assembled from the strongest memories NPCs hold (original templates, optional AI rewording). Headstone or memorial text from a few templates or custom (moderated).
 - **Death screen:** age, cause, net worth, key achievements, chapter titles, top relationships, the Life Title for the life's dominant theme (social note), and buttons: **Life Recap**, **Continue as heir**, **New life**, **Rewind** (Plus or free limited rewind).
-- **Continue as heir:** choose among eligible heirs (biological, adopted and step-children; with the Proposal of grandchildren if no living children). The heir inherits per the will (Module 7), family memories (relatives remember the parent), legacy traits and heirlooms. **Free:** up to Generation 4 per dynasty (founder + 3 heirs; the dynasty is saved at the cap, see [[06 Monetization and Economy]]). **Plus:** unlimited generations. The family tree and Dynasty Ambitions are in [[04 App Breakdown - Social, Meta and Premium]].
+- **Continue as heir:** choose among eligible heirs (biological, adopted and step-children; with the Proposal of grandchildren if no living children). The heir inherits per the will (Module 7), family memories (relatives remember the parent), legacy traits and heirlooms. **Free:** up to Generation 4 per dynasty (founder + 3 heirs; the dynasty is saved at the cap, see [[06 Monetization and Economy]]). **Plus:** up to 8 generations. The family tree and Dynasty Ambitions are in [[04 App Breakdown - Social, Meta and Premium]].
 
 ### Key rules, formulas and data
 - **Healthcare cost:** country data (free/universal, insurance-based, out-of-pocket). Example: US-like out-of-pocket surgery $8k–80k vs universal $0–500 with waiting time.
@@ -1308,7 +1308,7 @@ Hub **Health card** (Health stat, active conditions, fitness) → **Health scree
 | Plastic surgery | Launch | Free |
 | Aging avatar | MVP (basic stages), Launch (lifestyle layers) | Free; cosmetic styles via Season Pass |
 | Funeral, eulogy from memories | Launch | Free |
-| Continue as heir | MVP | Free (up to Generation 4), Plus (unlimited) |
+| Continue as heir | MVP | Free (up to Generation 4), Plus (up to Generation 8) |
 
 ### Dependencies
 Module 2 (Health, Looks, Willpower, Resilience, Stress), Module 3 (callbacks, memories for eulogies), Module 6 (medical costs, insurance), Module 7 (will, inheritance), Module 10 (healthcare systems, life expectancy, religious rites), generations and Life Recap in [[04 App Breakdown - Social, Meta and Premium]], sensitive-content review and helplines in [[09 Compliance and Ratings]].
@@ -1332,7 +1332,7 @@ Where and when you are born should matter. This module holds every place- and ti
 - Emigration in Activities: approval depends on criminal record and money, illegal emigration as a fallback, fleeing justice earns an achievement.
 - Military deployments (v1.20). No documented draft, religion system or era mode (players and a fan concept ask for religion and eras).
 
-### EverLife redesign
+### Relivable redesign
 - **Country profiles** (viewable in-game) list the key rules that affect a life, in plain language ("Here: free university, conscription at 18 for 12 months, same-sex marriage legal since 2010, no death penalty").
 - **Laws apply consistently everywhere** because all modules read the same country data.
 - **Religion is an optional, respectful system**, not a joke generator.
@@ -1372,7 +1372,7 @@ Where and when you are born should matter. This module holds every place- and ti
 - **Launch:** 60+ countries; **LiveOps:** 150+ countries, prioritised by player analytics.
 
 **Monarchies and royalty**
-- Data lists monarchies with type (constitutional or absolute), titles (king/queen, emir, sultan, grand duke, etc.) and succession rules (eldest child regardless of gender, male-preference, or chosen). EverLife uses **fictional royal houses** in real monarchies (no real royal family members are simulated), consistent with the IP and likeness rules in [[09 Compliance and Ratings]].
+- Data lists monarchies with type (constitutional or absolute), titles (king/queen, emir, sultan, grand duke, etc.) and succession rules (eldest child regardless of gender, male-preference, or chosen). Relivable uses **fictional royal houses** in real monarchies (no real royal family members are simulated), consistent with the IP and likeness rules in [[09 Compliance and Ratings]].
 - **Respect meter** (0–100): rises with duties, charity, good conduct; falls with scandals.
 - Royal actions: public duties, tours, charity patronage, speeches, state banquets, managing the press, marrying (suitability rules), abdication, and, in absolute monarchies only, limited governing decisions (laws as storylets).
 - Succession: when the monarch dies or abdicates, the heir accedes (a coronation long scene). Continuing as heir in a royal family carries titles.
@@ -1484,7 +1484,7 @@ Storage, sync and save-size budgets are in [[08 Technical Architecture]].
 
 Status key: **Parity** = matches BitLife's documented feature (redesigned UI); **Improved** = same idea, meaningfully better (free where BitLife charges, clearer, deeper); **New** = not documented in BitLife.
 
-| BitLife feature (as documented) | EverLife equivalent | Module | Status |
+| BitLife feature (as documented) | Relivable equivalent | Module | Status |
 |---|---|---|---|
 | Random new life | "Surprise me" one-tap life | 1 | Parity |
 | Custom character builder, saved custom people | Build a life stepper + Cast library | 1 | Improved |
@@ -1560,7 +1560,7 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 | — | Aging avatar with alt text | 9 | New |
 | Death causes, tombstone | Death screen + funeral + eulogy from memories | 9 | Improved |
 | Surrender (in-story suicide option) | Out-of-character "End this life" with support panel | 9 | Improved |
-| Continue as child; unlimited generations only for paid users | Continue as heir (free to Generation 4, unlimited with Plus) with memories and legacy traits | 9 | Improved |
+| Continue as child; unlimited generations only for paid users | Continue as heir (free to Generation 4, up to Generation 8 with Plus) with memories and legacy traits | 9 | Improved |
 | Countries and cities | Data-driven countries with profile screens | 10 | Improved |
 | Royalty with Respect meter | Fictional royal houses, duties, succession, abdication | 10 | Improved |
 | Arranged marriage, surrogacy legality, estate tax by country | All family, health, money and justice laws as country data | 10 | Improved |
@@ -1579,7 +1579,7 @@ Status key: **Parity** = matches BitLife's documented feature (redesigned UI); *
 ## Open questions for the client
 
 1. **Energy budget:** keep a per-year action budget (better choices, less spam) or default to unlimited "Classic" actions? Recommend testing both in the Phase 2 prototype.
-2. **Free generations limit:** *decided 2026-10-26*: founder + 3 heirs (Generation 4) free, unlimited with Plus, dynasty saved at the cap ([[06 Monetization and Economy]]).
+2. **Free generations limit:** *decided 2026-10-26*: founder + 3 heirs (Generation 4) free, up to Generation 8 with Plus, dynasty saved at the cap ([[06 Monetization and Economy]]).
 3. **Free rewind:** *decided 2026-10-26*: 1 free Rewind per life + 1 per day via opt-in rewarded ad; never sold per use; unlimited with Plus.
 4. **Religion representation:** real traditions with expert review (recommended) or fictional faiths? Budget impact in [[09 Compliance and Ratings]].
 5. **Country scope at MVP:** 25 countries recommended; confirm the list against soft-launch and language markets.

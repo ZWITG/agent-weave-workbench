@@ -1,8 +1,8 @@
 ---
 title: Market and Competitors
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, market, competitors, swot, positioning]
+tags: [relivable, phase-1, market, competitors, swot, positioning]
 updated: 2026-10-26
 ---
 
@@ -12,7 +12,7 @@ updated: 2026-10-26
 > All figures come from web-search snippets gathered 2026-10-25. Page fetching was blocked, so primary reports (Sensor Tower, AppMagic) could not be opened in full. Several Sensor Tower numbers come from short auto-generated quarterly blog posts, so they are approximate. **No public source isolates "life sim" as a mobile category.** Market size below is built from adjacent anchors, and every derived number is marked *(estimate)* or *(inference)*. This note is consistent with [[_Concept Brief]] and feeds [[01 Executive Summary]] and [[10 Go-to-Market]].
 
 > [!warning] IP stance
-> EverLife is *inspired by the genre*. It is not affiliated with BitLife, Candywriter or Stillfront. Competitor names here are used only for analysis. EverLife's store listing, text, characters and assets will be original, and store metadata will not use competitor trademarks.
+> Relivable is *inspired by the genre*. It is not affiliated with BitLife, Candywriter or Stillfront. Competitor names here are used only for analysis. Relivable's store listing, text, characters and assets will be original, and store metadata will not use competitor trademarks.
 
 ## 1. Market size
 
@@ -29,7 +29,7 @@ updated: 2026-10-26
 | Life Simulator subgenre ARPU (US Android) | $11.08–14.83, a top-3 hybrid-casual subgenre | Jun 2024–Jan 2025 | [Appodeal via gameindustrylibrary](https://gameindustrylibrary.com/documents/mobile-casual-benchmarks-report-2025) |
 
 ### 1.2 Serviceable market *(inference)*
-The text-life-sim niche is essentially BitLife plus a long tail of clones. BitLife's annualised revenue is about SEK 400M (~US$38–42M) *(inference from quarterly reports, ~10 SEK/USD)*, so the leader alone sets a floor of roughly $40M per year in directly comparable spend. Add the clones, Candywriter's spin-offs and the vacancy left by The Sims Mobile. A reasonable planning view is a **$50–80M/yr serviceable niche *(estimate)*** inside a ~$4.5B simulation genre. EverLife does not need to win the niche. At an illustrative 5–10% share it would be a $2.5–8M/yr title *(illustrative, not a forecast)*.
+The text-life-sim niche is essentially BitLife plus a long tail of clones. BitLife's annualised revenue is about SEK 400M (~US$38–42M) *(inference from quarterly reports, ~10 SEK/USD)*, so the leader alone sets a floor of roughly $40M per year in directly comparable spend. Add the clones, Candywriter's spin-offs and the vacancy left by The Sims Mobile. A reasonable planning view is a **$50–80M/yr serviceable niche *(estimate)*** inside a ~$4.5B simulation genre. Relivable does not need to win the niche. At an illustrative 5–10% share it would be a $2.5–8M/yr title *(illustrative, not a forecast)*.
 
 ## 2. BitLife revenue trend (Stillfront reporting)
 
@@ -97,16 +97,16 @@ quadrantChart
     Alter Ego: [0.78, 0.45]
     Infinite Life Sim: [0.65, 0.60]
     Episode Choices: [0.70, 0.18]
-    EverLife target: [0.85, 0.85]
+    Relivable target: [0.85, 0.85]
 ```
 
 ## 5. White space
 
-1. **Consequence over randomness.** No mass-market text sim combines BitLife's breadth with authored, remembered consequences. Alter Ego has depth without breadth, and AI newcomers have memory without reliability. EverLife's storylet engine with NPC memory sits in the gap ([[04 App Breakdown - Core Life Systems]]).
+1. **Consequence over randomness.** No mass-market text sim combines BitLife's breadth with authored, remembered consequences. Alter Ego has depth without breadth, and AI newcomers have memory without reliability. Relivable's storylet engine with NPC memory sits in the gap ([[04 App Breakdown - Core Life Systems]]).
 2. **A fair, unfragmented offer.** The incumbent ladder runs from $0.99 per use up to $20.99 per bundle, plus $7.99 per expansion. One clear premium unlock, account-tied restore and ads that never appear in paid tiers is a message competitors cannot easily copy without cannibalising their catalogue ([[06 Monetization and Economy]]).
 3. **First-class accessibility.** A loyal, vocal blind-gamer community has petitioned and been let down repeatedly ([AppleVis](https://www.applevis.com/comment/135452)). In a text-first game, accessibility is cheap and makes a credible differentiator. It also supports European Accessibility Act readiness ([[09 Compliance and Ratings]]).
 4. **The visual-sim vacancy.** With The Sims Mobile closed, a light aging avatar and home layer gives a visual hook without 3D cost.
-5. **Shareability.** BitLife's tombstone and ribbon are a share artefact waiting for an upgrade. Wrapped-style recaps and scenario seeds give EverLife organic reach ([[07 Retention and LiveOps]], [[10 Go-to-Market]]).
+5. **Shareability.** BitLife's tombstone and ribbon are a share artefact waiting for an upgrade. Wrapped-style recaps and scenario seeds give Relivable organic reach ([[07 Retention and LiveOps]], [[10 Go-to-Market]]).
 6. **An official community home.** The largest BitLife Discord is unofficial (~3.2K members) ([Discord](https://discord.com/servers/coral-eclipse-or-formerly-bitlife-792224999581810720)).
 
 ## 6. SWOT

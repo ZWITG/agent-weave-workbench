@@ -1,15 +1,15 @@
 ---
 title: "08 Technical Architecture"
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, tech, architecture, flutter, firebase, storylets, content-pipeline]
+tags: [relivable, phase-1, tech, architecture, flutter, firebase, storylets, content-pipeline]
 updated: 2026-10-26
 ---
 
 # 08 Technical Architecture
 
 > [!summary] Decision in one paragraph
-> EverLife is built in **Flutter (Dart)**, with **Shorebird** for Dart code patches, a **pure-Dart deterministic storylet engine**, an **offline-first local save** synced to **Firebase** (Auth, Firestore, Remote Config, Cloud Storage/CDN, Analytics, Crashlytics, Cloud Functions), and **RevenueCat** for purchases with server-side StoreKit 2 / Play verification. Content (events, strings, art atlases) ships as **signed remote bundles**, so new storylets go live without an app update. AI is **optional**: it only rewords text, runs on-device first (Apple Foundation Models), and falls back to a moderated cloud proxy. **Unity 6 LTS is the documented alternative.** We would switch to it only if the Phase 2 spike shows the art direction needs heavy 2D animation, or if the team we hire is Unity-native.
+> Relivable is built in **Flutter (Dart)**, with **Shorebird** for Dart code patches, a **pure-Dart deterministic storylet engine**, an **offline-first local save** synced to **Firebase** (Auth, Firestore, Remote Config, Cloud Storage/CDN, Analytics, Crashlytics, Cloud Functions), and **RevenueCat** for purchases with server-side StoreKit 2 / Play verification. Content (events, strings, art atlases) ships as **signed remote bundles**, so new storylets go live without an app update. AI is **optional**: it only rewords text, runs on-device first (Apple Foundation Models), and falls back to a moderated cloud proxy. **Unity 6 LTS is the documented alternative.** We would switch to it only if the Phase 2 spike shows the art direction needs heavy 2D animation, or if the team we hire is Unity-native.
 >
 > Sources: [[_Concept Brief]] (locked decisions), `research_notes/Life sim game phase 1/tech_compliance_budget.md`. Related: [[05 UX and Screen Map]], [[06 Monetization and Economy]], [[07 Retention and LiveOps]], [[09 Compliance and Ratings]], [[11 Roadmap Team and Budget]].
 
@@ -34,7 +34,7 @@ updated: 2026-10-26
 > [!note] Deviation from the research recommendation, and why
 > The tech research note recommended **Unity 6 LTS as the lowest-risk default** (hiring pool, SDK maturity) and Flutter as the "credible lower-cost alternative". The [[_Concept Brief]] locks **Flutter**, and this note follows the brief for three reasons:
 > 1. **Pillar 5 (Accessible by default)** is a headline differentiator. Flutter gives a screen-reader tree for free, while Unity needs a hand-synced parallel hierarchy, which is exactly the failure mode behind BitLife's regressions.
-> 2. EverLife is about **90% UI and text**. Rendering performance is not the deciding factor (the research says 2D paper-doll rendering is "trivial in all four").
+> 2. Relivable is about **90% UI and text**. Rendering performance is not the deciding factor (the research says 2D paper-doll rendering is "trivial in all four").
 > 3. App-developer rates are lower and the pool is larger than for Unity game developers.
 >
 > **Unresolved risk:** the research did not verify how Flame canvas content interacts with Flutter `Semantics`. The Phase 2 spike must prove it (see [[12 Risks and KPIs]]).
@@ -54,7 +54,7 @@ updated: 2026-10-26
 
 ```mermaid
 flowchart TB
-  subgraph Client["📱 EverLife client (Flutter, iOS + Android)"]
+  subgraph Client["📱 Relivable client (Flutter, iOS + Android)"]
     UI["UI shell<br/>Hub · Action cards · Command bar · Settings"]
     A11Y["Accessibility layer<br/>Semantics labels · dynamic type · reduced motion · colour-safe tokens"]
     ENG["Storylet engine (pure Dart pkg)<br/>condition eval · salience/weights · seeded RNG"]
@@ -301,7 +301,7 @@ flowchart LR
 
 | Step | Implementation |
 |---|---|
-| Catalogue | The 9 products in [[06 Monetization and Economy]] §2, all **non-consumable**: `everlife_plus` (P1, $9.99), `no_ads` (P2, $2.99), `plus_upgrade` (P3, $6.99, offered only to No-Ads owners), `pack_<id>` (P4, $2.99 small / $3.99 large), `season_<yyyy>_<n>` (P5, $4.99 per season, non-renewing), `welcome_pack` (P6, $1.99, once per account, cosmetic), `cosmetic_<id>` (P7, $0.99–1.99), `bundle_founders` (P8, $14.99, 60-day launch window), `bundle_complete` (P9, $24.99). **No consumables, no purchasable currency (Sparks are earn-only), no per-use Rewind, no subscriptions and no loot boxes** |
+| Catalogue | The 9 products in [[06 Monetization and Economy]] §2, all **non-consumable**: `relivable_plus` (P1, $9.99), `no_ads` (P2, $2.99), `plus_upgrade` (P3, $6.99, offered only to No-Ads owners), `pack_<id>` (P4, $2.99 small / $3.99 large), `season_<yyyy>_<n>` (P5, $4.99 per season, non-renewing), `welcome_pack` (P6, $1.99, once per account, cosmetic), `cosmetic_<id>` (P7, $0.99–1.99), `bundle_founders` (P8, $14.99, 60-day launch window), `bundle_complete` (P9, $24.99). **No consumables, no purchasable currency (Sparks are earn-only), no per-use Rewind, no subscriptions and no loot boxes** |
 | Entitlements | `plus` (granted by P1, P3, P8, P9), `no_ads` (granted by P2 and by `plus`), `pack_<id>`, `season_<yyyy>_<n>`, `cosmetic_<id>`. `plus` implies `no_ads`: ad offers are hidden and their rewards auto-granted. Prices come from RevenueCat Offerings via Remote Config |
 | Client | RevenueCat Flutter SDK. StoreKit 2 on iOS, Play Billing on Android. Entitlements are cached locally (signed), so Plus works offline |
 | Server verification | RevenueCat validates StoreKit 2 JWS transactions via the **App Store Server API + Notifications v2**. `verifyReceipt` and Notifications v1 are deprecated ([Apple forums](https://developer.apple.com/forums/thread/731550)). Play purchase tokens go through the Play Developer API with RTDN |
@@ -384,7 +384,7 @@ These are **targets (estimates)**, set for a mid-range reference Android phone (
 | AI never decides outcomes | The engine computes all effects first. AI only receives the resolved prose plus context and returns reworded text | [itch.io lesson](https://cynthiachen2023.itch.io/life-simulation-monopoly) |
 | On-device first | iOS 26 Apple Foundation Models (iPhone 15 Pro+). Offline, no inference cost, supports EN/FR/DE/IT/PT-BR/ES/zh/JA/KO, which matches our launch languages ([9to5Mac](https://9to5mac.com/2025/09/29/apple-intelligence-ios-26-models-developers/)) | |
 | Cloud fallback | Cloud Function proxy → small model (Gemini 2.5 Flash-Lite / GPT-4.1 nano class at **$0.10 / $0.40 per 1M tokens**) ([Simon Willison](https://www.simonwillison.net/2025/Jul/22/gemini-25-flash-lite)). Keys stay server-side. Per-user daily budget and rate limits | |
-| Cost | About **$0.27/user/month** at 100 events/day (research estimate). Gate cloud AI behind **EverLife Plus** or a daily free quota, and cache by `(storylet_id, outcome, locale, persona)` | tech note §3 |
+| Cost | About **$0.27/user/month** at 100 events/day (research estimate). Gate cloud AI behind **Relivable Plus** or a daily free quota, and cache by `(storylet_id, outcome, locale, persona)` | tech note §3 |
 | Moderation | Every cloud output goes through `omni-moderation-latest` (free) ([OpenAI](https://developers.openai.com/api/docs/models/omni-moderation-latest.md)). A block shows the canned text. On-device output passes a local blocklist plus the same content-flag rules | |
 | Constrained input | No free-text prompts in Phase 3/4. The AI rephrases preset options only, which lowers rating and moderation risk | tech note §3 inference |
 | Policy | In-app **report button** on every AI-generated text (Google Play) ([policy](https://support.google.com/googleplay/android-developer/answer/13985936?hl=en)). Disclosure and explicit consent before sending data to a third-party AI (Apple 5.1.2(i)). AI declared in the Apple age questionnaire. Toggle in Settings. See [[09 Compliance and Ratings]] | |

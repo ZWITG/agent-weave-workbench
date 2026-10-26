@@ -1,15 +1,15 @@
 ---
 title: "10 Go-to-Market"
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, gtm, aso, ua, soft-launch, creators, community, pr]
+tags: [relivable, phase-1, gtm, aso, ua, soft-launch, creators, community, pr]
 updated: 2026-10-26
 ---
 
 # 10 Go-to-Market
 
 > [!summary] GTM in one paragraph
-> EverLife launches **organic-first**. BitLife's own revenue fell **19% YoY in H1 2026** when Stillfront tightened paid UA ([Stillfront Q2 2026](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)), and our illustrative unit economics (LTV about $2–2.50 against a US iOS CPI of about $2–3) make paid UA marginal until retention proves top-decile ([monetization research §6](../../research_notes/Life%20sim%20game%20phase%201/monetization_retention.md)). The engine of growth is therefore **shareable stories**: Life Recap cards, scenario seeds and weekly challenges, amplified by a **creator program** (chaotic-playthrough YouTubers and TikTokers plus local-language creators, the BitLife/Goodgame playbook) and an **official Discord opened now** (about 12 months before global launch). Soft launch runs in the **Philippines + Ireland/Netherlands (+ Canada if budget allows)** with hard KPI gates. Global launch adds 5 languages, localised ASO and a coordinated creator wave.
+> Relivable launches **organic-first**. BitLife's own revenue fell **19% YoY in H1 2026** when Stillfront tightened paid UA ([Stillfront Q2 2026](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)), and our illustrative unit economics (LTV about $2–2.50 against a US iOS CPI of about $2–3) make paid UA marginal until retention proves top-decile ([monetization research §6](../../research_notes/Life%20sim%20game%20phase%201/monetization_retention.md)). The engine of growth is therefore **shareable stories**: Life Recap cards, scenario seeds and weekly challenges, amplified by a **creator program** (chaotic-playthrough YouTubers and TikTokers plus local-language creators, the BitLife/Goodgame playbook) and an **official Discord opened now** (about 12 months before global launch). Soft launch runs in the **Philippines + Ireland/Netherlands (+ Canada if budget allows)** with hard KPI gates. Global launch adds 5 languages, localised ASO and a coordinated creator wave.
 
 Related: [[_Concept Brief]] · [[01 Executive Summary]] · [[06 Monetization and Economy]] · [[07 Retention and LiveOps]] · [[11 Roadmap Team and Budget]] · [[12 Risks and KPIs]] · Source: `research_notes/Life sim game phase 1/ux_gtm_pitch.md`, `market_competitors.md`, `monetization_retention.md`, `reddit_player_wishlist.md`.
 
@@ -18,7 +18,7 @@ Related: [[_Concept Brief]] · [[01 Executive Summary]] · [[06 Monetization and
 ## 1. Positioning and messaging
 
 ### 1.1 Positioning statement
-> **For** players who love living wild, whole lives on their phone, **EverLife is** the life simulator where **every choice is remembered**: your bully shows up at your wedding, your kids inherit your grudges, and your story is worth sharing. **Unlike** BitLife, every career and system is free, ads are opt-in, there is no pay-per-undo, your purchases follow your account, and it works fully with a screen reader.
+> **For** players who love living wild, whole lives on their phone, **Relivable is** the life simulator where **every choice is remembered**: your bully shows up at your wedding, your kids inherit your grudges, and your story is worth sharing. **Unlike** BitLife, every career and system is free, ads are opt-in, there is no pay-per-undo, your purchases follow your account, and it works fully with a screen reader.
 
 ### 1.2 Why now (market context)
 - **The category leader is mature and UA-dependent.** BitLife made SEK 95M (Q1), 109M (Q2) and about 100M (Q3) in 2026, with organic growth of −19%, −19% and −2% ([Yahoo Q1](https://finance.yahoo.com/markets/stocks/articles/stillfront-group-ab-stlff-q1-070405250.html); [Stillfront Q2](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/); [Q3 call](https://finance.yahoo.com/quote/SFS.XC/earnings/SFS.XC-Q3-2026-earnings_call-537398.html)). It still earns about US$38–42M a year annualised (research inference), so demand is proven.
@@ -109,7 +109,7 @@ All values are **targets** set against GameAnalytics 2026 benchmarks. The retent
 
 | Element | Plan |
 |---|---|
-| **Title (iOS 30 chars)** | `EverLife: Life Simulator` (24 chars). **Pending trademark clearance** ([[09 Compliance and Ratings]] §10) |
+| **Title (iOS 30 chars)** | `Relivable: Life Simulator` (24 chars). **Pending trademark clearance** ([[09 Compliance and Ratings]] §10) |
 | **Subtitle (iOS 30) / short description (Play 80)** | iOS: `Choices that remember you`. Play: `Live a whole life. Every choice remembered. Every career free.` |
 | **Keyword field (iOS 100 chars)** | `life,sim,simulator,choices,story,text,adventure,rpg,family,tree,career,dating,generations,legacy` (no spaces after commas, no repeats of title words). Sub-genre keywords beat broad ones ([Appdrift](https://appdrift.co/top-apps/games)). **No competitor names** |
 | **Play description** | First 167 chars carry the hook plus "life simulator". Natural keyword density. Feature bullets mirror the messaging pillars |
@@ -203,7 +203,7 @@ Cadence: **8–12 new concepts per week** at launch. Kill a concept if IPM is be
 | **Scenario seeds** | "Try my life" codes and deep links: the same birth setup and early events (the deterministic engine, [[08 Technical Architecture]] §2.1). The friend's result compares against the sharer's | Mirrors Wrapped's friend-comparison and "Wrapped Party" mechanics ([Thred](https://thred.com/newsletters/its-a-wrapped-analysing-spotifys-gen-z-success/)) |
 | **Weekly challenges** | Every Monday, free for all players (not pack-gated, which answers a BitLife complaint) ([AppleVis](https://applevis.com/comment/98850)). Shareable completion card | BitLife: 6,800+ challenges played and 72M lives a year ([Goodgame](https://goodgamestudios.com/company/press/releases/72-million-virtual-lives-in-one-year-bitlife-impresses-internationally/)) |
 | **Life Title hunting** | Rare Life Titles with hinted (never hidden) conditions that players work out and share. Discord channels and Reddit threads form around them | BitLife ribbons spawned Reddit guides ([Gamezebo](https://www.gamezebo.com/walkthroughs/bitlife-guide-how-to-get-the-model-bitizen-ribbon/)) |
-| **Year-end "EverLife Wrapped"** | Every December, a player's year: lives lived, deaths, dynasties | The Wrapped calendar moment |
+| **Year-end "Relivable Wrapped"** | Every December, a player's year: lives lived, deaths, dynasties | The Wrapped calendar moment |
 
 **Virality targets (estimates):** share rate ≥ 8% of completed lives, seed-open → install ≥ 15%, K-factor 0.15–0.30 at launch. Tracked via `recap_shared`, `seed_opened` and `install_from_share` ([[08 Technical Architecture]] §7).
 
@@ -228,7 +228,7 @@ Cadence: **8–12 new concepts per week** at launch. Kill a concept if IPM is be
 
 ```mermaid
 gantt
-  title EverLife GTM timeline (target dates, subject to stage gates)
+  title Relivable GTM timeline (target dates, subject to stage gates)
   dateFormat YYYY-MM-DD
   axisFormat %b %y
   section Community

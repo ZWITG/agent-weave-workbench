@@ -1,16 +1,16 @@
 ---
 title: Retention and LiveOps
-project: EverLife
+project: Relivable
 phase: 1
 status: draft
-tags: [everlife, phase-1, retention, liveops, ab-testing, remote-config, community]
+tags: [relivable, phase-1, retention, liveops, ab-testing, remote-config, community]
 updated: 2026-10-26
 ---
 
 # 07 Retention and LiveOps
 
 > [!summary] In one paragraph
-> EverLife retains through **story**, not pressure. The year-by-year core loop has to make each life feel different (memory, chapters, consequences). A short session loop is built around 3 daily goals and a one-year-a-day streak with free freezes. The meta loop of dynasties, Life Titles, weekly challenges and quarterly seasons gives a reason to come back for months. We target **top-decile retention: D1 40% / D7 13% / D30 5%** against a market median of about 22% / 4% / 0.7% ([GameAnalytics 2026 via gamedevreports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)). LiveOps runs a weekly challenge every Monday, two weekend events a month, a Story Pack every two months and four seasons a year. All of it is delivered as data through remote config and storylet bundles, so no app update is needed. Source of truth: [[_Concept Brief]] (pillars 1 and 4, Phase 5 LiveOps).
+> Relivable retains through **story**, not pressure. The year-by-year core loop has to make each life feel different (memory, chapters, consequences). A short session loop is built around 3 daily goals and a one-year-a-day streak with free freezes. The meta loop of dynasties, Life Titles, weekly challenges and quarterly seasons gives a reason to come back for months. We target **top-decile retention: D1 40% / D7 13% / D30 5%** against a market median of about 22% / 4% / 0.7% ([GameAnalytics 2026 via gamedevreports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)). LiveOps runs a weekly challenge every Monday, two weekend events a month, a Story Pack every two months and four seasons a year. All of it is delivered as data through remote config and storylet bundles, so no app update is needed. Source of truth: [[_Concept Brief]] (pillars 1 and 4, Phase 5 LiveOps).
 
 Related: [[00 Home]] · [[04 App Breakdown - Core Life Systems]] · [[04 App Breakdown - Social, Meta and Premium]] · [[05 UX and Screen Map]] (Challenges hub S59, Recap S61) · [[06 Monetization and Economy]] (Season Pass, Sparks) · [[08 Technical Architecture]] (Remote Config, content pipeline) · [[10 Go-to-Market]] · [[11 Roadmap Team and Budget]] (writer capacity) · [[12 Risks and KPIs]].
 
@@ -71,7 +71,7 @@ Where retention comes from: novelty (new storylets every month), mastery (Titles
 
 ## 2. Retention targets vs benchmarks
 
-| Metric | Market median | Top quartile | Top 10% | **EverLife target (global launch)** | **Soft-launch gate to go global** |
+| Metric | Market median | Top quartile | Top 10% | **Relivable target (global launch)** | **Soft-launch gate to go global** |
 |---|---|---|---|---|---|
 | D1 | ~22% | just above 30% | ~40% | **40%** | ≥ 35% |
 | D7 | just under 4% | 6–7% | ~11–12% | **13%** | ≥ 10% |
@@ -221,7 +221,7 @@ Scheduling: Firebase Remote Config conditions with date windows are enough for M
 | Channel | Purpose | Cadence / owner | Notes |
 |---|---|---|---|
 | **Official Discord** (open at T-12 months, per [[10 Go-to-Market]]) | Home base: playtest sign-ups, bug reports, challenge discussion, seed sharing, creator hub | Daily moderation; weekly dev post; monthly AMA. 1 community manager (CM) + volunteer mods | BitLife's largest Discord is unofficial (~3,187 members) ([Discord listing](https://discord.com/servers/coral-eclipse-or-formerly-bitlife-792224999581810720)), which leaves an opening. Start early to avoid a "ghost town" ([Wayline](https://www.wayline.io/blog/discord-community-indie-game-marketing)) |
-| Reddit (r/EverLife) | Stories, suggestions, Title decoding | 2–3 dev posts/week, weekly "Suggestion Megathread" | Suggestions are tagged and fed to the content backlog. Monthly "You asked, we built" post |
+| Reddit (r/Relivable) | Stories, suggestions, Title decoding | 2–3 dev posts/week, weekly "Suggestion Megathread" | Suggestions are tagged and fed to the content backlog. Monthly "You asked, we built" post |
 | TikTok / Instagram / YouTube Shorts | Recap clips, wild-life POV content, creator duets | 4–5 posts/week | UGC-style creative lifts IPM by 152% on average ([Liftoff](https://www.newswire.ca/news-releases/liftoff-s-2025-mobile-ad-creative-index-reveals-ugc-is-a-key-differentiator-for-top-apps-837345804.html)) |
 | **Creator program** | Early builds, custom seeded challenges ("Chaos Agent" in July), creator-named Milestones | 10–20 creators per launch market | Model: CallMeKevin-style chaotic play; local creators per market as Goodgame did with Gnu (DE) and Jazzghost (BR) ([Goodgame](https://goodgamestudios.com/company/press/releases/72-million-virtual-lives-in-one-year-bitlife-impresses-internationally/)) |
 | **Accessibility council** | 5–10 blind and low-vision players (AppleVis outreach) test every major release before it ships | Per release | Answers BitLife's accessibility trust breakdowns ([AppleVis](https://www.applevis.com/blog/updated-now-resolved-candywriters-betrayal-blind-low-vision-gaming-community-announcing-forced)) |

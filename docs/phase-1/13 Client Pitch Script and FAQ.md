@@ -1,8 +1,8 @@
 ---
 title: Client Pitch Script and FAQ
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, pitch, faq, client]
+tags: [relivable, phase-1, pitch, faq, client]
 updated: 2026-10-26
 ---
 
@@ -15,7 +15,7 @@ updated: 2026-10-26
 > - Say "inspired by the text life-sim genre". Never say "BitLife clone", "BitLife 2" or imply any link with BitLife, Candywriter or Stillfront.
 > - Name BitLife only as the market leader and a comparison point.
 > - No screenshots of BitLife in the deck. Describe its UI in words or with neutral wireframes.
-> - "EverLife" is a working title pending a trademark check.
+> - "Relivable" is a working title pending a trademark check.
 
 ## Talk track
 
@@ -25,7 +25,7 @@ updated: 2026-10-26
 | 2 | The market | 1:00 | 1:45 |
 | 3 | The leader is tired | 1:00 | 2:45 |
 | 4 | What players are telling us | 1:00 | 3:45 |
-| 5 | EverLife in one line + five pillars | 1:15 | 5:00 |
+| 5 | Relivable in one line + five pillars | 1:15 | 5:00 |
 | 6 | The redesigned experience | 1:00 | 6:00 |
 | 7 | Fair forever: business model | 1:00 | 7:00 |
 | 8 | Growth: share your story | 0:45 | 7:45 |
@@ -36,7 +36,7 @@ updated: 2026-10-26
 
 ### Slide 1 — Hook (0:45)
 **On screen:** a single illustrated event card: *"Age 34. Your estranged brother, the one you sued in 2019, is at the door. He's holding a baby."* Three choice buttons in the thumb zone.
-**Say:** "Every life-sim player knows the one-tap year: you're born, you age up, chaos happens. What they've never had is a game that *remembers*. This card only exists because of a choice you made fifteen in-game years ago. That's EverLife: a text life simulator rebuilt around memory, clarity, fairness and sharing."
+**Say:** "Every life-sim player knows the one-tap year: you're born, you age up, chaos happens. What they've never had is a game that *remembers*. This card only exists because of a choice you made fifteen in-game years ago. That's Relivable: a text life simulator rebuilt around memory, clarity, fairness and sharing."
 
 ### Slide 2 — The market (1:00)
 **On screen:** three numbers. Simulation genre ~$4.5B/yr. BitLife 50M+ Play installs. BitLife ~US$38–42M/yr *(estimate from Stillfront quarterly reports)*.
@@ -50,21 +50,21 @@ updated: 2026-10-26
 **On screen:** the ranked top five complaints (ads, paywall creep, lost purchases, repetition, accessibility regressions), each with one short real quote.
 **Say:** "We read app-store reviews, accessibility forums, wikis and petitions. Reddit was largely blocked to our tools, so this is ranked by how often each theme appears across sources, not by votes. The pattern is unmistakable. Players love the loop and resent the monetisation. One player lost 90% of their paid packs on a new phone and dropped the rating from five stars to one. Others paid to remove ads and still saw ads. Blind players even ran a petition to make the game accessible again after an update broke VoiceOver."
 
-### Slide 5 — EverLife in one line + five pillars (1:15)
+### Slide 5 — Relivable in one line + five pillars (1:15)
 **On screen:** the one-liner and five pillar tiles.
-**Say:** "EverLife keeps everything players love, from birth to death, wild choices and generations, and redesigns it around five pillars. **Every choice remembered**: a storylet engine with NPC memory, so consequences come back years later. **One tap to anything**: a thumb-zone hub and a 'What do you want to do?' search instead of nested menus, and locked actions tell you why. **Fair forever**: every career free, one optional unlock, no pay-per-use rewind. **Share your story**: Wrapped-style life recaps and a dynasty tree. **Accessible by default**: VoiceOver and TalkBack from day one. Each pillar answers a complaint from the previous slide."
+**Say:** "Relivable keeps everything players love, from birth to death, wild choices and generations, and redesigns it around five pillars. **Every choice remembered**: a storylet engine with NPC memory, so consequences come back years later. **One tap to anything**: a thumb-zone hub and a 'What do you want to do?' search instead of nested menus, and locked actions tell you why. **Fair forever**: every career free, one optional unlock, no pay-per-use rewind. **Share your story**: Wrapped-style life recaps and a dynasty tree. **Accessible by default**: VoiceOver and TalkBack from day one. Each pillar answers a complaint from the previous slide."
 
 ### Slide 6 — The redesigned experience (1:00)
 **On screen:** three neutral wireframes: Hub (big Age button in the thumb arc), Action search, Life Recap card. See [[05 UX and Screen Map]].
 **Say:** "This is the home screen. Everything important is reachable with one thumb. Want to throw a party? Type 'party' or tap the contextual card. You'll see a guest list, not three menus deep. Too young? The card says 'Unlocks at 18' instead of silently failing. We reach full parity with the genre's systems, from school to crime to dynasties, plus the features players keep requesting: parents who divorce, twins, school electives, religion, lawsuits with retaliation, heists that explain why they failed."
 
 ### Slide 7 — Fair forever: business model (1:00)
-**On screen:** a simple ladder. Free: everything, with opt-in rewarded ads. EverLife Plus ~$9.99 one-time. Season Pass ~$4.99. Story Packs ~$2.99–3.99. "No loot boxes. No per-use rewind. Restore anywhere."
-**Say:** "Fairness is our marketing. The incumbent sells roughly ten separate unlocks up to $20.99 plus per-use rewinds. We sell one clear premium unlock that removes every ad and adds unlimited generations, Destiny Mode and unlimited Rewind. Seasons and Story Packs add stories; they never lock careers. Ads are opt-in and capped. This model is also built for 2026 regulation: no paid randomness, real-money prices, age-appropriate defaults. Our base case is deliberately modest: about $0.07 blended ARPDAU worldwide, at least $0.20 in Tier-1 markets, with 2–4% payers. That is why growth is organic and creator-led, and soft launch validates it." See [[06 Monetization and Economy]].
+**On screen:** a simple ladder. Free: everything, with opt-in rewarded ads. Relivable Plus ~$9.99 one-time. Season Pass ~$4.99. Story Packs ~$2.99–3.99. "No loot boxes. No per-use rewind. Restore anywhere."
+**Say:** "Fairness is our marketing. The incumbent sells roughly ten separate unlocks up to $20.99 plus per-use rewinds. We sell one clear premium unlock that removes every ad and adds up to 8 generations, Destiny Mode and unlimited Rewind. Seasons and Story Packs add stories; they never lock careers. Ads are opt-in and capped. This model is also built for 2026 regulation: no paid randomness, real-money prices, age-appropriate defaults. Our base case is deliberately modest: about $0.07 blended ARPDAU worldwide, at least $0.20 in Tier-1 markets, with 2–4% payers. That is why growth is organic and creator-led, and soft launch validates it." See [[06 Monetization and Economy]].
 
 ### Slide 8 — Growth: share your story (0:45)
-**On screen:** a 9:16 Life Recap story sequence and a scenario seed code ("Try my life: #EL-7Q2K").
-**Say:** "Life sims spread through stories, from creators' chaotic playthroughs to screenshots of absurd deaths. Every EverLife life ends in a shareable Wrapped-style recap. Spotify's version was shared 500 million times on its 2025 launch day. Scenario seeds let friends replay your start. We pair that with an official Discord from day one and a creator program, then soft-launch in the Philippines and Ireland or the Netherlands to keep test costs low." See [[10 Go-to-Market]].
+**On screen:** a 9:16 Life Recap story sequence and a scenario seed code ("Try my life: #RL-7Q2K").
+**Say:** "Life sims spread through stories, from creators' chaotic playthroughs to screenshots of absurd deaths. Every Relivable life ends in a shareable Wrapped-style recap. Spotify's version was shared 500 million times on its 2025 launch day. Scenario seeds let friends replay your start. We pair that with an official Discord from day one and a creator program, then soft-launch in the Philippines and Ireland or the Netherlands to keep test costs low." See [[10 Go-to-Market]].
 
 ### Slide 9 — Technology and safety (0:45)
 **On screen:** a simple stack diagram: Flutter client, remote storylet bundles, Firebase, RevenueCat, optional on-device AI.
@@ -93,12 +93,12 @@ Low if we stay disciplined, though it is not zero. Game mechanics and genres are
 - All original text, event writing, names and assets.
 - No BitLife-specific product terms (e.g. Bitizen, Bitizenship, Boss Mode) in the game or store metadata, and our own names for equivalent features.
 - A distinct visual identity.
-- IP counsel review before soft launch, plus a trademark check on "EverLife".
+- IP counsel review before soft launch, plus a trademark check on "Relivable".
 
 *This is general orientation, not legal advice. Budget for counsel is in [[11 Roadmap Team and Budget]].*
 
 **3. Why would players leave a game they've played for years?**
-Many already have: US weekly active users fell from a 2.78M peak (Dec 2023) to about 1.0–1.4M (Q2 2025) on Sensor Tower estimates. The pitch to them is concrete: every career free, four generations per dynasty free (unlimited with Plus), your purchases follow your account, and a story that remembers you. Lapsed players are our win-back persona ([[03 Player Research and Wishlist]]).
+Many already have: US weekly active users fell from a 2.78M peak (Dec 2023) to about 1.0–1.4M (Q2 2025) on Sensor Tower estimates. The pitch to them is concrete: every career free, four generations per dynasty free (up to Generation 8 with Plus), your purchases follow your account, and a story that remembers you. Lapsed players are our win-back persona ([[03 Player Research and Wishlist]]).
 
 **4. What if the incumbent copies our features?**
 Some features (recaps, percentages) are easy to copy. The fairness model is not, because matching it would cannibalise a catalogue of roughly ten paid unlocks and packs. Our deeper moat is a content engine built around memory from day one, plus a community and accessibility reputation that takes years to earn.
@@ -123,7 +123,7 @@ Little, if it's done from day one. That's the point. Flutter generates an access
 
 ### Business model
 **9. How do you make money without paywalls?**
-We do have one paywall. It's optional, one-time and honest: **EverLife Plus (~$9.99)** removes every ad and adds unlimited generations, Destiny Mode and unlimited Rewind (a $2.99 No Ads option upgrades to Plus for $6.99). On top of that:
+We do have one paywall. It's optional, one-time and honest: **Relivable Plus (~$9.99)** removes every ad and adds up to 8 generations, Destiny Mode and unlimited Rewind (a $2.99 No Ads option upgrades to Plus for $6.99). On top of that:
 - **Opt-in rewarded ads**, capped at 4 per session and 8 per day. US rewarded eCPMs run about $12–20.
 - A cosmetic and story **Season Pass** (~$4.99).
 - **Story Packs** (~$2.99–3.99) that add storylines and never lock careers.
@@ -141,7 +141,7 @@ The genre's leader tested a subscription in 2019 and dropped it after a "nearly 
 
 ### Technology and AI
 **12. Why Flutter and not Unity?**
-Our research found Unity the lowest-risk default for games in general. EverLife, though, is a UI-heavy text game, and Flutter wins on that profile:
+Our research found Unity the lowest-risk default for games in general. Relivable, though, is a UI-heavy text game, and Flutter wins on that profile:
 - Best built-in VoiceOver/TalkBack support.
 - Fast UI iteration.
 - Cheaper hiring from the large app-developer pool.

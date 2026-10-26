@@ -1,8 +1,8 @@
 ---
 title: "12 Risks and KPIs"
-project: EverLife
+project: Relivable
 phase: 1
-tags: [everlife, phase-1, risks, kpis, stage-gates, metrics]
+tags: [relivable, phase-1, risks, kpis, stage-gates, metrics]
 updated: 2026-10-26
 ---
 
@@ -32,7 +32,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 | R7 | **Save or purchase loss incidents** destroy trust (a top BitLife complaint) ([Google Play review](https://play.google.com/store/apps/eventdetails/4831791308351315470)) | 2 | 3 | 🔴 6 | Offline-first + cloud sync. No silent overwrite. Migration tests. RevenueCat server verification. Restore on sign-in | Tech Lead | Any `save_conflict` data-loss report. Restore success < 99.9% |
 | R8 | **Accessibility regression** ships (BitLife's history) ([AppleVis](https://www.applevis.com/comment/135452)) | 2 | 3 | 🔴 6 | CI guideline checks. A manual screen-reader release gate. Blind testers. External audit | QA Lead | Any P0 a11y bug in a release candidate |
 | R9 | **IP or clone claim** from the incumbent (which showed DMCA aggressiveness in 2023) ([AppleVis](https://applevis.com/comment/144257)) | 2 | 3 | 🔴 6 | Original text and art, a banned-terms list, writer attestations, plagiarism checks, distinct trade dress. Counsel review of store assets | Producer + Counsel | Takedown notice or C&D |
-| R10 | **Name unavailable**: "EverLife" is a working title | 2 | 2 | 🟠 4 | Clearance in Phase 2 with 3 backup names. Working-title handles | Client | Search finds conflicts |
+| R10 | **Name unavailable**: "Relivable" is a working title | 2 | 2 | 🟠 4 | Clearance in Phase 2 with 3 backup names. Working-title handles | Client | Search finds conflicts |
 | R11 | **Monetization too generous**: all careers free plus one ~$9.99 unlock gives ARPDAU < $0.12 | 2 | 3 | 🔴 6 | Season Pass + Story Packs + capped rewarded ads. Price-ladder A/B tests via Remote Config. Web shop margin. Pillar 3 stays non-negotiable | Product Owner | SL ARPDAU < $0.12 or payer conversion < 1.5% |
 | R12 | **Paid UA dependence / rising CPIs**: Meta and TikTok CPI +15–20% YoY ([Admiral](https://admiral.media/mobile-game-marketing-benchmarks/)). BitLife fell 19% when it cut UA ([Stillfront](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)) | 3 | 2 | 🔴 6 | Organic-first: Life Recap, seeds, creators, Discord. Scale gate LTV ≥ 1.2× CPI ([[10 Go-to-Market]] §10) | UA Lead | Blended CPI > D90 LTV |
 | R13 | **AI backlash or AI policy breach** (inZOI review-bombing; Apple 1.2 and 5.1.2(i); Google report button) | 2 | 2 | 🟠 4 | AI optional, off by default, rewording only. Moderation, report button, consent. Never in headline marketing | Tech Lead | Negative-review spike mentioning AI. Store rejection |
@@ -105,7 +105,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 |---|---|---|
 | ARPDAU (IAP + ads, Tier-1) | **Target:** ≥ $0.20 Tier-1 (blended global base case ~$0.07, see [[06 Monetization and Economy]]) | Hybrid-casual $0.15–0.50 (vendor) ([Juego](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre)) |
 | Payer conversion (D30) | **Target:** 2.5–4% | ~2–3.5% |
-| EverLife Plus attach (of payers) | **Target:** ≥ 60% | Design intent ([[06 Monetization and Economy]]) |
+| Relivable Plus attach (of payers) | **Target:** ≥ 60% | Design intent ([[06 Monetization and Economy]]) |
 | ARPPU (D90) | **Target:** $9–14 | Casual D90 ARPPU $7.26 ([gamedevreports](https://gamedevreports.substack.com/p/weekly-gaming-reports-recap-june-e95)) |
 | Rewarded ad opt-in (of non-payer DAU) | **Target:** 30–45%, ≤ cap per day | 76% of players prefer opt-in ads (2017 vendor survey) ([MarketingDive](https://www.marketingdive.com/press-release/20170613-mobile-gamers-prefer-rewarded-ads-by-4-to-1-margin-tapjoy-research-finds/)) |
 | Rewarded eCPM (US) | **Planning value:** $12–20 | Appodeal Q4 2024 |

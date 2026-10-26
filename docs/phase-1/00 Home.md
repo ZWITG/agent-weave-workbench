@@ -1,13 +1,13 @@
 ---
-title: EverLife Phase 1 — Home
-project: EverLife
+title: Relivable Phase 1 — Home
+project: Relivable
 phase: 1
 status: draft
 updated: 2026-10-26
-tags: [everlife, phase-1, moc]
+tags: [relivable, phase-1, moc]
 ---
 
-# EverLife — Phase 1 Planning Vault
+# Relivable — Phase 1 Planning Vault
 
 > [!note] How to use this vault
 > Copy the whole `phase-1` folder into your Obsidian vault. Every note links to the others with `[[wikilinks]]`, so the graph view shows the full plan. Start at [[_Concept Brief]]; every other note follows it.
@@ -32,8 +32,8 @@ tags: [everlife, phase-1, moc]
 | 13 | [[13 Client Pitch Script and FAQ]] | What to say on each slide and how to answer client questions |
 
 ## Other formats in this phase
-- **Feature matrix spreadsheet:** `EverLife Feature Matrix.xlsx` (every feature, BitLife equivalent, priority, phase, free/Plus, effort)
-- **Client pitch deck:** [EverLife Phase 1 Pitch](https://claude.ai/artifact/TEn1vpqBdRUxMBjiAJW23Q) (12 slides with speaker notes; private until shared)
+- **Feature matrix spreadsheet:** `Relivable Feature Matrix.xlsx` (every feature, BitLife equivalent, priority, phase, free/Plus, effort)
+- **Client pitch deck:** Relivable Phase 1 Pitch (12 slides with speaker notes; shared separately)
 - **Background research:** `research_notes/Life sim game phase 1/`, `research_notes/BitLife complete feature guide/` and `reports/BitLife complete feature guide.md` in the repo
 
 ## Phase map

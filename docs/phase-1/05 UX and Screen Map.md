@@ -1,16 +1,16 @@
 ---
 title: UX and Screen Map
-project: EverLife
+project: Relivable
 phase: 1
 status: draft
-tags: [everlife, phase-1, ux, ui, accessibility, screens, ftue]
+tags: [relivable, phase-1, ux, ui, accessibility, screens, ftue]
 updated: 2026-10-26
 ---
 
 # 05 UX and Screen Map
 
 > [!summary] In one paragraph
-> EverLife keeps BitLife's one-thumb, one-year-per-tap rhythm, but rebuilds everything around it. There is a **thumb-zone Life Hub**, **card-based events**, a **bottom command bar** ("What do you want to do?") instead of nested Activities menus, **no silent failures** (every locked action says why and when it unlocks), and **accessibility as a release gate**. This note is the screen inventory, navigation map, wireframes, FTUE, visual direction and accessibility spec. Its source of truth is [[_Concept Brief]] (pillars 2 and 5). The systems behind each screen are in [[04 App Breakdown - Core Life Systems]] and [[04 App Breakdown - Social, Meta and Premium]], and the implementation (Flutter `Semantics`, remote content) is in [[08 Technical Architecture]].
+> Relivable keeps BitLife's one-thumb, one-year-per-tap rhythm, but rebuilds everything around it. There is a **thumb-zone Life Hub**, **card-based events**, a **bottom command bar** ("What do you want to do?") instead of nested Activities menus, **no silent failures** (every locked action says why and when it unlocks), and **accessibility as a release gate**. This note is the screen inventory, navigation map, wireframes, FTUE, visual direction and accessibility spec. Its source of truth is [[_Concept Brief]] (pillars 2 and 5). The systems behind each screen are in [[04 App Breakdown - Core Life Systems]] and [[04 App Breakdown - Social, Meta and Premium]], and the implementation (Flutter `Semantics`, remote content) is in [[08 Technical Architecture]].
 
 Related: [[00 Home]] · [[06 Monetization and Economy]] (shop/paywall screens) · [[07 Retention and LiveOps]] (daily goals, challenges, push) · [[09 Compliance and Ratings]] (age gate, consent) · [[12 Risks and KPIs]] (UX KPIs).
 
@@ -140,7 +140,7 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 
 | # | Screen | Type | Purpose | Key components | Entry → Exit |
 |---|---|---|---|---|---|
-| S70 | Shop | F | Everything for sale, in real-money prices | EverLife Plus card (exact contents list), No Ads (+ Plus Upgrade for No-Ads owners), Story Packs, Season Pass, Welcome Pack, cosmetic sets, Founder's Bundle / Complete Collection, Restore Purchases (catalogue: [[06 Monetization and Economy]] §2) | Me → S70; Death screen secondary link |
+| S70 | Shop | F | Everything for sale, in real-money prices | Relivable Plus card (exact contents list), No Ads (+ Plus Upgrade for No-Ads owners), Story Packs, Season Pass, Welcome Pack, cosmetic sets, Founder's Bundle / Complete Collection, Restore Purchases (catalogue: [[06 Monetization and Economy]] §2) | Me → S70; Death screen secondary link |
 | S71 | Plus details | M | One-time unlock explained | Checklist of contents, "Not included" list, price, "Already own it? Restore" | S70 → OS purchase sheet |
 | S72 | Rewarded ad offer | M | Opt-in ad for a perk | Exact reward, ad length estimate, remaining today (e.g. "3 of 8 left"), No thanks (same size) | Only from explicit "Watch for…" buttons |
 | S73 | Settings | F | App settings | Text size, theme (light/dark/system), motion, haptics, colour-vision mode, left-hand layout, AI flavour text on/off, content filters, notifications, language | Me → S73 |
@@ -229,7 +229,7 @@ Phone frame shown at 360 dp wide. `▓` = thumb zone (bottom ~40%).
 
 ```
 ┌────────────────────────────────────┐
-│ ☰ Lives        EverLife      ⚙︎ 🔔 │  ← low-frequency only (top)
+│ ☰ Lives        Relivable      ⚙︎ 🔔 │  ← low-frequency only (top)
 ├────────────────────────────────────┤
 │   ╭─────╮   Maya Okafor, 17        │
 │   │ ◕‿◕ │   Lagos → Dublin · 2009  │
@@ -606,7 +606,7 @@ There is a haptics toggle (On / Important only / Off), and the game respects the
 
 ## 9. BitLife UX problems → our fix
 
-| # | BitLife problem (evidence) | Impact | EverLife fix | Screen(s) |
+| # | BitLife problem (evidence) | Impact | Relivable fix | Screen(s) |
 |---|---|---|---|---|
 | 1 | Activities split across School, Relationships and "More", unlocked by age, hard to find ([AppleVis](https://www.applevis.com/apps/ios/games/bitlife)) | Discovery friction, feels shallow | Command bar + category sheet + contextual suggestions; ≤2 taps rule | S10, S14, S15 |
 | 2 | Activities silently fail to open when too young ([AppleVis](https://applevis.com/comment/92232)) | Confusion, "is it broken?" | Locked items are visible with a reason and a "Show me how" path | S16 |
