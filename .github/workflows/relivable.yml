@@ -2,10 +2,8 @@ name: Relivable game
 
 # Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
 # - tests the engine (including the 500-life simulator run)
-# - publishes the web build to the gh-pages branch, served by GitHub Pages
-#   (play it on any phone)
-# - builds an installable Android APK and a Windows installer and attaches
-#   both to the "relivable-prototype" pre-release.
+# - saves the web build, the Android APK and the Windows installer as
+#   downloadable build artifacts on the workflow run.
 
 on:
   push:
@@ -14,11 +12,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: relivable-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -41,31 +39,17 @@ jobs:
       - run: flutter analyze
       - run: flutter test
       - name: Build web
-        run: flutter build web --release --no-web-resources-cdn --base-href "/${{ github.event.repository.name }}/"
-      - name: Publish web build to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        run: flutter build web --release --no-web-resources-cdn
+      - uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: game/build/web
-          publish_branch: gh-pages
-          force_orphan: true
-          commit_message: Relivable web build
+          name: relivable-web
+          path: game/build/web
       - name: Build Android APK
         run: flutter build apk --release
-      - name: Publish APK to the prototype pre-release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: relivable-prototype
-          name: Relivable prototype (latest build)
-          prerelease: true
-          target_commitish: ${{ github.sha }}
-          body: |
-            Latest Relivable Phase 2 prototype, built from ${{ github.sha }}.
-            Play on any phone: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-            Android: download app-release.apk below and open it to install (allow installs from your browser when asked).
-            Windows: download RelivableSetup.exe below and run it (no admin rights needed), or unzip Relivable-portable.zip and open Relivable.exe.
-          files: game/build/app/outputs/flutter-apk/app-release.apk
-          fail_on_unmatched_files: true
+          name: relivable-android-apk
+          path: game/build/app/outputs/flutter-apk/app-release.apk
 
   windows:
     needs: build
@@ -89,11 +73,11 @@ jobs:
           choco install innosetup -y --no-progress
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.1.${{ github.run_number }} /DSourceDir="$PWD\build\windows\x64\runner\Release" windows\installer\relivable.iss
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows\installer\Output\Relivable-portable.zip
-      - name: Add Windows files to the prototype pre-release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: relivable-prototype
-          files: |
-            game/windows/installer/Output/RelivableSetup.exe
-            game/windows/installer/Output/Relivable-portable.zip
-          fail_on_unmatched_files: true
+          name: relivable-windows-installer
+          path: game/windows/installer/Output/RelivableSetup.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-windows-portable
+          path: game/windows/installer/Output/Relivable-portable.zip
