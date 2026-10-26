@@ -1310,15 +1310,15 @@ flowchart TB
 | Careers, systems, countries, pets, challenges | **All free** | Same |
 | Dark mode, themes, text size, accessibility | **All free** | Same |
 
-**Destiny Mode (editor, God Mode equivalent)**
+**Destiny Mode (editor; replaces BitLife's paid stat editor)**
 - **Self:** edit name, identity, appearance (any age, unlike BitLife's 21–44 limit), visible and hidden stats (Health, Smarts, Looks, Happiness, Karma, Willpower, Discipline, Fertility, Athleticism, etc.), traits, skills.
-- **Others:** edit any NPC's stats, traits, appearance, Bond % and facets with you, memories (delete a grudge), orientation of NPCs is **not** editable (respect rule; identity is the NPC's own).
+- **Others:** edit any NPC's stats, traits, appearance, Bond % and facets with you, memories (delete a grudge). NPC gender identity and orientation are **not** editable (respect rule: identity belongs to the character).
 - **World:** set royal status where monarchies exist (BitLife parity), change birth country before birth, change the life's starting family (parents' wealth, marriage health, siblings, twins) before birth.
 - **Odds view:** show exact % odds on action cards.
 - **Not editable:** past events already in the life log (use Rewind instead), other players' content.
 - **Integrity:** lives with any Destiny edit get an "Assisted" tag for leaderboards (module 11). Single-player achievements still count.
 
-**Rewind (Time Machine equivalent)**
+**Rewind (replaces BitLife's pay-per-use time rewind)**
 - Go back to any earlier birthday in the current life (or the last 5 years after death), with a timeline of key moments to pick from.
 - **Free allowance (recommendation, client decision):** **1 Rewind per life**, plus **1 extra a day** from an optional rewarded ad (capped). Never sold for money per use.
 - **Plus:** unlimited.
@@ -1637,8 +1637,8 @@ Make EverLife playable by everyone and safe by default. Accessibility is pillar 
 | Friends, Life Museum, postcards, leaderboards, gifting | ✅ | Profile frames | — | — | Assisted runs on separate boards |
 | Creator Mode (UGC scenarios) | ✅ (18+ to publish publicly) | — | — | — | |
 | Story Packs (themed storylines, scenario starts, eras' extra arcs) | — | — | ✅ | — | Never careers or systems |
-| Destiny Mode (editor) | Preview | ✅ | — | — | God Mode equivalent |
-| Rewind (Time Machine equivalent) | 1 per life + 1/day via opt-in ad | Unlimited | — | — | Never sold per use |
+| Destiny Mode (editor) | Preview | ✅ | — | — | Replaces BitLife's paid editor |
+| Rewind (time rewind) | 1 per life + 1/day via opt-in ad | Unlimited | — | — | Never sold per use |
 | Save slots | 3 | 12 | — | — | Convenience |
 | Ads | Opt-in rewarded only, capped (6/day) | None (rewards auto-granted) | — | — | No interstitials or banners for anyone |
 | AI Storyteller on-device | ✅ | — | — | — | Opt-in |

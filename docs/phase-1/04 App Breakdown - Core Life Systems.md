@@ -327,7 +327,7 @@ This is the heart of the game: the "Age +1" rhythm players love, rebuilt around 
 |---|---|---|---|
 | Infancy | 0–4 | "Early Days" | Parent-driven events, first words, temperament hints |
 | Childhood | 5–11 | "School Days" | Primary school, hobbies and lessons, friendships, pets with parents' permission |
-| Teen | 12–17 | "Growing Up" | Secondary school, cliques, Mind & Body (12+), freelance (13+), part-time job (14/16+ by country), dating (14+, non-explicit), driving (country age) |
+| Teen | 12–17 | "Growing Up" | Secondary school, cliques, Wellbeing activities (12+), freelance (13+), part-time job (14/16+ by country), dating (14+, non-explicit), driving (country age) |
 | Young adult | 18–29 | "Finding My Way" | University, full careers, renting, loans, crime with full penalties, fertility options, emigration |
 | Adult | 30–49 | "Building a Life" | Mortgages, senior roles, children growing up, midlife events |
 | Midlife | 50–64 | "The Long Middle" | Caregiving for parents, career peak, health checks, grandchildren |
@@ -1263,7 +1263,7 @@ Health sets how long a life lasts and how it feels. This module covers illness, 
 **Appearance and body**
 - **Salon and spa (12+ with parents, 16+ alone):** haircuts, colour, nails, skincare, massage, makeup lessons: small Looks/Happiness boosts, cosmetic avatar changes.
 - **Plastic surgery (18+):** procedures (nose, teeth, skin, hair transplant, body contouring, facial rejuvenation, injectables); each has a cost, Looks gain, and a botch risk (`2–12%` by surgeon quality and procedure); repeated surgery has rising risks and body-image storylets. A gentle, non-judgemental "Are you doing this for you?" storylet appears after 3 procedures.
-- **Gym and Mind & Body (12+):** gym (Fitness, Health, Looks), running, swimming, yoga, martial arts (fighter career link), dance, meditation (−Stress), library (Smarts), journaling (Happiness, Resilience), sleep routine, diet choices (Module 6 food budget). Each activity has diminishing returns within a year.
+- **Gym and Wellbeing (12+):** gym (Fitness, Health, Looks), running, swimming, yoga, martial arts (fighter career link), dance, meditation (−Stress), library (Smarts), journaling (Happiness, Resilience), sleep routine, diet choices (Module 6 food budget). Each activity has diminishing returns within a year.
 - **Fitness meter (0–100):** `ΔFitness = activityGains − 3 − ageDecay/2`, drives Health and athletic careers.
 
 **Aging avatar**
@@ -1272,7 +1272,7 @@ Health sets how long a life lasts and how it feels. This module covers illness, 
 - Reduced-motion setting disables aging transitions.
 
 **Death**
-- **Death check (each Age +1):** `qDeath = gompertz(age) × healthFactor × conditionFactor × lifestyleFactor × karmaFactor`, where `gompertz(age) = 0.00005 × e^(0.085 × age)` (about 0.5% at 52, 4.5% at 80, 10.5% at 90), `healthFactor = clamp(1 + (50 − Health)/40, 0.4, 3)`, `karmaFactor` 0.95–1.05. Accidents, crime, war and fatal illness stages are separate event-driven causes. Country life-expectancy data adjusts the base curve.
+- **Death check (each Age +1):** `qDeath = gompertz(age) × healthFactor × conditionFactor × lifestyleFactor × karmaFactor`, where `gompertz(age) = 0.00005 × e^(0.085 × age)` (about 0.4% at 52, 4.5% at 80, 10.5% at 90), `healthFactor = clamp(1 + (50 − Health)/40, 0.4, 3)`, `karmaFactor` 0.95–1.05. Accidents, crime, war and fatal illness stages are separate event-driven causes. Country life-expectancy data adjusts the base curve.
 - **Causes of death (examples):** old age, heart disease, cancer, stroke, untreated infection, accident (car, workplace, sports, home), natural disaster, violence (toggle-dependent wording), overdose (toggle-dependent, non-graphic), execution (country and toggle), war or deployment, extreme-sport accident, rare comic-but-gentle causes (for example "a falling coconut on a beach holiday": low frequency, original).
 - **Warning signs:** serious conditions show symptoms first; elder years show a frailty indicator so death rarely feels random.
 - **Funeral:** choose (or the family chooses) type: burial, cremation, natural burial, religious rites (Module 10), sea scattering. Attendance is computed from relationship % and fame; a **eulogy** is assembled from the strongest memories NPCs hold (original templates, optional AI rewording). Headstone or memorial text from a few templates or custom (moderated).
@@ -1304,7 +1304,7 @@ Hub **Health card** (Health stat, active conditions, fitness) → **Health scree
 | Serious and chronic conditions, treatments, insurance by country | MVP | Free |
 | Addictions and rehab | MVP | Free |
 | Mental-health system with helpline panel (consultant-reviewed) | MVP | Free |
-| Gym, Mind & Body, salon | MVP | Free |
+| Gym, Wellbeing activities, salon | MVP | Free |
 | Plastic surgery | Launch | Free |
 | Aging avatar | MVP (basic stages), Launch (lifestyle layers) | Free; cosmetic styles via Season Pass |
 | Funeral, eulogy from memories | Launch | Free |
@@ -1321,3 +1321,274 @@ Module 2 (Health, Looks, Willpower, Resilience, Stress), Module 3 (callbacks, me
 - Continue as heir carries over assets, heirlooms, legacy traits and NPC memories of the previous character.
 
 ---
+
+## Module 10: Countries and world
+
+### Purpose
+Where and when you are born should matter. This module holds every place- and time-based rule as **data**: laws, monarchies, military service, religion, migration and historical eras. It makes lives in Lagos, Lisbon and Lima feel different, and lets players play in other decades.
+
+### BitLife equivalent (today)
+- Many countries and cities (expanded in v1.18); laws in some systems follow the real country (estate tax, surrogacy legality, arranged marriage in certain countries, Prime Minister in parliamentary systems, royalty in about 17–18 monarchies with a Respect meter, some countries barring executions).
+- Emigration in Activities: approval depends on criminal record and money, illegal emigration as a fallback, fleeing justice earns an achievement.
+- Military deployments (v1.20). No documented draft, religion system or era mode (players and a fan concept ask for religion and eras).
+
+### EverLife redesign
+- **Country profiles** (viewable in-game) list the key rules that affect a life, in plain language ("Here: free university, conscription at 18 for 12 months, same-sex marriage legal since 2010, no death penalty").
+- **Laws apply consistently everywhere** because all modules read the same country data.
+- **Religion is an optional, respectful system**, not a joke generator.
+- **Emigration is a real process** with visa routes, costs and waiting times, plus a family and identity dimension.
+- **Era mode** lets a life start from 1900 to 2040, with technology, jobs, laws and world events matched to the time.
+
+### New features (vs BitLife)
+- Country profile screen; laws as data shared by every system.
+- Military draft/conscription with deferment, alternative service and conscientious objection.
+- Religion system (faith, practice, community, conversion, family reactions, marriage and politics effects).
+- Visa routes (work, study, family, investment, asylum storyline), citizenship and dual citizenship, language learning.
+- Era/historical mode with era-gated content and abstracted historical events.
+- Regional events (natural disasters, elections, economic cycles, sports tournaments) as world storylets.
+
+### Detailed sub-features
+**Country data (per country; remote content)**
+| Field group | Example fields |
+|---|---|
+| Basics | Name, cities/regions, languages, currency, cost-of-living index, life expectancy, climate/disaster risks |
+| Ages | School start, leaving age, driving age, drinking age, voting age, marriage age (with/without consent), gambling age, minimum working age, age of criminal responsibility, retirement/pension age |
+| Family law | Same-sex marriage/civil unions, divorce rules (no-fault, waiting periods), polygamy (not simulated for players at launch; see note below), adoption rules, surrogacy legality, arranged-marriage likelihood, child support |
+| Health | Healthcare model (universal, insurance, out-of-pocket), costs, waiting times |
+| Education | Free or paid university, tuition bands, national exams, grading scale display |
+| Money | Tax brackets, estate/inheritance tax, wealth tax, pension system, unemployment benefits, credit-bureau presence, gambling legality |
+| Justice | Sentence bands per crime, death penalty (yes/no/moratorium), jury or judge trials, parole fraction, pardon authority, extradition partners, drug laws, gun laws |
+| Government | System (presidential, parliamentary, monarchy: absolute or constitutional, one-party), office titles and minimum ages, term limits |
+| Military | Conscription (none, selective, universal), length, ages, exemptions, alternative service |
+| Religion | Major faith traditions present and their local share (for random family religion), religious freedom level, state religion |
+| Migration | Visa routes and difficulty, citizenship years, dual-citizenship allowed |
+| Era overrides | Historical values per decade where different (for example divorce or same-sex marriage legal from year X) |
+
+> [!note] Accuracy and sensitivity
+> Country data is simplified and must be reviewed per release. Laws on sensitive topics (sexuality, religion, punishments) are shown factually and neutrally. Where a country's law would put a player's identity at legal risk, the game presents it as world context with support-oriented storylets, never as a punishment for the player's identity. Final rules, and whether any country needs a softened presentation for store or rating reasons, are decided in [[09 Compliance and Ratings]]. **Proposal:** polygamous marriage is not playable at launch (complexity and rating risk); it can appear as NPC family background where relevant.
+
+**Launch country scope (Proposal)**
+- **MVP:** about 25 countries with full data and native city lists, covering soft-launch markets (Philippines, Ireland, Netherlands, Canada) and the main English, Spanish, Portuguese, German and French markets.
+- **Launch:** 60+ countries; **LiveOps:** 150+ countries, prioritised by player analytics.
+
+**Monarchies and royalty**
+- Data lists monarchies with type (constitutional or absolute), titles (king/queen, emir, sultan, grand duke, etc.) and succession rules (eldest child regardless of gender, male-preference, or chosen). EverLife uses **fictional royal houses** in real monarchies (no real royal family members are simulated), consistent with the IP and likeness rules in [[09 Compliance and Ratings]].
+- **Respect meter** (0–100): rises with duties, charity, good conduct; falls with scandals.
+- Royal actions: public duties, tours, charity patronage, speeches, state banquets, managing the press, marrying (suitability rules), abdication, and, in absolute monarchies only, limited governing decisions (laws as storylets).
+- Succession: when the monarch dies or abdicates, the heir accedes (a coronation long scene). Continuing as heir in a royal family carries titles.
+- Marrying into royalty: dating a royal NPC (rare encounters), approval from the family (Respect, background checks).
+
+**Military draft**
+- In conscription countries: a draft notice event at the country age. Choices: serve (length from data; Discipline and Fitness gains, career and storylet effects), request deferment (university, medical, family hardship rules), **alternative civilian service** (where it exists), conscientious objection (country-dependent consequences), or evade (crime with legal risk; flee abroad).
+- In wartime era events (Era mode or fictional conflicts in Modern mode), selective drafts can be activated. War is shown with restraint: deployments, risk, letters home, injury and PTSD storylets (Module 9), no graphic depiction.
+
+**Religion system**
+- **Affiliation:** born into a family tradition (country share data) or none; can explore, join, change or leave at any age (parents restrict under 16 in strict families).
+- **Representation (Proposal):** real major world faith traditions plus "non-religious" and "spiritual but not religious" options, portrayed with neutral, respectful, sensitivity-read copy; no faith is shown as true or false, and no storylet mocks belief. An alternative is a set of fictional faiths; recommend real traditions for authenticity, with expert review budgeted (see [[09 Compliance and Ratings]]). Era mode uses the same set.
+- **Practice:** attend services, pray/meditate, holy days and festivals, fasting periods (Health-aware), pilgrimages (travel), volunteering through a community, religious school (Module 4), clergy career (Module 5).
+- **Meters and effects:** Faith (0–100); community network (new NPCs); Happiness and Resilience support; effects on marriage choices (family approval for interfaith marriage), funerals (rites), political campaigns (voter alignment in some countries), food and lifestyle choices.
+- **Family reactions:** switching or leaving faith writes memories with parents and relatives (intensity by family values).
+- **Interfaith and secular storylets:** mixed families, holidays together, children's upbringing decisions.
+
+**Emigration and citizenship**
+| Route | Requirements (data) | Process |
+|---|---|---|
+| Work visa | Job offer or in-demand occupation, degree | Application cost, wait 0–2 years, approval roll explained |
+| Study visa | University admission abroad | Tied to study; can convert to work |
+| Family visa | Spouse or close family abroad | Relationship check, wait |
+| Investor visa | High net worth | Investment amount |
+| Asylum (storyline) | Conflict or persecution storylets | Handled sensitively; long process; support NPCs |
+| Retirement visa | Age + income | Some countries |
+| Irregular migration | Any | Risky storyline (toggle-aware), legal consequences, no glamorisation |
+- **Approval chance:** `p = routeBase × (1 − recordPenalty) × documentFit × countryDifficulty`, explained with reasons.
+- **After moving:** new country rules apply; language learning (fluency 0–100, affects jobs and friendships); homesickness storylets; family left behind (relationship drift faster); citizenship after the country's residency years; dual citizenship if both allow it.
+- **Fleeing justice:** possible to countries without extradition to your home country (data); an open case follows you as a flag, and returning risks arrest.
+
+**Era / historical mode**
+| Era band (start year) | Content gates (examples) |
+|---|---|
+| 1900–1919 | No cars for most families, early aviation, limited schooling, high child-mortality data (handled gently), no social media careers |
+| 1920s–1940s | Radio, early film careers, a stylised global depression, wartime drafts (abstracted) |
+| 1950s–1960s | Television, rock-and-roll musician paths, space-race astronaut path, changing family law |
+| 1970s–1980s | Home computers late in the band, disco/punk scenes, oil shocks (stylised) |
+| 1990s–2000s | Internet, mobile phones, dot-com boom/bust, early online careers |
+| 2010s–Modern | Smartphones, influencer careers, crypto (2009+), gig economy |
+| Near future (to 2040) | Light speculative tech (self-driving cars, new jobs), fictional events only |
+- **Rules:** content items have `era: [fromYear, toYear]`. Laws use per-decade overrides. Prices scale by an era price index.
+- **Historical events** are **abstracted and fictionalised** (for example "a global recession", "a major war in Europe" with drafts in affected countries, "a pandemic year") and never feature real public figures as characters. Event intensity is tunable and sensitive events have content notes ([[09 Compliance and Ratings]]).
+- **Aging through eras:** a life born in 1950 naturally lives through later eras, so the content unlocks as the years pass (for example getting your first mobile phone at 45).
+
+### Key rules, formulas and data
+- **One source of truth:** every module reads country rules through one rules service (`rules.get(countryId, year, key)`), which applies era overrides. See [[08 Technical Architecture]].
+- **Validation:** each country file is checked for required fields, and the simulator runs 1,000 lives per country per release to catch broken gates (for example no reachable career for a country).
+- **Localisation:** country and city names, office titles and religious terms are localised and reviewed by native speakers for the 5 launch languages.
+
+### Example events (original)
+| Event | Hook |
+|---|---|
+| Your draft notice arrives the same week as your university acceptance | Defer, serve, or alternative service; memories with parents |
+| Your grandmother asks you to come to her festival service "just this once" after you left the faith | Family memory, Faith meter, Happiness |
+| Your work visa is approved, but your partner's is still pending | Go alone, wait, or decline; relationship memory |
+| A leaked photo of you at a nightclub hits the royal press | Respect drop, damage-control choices |
+| (Era mode, 1969) The neighbours gather around your family's new television | Callback for an astronaut-career kid |
+
+### UI entry point
+Country chip on the hub header (tap for the **Country profile**). **Move abroad** from the command bar or Activities → Travel and moving. Draft, royal and religious events arrive as decision cards; the **Faith** tab appears on the Character sheet if affiliated. Era picker in character creation ([[05 UX and Screen Map]]).
+
+### Priority and access
+| Feature | Priority | Access |
+|---|---|---|
+| Country data model and rules service; ~25 countries | MVP | Free |
+| Country profile screen | MVP | Free |
+| Emigration with visa routes, citizenship, language | Launch | Free |
+| Monarchies, royalty with Respect | Launch | Free |
+| Military draft, alternative service | Launch | Free |
+| Religion system (with expert review) | Launch | Free |
+| Era mode (1900–2040) | Launch | Free |
+| 60+ countries | Launch | Free |
+| 150+ countries, extra era storylines (for example a 1920s jazz-age arc) | LiveOps | Free countries; Pack storylines |
+
+### Dependencies
+All modules (they read country rules), [[08 Technical Architecture]] (rules service, remote content, validation), [[09 Compliance and Ratings]] (sensitive laws, religion, war, real-person likeness), localisation, [[05 UX and Screen Map]] (country profile and era picker).
+
+### Acceptance criteria
+- Changing country (by emigration) changes laws, taxes, healthcare and justice outcomes correctly in the same year, verified by automated tests per country pair sample.
+- The country profile shows at least 12 key rules in plain language for every playable country.
+- Era-gated content never appears outside its date range across 10,000 simulator lives spread over all start decades.
+- Religion and royalty storylets pass sensitivity review before release, and the religion system can be ignored completely without penalty.
+- Adding a new country requires only a data file and localisation, with no app update.
+
+---
+
+## Cross-module data summary
+
+| Entity | Key fields | Owned by |
+|---|---|---|
+| Life | seed, contentVersion, country, startYear, difficulty, ironman, chapters[], timeline[] | Modules 1, 3 |
+| Character | stats{}, hiddenStats{}, caps{}, traits[], meters{}, conditions[], appearance, record[] | Modules 2, 8, 9 |
+| NPC | id, role, traits[], stats, relationship, memories[≤24], career, assets (light) | Module 3 + social note |
+| Storylet | id, conditions, weight, cooldown, choices[], outcomes, callbacks, contentTags | Module 3 |
+| Callback | storyletId, dueYear(range), chance, sourceFlag | Module 3 |
+| Account | type, balance, rate | Module 6 |
+| Business | industry, meters{}, staff[], products[], equity, valuation | Module 6 |
+| Asset | type, value, condition, upkeep, ownerHistory[] | Module 7 |
+| Will | beneficiaries[], bequests[], trusts[], executor | Module 7 |
+| Case | crimeId, evidence, witnesses[], status, sentence | Module 8 |
+| Country rules | see Module 10 table, with era overrides | Module 10 |
+
+Storage, sync and save-size budgets are in [[08 Technical Architecture]].
+
+---
+
+## BitLife parity checklist
+
+Status key: **Parity** = matches BitLife's documented feature (redesigned UI); **Improved** = same idea, meaningfully better (free where BitLife charges, clearer, deeper); **New** = not documented in BitLife.
+
+| BitLife feature (as documented) | EverLife equivalent | Module | Status |
+|---|---|---|---|
+| Random new life | "Surprise me" one-tap life | 1 | Parity |
+| Custom character builder, saved custom people | Build a life stepper + Cast library | 1 | Improved |
+| Scenario Creator (details undocumented) | Scenario seeds, Daily Seed, shareable codes | 1 | Improved |
+| Same-sex parents (random chance) | Family setup presets incl. two mums/two dads, single parent, foster | 1 | Improved |
+| — | Era/historical start year | 1, 10 | New |
+| — | Starting traits and flaws | 1, 2 | New |
+| Four visible stats (Happiness, Health, Smarts, Looks) | Same four, with numbers, trends and "why" history | 2 | Improved |
+| Hidden stats (Karma, Willpower, Discipline, Fertility, Athleticism, Craziness, Wiliness) behind paid God Mode | Discoverable hidden stats, free to learn; exact edit via Plus | 2 | Improved |
+| — | Charisma, Creativity, Luck, Resilience, Musicality | 2 | New |
+| Relationship bars without numbers | Relationship % with bands and memory reasons | 2 | Improved |
+| — | Customisable HUD (pinned meters) | 2 | New |
+| Age +1 yearly loop with random pop-ups | Age +1 with year summary card and storylet engine | 3 | Improved |
+| Unlimited actions per year | Energy budget (with Classic toggle) | 3 | Improved |
+| — | Optional Seasons time step | 3 | New |
+| — | NPC memory and delayed callbacks | 3 | New |
+| — | Life chapters, chapter goals, Life Timeline | 3 | New |
+| Time Machine (paid per use) | Rewind from timeline (Plus; limited free rewind; never per-use) | 3 | Improved |
+| Primary/secondary school with Grades and Popularity | School hub with explained grades, report cards | 4 | Improved |
+| Cliques | Original cliques with clear entry rules | 4 | Parity |
+| Bullying, cheating, teacher interactions | Same, plus teacher NPCs with memory and support options | 4 | Improved |
+| — | Electives, clubs, sports seasons | 4 | New |
+| Private/boarding school (weakly documented) | Private, boarding, military academy, arts school, homeschooling | 4 | Improved |
+| Community college, dropout, GED (undocumented) | Community college with transfer, dropout, equivalency exam, adult education | 4 | New |
+| University, majors, loans, scholarships | Same, with explained admissions and scholarship types | 4 | Improved |
+| Graduate schools (law, medical, business, dental, pharmacy, nursing, vet) | All of these + PhD, engineering, architecture, film, teaching, in a Pathways table | 4 | Improved |
+| Intelligence-test mini-game | Exams and test scores with decision mode | 4 | Parity |
+| Freelance, part-time, full-time jobs | Same, plus gig platforms, apprenticeships, volunteering | 5 | Improved |
+| Work harder, raise, hours, resign, promotions | Same, with a visible performance meter and explained odds | 5 | Improved |
+| Job interviews | 3-question interview scene with score breakdown | 5 | Improved |
+| Co-workers, bosses, HR reports | Colleagues with memory, unions, strikes | 5 | Improved |
+| Retirement and pension (~20 years) | Employer + state pensions + retirement accounts | 5, 6 | Improved |
+| Special careers as paid job packs / Boss Mode (Actor, Astronaut, Athlete, Business, Organised crime, Musician, Politician, Street Hustler, Model, Dealer) | All free, each with a signature mechanic | 5 | Improved |
+| Secret Agent, Zoo, Movie Director, Ultimate Fighter, Political packs (paid) | Secret agent, Zookeeper, Movie director, Fighter, Politician careers, all free | 5 | Improved |
+| Monk/Nun careers | Clergy career across faiths | 5, 10 | Improved |
+| Military with deployments | Military career with ranks, deployments, draft | 5, 10 | Improved |
+| Police, doctor, lawyer/judge, pilot (regular jobs, weakly documented) | Full ladders with signature mechanics (police academy, case files, surgery scenes) | 5 | Improved |
+| — | Chef, writer, artist, firefighter, comedian, fashion designer, PI, teacher/professor careers with mechanics | 5 | New |
+| Bank balance, net worth | Money screen with cash-flow breakdown | 6 | Improved |
+| — | Budget tiers, credit score, bankruptcy | 6 | New |
+| Taxes (basic) | Country tax tables, accountant, tax evasion | 6 | Improved |
+| Loans and mortgages | Loan types with rates by credit score | 6 | Improved |
+| Business pack (paid, 25 industries) | Free business simulation, 25+ industries, IPO, franchising, inheritable | 6 | Improved |
+| Investor pack (paid): stocks, crypto, bonds, advisor | Free investing with market cycles and explained returns | 6 | Improved |
+| Lottery | Lottery with honest odds and sudden-wealth storylets | 6 | Parity |
+| Casino (blackjack free; Casino pack paid) | All casino games free, opt-in, age-gated, never purchasable | 6 | Improved |
+| Buy houses (cash/mortgage), renovate and flip | Same, with listings, viewings, surveys, bidding | 7 | Improved |
+| Landlord pack (paid) | Free landlord system with tenant NPCs | 7 | Improved |
+| — | Renting as a tenant | 7 | New |
+| — | Home customisation (rooms, styles, effects) | 7 | New |
+| Cars, boats, aircraft with licences | Same, plus depreciation, classics, gifting cars to children, road trips | 7 | Improved |
+| Jewelry (depreciates) | Jewelry plus collectibles with appreciation and authenticity | 7 | Improved |
+| Heirlooms (daily attic mini-game) | Event-found heirlooms with multi-generation owner history | 7 | Improved |
+| Will, estate tax, heirs inherit; minors' assets auctioned | Wills with % splits, bequests, trusts for minors, contests | 7 | Improved |
+| Crimes list (shoplifting to murder, embezzlement) | Expanded crimes list with risk bands and toggles | 8 | Improved |
+| Bank/train robbery (opaque failures) | Heist planner with crew, intel and after-action report | 8 | Improved |
+| Organised crime (paid pack) | Organised-crime career, free, toggle-gated | 5, 8 | Improved |
+| — | Investigation, evidence, cold cases | 8 | New |
+| Trials, sentences (undocumented) | Trial scene, plea deals, lawyer tiers, sentence bands | 8 | New |
+| Appeals with lawyer quality | Appeals by level, pardons | 8 | Improved |
+| Prison jobs, gangs, bribing guards | Prison hub with routines, education, cellmate memory | 8 | Improved |
+| Riot mini-game | "Stand Together" decision-based riot scene | 8 | Improved |
+| Escape maze mini-game | "Night Route" with visible patrols + equal-odds decision mode | 8 | Improved |
+| Parole (undocumented) | Parole hearings with explained decisions | 8 | New |
+| Death penalty | By country data, with appeals and a content toggle | 8, 10 | Improved |
+| Lawsuits (only with a grievance) | Civil lawsuits both ways, with retaliation | 8 | Improved |
+| Doctor, illnesses, STDs | Symptom → diagnosis → treatment journey, chronic conditions | 9 | Improved |
+| Witch doctor | Alternative healer (risky, never a real cure) | 9 | Parity |
+| Rehab, addictions | Addiction model with triggers, relapse and support | 9 | Improved |
+| — | Mental-health system with helpline links | 9 | New |
+| Plastic surgery, salon & spa | Same, with risk transparency and body-image care | 9 | Parity |
+| Mind & Body (gym, library, meditation) | Wellbeing: gym, sports, yoga, meditation, journaling, sleep, diet, fitness meter | 9 | Improved |
+| — | Aging avatar with alt text | 9 | New |
+| Death causes, tombstone | Death screen + funeral + eulogy from memories | 9 | Improved |
+| Surrender (in-story suicide option) | Out-of-character "End this life" with support panel | 9 | Improved |
+| Continue as child; unlimited generations only for paid users | Continue as heir (limited free, unlimited with Plus) with memories and legacy traits | 9 | Improved |
+| Countries and cities | Data-driven countries with profile screens | 10 | Improved |
+| Royalty with Respect meter | Fictional royal houses, duties, succession, abdication | 10 | Improved |
+| Arranged marriage, surrogacy legality, estate tax by country | All family, health, money and justice laws as country data | 10 | Improved |
+| Emigrate (record and money check, illegal fallback) | Visa routes, citizenship, language, extradition rules | 10 | Improved |
+| — | Military draft and alternative service | 10 | New |
+| — | Religion system | 10 | New |
+| — | Era/historical mode | 10 | New |
+| — | Optional AI flavour text (rewording only) | 3 | New |
+| Screen-reader support (repeated regressions) | Accessible-by-default, decision modes for every mini-game | All | Improved |
+
+> [!info] Covered in the companion note
+> Relationships and romance, marriage and divorce, children, adoption/IVF/surrogacy, fame and social media, pets, Activities hub, vacations and nightlife, identity, licences, ribbons/badges and achievements, weekly challenges, editor (God Mode equivalent), Life Recap, family tree and dynasty goals, async social. See [[04 App Breakdown - Social, Meta and Premium]].
+
+---
+
+## Open questions for the client
+
+1. **Energy budget:** keep a per-year action budget (better choices, less spam) or default to unlimited "Classic" actions? Recommend testing both in the Phase 2 prototype.
+2. **Free generations limit:** how many free heir continuations (Proposal: 3 per family line) before Plus? Decision sits in [[06 Monetization and Economy]].
+3. **Free rewind:** one free rewind per life, or none outside Plus? Recommend one, to remove the most-resented BitLife paywall.
+4. **Religion representation:** real traditions with expert review (recommended) or fictional faiths? Budget impact in [[09 Compliance and Ratings]].
+5. **Country scope at MVP:** 25 countries recommended; confirm the list against soft-launch and language markets.
+6. **Murder and drugs defaults:** confirm defaults per age signal and per store rating target ([[09 Compliance and Ratings]]).
+
+## Related notes
+- [[_Concept Brief]] (source of truth)
+- [[04 App Breakdown - Social, Meta and Premium]]
+- [[05 UX and Screen Map]]
+- [[06 Monetization and Economy]]
+- [[08 Technical Architecture]]
+- [[09 Compliance and Ratings]]
