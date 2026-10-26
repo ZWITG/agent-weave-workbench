@@ -54,7 +54,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     L[Live many lives] --> S[Earn Life Titles<br/>+ Milestones]
-    L --> D[Build a dynasty<br/>family tree, crest, goals]
+    L --> D[Build a dynasty<br/>family tree, crest, Ambitions]
     S --> CH[Weekly challenges<br/>seeded scenarios]
     D --> CH
     CH --> SP[Season track<br/>free + premium]
@@ -111,11 +111,11 @@ Push opt-in benchmarks: about 81% on Android and 51% on iOS ([Pushwoosh](https:/
 | **Weekly challenges** | New seeded challenge every **Monday 15:00 UTC**, runs 7 days: a scenario start + 3–5 tasks ("Become a surgeon, adopt twins, never commit a crime"). Reward: 200 Sparks, a unique Milestone, a cosmetic | **Completable with the free base game**. Never needs a Story Pack. Past challenges sit in the Challenge Archive (Sparks, not cash) | Life 3 or day 3 | BitLife players say challenges are "very hard for those who don't have expansion packs" ([Sensor Tower review dump](https://app.sensortower.com/api/ios/apps/1374403536?country=GB)) |
 | **Weekend events** | 2 per month, Fri–Sun. Boosted storylet weights for a theme ("Crime Wave Weekend": heist events ×3, special heist outcomes) + a community counter ("Players solved 1.2M heists") | No paid component. Free reward for participation | Day 3 | Weekend timing peaks ([Sensor Tower Royal Match calendar](https://sensortower.com/blog/what-royal-matchs-calendar-teaches-about-live-ops-in-2026)) |
 | **Seasonal events** | 4 seasons a year, about 13 weeks each. Each has a themed storyline (8 chapters released weekly), a free track (~20 rewards) and a premium track ($4.99, ~30 cosmetics + 2 bonus chapters) | Main storyline free for all. Premium is cosmetic + bonus story only | Life 3 | Half of top-grossing titles used a season pass in 2021, and casual games adopted them ([Sensor Tower](https://sensortower.com/blog/state-of-mobile-game-monetization-2022)). BitLife ended its Seasons/pass system in Aug 2026 ([BitLife What's New](https://bitlifeapp.com/whats-new)), which leaves the format open |
-| **Dynasty goals** | Long goals across generations ("3 generations of doctors", "Family net worth $100M"), plus Legacy Points per [[04 App Breakdown - Social, Meta and Premium]] | Free tier: up to Generation 4 per dynasty, shown clearly. No goal needs more than 3 generations | First heir | Pillar 4 |
+| **Dynasty Ambitions** | Long goals across generations ("3 generations of doctors", "Family net worth $100M"), plus Legacy Points per [[04 App Breakdown - Social, Meta and Premium]] | Free tier: up to Generation 4 per dynasty, shown clearly. No goal needs more than 3 generations | First heir | Pillar 4 |
 | **Life Titles and Milestones** | End-of-life title (one per life) + ~300 Milestones at launch, with locked hints | Hints are always shown (no silent mystery) | Life 1 death | BitLife ribbons drive community decoding ([Gamezebo](https://www.gamezebo.com/walkthroughs/bitlife-guide-how-to-get-the-model-bitizen-ribbon/)) |
 | **Life Recap sharing** | Wrapped-style 9:16 cards + "Try my life" seed | Free | Life 1 death | Wrapped credited with a 21% rise in app downloads ([Idomoo](https://www.idomoo.com/blog/why-spotify-wrapped-works-and-how-you-can-do-it-too/)) |
 | **Friend seeds and async visits** (Phase 5) | Play a friend's seed and compare outcomes; visit a friend's shared life snapshot | Free | Account linked | Change.org multiplayer petition ([Change.org](https://www.change.org/topic/bitlife-en-us)) |
-| **Comeback flow** | After 7+ days away: "While you were away…" a family-news card for the active life, 1 free bonus Rewind, and a summary of new content | No pressure copy | Auto | – |
+| **Comeback flow** | After 7+ days away: "While you were away…" a family-news card for the active life, a small Sparks welcome-back bonus, and a summary of new content | No pressure copy | Auto | – |
 
 ### 3.5 Push notification policy
 
@@ -191,7 +191,6 @@ Tool: **Firebase Remote Config + A/B Testing**, with BigQuery export ([Firebase]
 | T11 | Global | Season premium contents | +2 story chapters vs +4 cosmetics instead | Pass conversion | Free track completion −10% |
 | T12 | Global | Recap share CTA | "Share story" vs "Challenge a friend" (seed) | K-factor proxy: installs from shared links per 1,000 lives | – |
 | T13 | Global | Storylet weighting | Memory-callback weight ×1.0 vs ×1.5 | Lives per user D30, freshness KPI | Session length −5% |
-| T14 | Global | Opt-in Wealth-tab banner (only if net revenue is short of plan) | Off vs on | Ad ARPDAU | **D7 −0.5 pp or rating −0.05 → kill** |
 
 Tests that will **never** run: interstitials, paid streak repair, pay-per-use rewind, countdown offer pop-ups ([[06 Monetization and Economy]] §9).
 

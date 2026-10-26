@@ -14,10 +14,10 @@ updated: 2026-10-26
 > | 2 Prototype | 8 weeks (Nov 2026 – Jan 2027) | 3.0 | **$25K – $60K** | ~$105K |
 > | 3 MVP + Soft launch | ~5 months build + soft-launch start (Jan – Jun 2027) | 4.4 | **$82K – $264K** (labour $60K – $210K) | ~$440K |
 > | 4 Global launch | ~4 months (Jun – Oct 2027) | 9 – 10.5 | **$400K – $700K** | ~$884K – $1.08M |
-> | **Cumulative to launch** | **~11 months** (brief range 9–14) | — | **≈ $0.5M – $1.03M** | **≈ $1.43M – $1.62M** |
+> | **Cumulative to launch** | **~11 months** (brief range 9–14) | — | **≈ $505K – $1.03M** | **≈ $1.43M – $1.62M** |
 > | 5 LiveOps | Ongoing from Oct 2027 | 6 – 8 | **$54K – $90K / month** | ~$136K / month |
 >
-> These figures reconcile with the [[_Concept Brief]]: prototype ~$25–60K, MVP ~$60–150K hybrid up to ~$385K US (labour), full launch ~$0.5–1.1M EE/LatAm and $1.2–2M US, excluding UA. **Writing, not engineering, is the critical path** (§6). UA and marketing budgets are in [[10 Go-to-Market]] §10.
+> These figures are the resolved budget used across the vault ([[_Concept Brief]], resolved decisions 2026-10-26): prototype ~$25–60K; MVP labour ~$60–210K (US reference ~$385K); total to global launch ≈ $505K (low) – $1.03M (high), US team ≈ $1.43–1.62M, excluding UA. **Writing, not engineering, is the critical path** (§6). UA and marketing budgets are in [[10 Go-to-Market]] §10.
 
 Related: [[00 Home]] · [[01 Executive Summary]] · [[08 Technical Architecture]] · [[09 Compliance and Ratings]] · [[12 Risks and KPIs]] · Source: `research_notes/Life sim game phase 1/tech_compliance_budget.md` §6.
 
@@ -111,7 +111,7 @@ FTE = full-time equivalent averaged over the phase. "C" = contract. Rates are in
 | Eastern Europe | ~$50–80/h games, $45–70/h mobile | **$60/h** | same + [Whimsy Games](https://whimsygames.co/blog/complete-guide-to-game-development-outsourcing-costs/) |
 | LatAm | ~$30–70/h | **$50/h** | same |
 | India / South Asia | ~$19–50/h | **$30/h** | same |
-| Hybrid (founder-led, offshore engineers, some roles part-paid or equity) | — | **~$17–43/h effective** *(estimate)* | Matches the brief's "$60–150K hybrid MVP" |
+| Hybrid (founder-led, offshore engineers, some roles part-paid or equity) | — | **~$17–43/h effective** *(estimate)* | Matches the low end of the resolved $60–210K MVP labour range |
 
 Hours: **160 h per FTE-month** (the research's 22 person-months ≈ 3,500 h). Effective cost should also allow for PM, reviews and rework overhead (research note).
 
@@ -158,7 +158,7 @@ Hours: **160 h per FTE-month** (the research's 22 person-months ≈ 3,500 h). Ef
 
 ### 4.5 Cumulative to global launch (excl. UA)
 
-| Scenario | P2 | P3 | P4 | **Total** | Brief range |
+| Scenario | P2 | P3 | P4 | **Total** | Original brief range |
 |---|---|---|---|---|---|
 | Low (hybrid → LatAm) | $25K | $82K | $398K | **≈ $505K** | ~$0.5M (EE/LatAm low) ✅ |
 | High (EE) | $60K | $264K | $701K | **≈ $1.03M** | ~$1.1M (EE/LatAm high) ✅ |

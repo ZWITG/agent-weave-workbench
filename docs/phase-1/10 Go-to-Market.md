@@ -50,7 +50,7 @@ Related: [[_Concept Brief]] · [[01 Executive Summary]] · [[06 Monetization and
 
 ## 2. Pre-launch (T-12 → T-0)
 
-Global launch target: **mid-Oct 2027** (≈ month 12 from Phase 2 start; range 9–14 months, see [[11 Roadmap Team and Budget]]). **"Discord 12 months out" therefore means opening it now, at the start of Phase 2.**
+Global launch target: **12 Oct 2027** (≈ 11 months from the Phase 2 start on 9 Nov 2026; range 9–14 months, see [[11 Roadmap Team and Budget]]). **"Discord 12 months out" therefore means opening it now, at the start of Phase 2.**
 
 | When | Workstream | Actions | Output / KPI *(targets)* |
 |---|---|---|---|
@@ -89,13 +89,13 @@ Global launch target: **mid-Oct 2027** (≈ month 12 from Phase 2 start; range 9
 
 ### 3.3 KPI gates (go / iterate / stop)
 
-All values are **targets** set against GameAnalytics 2026 benchmarks: **median D1 ≈ 22%, D7 < 4%, D30 < 1%; top 10% ≈ 40% / 11–12% / 4%** ([GameDevReports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)). Full framework in [[12 Risks and KPIs]].
+All values are **targets** set against GameAnalytics 2026 benchmarks. The retention gates (35% / 10% / 3.5%) sit below the global-launch targets of **D1 40% / D7 13% / D30 5%** ([[07 Retention and LiveOps]] §2). Benchmarks: **median D1 ≈ 22%, D7 < 4%, D30 < 1%; top 10% ≈ 40% / 11–12% / 4%** ([GameDevReports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)). Full framework in [[12 Risks and KPIs]].
 
 | Metric | 🟢 Go to global | 🟡 Iterate (extend 4–8 weeks) | 🔴 Stop / rethink |
 |---|---|---|---|
-| D1 retention (IE/NL/CA) | ≥ 38% | 30–38% | < 30% |
-| D7 retention | ≥ 11% | 7–11% | < 7% |
-| D30 retention | ≥ 4% | 2.5–4% | < 2.5% |
+| D1 retention (IE/NL/CA) | ≥ 35% | 30–35% | < 30% |
+| D7 retention | ≥ 10% | 7–10% | < 7% |
+| D30 retention | ≥ 3.5% | 2.5–3.5% | < 2.5% |
 | Crash-free users | ≥ 99.5% | 99.0–99.5% | < 99.0% |
 | Payer conversion (D30, Tier-1 geos) | ≥ 2.5% | 1.5–2.5% | < 1.5% |
 | ARPDAU (IAP + ads, Tier-1) | ≥ $0.20 | $0.12–0.20 | < $0.12 |
@@ -115,7 +115,7 @@ All values are **targets** set against GameAnalytics 2026 benchmarks: **median D
 | **Play description** | First 167 chars carry the hook plus "life simulator". Natural keyword density. Feature bullets mirror the messaging pillars |
 | **Icon** | An aging face motif (baby → elder morph) on a distinct palette. A/B test 3 variants via Play experiments and App Store Product Page Optimization. Must not echo BitLife trade dress |
 | **Localisation** | Fully localised metadata and screenshots for ES/PT-BR/DE/FR at global launch, with keyword research per locale. Top games localise into 15+ languages ([Appdrift](https://appdrift.co/top-apps/games)) |
-| **Ratings prompt** | Native in-app review prompt after a **positive peak**: the first life ends with ≥ 1 ribbon/badge, or a recap is shared. Never after a death or a purchase failure |
+| **Ratings prompt** | Native in-app review prompt after a **positive peak**: the first life ends with a Life Title earned, or a recap is shared. Never after a death or a purchase failure |
 | **Custom pages** | iOS Custom Product Pages and Play custom store listings per creative angle (Drama, Dynasty, Fairness, Accessibility), so ad → page messaging matches |
 
 ### 4.1 Screenshot plan
@@ -199,10 +199,10 @@ Cadence: **8–12 new concepts per week** at launch. Kill a concept if IPM is be
 
 | Mechanic | Design | Benchmark / precedent |
 |---|---|---|
-| **Life Recap ("Your Life, Wrapped")** | At death: a 6–8 card 9:16 story sequence (birth → milestones → biggest choice → callback → badge → epitaph), plus a novel stat (e.g. **"Life Archetype"**: *The Lovable Menace*, *The Quiet Tycoon*). One-tap export to TikTok, IG Stories, Snapchat and WhatsApp with an app link and seed | Spotify Wrapped: +21% downloads in the first week of Dec 2020, 2B+ social impressions in 2023, **500M+ shares on day one in 2025 (+41% YoY)**. "Listening Age" was the novel stat ([Idomoo](https://www.idomoo.com/blog/why-spotify-wrapped-works-and-how-you-can-do-it-too/); [RouteNote](https://routenote.com/blog/spotify-wrapped-2025-record-breaking-launch/)) |
+| **Life Recap ("Your Life, Wrapped")** | At death: a 6–8 card 9:16 story sequence (birth → milestones → biggest choice → callback → Life Title → epitaph), plus a novel stat (e.g. **"Life Archetype"**: *The Lovable Menace*, *The Quiet Tycoon*). One-tap export to TikTok, IG Stories, Snapchat and WhatsApp with an app link and seed | Spotify Wrapped: +21% downloads in the first week of Dec 2020, 2B+ social impressions in 2023, **500M+ shares on day one in 2025 (+41% YoY)**. "Listening Age" was the novel stat ([Idomoo](https://www.idomoo.com/blog/why-spotify-wrapped-works-and-how-you-can-do-it-too/); [RouteNote](https://routenote.com/blog/spotify-wrapped-2025-record-breaking-launch/)) |
 | **Scenario seeds** | "Try my life" codes and deep links: the same birth setup and early events (the deterministic engine, [[08 Technical Architecture]] §2.1). The friend's result compares against the sharer's | Mirrors Wrapped's friend-comparison and "Wrapped Party" mechanics ([Thred](https://thred.com/newsletters/its-a-wrapped-analysing-spotifys-gen-z-success/)) |
 | **Weekly challenges** | Every Monday, free for all players (not pack-gated, which answers a BitLife complaint) ([AppleVis](https://applevis.com/comment/98850)). Shareable completion card | BitLife: 6,800+ challenges played and 72M lives a year ([Goodgame](https://goodgamestudios.com/company/press/releases/72-million-virtual-lives-in-one-year-bitlife-impresses-internationally/)) |
-| **Badge decoding** | Secret badges whose conditions players discover and share. Discord channels and Reddit threads form around them | BitLife ribbons spawned Reddit guides ([Gamezebo](https://www.gamezebo.com/walkthroughs/bitlife-guide-how-to-get-the-model-bitizen-ribbon/)) |
+| **Life Title hunting** | Rare Life Titles with hinted (never hidden) conditions that players work out and share. Discord channels and Reddit threads form around them | BitLife ribbons spawned Reddit guides ([Gamezebo](https://www.gamezebo.com/walkthroughs/bitlife-guide-how-to-get-the-model-bitizen-ribbon/)) |
 | **Year-end "EverLife Wrapped"** | Every December, a player's year: lives lived, deaths, dynasties | The Wrapped calendar moment |
 
 **Virality targets (estimates):** share rate ≥ 8% of completed lives, seed-open → install ≥ 15%, K-factor 0.15–0.30 at launch. Tracked via `recap_shared`, `seed_opened` and `install_from_share` ([[08 Technical Architecture]] §7).
@@ -256,7 +256,7 @@ gantt
 |---|---|---|
 | Discord + socials open | Nov 2026 | Name cleared enough for social handles (use a working-title handle if needed) |
 | Pre-registration live | Apr 2027 | Store listing approved, rating questionnaire done |
-| Soft launch W1 | mid-May 2027 | Phase 3 MVP gate ([[11 Roadmap Team and Budget]]) |
+| Soft launch W1 (Philippines) | 17 May 2027 | Phase 3 MVP gate ([[11 Roadmap Team and Budget]]) |
 | Go/No-go | end Aug 2027 | §3.3 gates |
 | **Global launch** | **12 Oct 2027** (range Aug 2027 – Jan 2028) | 5 languages, 3,000+ events, accessibility audit passed |
 

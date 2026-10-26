@@ -140,7 +140,7 @@ Main menu → **New Life** sheet (three doors). Also from the death screen ("New
 | Seeds (code, share, enter), Daily Seed | MVP | Free |
 | Era mode start year | Launch | Free |
 | Cast library (20 slots) | MVP | Free; unlimited slots with Plus |
-| Editing hidden stats and caps at creation | Launch | Plus (editor tools) |
+| Editing hidden stats and caps at creation | Launch | Plus (Destiny Mode) |
 | Curated scenario packs | LiveOps | Free rotation + Pack |
 
 ### Dependencies
@@ -281,7 +281,7 @@ Hub top strip: the four core stats (tap to open **Character sheet**). Character 
 | Relationship % with bands | Proto | Free |
 | Traits (starting + flaws) | MVP | Free |
 | Acquired and legacy traits | Launch | Free |
-| Exact hidden values during a life; editing stats/traits | Launch | Plus (editor tools) |
+| Exact hidden values during a life; editing stats/traits | Launch | Plus (Destiny Mode) |
 | Pinned HUD stats | MVP | Free |
 
 ### Dependencies

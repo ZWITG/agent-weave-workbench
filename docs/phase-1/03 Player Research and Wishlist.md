@@ -82,7 +82,7 @@ The personas are *hypotheses* built from recurring voices in the sources, not su
 | InstLife | Tabbed stats; make art or music and sell it; offline mode ([AppleVis](https://applevis.com/comment/97255)) | Skill-to-income loops; a tabbed stats sheet; offline-first single player |
 | Another Life | Swipe micro-choices; game modes and challenges ([Dot Esports](https://dotesports.com/bitlife/news/best-games-like-bitlife)) | Swipe-to-choose on quick events (with button equivalents for accessibility) |
 | The Sims Mobile | Avatars and home building ([GameSkinny](https://www.gameskinny.com/culture/top-10-best-games-like-bitlife-to-get-your-life-simulator-fix/)) | An avatar that ages; home customisation as cosmetics |
-| Family Life | Idle multi-generation guidance ([Gameluster](https://gameluster.com/?p=32010)) | Dynasty goals across generations |
+| Family Life | Idle multi-generation guidance ([Gameluster](https://gameluster.com/?p=32010)) | Dynasty Ambitions across generations |
 | AI newcomers | NPCs that "remember and hold grudges" ([App Store](https://apps.apple.com/us/app/id6503607456)) | Deterministic NPC memory, with optional AI rewording only |
 
 ## 6. How EverLife answers each pain and request
@@ -103,7 +103,7 @@ The personas are *hypotheses* built from recurring voices in the sources, not su
 | R4 | New systems | Religion; lawsuits with retaliation; deeper homelessness; military and police academy paths | 1 | [[04 App Breakdown - Core Life Systems]] |
 | R5 | Social and diversity | Async social (visit friends' lives, shared challenges); inclusive avatar options; Creator Mode later | 4 | [[04 App Breakdown - Social, Meta and Premium]] |
 | R6 | Accessibility | Full VoiceOver/TalkBack, dynamic type, colour-blind palettes, reduced motion, skippable or alternative minigames | 5 | [[05 UX and Screen Map]] |
-| R7 | Premium powers | Editor tools and rewind in Plus (one-time), never sold per use | 3 | [[06 Monetization and Economy]] |
+| R7 | Premium powers | Destiny Mode (editor) and unlimited Rewind in Plus (one-time); free Rewind 1 per life + 1 per day via opt-in ad; never sold per use | 3 | [[06 Monetization and Economy]] |
 | R8 | Eras, supernatural | Era/historical mode; optional themed scenario packs | 1 | [[07 Retention and LiveOps]] |
 | — | Sharing (rival gap) | Life Recap cards, scenario seeds | 4 | [[10 Go-to-Market]] |
 

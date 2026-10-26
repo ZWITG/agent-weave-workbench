@@ -159,7 +159,7 @@ All toggles live in Settings, are screen-reader labelled ([[05 UX and Screen Map
 | Area | Do | Don't |
 |---|---|---|
 | Name | Clear "EverLife" (or the final name) through USPTO/EUIPO/WIPO trademark and App Store / Play name searches **before any public use** ([[_Concept Brief]]) | Use "Bit-" prefixes or "-Life" constructions confusingly close to BitLife's family (BitLife, DogLife, CatLife) without clearance |
-| Product terms | Original names: e.g. *EverLife Plus*, *Rewind*, *Editor tools*, *Life Badges*, *Story Packs* | Use **Bitizenship, God Mode, Boss Mode, Time Machine, Ribbons, Bitizen** or BitLife's pack names |
+| Product terms | Original names: e.g. *EverLife Plus*, *Destiny Mode*, *Rewind*, *Life Timeline*, *Bond %*, *Life Titles*, *Life Recap*, *Story Packs*, *Season Pass*, *Dynasty Ambitions*, *Wellbeing*, *Sparks* | Use **Bitizenship, God Mode, Boss Mode, Time Machine, Ribbons, Bitizen** or BitLife's pack names |
 | Text | Write every storylet from scratch, with **writer originality attestations** and plagiarism spot-checks (n-gram similarity against public BitLife text, wikis and guides) | Copy, paraphrase or "reword with AI" BitLife event text, death messages or ribbon descriptions |
 | Visual / trade dress | A distinct palette, typography, iconography, card layout, illustrated avatars and an icon that doesn't echo BitLife's | Mimic BitLife's stat-bar colours and layout, emoji-style icon, or screen composition |
 | Store metadata | Generic sub-genre keywords ("life simulator", "life sim", "choices", "story game") | Use competitor trademarks in the keyword field, title or ads (store policy prohibits it; verify the current rule) |

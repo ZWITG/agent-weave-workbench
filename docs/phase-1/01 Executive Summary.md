@@ -41,10 +41,11 @@ EverLife is a text-first life simulator for iOS and Android phones (tablets supp
 
 ## Business model (headline)
 EverLife is free to play, with no loot boxes and no pay-per-use undo. Revenue comes from:
-- **Opt-in rewarded ads**, frequency-capped, never forced mid-story.
-- **EverLife Plus**, a one-time ~$9.99 unlock: no ads, unlimited generations, editor tools, rewind.
+- **Opt-in rewarded ads**, capped (4 per session, 8 per day, 90-second cooldown), never forced mid-story, none in the first life or for 7 days after a purchase.
+- **EverLife Plus**, a one-time ~$9.99 unlock: no ads (ad rewards auto-granted), unlimited generations (free: founder + 3 heirs), Destiny Mode editor, unlimited Rewind (free: 1 per life + 1 per day via ad). A $2.99 No Ads option upgrades to Plus for $6.99.
 - An optional cosmetic and story **Season Pass**, ~$4.99.
 - Small **Story Packs**, ~$2.99–3.99, that add storylines and never lock careers.
+- Cosmetics ($1.99 Welcome Pack, $0.99–1.99 sets) and two bundles ($14.99 Founder's Bundle, $24.99 Complete Collection). The only soft currency, **Sparks**, is earn-only and never sold.
 
 Life Simulator is among the top-earning hybrid-casual subgenres, with US Android ARPU of about $11–15 in Appodeal's 2025 benchmark ([gameindustrylibrary](https://gameindustrylibrary.com/documents/mobile-casual-benchmarks-report-2025)). See [[06 Monetization and Economy]].
 
@@ -52,16 +53,16 @@ Life Simulator is among the top-earning hybrid-casual subgenres, with US Android
 
 | Phase | Duration | Budget estimate | Exit criterion |
 |---|---|---|---|
-| 2 – Prototype | 6–8 weeks | ~$25–60K | Vertical slice (birth to age 30), 150 events, redesigned hub, playtests |
-| 3 – MVP and soft launch | ~5–6 months | ~$60–150K (hybrid team) up to ~$385K (US team) | 1,500+ events, monetisation and analytics live, soft-launch KPIs read |
-| 4 – Global launch | ~9–14 months from start | ~$0.5–1.1M (EE/LatAm team) up to $1.2–2M (US team) | Parity plus "better" features, 5 languages |
+| 2 – Prototype | 8 weeks (9 Nov 2026 – 8 Jan 2027) | ~$25–60K | Vertical slice (birth to age 30), 150 events, redesigned hub, playtests |
+| 3 – MVP and soft launch | ~5 months; soft launch from 17 May 2027 (Philippines, then Ireland/Netherlands, Canada optional) | MVP labour ~$60–210K (US-team reference ~$385K) | 1,500+ events, monetisation and analytics live, soft-launch KPIs read |
+| 4 – Global launch | Target 12 Oct 2027 (~11 months from start; range 9–14) | Total to global launch ≈ $505K (low) – $1.03M (high); US team ≈ $1.43–1.62M | Parity plus "better" features, 5 languages |
 | 5 – LiveOps | Ongoing | Run-rate, set at launch | Seasons, Story Packs, async social, Creator Mode |
 
 > [!warning] Not included
 > These figures exclude user-acquisition spend, which for mobile often exceeds development cost. **Writing, not engineering, is the critical path.** See [[11 Roadmap Team and Budget]].
 
 ## The ask
-1. **Approve Phase 2.** A 6–8 week prototype for ~$25–60K (estimate), with go/no-go playtest gates.
+1. **Approve Phase 2.** A 8-week prototype for ~$25–60K (estimate), with go/no-go playtest gates.
 2. **Confirm three decisions.**
    - Age-rating stance: target Apple 16+ / Google Mature 17+, or fund a softened teen mode.
    - Team model: hybrid/offshore or US.
@@ -72,8 +73,8 @@ Life Simulator is among the top-earning hybrid-casual subgenres, with US Android
 
 | KPI | Target | Benchmark reference |
 |---|---|---|
-| D1 / D7 / D30 retention | ≥35–40% / 10–12% / ≥4% | GameAnalytics 2026: median 22% / ~4% / <1%; top 10% ~40% / 11–12% / ~4% ([gamedevreports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)) |
-| ARPDAU (blended) | $0.15–0.40 | Hybrid-casual range ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor) |
+| D1 / D7 / D30 retention | 40% / 13% / 5% (soft-launch gates 35% / 10% / 3.5%) | GameAnalytics 2026: median 22% / ~4% / <1%; top 10% ~40% / 11–12% / ~4% ([gamedevreports](https://gamedevreports.substack.com/p/gameanalytics-mobile-and-pc-game)) |
+| ARPDAU | ~$0.07 blended global base case; ≥ $0.20 Tier-1 | Hybrid-casual range ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor) |
 | Payer conversion | 2–4% | ~3.5% of mobile gamers spend ([PocketGamer.biz / AppsFlyer](https://www.pocketgamer.biz/comment-and-opinion/64530/best-practices-for-implementing-iap-starter-packs-in-free-to-play-games/entry/1/)) |
 | D30 ROAS / payback | 50–70% / D90–D180 | Casual iOS D30 ROAS average 47% ([Liftoff](https://liftoff.ai/?p=34267)) |
 | Accessibility | 100% of interactive elements screen-reader labelled; a11y QA as a release gate | Internal target |

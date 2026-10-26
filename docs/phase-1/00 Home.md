@@ -39,9 +39,9 @@ tags: [everlife, phase-1, moc]
 ## Phase map
 ```mermaid
 flowchart LR
-  P1[Phase 1<br/>Planning<br/>this vault] --> P2[Phase 2<br/>Prototype<br/>6-8 wks]
-  P2 --> P3[Phase 3<br/>MVP + soft launch<br/>~5-6 months]
-  P3 --> P4[Phase 4<br/>Global launch<br/>~9-14 months from start]
+  P1[Phase 1<br/>Planning<br/>this vault] --> P2[Phase 2<br/>Prototype<br/>9 Nov 2026 - 8 Jan 2027]
+  P2 --> P3[Phase 3<br/>MVP + soft launch<br/>soft launch 17 May 2027]
+  P3 --> P4[Phase 4<br/>Global launch<br/>target 12 Oct 2027]
   P4 --> P5[Phase 5<br/>LiveOps<br/>seasons, packs, social, UGC]
 ```
 

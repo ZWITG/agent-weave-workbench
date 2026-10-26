@@ -24,7 +24,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 | ID | Risk | L | I | Score | Mitigation | Owner | Early-warning trigger |
 |---|---|---|---|---|---|---|---|
 | R1 | **Content throughput below plan.** 1,500 events at MVP and 3,000+ at launch need about 8 net events/writer-day, and that throughput figure is unsourced ([[11 Roadmap Team and Budget]] §6) | 3 | 3 | 🔴 9 | Measure throughput in Phase 2. Templated storylet families. Validator + sim bot. A contract-writer pool of 6–10 people. A scope lever: launch with 2,500 events plus a monthly cadence | Narrative Lead | Throughput < 6/day for 2 consecutive weeks |
-| R2 | **Retention below top-decile** (D1 < 35%, D30 < 3%). Then UA can't pay back: LTV about $2–2.50 against a US iOS CPI of about $2–3 ([monetization research §6](../../research_notes/Life%20sim%20game%20phase%201/monetization_retention.md)) | 2 | 3 | 🔴 6 | FTUE to first wild event in < 60 s. Callback arcs. Weekly challenges. Opt-in push after the first life ends. Soft-launch iteration window. Organic-first GTM | Product Owner | SL cohort D1 < 30% or D7 < 7% |
+| R2 | **Retention below top-decile** (D1 < 35%, D30 < 3.5%, i.e. below the soft-launch gates). Then UA can't pay back: LTV about $2–2.50 against a US iOS CPI of about $2–3 ([monetization research §6](../../research_notes/Life%20sim%20game%20phase%201/monetization_retention.md)) | 2 | 3 | 🔴 6 | FTUE to first wild event in < 60 s. Callback arcs. Weekly challenges. Opt-in push after the first life ends. Soft-launch iteration window. Organic-first GTM | Product Owner | SL cohort D1 < 30% or D7 < 7% |
 | R3 | **Repetition**: players see the same events. This is BitLife's main gameplay criticism ([Mechanics of Magic](https://mechanicsofmagic.com/?p=5062)) | 2 | 3 | 🔴 6 | Cooldowns, `maxPerLife`, salience tiers, memory-biased weights. Sim-bot gate: repeats < 5% per life | Narrative Lead | `storylet_shown` repeat rate > 5% |
 | R4 | **Rating lands at 18+** or the teen audience is cut by the 16+ rating. That hurts virality | 2 | 3 | 🔴 6 | Implied-only sexual content. Gambling sim hidden for under-18. Questionnaire dry-run in Phase 2. Teen profile option in Phase 5 ([[09 Compliance and Ratings]] §2–3) | Producer | Dry-run result is 18+ |
 | R5 | **US age-law non-compliance** (Texas enforceable, Utah private right of action from 31 Dec 2026, Louisiana has no safe harbor) ([Bass Berry](https://www.bassberry.com/news/apps-and-minors-new-compliance-frontiers-and-risks-in-louisiana-utah-and-texas/)) | 2 | 3 | 🔴 6 | Age-signal APIs, IAP ratings, significant-change notices, data deletion. Counsel's quarterly memo | Producer + Counsel | A new statute or ruling. Any store policy notice |
@@ -93,9 +93,9 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 
 | KPI | Target (soft launch → launch) | Median | Top 10% |
 |---|---|---|---|
-| D1 | **Target: 38% → 40%** | ~22% | ~40% |
-| D7 | **Target: 11% → 13%** | < 4% | 11–12% |
-| D30 | **Target: 4% → 5%** | 0.69–0.79% | ~4% |
+| D1 | **Target: 40%** (soft-launch gate ≥ 35%) | ~22% | ~40% |
+| D7 | **Target: 13%** (soft-launch gate ≥ 10%) | < 4% | 11–12% |
+| D30 | **Target: 5%** (soft-launch gate ≥ 3.5%) | 0.69–0.79% | ~4% |
 | D90 | **Target: ≥ 2%** | — | — |
 | Push opt-in (prompt after first life) | **Target:** iOS ≥ 50%, Android ≥ 80% | iOS ~51%, Android ~81% ([Pushwoosh](https://cdc.pushwoosh.com/blog/increase-push-notifications-opt-in)) |
 
@@ -103,7 +103,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 
 | KPI | Target | Benchmark |
 |---|---|---|
-| ARPDAU (IAP + ads, Tier-1) | **Target:** $0.15–0.40 (base $0.25) | Hybrid-casual $0.15–0.50 (vendor) ([Juego](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre)) |
+| ARPDAU (IAP + ads, Tier-1) | **Target:** ≥ $0.20 Tier-1 (blended global base case ~$0.07, see [[06 Monetization and Economy]]) | Hybrid-casual $0.15–0.50 (vendor) ([Juego](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre)) |
 | Payer conversion (D30) | **Target:** 2.5–4% | ~2–3.5% |
 | EverLife Plus attach (of payers) | **Target:** ≥ 60% | Design intent ([[06 Monetization and Economy]]) |
 | ARPPU (D90) | **Target:** $9–14 | Casual D90 ARPPU $7.26 ([gamedevreports](https://gamedevreports.substack.com/p/weekly-gaming-reports-recap-june-e95)) |
@@ -169,7 +169,7 @@ Uses the soft-launch gates in [[10 Go-to-Market]] §3.3 (Tier-1 cohorts):
 
 | Criterion | Go | Iterate (4–8 wk) | Stop / rethink |
 |---|---|---|---|
-| D1 / D7 / D30 | ≥ 38% / ≥ 11% / ≥ 4% | 30–38% / 7–11% / 2.5–4% | < 30% / < 7% / < 2.5% |
+| D1 / D7 / D30 | ≥ 35% / ≥ 10% / ≥ 3.5% | 30–35% / 7–10% / 2.5–3.5% | < 30% / < 7% / < 2.5% |
 | ARPDAU / payer conversion | ≥ $0.20 / ≥ 2.5% | $0.12–0.20 / 1.5–2.5% | < $0.12 / < 1.5% |
 | Recap share rate | ≥ 8% | 4–8% | < 4% |
 | Crash-free / rating | ≥ 99.5% / ≥ 4.5★ | 99.0–99.5% / 4.2–4.5★ | < 99.0% / < 4.2★ |

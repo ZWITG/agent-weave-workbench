@@ -1281,7 +1281,7 @@ flowchart TB
 
 - **Free game is complete:** no career, life system, country, pet species, activity or challenge is paid.
 - **EverLife Plus (one-time, ~$9.99):** no ads at all, unlimited generations, **Destiny Mode** (editor), unlimited **Rewind**, plus convenience (extra save slots, extra profile frames). Includes all future Plus features at no extra cost; the list of what Plus includes is published and versioned.
-- **Rewind is included, never pay-per-use.** Free players get a limited free allowance (proposal below); Plus is unlimited.
+- **Rewind is included, never pay-per-use.** Free players get 1 per life + 1 per day via an opt-in rewarded ad (below); Plus is unlimited.
 - **Season Pass (~$4.99, optional):** cosmetic rewards and bonus storylines on a seasonal track; a **free track** exists for everyone.
 - **Story Packs (~$2.99–3.99):** themed storyline sets and scenario starts. **Never** careers, systems or anything a challenge needs.
 - **Cosmetics:** avatar outfits, card themes, tombstone styles, recap frames, family crest designs, sold at direct prices. **No loot boxes, no paid random rewards, no premium currency.**
@@ -1368,7 +1368,7 @@ flowchart TB
 - **Example:** Leila plays free for 3 weeks, finishes a Gen 4 dynasty and sees "Your dynasty is saved. Plus unlocks unlimited generations, Destiny Mode and unlimited Rewind — $9.99 once." She buys on iPhone; months later she switches to Android, signs in with her account, and Plus is active.
 
 ### UI entry point
-- **Store** (Profile → Store): Plus, Season Pass, Story Packs, Cosmetics, "My purchases", Restore.
+- **Store** (Profile → Store): the 9-product catalogue in [[06 Monetization and Economy]] §2 (Plus, No Ads + Plus Upgrade, Story Packs, Season Pass, Welcome Pack, cosmetic sets, Founder's Bundle, Complete Collection), "My purchases", Restore.
 - **Destiny Mode:** a wand icon on any Person sheet and on the life menu (Plus).
 - **Rewind:** life menu → "Rewind", and on the tombstone ("Rewind to age 34").
 - Natural upsell moments only: free generation cap, Rewind allowance used, a locked Destiny action. No pop-ups at app launch.

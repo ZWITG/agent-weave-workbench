@@ -60,7 +60,7 @@ updated: 2026-10-26
 
 ### Slide 7 — Fair forever: business model (1:00)
 **On screen:** a simple ladder. Free: everything, with opt-in rewarded ads. EverLife Plus ~$9.99 one-time. Season Pass ~$4.99. Story Packs ~$2.99–3.99. "No loot boxes. No per-use rewind. Restore anywhere."
-**Say:** "Fairness is our marketing. The incumbent sells roughly ten separate unlocks up to $20.99 plus per-use rewinds. We sell one clear premium unlock that removes every ad and adds unlimited generations, editor tools and rewind. Seasons and Story Packs add stories; they never lock careers. Ads are opt-in and capped. This model is also built for 2026 regulation: no paid randomness, real-money prices, age-appropriate defaults. Our planning range is $0.15–0.40 ARPDAU with 2–4% payers, and we'll validate that in soft launch." See [[06 Monetization and Economy]].
+**Say:** "Fairness is our marketing. The incumbent sells roughly ten separate unlocks up to $20.99 plus per-use rewinds. We sell one clear premium unlock that removes every ad and adds unlimited generations, Destiny Mode and unlimited Rewind. Seasons and Story Packs add stories; they never lock careers. Ads are opt-in and capped. This model is also built for 2026 regulation: no paid randomness, real-money prices, age-appropriate defaults. Our base case is deliberately modest: about $0.07 blended ARPDAU worldwide, at least $0.20 in Tier-1 markets, with 2–4% payers. That is why growth is organic and creator-led, and soft launch validates it." See [[06 Monetization and Economy]].
 
 ### Slide 8 — Growth: share your story (0:45)
 **On screen:** a 9:16 Life Recap story sequence and a scenario seed code ("Try my life: #EL-7Q2K").
@@ -68,14 +68,14 @@ updated: 2026-10-26
 
 ### Slide 9 — Technology and safety (0:45)
 **On screen:** a simple stack diagram: Flutter client, remote storylet bundles, Firebase, RevenueCat, optional on-device AI.
-**Say:** "We recommend Flutter for the client because it gives us the best built-in screen-reader support for a UI-heavy text game. Content ships as data, so we can add events without app updates. Firebase and RevenueCat handle cloud saves and server-verified purchases, which fixes the lost-purchase problem at the root. AI is optional and on-device first. It only rewords text, never decides outcomes, and players can switch it off." See [[08 Technical Architecture]].
+**Say:** "We recommend Flutter for the client because it gives us the best built-in screen-reader support for a UI-heavy text game. Unity 6 stays the alternative, and we confirm the choice at the end of the Phase 2 prototype. Content ships as data, so we can add events without app updates. Firebase and RevenueCat handle cloud saves and server-verified purchases, which fixes the lost-purchase problem at the root. AI is optional and on-device first. It only rewords text, never decides outcomes, and players can switch it off." See [[08 Technical Architecture]].
 
 ### Slide 10 — Roadmap and budget (1:00)
 **On screen:** a five-phase timeline with budget bands, clearly labelled *estimates*.
-**Say:** "Phase 2 is a 6–8 week prototype for about $25–60K: birth to age 30, 150 events, the new hub, real playtests. Phase 3 is MVP and soft launch in about five to six months, roughly $60–150K with a hybrid team, more with a US team. Global launch lands nine to fourteen months from start at roughly $0.5–1.1M with an Eastern European or Latin American team. These exclude user acquisition. The critical path is writing, not code, so we staff and tool for content throughput." See [[11 Roadmap Team and Budget]].
+**Say:** "Phase 2 is a 8-week prototype for about $25–60K: birth to age 30, 150 events, the new hub, real playtests. Phase 2 runs from 9 November to 8 January. Phase 3 is MVP and soft launch in about five months, with MVP labour of roughly $60–210K, or about $385K with a US team, and soft launch in the Philippines from 17 May 2027, then Ireland and the Netherlands. We target global launch on 12 October 2027, about eleven months from start, at roughly $505K to $1.03M in total, or about $1.4–1.6M with a US team. These exclude user acquisition. The critical path is writing, not code, so we staff and tool for content throughput." See [[11 Roadmap Team and Budget]].
 
 ### Slide 11 — KPIs and risk (0:45)
-**On screen:** target row D1 ≥35–40%, D7 10–12%, D30 ≥4%, payback D90–D180, against benchmark medians of 22% / ~4% / <1%. Top three risks with mitigations.
+**On screen:** target row D1 40% / D7 13% / D30 5% (soft-launch gates 35% / 10% / 3.5%), payback D90–D180, against benchmark medians of 22% / ~4% / <1%. Top three risks with mitigations.
 **Say:** "We're aiming for top-decile retention, which is ambitious and is exactly what the prototype and soft launch test. The three biggest risks are content volume, paid-UA cost and AI perception. Each has a gate. If the prototype doesn't hit its retention and fun bar, we stop or pivot before the big spend." See [[12 Risks and KPIs]].
 
 ### Slide 12 — The ask (0:45)
@@ -98,7 +98,7 @@ Low if we stay disciplined, though it is not zero. Game mechanics and genres are
 *This is general orientation, not legal advice. Budget for counsel is in [[11 Roadmap Team and Budget]].*
 
 **3. Why would players leave a game they've played for years?**
-Many already have: US weekly active users fell from a 2.78M peak (Dec 2023) to about 1.0–1.4M (Q2 2025) on Sensor Tower estimates. The pitch to them is concrete: every career free, nothing locked behind generations, your purchases follow your account, and a story that remembers you. Lapsed players are our win-back persona ([[03 Player Research and Wishlist]]).
+Many already have: US weekly active users fell from a 2.78M peak (Dec 2023) to about 1.0–1.4M (Q2 2025) on Sensor Tower estimates. The pitch to them is concrete: every career free, four generations per dynasty free (unlimited with Plus), your purchases follow your account, and a story that remembers you. Lapsed players are our win-back persona ([[03 Player Research and Wishlist]]).
 
 **4. What if the incumbent copies our features?**
 Some features (recaps, percentages) are easy to copy. The fairness model is not, because matching it would cannibalise a catalogue of roughly ten paid unlocks and packs. Our deeper moat is a content engine built around memory from day one, plus a community and accessibility reputation that takes years to earn.
@@ -123,13 +123,15 @@ Little, if it's done from day one. That's the point. Flutter generates an access
 
 ### Business model
 **9. How do you make money without paywalls?**
-We do have one paywall. It's optional, one-time and honest: **EverLife Plus (~$9.99)** removes every ad and adds unlimited generations, editor tools and rewind. On top of that:
-- **Opt-in rewarded ads.** US rewarded eCPMs run about $12–20.
+We do have one paywall. It's optional, one-time and honest: **EverLife Plus (~$9.99)** removes every ad and adds unlimited generations, Destiny Mode and unlimited Rewind (a $2.99 No Ads option upgrades to Plus for $6.99). On top of that:
+- **Opt-in rewarded ads**, capped at 4 per session and 8 per day. US rewarded eCPMs run about $12–20.
 - A cosmetic and story **Season Pass** (~$4.99).
 - **Story Packs** (~$2.99–3.99) that add storylines and never lock careers.
+- Cosmetics: a $1.99 Welcome Pack and $0.99–1.99 sets. Two bundles of Plus and Story Packs at $14.99 and $24.99.
+- No premium currency. Our only soft currency, Sparks, is earned in play and never sold.
 - **Web-shop link-outs** where allowed, currently 0% Apple fee in the US.
 
-Planning range: $0.15–0.40 ARPDAU and 2–4% payers *(targets to validate)*.
+Base case: ~$0.07 blended global ARPDAU (≥ $0.20 in Tier-1 markets) and 2–4% payers *(estimates to validate; see [[06 Monetization and Economy]])*.
 
 **10. Won't one $9.99 unlock cap our revenue?**
 It caps revenue from the *unlock*, not from the player. Seasons and Story Packs provide recurring spend, and rewarded ads monetise the 96%+ who never pay. A single clear unlock also converts better than a confusing ladder and earns the word of mouth that cuts acquisition cost. We'll A/B test price points in soft launch via remote config.
@@ -145,7 +147,7 @@ Our research found Unity the lowest-risk default for games in general. EverLife,
 - Cheaper hiring from the large app-developer pool.
 - Shorebird for over-the-air patches.
 
-Rendering performance isn't the deciding factor for 2D layered avatars. Unity 6 remains our documented alternative if the client wants heavier 2D animation. See [[08 Technical Architecture]].
+Rendering performance isn't the deciding factor for 2D layered avatars. Unity 6 remains our documented alternative if the client wants heavier 2D animation; the stay-or-switch decision is made at the end of Phase 2 against the spike criteria. See [[08 Technical Architecture]].
 
 **13. What if AI backfires?**
 We designed for that. AI is **optional, off by default for minors, on-device first, and only rewords text**. It never decides outcomes, so the game is fully playable and balanced without it. Every output passes moderation, with an in-app report button, as Google Play requires. We don't headline AI in marketing; we headline memory, which the deterministic engine delivers on its own. The inZOI backlash and the Peridot shutdown are our cautionary examples. Worst case, we switch AI off remotely with no gameplay loss.
@@ -175,7 +177,7 @@ Writing throughput. Thousands of high-quality events is the critical path, not e
 - Remote content delivery, so launch scope can grow after release.
 
 **19. What happens if the prototype doesn't work?**
-That's what Phase 2 is for. For about $25–60K and 6–8 weeks, you get real playtest data on fun, retention signals and UX before committing to the MVP budget. The go/no-go criteria are agreed up front ([[12 Risks and KPIs]]).
+That's what Phase 2 is for. For about $25–60K and 8 weeks, you get real playtest data on fun, retention signals and UX before committing to the MVP budget. The go/no-go criteria are agreed up front ([[12 Risks and KPIs]]).
 
 **20. How do you acquire users if paid UA is expensive?**
 We lead with organic: shareable recaps, scenario seeds, creators and an official Discord. We soft-launch in cheaper markets, then scale paid UA only where LTV exceeds CPI. Casual iOS CPI averages about $1.41 globally, and US casual CPIs are much higher. We plan payback at D90–D180, and UGC-style creative raises install conversion (IPM) by about 152% on average ([Liftoff](https://www.newswire.ca/news-releases/liftoff-s-2025-mobile-ad-creative-index-reveals-ugc-is-a-key-differentiator-for-top-apps-837345804.html)).

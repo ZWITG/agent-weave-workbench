@@ -79,9 +79,9 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S12 | Outcome face | M (same card) | Result and consequences | Outcome text, stat deltas (+3 Smarts ▲), relationship deltas, "Why?" expander, Continue | S11 → S10 or chained S11 |
 | S13 | Year summary | M | Batch of minor events when several fire at once | Collapsible list, one line each, "Open" for detail | Age +1 → S10 |
 | S14 | **Action search / command bar** | M | Do anything fast | Search field, recent, suggested for your age, results grouped (Actions/People/Assets/Settings), locked results with reasons | Bottom pill on any tab → target screen or action |
-| S15 | Category sheet | M | Browse actions by category (the replacement for Activities) | Grid of 8–12 categories (Mind & Body, Romance, Nightlife, Shopping, Travel, Health, Legal, Crime, Faith, Licences, Identity, Social Media), each listing its actions with lock reasons | Hub "All actions" / S14 → action |
+| S15 | Category sheet | M | Browse actions by category (the replacement for Activities) | Grid of 8–12 categories (Wellbeing, Romance, Nightlife, Shopping, Travel, Health, Legal, Crime, Faith, Licences, Identity, Social Media), each listing its actions with lock reasons | Hub "All actions" / S14 → action |
 | S16 | Why-locked sheet | M | Explains a lock | Requirement checklist (✓ Age 18 · ✗ Licence · ✓ $500), "Show me how" (deep link to the step that unlocks it) | Tap any locked item → target |
-| S17 | Rewind | M | Time rewind | Life timeline scrubber by year, "Rewind to age N", remaining rewinds (1 free per life; unlimited with Plus) | Death screen / Me → S10 |
+| S17 | Rewind | M | Time rewind | Life timeline scrubber by year, "Rewind to age N", remaining rewinds (1 free per life + 1 per day via opt-in rewarded ad; unlimited with Plus) | Death screen / Me → S10 |
 
 ### 3.3 People
 
@@ -134,19 +134,19 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S60 | Death | F | The end of a life | Epitaph, cause, age, net worth, Life Title earned, **View Life Recap**, Rewind, Continue as heir | Death event → S61/S17/S62 |
 | S61 | **Life Recap** | F (story pager) | Shareable, Wrapped-style recap | 6–8 vertical 9:16 story cards, share/export, "Try my life" seed code | S60 / S57 → share sheet / S62 |
 | S62 | Heir selection | F | Continue the dynasty | Eligible heirs (children, including adopted), inheritance preview, generation counter (free cap shown clearly) | S60 → S10 (new character) |
-| S63 | Dynasty view | F | Multi-generation family legacy | Generations strip, dynasty goals, family crest, total wealth over time | S05 / S22 |
+| S63 | Dynasty view | F | Multi-generation family legacy | Generations strip, Dynasty Ambitions, family crest, total wealth over time | S05 / S22 |
 
 ### 3.7 Shop, settings and support
 
 | # | Screen | Type | Purpose | Key components | Entry → Exit |
 |---|---|---|---|---|---|
-| S70 | Shop | F | Everything for sale, in real-money prices | EverLife Plus card (exact contents list), Story Packs, Season Pass, cosmetics, Restore Purchases | Me → S70; Death screen secondary link |
+| S70 | Shop | F | Everything for sale, in real-money prices | EverLife Plus card (exact contents list), No Ads (+ Plus Upgrade for No-Ads owners), Story Packs, Season Pass, Welcome Pack, cosmetic sets, Founder's Bundle / Complete Collection, Restore Purchases (catalogue: [[06 Monetization and Economy]] §2) | Me → S70; Death screen secondary link |
 | S71 | Plus details | M | One-time unlock explained | Checklist of contents, "Not included" list, price, "Already own it? Restore" | S70 → OS purchase sheet |
 | S72 | Rewarded ad offer | M | Opt-in ad for a perk | Exact reward, ad length estimate, remaining today (e.g. "3 of 8 left"), No thanks (same size) | Only from explicit "Watch for…" buttons |
 | S73 | Settings | F | App settings | Text size, theme (light/dark/system), motion, haptics, colour-vision mode, left-hand layout, AI flavour text on/off, content filters, notifications, language | Me → S73 |
 | S74 | Notification preferences | F | Push categories | Toggles per category, quiet hours | S73 / after first life ends |
 | S75 | Help and report | F | FAQ, contact, bug report, report AI text | Searchable FAQ, auto-attached log (with consent) | S73 / card overflow menu |
-| S76 | Editor tools (Plus) | F | Edit stats and people ("Destiny Mode", our original name) | Stat sliders incl. revealed hidden stats, NPC editor | Me → S76 (Plus) or S71 |
+| S76 | Destiny Mode (Plus) | F | Edit stats and people (our original name for the editor) | Stat sliders incl. revealed hidden stats, NPC editor | Me → S76 (Plus) or S71 |
 | S77 | Scenario seed share/import | M | Share or play a seeded life | Seed code + QR, preview of the starting conditions | S61 / S06 |
 
 **Total: 60+ screens.** About 15 are needed for the Phase 2 prototype: S01, S05, S06, S10–S16, S20, S21, S30, S50, S57 and S60–S61 (see [[11 Roadmap Team and Budget]]).
@@ -209,7 +209,7 @@ flowchart TD
     ME --> S59[Challenges hub] --> S06
     ME --> S70[Shop] --> S71[Plus details]
     ME --> S73[Settings] --> S08[Account and sync]
-    ME --> S76[Editor tools]
+    ME --> S76[Destiny Mode]
 
     S11 -->|death event| S60[Death]
     S60 --> S61[Life Recap] -->|share| Share([OS share sheet])
@@ -623,7 +623,7 @@ There is a haptics toggle (On / Important only / Off), and the game respects the
 | 13 | House listings don't show amenities such as a pool ([AppleVis](https://www.applevis.com/comment/98871)) | Poor decisions | Structured listing cards with amenities and condition | S43 |
 | 14 | "Passive decision-making", repetitive random events ([Blackscreen Gaming](https://blog.blackscreengaming.com/audio-games/bitlife-review/01/25/2019/)) | Churn after several lives | Memory markers, chapter banners, consequence callbacks linked from the Life Timeline | S11, S57 |
 | 15 | Tombstone summary is static and not shareable | Missed virality | Wrapped-style Life Recap with export and seed codes | S61, S77 |
-| 16 | Pay-per-use undo ([AppleVis](https://www.applevis.com/comment/98823)) | Feels exploitative | 1 free Rewind per life; unlimited with one-time Plus; never sold per use | S17 |
+| 16 | Pay-per-use undo ([AppleVis](https://www.applevis.com/comment/98823)) | Feels exploitative | 1 free Rewind per life + 1 per day via opt-in rewarded ad; unlimited with one-time Plus; never sold per use | S17 |
 
 ---
 

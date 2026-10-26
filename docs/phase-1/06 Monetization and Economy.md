@@ -87,12 +87,12 @@ $24.99 ── Complete Collection                ← top anchor; still < BitLife
 ## 4. Ad policy
 
 > [!important] Rules (non-negotiable, enforced in code and remote config)
-> 1. **Opt-in rewarded video only.** No interstitials, no app-open ads, no auto-playing video. **No banners at launch**; a single bottom banner on the Wealth tab only is a possible A/B test, and only if retention guardrails hold.
+> 1. **Opt-in rewarded video only.** No interstitials, no app-open ads, no auto-playing video. **No banners, ever.**
 > 2. **Never after an action.** No ad plays as a consequence of tapping an action, finishing a year, dying or closing a card. Ads play only after the player taps a button labelled "▶ Watch ad: [exact reward]".
 > 3. **Never after a purchase.** Any purchase (even $0.99) suppresses all ad *offers* for 7 days. No-Ads and Plus suppress them permanently and grant the perks automatically.
 > 4. **Caps:** max **4 rewarded views per session**, **8 per day**, with a **90 s cooldown** between views. The remaining count is shown on every offer ("3 of 8 left today"). No ad offers appear inside a story (storylet, event card, death flow, recap) or an activity; they appear only on the hub between years or on reward screens.
 > 5. **Equal-weight decline.** The "No thanks" button is the same size, in the thumb zone, and labelled for screen readers. There are no hidden close buttons; an academic paper documents games putting ad close controls in unreachable zones ([CMS Conferences](https://openaccess.cms-conferences.org/publications/book/978-1-964867-13-7/article/978-1-964867-13-7_13)).
-> 6. **Content:** ad networks run with age-appropriate settings. No ads for under-16 or unknown-age users that use behavioural targeting (contextual only). Gambling, dating and alcohol ad categories are blocked. See [[09 Compliance and Ratings]].
+> 6. **Content:** ad networks run with age-appropriate settings. No behaviourally targeted ads for under-18 or unknown-age users (contextual only). Gambling, dating and alcohol ad categories are blocked. See [[09 Compliance and Ratings]].
 > 7. **No ads in the FTUE:** none during the first life (no offers before the first death).
 
 **Rewarded placements (what an ad can give):**
@@ -183,7 +183,7 @@ The naive LTV method is for pre-launch; a retention-curve fit replaces it in sof
 > - **Base ARPDAU ($0.066) is below the hybrid-casual range of $0.15–0.50** ([Juego Studio](https://www.juegostudio.com/blog/arpdau-benchmarks-by-game-genre), vendor) and the $0.15–0.40 planning range in our research. This is the cost of no interstitials, no consumables and a one-time unlock. Plus revenue is also **front-loaded**: ARPPU falls as long-tenure payers saturate, which is why packs and seasons matter.
 > - The optimistic case (≈$18.5M/yr gross) is roughly BitLife-scale for the **US alone**. BitLife's US weekly revenue ran about $263K–497K in H1 2025 ([Sensor Tower](https://sensortower.com/blog/2025-q2-unified-top-5-simulator%20games-revenue-us-60416e41241bc16eb8905c2f)), or about $14–26M/yr annualised (est.).
 > - **Naive LTV (base):** with D1/D7/D30 of 40/12/5% we estimate about 8–10 lifetime days by D180 (research inference), so LTV ≈ $0.066 × 9 ≈ **$0.60**. Casual CPI is $1.41 on iOS and $0.14 on Android globally ([Liftoff](https://liftoff.ai/?p=34267)), and about $2–3 for North American iOS ([Segwise](https://segwise.ai/blog/cpi-ipm-roas-benchmarks-optimizing-ad-spend/), secondary). **Paid UA in Tier-1 iOS does not pay back at base ARPDAU.** Growth must be organic and creator-led (Life Recap sharing, seeds, creators; see [[10 Go-to-Market]]), with paid UA only in cheap Android geos or for retargeting until soft-launch LTV beats CPI.
-> - **Levers if soft launch underperforms** (each is A/B tested, never all at once): Plus price $9.99 vs $12.99; Welcome Pack timing; ad cap 8 vs 10/day; a 7-day Plus trial via rewarded ads; Story Pack cadence; the opt-in Wealth-tab banner test. Interstitials and consumable power items are **excluded** (§9).
+> - **Levers if soft launch underperforms** (each is A/B tested, never all at once): Plus price $9.99 vs $12.99; Welcome Pack timing; ad cap 8 vs 10/day; a 7-day Plus trial via rewarded ads; Story Pack cadence. Banners, interstitials and consumable power items are **excluded** (§9).
 
 ---
 
