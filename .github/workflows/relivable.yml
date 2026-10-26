@@ -1,0 +1,73 @@
+name: Relivable game
+
+# Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
+# - tests the engine (including the 500-life simulator run)
+# - publishes the web build to GitHub Pages (play it on any phone)
+# - builds an installable Android APK and attaches it to the
+#   "relivable-prototype" pre-release.
+
+on:
+  push:
+    branches: [relivable-phase-2]
+    paths: ['game/**', '.github/workflows/relivable.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: relivable-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build web
+        run: flutter build web --release --no-web-resources-cdn --base-href "/${{ github.event.repository.name }}/"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: game/build/web
+      - name: Build Android APK
+        run: flutter build apk --release
+      - name: Publish APK to the prototype pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: relivable-prototype
+          name: Relivable prototype (latest build)
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          body: |
+            Latest Relivable Phase 2 prototype, built from ${{ github.sha }}.
+            Play on any phone: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+            Android: download app-release.apk below and open it to install (allow installs from your browser when asked).
+          files: game/build/app/outputs/flutter-apk/app-release.apk
+          fail_on_unmatched_files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
