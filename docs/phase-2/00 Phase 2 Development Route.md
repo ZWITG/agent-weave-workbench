@@ -49,6 +49,6 @@ tags: [relivable, phase-2, roadmap]
 The plan's 11 months assumed a 7–10 person team. With me doing most of the coding and first-draft writing, the realistic target is **about 7–10 months to global launch**, provided you (or a small team) handle content review, art direction, store accounts, legal and playtesting.
 
 ## Decisions needed now
-1. **Design direction:** A Storybook, B Night Feed or C Clean Slate (see the design board).
+1. **Design direction:** pick a **look** (A Storybook, B Night Feed, C Clean Slate) and a **way to play** (Hub with event card, A2 Book pages, B2 Swipe cards, C2 Timeline + bottom sheet). Looks and ways to play can be mixed, for example the Storybook look with swipe cards. All six screens are on the design board.
 2. **Your phone:** Android, iPhone or both (decides whether the APK or TestFlight comes next after the web build).
 3. **Where the web build is hosted:** a private link (recommended for now) or GitHub Pages (needs a public repo or a paid GitHub plan).
