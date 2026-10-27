@@ -3,7 +3,7 @@ title: "05 UX and Screen Map"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [relivable, phase-1, ux, ui, accessibility, screens, ftue]
 ---
 
@@ -44,13 +44,13 @@ Related: [[00 Home]] · [[06 Monetization and Economy]] (shop/paywall screens) �
 
 | Tab | Icon | Contains |
 |---|---|---|
-| **Life** (home) | sun-ring | Life Hub: avatar, stats, the year's feed, suggestions, Age +1 |
+| **Life** (home) | sun-ring | Life Hub: avatar, stats, money, the year's feed (events, this year's news headline, updates from people you know), Age +1 |
 | **People** | two heads | Family, partner, friends, exes, coworkers, pets, family tree |
-| **Path** | signpost | School/university, job/career, business, military/police academy, freelance |
+| **Path** | signpost | Your path card, career ladder, every education option, work actions and the job board, each with lock reasons; later business, military/police academy |
 | **Wealth** | coin-stack | Bank, investing, real estate, vehicles, belongings, home customisation |
-| **Me** | person-badge | Stats detail, traits, life chapters, health, Life Timeline, milestones, challenges, shop, settings |
+| **Me** | person-badge | Stats detail, traits, life chapters, health, Life Timeline, milestones, challenges, "Your world" (family name and history), app version and updates, sound, shop, settings |
 
-**Persistent bottom cluster** (above the tab bar): `[ 🔍 What do you want to do? ]  [ AGE +1 ]`. The Age button is the largest target on screen, at least 64×64 pt, on the right for right-hand use. It mirrors to the left with the **Left-hand layout** setting.
+**Persistent bottom cluster** (above the tab bar): `[ 🔍 What do you want to do? ]  [ AGE +1 ]`. The Age button is the largest target on screen, at least 64×64 pt, on the right for right-hand use. It mirrors to the left with the **Left-hand layout** setting. **Swiping up on the cluster (or tapping its handle) opens the Activities panel (S15)**; Activities is never a separate tab (owner decision, 27 Oct 2026).
 
 ---
 
@@ -81,9 +81,11 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S12 | Outcome face | M (same card) | Result and consequences | Outcome text, stat deltas (+3 Smarts ▲), relationship deltas, "Why?" expander, Continue | S11 → S10 or chained S11 |
 | S13 | Year summary | M | Batch of minor events when several fire at once | Collapsible list, one line each, "Open" for detail | Age +1 → S10 |
 | S14 | **Action search / command bar** | M | Do anything fast | Search field, recent, suggested for your age, results grouped (Actions/People/Assets/Settings), locked results with reasons | Bottom pill on any tab → target screen or action |
-| S15 | Category sheet | M | Browse actions by category (the replacement for Activities) | Grid of 8–12 categories (Wellbeing, Romance, Nightlife, Shopping, Travel, Health, Legal, Crime, Faith, Licences, Identity, Social Media), each listing its actions with lock reasons | Hub "All actions" / S14 → action |
+| S15 | **Activities panel** | M (draggable sheet) | Browse and do activities (the replacement for BitLife's Activities menu) | Opened by swiping up on the bottom cluster. "Suggested for you" (up to 4), a category grid showing how many activities are open, a category page with open items first and locked ones folded behind "Show n locked" (each with its reason), search. Mini-game activities show a game-controller icon | Swipe up / S14 → action → S18 or S19 |
 | S16 | Why-locked sheet | M | Explains a lock | Requirement checklist (✓ Age 18 · ✗ Licence · ✓ $500), "Show me how" (deep link to the step that unlocks it) | Tap any locked item → target |
 | S17 | Rewind | M | Time rewind | Life timeline scrubber by year, "Rewind to age N", remaining rewinds (1 free per life + 1 per day via opt-in rewarded ad; unlimited with Plus) | Death screen / Me → S10 |
+| S18 | **Result pop-up** | M (centred card) | The result of an activity, person interaction or job application | Tone colour and icon, title, outcome text, animated stat / money / Bond chips, "Why" and "Tip" lines, Continue. Replaces toasts and bottom bars for results (owner decision, 27 Oct 2026) | Any action → back where you were |
+| S19 | Mini-game | F | Play some activities as a short game (reps, quiz, timing, cards, memory, reaction) | Instructions, the game, score, "Skip and decide for me" (always a fair middle result), close | S15 → S18 |
 
 ### 3.3 People
 
@@ -100,6 +102,9 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 
 ### 3.4 Path (education and work)
 
+> [!note] Phase 2 prototype
+> S30–S32 are combined into one scrolling Path tab: a Your path card (stage, education with "Year 2 of 4", job, salary), the career ladder with the next step's requirement, Education options, Work actions and the Job board with pay and hiring chance. Locked options fold behind "Show n locked" and always say why ([[04 App Breakdown - Core Life Systems]] Modules 4–5).
+
 | # | Screen | Type | Purpose | Key components | Entry → Exit |
 |---|---|---|---|---|---|
 | S30 | Education | T | School → university → grad school | Current school card, grades %, popularity %, clique, electives (new), teachers (new), study/skip/drop-out actions with consequences | Tab Path → S11 |
@@ -109,6 +114,9 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S34 | Service academies (new) | F | Military / police academy paths | Phase tracker (application, training, assignment), fitness and record requirements | Path → S11 |
 
 ### 3.5 Wealth
+
+> [!note] Phase 2 prototype
+> S40–S44 are combined into one scrolling Wealth tab: net worth with a trend line and the current economy, four totals (cash, savings, investments, debts), a **Last birthday** cash-flow card that adds up exactly, a **next-birthday estimate with an overspend warning**, lifestyle tiers, savings / index fund / debts / personal loan rows (amounts chosen on a slider sheet), and home and vehicle cards with Sell or Move out ([[04 App Breakdown - Core Life Systems]] Modules 6–7).
 
 | # | Screen | Type | Purpose | Key components | Entry → Exit |
 |---|---|---|---|---|---|
@@ -137,6 +145,7 @@ Legend: **M** = modal or sheet, **F** = full screen, **T** = tab root. "Unlock" 
 | S61 | **Life Recap** | F (story pager) | Shareable, Wrapped-style recap | 6–8 vertical 9:16 story cards, share/export, "Try my life" seed code | S60 / S57 → share sheet / S62 |
 | S62 | Heir selection | F | Continue the dynasty | Eligible heirs (children, including adopted), inheritance preview, generation counter "Gen 3 of 4" free / "of 8" with Plus (caps shown clearly) | S60 → S10 (new character) |
 | S63 | Dynasty view | F | Multi-generation family legacy | Generations strip (up to 8), Dynasty Ambitions, family crest, total wealth over time; **Dynasty Recap** when a dynasty completes at Generation 8 | S05 / S22 |
+| S64 | **Newspaper** | F | What is happening in the world and what it means for you | Masthead "The {city} Chronicle", lead story, "What this means for you" (active effects with end years), Business, World, national and local sections, announcements from people you know, From the archive, Names in the news. $2 for adults, free for under-18s, re-read free all year | Activities → News, or tap the headline in the Life feed |
 
 ### 3.7 Shop, settings and support
 
@@ -471,6 +480,9 @@ Push permission is asked after the first memorable life ends, not at launch (see
 ## 7. Visual direction
 
 ### 7.1 Style
+
+> [!important] Phase 2 direction chosen (26 Oct 2026)
+> The owner chose **B "Night Feed"** with the Hub + event card way to play: a dark, chat-style year feed with glowing stat tiles, an age ring around the avatar and money always visible in the header. Prototype tokens: background `#0F1220`, accent blue `#7C9CFF`, accent orange `#FFB86B`, the Sora typeface. The newspaper (S64) deliberately uses a light newsprint page so it feels like an object you picked up. The storybook style and light/dark palettes below stay the reference for illustration and a future light theme.
 - **"Warm storybook, crisp UI."** Flat vector illustration with soft grain for event cards and avatars. The UI chrome stays clean and system-like (rounded 16 dp cards, generous spacing). Flat and minimal styles read well on small screens and are cheap to produce ([Udonis](https://blog.udonis.co/mobile-marketing/mobile-games/mobile-game-art-styles)).
 - An illustrated layer sets us apart from BitLife's text lists, and The Sims Mobile's 2026 shutdown leaves a gap for visual life sims ([SimsCommunity](https://simscommunity.info/2025/10/20/the-sims-mobile-shutting-down/)).
 - Illustration budget: about **120 reusable scene illustrations** for MVP (tagged by context: hospital, school, club, courtroom…) plus about 40 hero illustrations for rare events. Storylets reference scenes by tag (see [[08 Technical Architecture]]).
@@ -631,6 +643,6 @@ There is a haptics toggle (On / Important only / Off), and the game respects the
 
 ## 10. Open UX questions (for Phase 2 playtests)
 1. Swipe-to-choose (Reigns style) as an *optional* input mode, or buttons only? Default is buttons; swipe is behind a setting.
-2. Command bar placement: bottom pill (current) vs a floating button. A/B test in the prototype ([[07 Retention and LiveOps]] §7).
+2. ~~Command bar placement~~ **Decided (27 Oct 2026):** a bottom pill next to Age +1, and swiping it up opens the Activities panel.
 3. How many suggestion cards: 3 vs 5. Test the effect on actions per year and session length.
 4. Whether the Recap auto-plays (for players not using a screen reader) or advances manually.

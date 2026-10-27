@@ -3,7 +3,7 @@ title: "08 Technical Architecture"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [relivable, phase-1, tech, architecture, flutter, firebase, storylets, content-pipeline]
 ---
 
@@ -291,6 +291,7 @@ flowchart LR
 |---|---|
 | **Data model** | Per slot: `profile` (dynasty, unlocked ribbons/achievements, settings) plus `life` (the current character: compressed JSON state, RNG seed and cursor, memory store, NPC table). Past lives become compact **Life Records** (summary, recap data, family-tree node). These are not full states, so dynasties don't bloat ([player complaint: "deletes your save after 4 generations"](https://play.google.com/store/apps/eventdetails/4831791308351315470)) |
 | **World Ledger** | One `world` record per player account (one world, one continuous history, never reset), shared by every life and dynasty: notable people, companies, landmarks, events, name-reputation axes and active world effects (see [[04 App Breakdown - Core Life Systems]], Module 11). Capped at about 250 entries (lower tiers summarised first), synced like a slot, so it stays small |
+| **Phase 2 prototype** | The world is saved under its own key (`relivable.world.v1`), separate from the current life (`relivable.life.v1`), so ending a life never touches the history. It holds the world seed, the year reached, the economy per year, each year's fixed stories, the Ledger of player deeds, family-name axes and earlier notable lives. Saves are JSON in on-device storage (SharedPreferences) and include older-save migrations (for example assets rebuilt from earlier flags) |
 | **Local storage** | SQLite (Drift). A write-ahead journal. Autosave on every Age +1 and on app background. 3 rolling local snapshots |
 | **Identity** | Anonymous Firebase Auth from first launch, so there is no sign-up wall before the fun (FTUE in under 60 s). The player is prompted to link Apple or Google after the first finished life, or at first purchase |
 | **Sync** | A background push after each save once the network is available (debounced to about 30 s). Pull on launch and on sign-in. Firestore doc per slot: `{rev, deviceId, updatedAt, schema, blob(gz, ~50–150 KB est.)}` |
@@ -439,6 +440,20 @@ These are **targets (estimates)**, set for a mid-range reference Android phone (
 | Design | Figma (design tokens exported to Dart theme) | ~$15–45/editor/mo *(estimate)* |
 | Content | Sheets/YAML → custom editor (Phase 3). Ink (inky) for long scenes. Crowdin | See above |
 | Project | Linear/Jira + Notion/Obsidian (this vault) | ~$10/user/mo *(estimate)* |
+
+### 13.1 Prototype distribution and auto-update (decided 27 Oct 2026)
+The owner asked for the game to update itself on phones. The Phase 2 prototype does it without an app store:
+
+| Step | How it works |
+|---|---|
+| Build | Every push to the Phase 2 branch runs analyze, the unit tests (including the 500-life simulator), then the web, Android and Windows builds in GitHub Actions |
+| Signing | Every Android APK is signed with the **same key**, so a new version installs over the old one. The key comes from a repository secret when one is set; otherwise one key is made once and kept in the repository's private Actions cache (never committed). Each build records the key's SHA-256 fingerprint |
+| Version | The build number is the run number (version `0.1.<run>`), stamped into the app at build time |
+| Publish | `Relivable.apk`, `version.json` (build, version, APK link, key fingerprint, notes), `RelivableSetup.exe` and a portable zip go to one rolling **"relivable-latest"** pre-release with a permanent link. `version.json` is uploaded last, so phones never see a version whose APK is missing. The release is never marked "latest", so other apps' updaters in the repository are unaffected |
+| Update | On launch (and when the app returns to the foreground, at most hourly) the Android app reads `version.json`. If there is a newer build, a pop-up offers **Update now**: Android's download manager fetches the APK and the system installer opens (the player confirms, as Android requires). If the signing key ever changed, the pop-up explains that a fresh install is needed instead of failing silently. The Me tab shows the version and a **Check** button |
+| Web | The web build is always the latest version, so it needs no updater |
+
+Before store launch this is replaced by Play and App Store updates; keep Shorebird for hotfixes only (see the table above).
 
 > [!tip] Phase 2 technical spikes (2 weeks inside the prototype)
 > 1. VoiceOver/TalkBack across hub, card, command bar and a Flame avatar (go/no-go for Flutter).

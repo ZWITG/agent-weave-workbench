@@ -3,7 +3,7 @@ title: "04 App Breakdown - Social, Meta and Premium"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [relivable, phase-1, app-breakdown, relationships, family, dynasty, fame, pets, activities, identity, achievements, challenges, social, ugc, premium, ai, accessibility, safety]
 ---
 
@@ -160,6 +160,9 @@ memory:
 1. Age 17: you insult your younger brother Theo in front of his friends (memory: humiliation, intensity 3).
 2. Age 19: you borrow $800 from Theo and never repay (memory: money, intensity 3 → grudge from 2 negatives with heavy weight).
 3. Age 41: Theo is executor of your mother's will. A storylet fires: "Theo hasn't forgotten." Options: apologize and repay (Trust check), argue (lawsuit risk), let it go (you get the smaller share).
+
+### Phase 2 prototype (built 27 Oct 2026)
+- **People live their own lives (owner request):** each birthday, up to two people you are connected to (family, partner, or friends with Bond 40%+, and never people you have cut off) get a small life update in the Life feed with their avatar, for example "Sofia started a vegetable garden. The courgettes are winning." One-off milestones (first job, moving, engagement, wedding, retirement, adopting a pet) happen once. The latest five updates show on the person's card under "What they've been up to", and big ones appear in the newspaper's announcements.
 
 ### UI entry point
 - **People tab** in the bottom navigation (thumb zone). Circles appear as horizontal chips at the top. Each person opens a **Person sheet**: avatar, Bond % and label, facets ("why"), memories timeline ("Things Rosa remembers"), and action cards sorted by relevance.
@@ -835,6 +838,11 @@ flowchart TB
 - **Search** is local and offline (on-device index of action ids, synonyms and translated keywords per locale); works with the screen reader and voice dictation.
 - **Every action has an id and a `locked_reason` template** (age, money, location, licence, relationship, cooldown, content filter, "not in this era").
 - **Example:** A 15-year-old types "drive". Results: "Driver's licence — Locked: you can take the test at 16 in Ireland (in 1 year). Remind me?" and "Driving lessons with Dad — Available".
+
+### Phase 2 prototype (built 27 Oct 2026)
+- **Activities is not a tab (owner request):** swiping up on the bottom search bar opens the Activities panel: "Suggested for you", a category grid with how many activities are open, and a category page where locked items fold behind "Show n locked" with their reasons. Searching still works from the bar. 56 activities in 16 categories, including **News** (buy a newspaper, [[04 App Breakdown - Core Life Systems]] Module 11).
+- **Mini-games (owner request):** seven activities can be played as a short mini-game whose score (0–1) shapes the result: Work out (tap reps), Study harder (quiz), Shoplift and Pickpocket (timing), Casino (cards), Learn an instrument (memory) and Driving lessons (reaction). "Skip and decide for me" always gives a fair middle result (0.6), so mini-games never block progress (accessibility rule).
+- Results appear in a centred pop-up card, not a bottom bar ([[05 UX and Screen Map]] S18).
 
 ### UI entry point
 - **Life hub** (home): feed + contextual cards + Age +1 button in the thumb zone.

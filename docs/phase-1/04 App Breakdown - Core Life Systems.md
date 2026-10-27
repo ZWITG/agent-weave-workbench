@@ -3,7 +3,7 @@ title: "04 App Breakdown - Core Life Systems"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [relivable, phase-1, app-breakdown, game-design, core-systems, parity]
 ---
 
@@ -466,6 +466,12 @@ set_flags: [borrowed_bike_done]
 | 58 | Your father, now frail, asks to move in with you | Yes / Find a care home / Ask a sibling | Caregiving Stress, sibling memories, inheritance attitudes |
 | 76 | A journalist wants to interview you about the event you witnessed at 9 | Tell the truth / Decline | Callback payoff from the childhood flag |
 
+### Phase 2 prototype (built 27 Oct 2026)
+- **Event writing standard (owner request):** an event card is 2–4 sentences (about 30–50 words) that set the scene, who is there and what is at stake; each choice result is 2–3 sentences (about 25–45 words) covering what happened, how people reacted and what lingers. The 40 prototype events average 37 and 34 words (they were 13 and 10).
+- **Results always appear as a centred pop-up**, never a bottom notification bar: event outcomes use the outcome card; activities, person interactions and job applications use a result pop-up (tone colour and icon, title, text, animated stat/money/Bond chips, "Why" and "Tip" lines, Continue). See [[05 UX and Screen Map]] S12 and S18.
+- **Sound and haptics:** an age-up chime, good/bad/neutral result sounds and light haptics, with a Sound toggle on the Me tab.
+- **The Life feed** also shows this year's news headline (tap to read the newspaper, Module 11) and small life updates from people you know ([[04 App Breakdown - Social, Meta and Premium]] §1).
+
 ### UI entry point
 Hub (centre) with the **Age +1** button in the thumb zone; year summary card; the **Timeline** tab; the command bar ("What do you want to do?") for any action ([[05 UX and Screen Map]]).
 
@@ -620,6 +626,10 @@ Make childhood and school a real part of the game rather than years to skip. Sch
 | Age 20 | Your flatmate is selling last year's exam papers | Academic misconduct risk, Karma |
 | Age 26 | Your PhD supervisor takes credit for your discovery | Confront, publish anyway, or a lawsuit storylet |
 
+### Phase 2 prototype (built 27 Oct 2026)
+- The **Path tab lists every education option** with its lock reason: enrol at university (4 years), community college (2 years, associate degree), trade school (2 years, trade certificate), drop out (16–17), the high-school-equivalency exam (Smarts-based pass chance, retakes allowed), leave your course, plus study, ask a teacher, join a club and skip class.
+- Courses **finish after their length** (graduation milestone in the feed). Fees that the player cannot cover become a 5% **student loan**, repaid only once the player earns (Module 6).
+
 ### UI entry point
 **School card** on the hub during school years (tap for the School screen: Classes · Teachers · Cliques · Clubs · Exams). **Pathways** view from the School screen and the Career screen. Admissions and scholarships appear as decision cards at the right ages ([[05 UX and Screen Map]]).
 
@@ -739,6 +749,11 @@ Work is the main way most lives earn money, status and story. Relivable's positi
 - **Career collecting:** completed careers (reached any senior rank) are logged across lives for collection badges (social note).
 - **Workplace Stress** adds to Module 2 Stress. Burnout event if Stress stays above 80 for 2 years: forced leave or a performance drop.
 - **Unemployment:** benefits per country table (for example 40–70% of salary for 6–12 months).
+
+### Phase 2 prototype (built 27 Oct 2026)
+- **Job board on the Path tab (owner request: "the Path tab should show path options"):** 10 careers (retail, food, office, police, electrician, lab technician, nurse, teacher, analyst, developer), each with pay, the education it needs (none, school diploma, trade certificate, associate degree or university degree), a minimum Smarts where relevant and the **hiring chance** shown before applying. Better-paid jobs are more competitive; world news can raise or lower hiring chances (Module 11).
+- **Career ladder:** 4 steps per career (pay ×1.0 / 1.3 / 1.7 / 2.4). "Ask for a promotion" needs 2 years in the current role and shows exactly how long is left; working harder that year improves the odds. Reaching the top step is a notable deed (Module 11).
+- Rejections and failed promotions always list the main reasons and a tip.
 
 ### UI entry point
 Hub **Work card** (job, rank, performance bar, next payday) → **Career screen** (Ladder · Colleagues · Job board · Special careers · Retirement). The command bar ("become an astronaut") jumps to the right requirements view ([[05 UX and Screen Map]]).
@@ -871,6 +886,16 @@ If annual spending exceeds income and savings, the shortfall becomes debt (credi
 | A recession hits and your mortgage rate resets higher | Budget choices, Stress |
 | You win a medium lottery prize and your estranged brother calls the next day | Relationship memories, Karma |
 
+### Phase 2 prototype (built 27 Oct 2026)
+The owner asked for a Wealth tab that works properly. The prototype ships the Proto-priority economy above, with these rules:
+- **Birthday order:** world economy → salary → income tax (0% to $12k, 20% to $50k, 35% above) → living costs by lifestyle → rent and upkeep → debt payments → overspend → savings interest (2%) → index fund return (by economy state) → home and car values → net worth recorded.
+- **Lifestyle tiers:** Frugal / Comfortable / Lavish = $6k / $11k / $22k a year living alone, $2k / $4k / $9k living with family; Happiness −2 / ±0 / +3.
+- **Fair-start rules:** the family covers living costs while you live at home with no income; student loans are repaid only once you earn; under-18s never go into debt (the family covers it).
+- **Warn before, not after:** the Wealth tab shows a next-birthday estimate and a warning when cash will not cover it. Any shortfall becomes credit-card debt at 20% (or a student loan while studying).
+- **Debts:** student loan 5%, mortgage 5% (25-year annuity), personal loan 12% (up to one year's salary, needs a job), credit card 20%; about 20% of a balance is repaid each birthday. Players can pay off any debt early.
+- **The economy belongs to the world** (Boom, Normal, Slowdown, Recession, Crash, Markov chain), so every life living through a year sees the same economy and the same news (Module 11).
+- Acceptance criterion met: the cash-flow breakdown adds up exactly to the change in cash (tested on 1,000 simulated years).
+
 ### UI entry point
 Hub **Money card** (cash, net worth trend) → **Money screen** (Overview · Budget · Accounts and debts · Investments). **Business screen** from the Money screen or the Work card if self-employed. Casino and lottery live in Activities → Leisure (hidden if toggled off) ([[05 UX and Screen Map]]).
 
@@ -991,6 +1016,9 @@ Give players things to own, care about, show off and pass on. Assets connect mon
 | Your daughter passes her driving test and hints about the car in the drive | Gift, loan or refuse; callback when she has a teenager of her own |
 | A storm floods the basement, and you skipped flood insurance | Cost, Stress, a memory with the neighbour who helped |
 | Your late uncle left his vintage motorbike to you, not to his son | Will dispute, family memories |
+
+### Phase 2 prototype (built 27 Oct 2026)
+- Asset cards on the Wealth tab: used car (value falls 15% a year, $1,200 a year to run), rented flat ($9,600 a year, rising with local rent news) and a house bought with a deposit and a 25-year mortgage (value follows the economy, condition falls each year). Cars and houses can be sold (3% agent fee; the mortgage is repaid from the sale); renters can move out.
 
 ### UI entry point
 Hub **Home card** (current home, condition, hosting) → **Assets screen** (Homes · Vehicles · Valuables · Collections · Will). Real-estate listings from the command bar ("buy a house") or the Assets screen ([[05 UX and Screen Map]]).
@@ -1158,6 +1186,9 @@ See [[09 Compliance and Ratings]] for the age-signal rules.
 | Your cellmate is learning to read; you can help | Prison education, Karma, a callback when he becomes a teacher |
 | The landlord you sued five years ago now owns the building where you want to open your shop | Retaliation storyline |
 | A new forensic test reopens the 20-year-old case | Cold-case callback |
+
+### Phase 2 prototype (built 27 Oct 2026)
+- Shoplifting and pickpocketing can be played as a timing mini-game ([[04 App Breakdown - Social, Meta and Premium]] §7). Extra police patrols from world news make getting caught more likely, and an arrest becomes a local news story (Module 11).
 
 ### UI entry point
 Activities → **Crime** (hidden behind the content toggle where off). Arrest, trial, prison and parole appear as full-screen chapter scenes. **Legal** card for lawsuits (also from the command bar: "sue my landlord"). Prison replaces the hub with the **Prison hub** during a sentence ([[05 UX and Screen Map]]).
@@ -1577,6 +1608,16 @@ content_tags: [violence]                        # hidden if the violent-crime to
 - *The podcast (adult):* a true-crime host asks for an interview about your family. Choices: decline, cooperate for a fee, demand they stop. Outcomes shift Infamy and Bond with relatives.
 - *The scholarship:* the foundation your grandmother started offers you a place, if you keep the family's name clean.
 - *The company town:* your ancestor's factory is the city's biggest employer; the union asks you, the heir, to save it.
+
+### Phase 2 prototype (built 27 Oct 2026)
+The owner asked for a world where things happen, a newspaper players can buy to find out what is going on, and memory that carries between lives. The prototype builds the MVP slice plus early Launch pieces:
+- **One world per player, saved separately from the current life.** When a life ends, the next one starts in the year the world has reached, so the history only moves forward and earlier lives become the past.
+- **Yearly news, written once and fixed:** each year gets a world economy story, a world story (science, culture, sport, weather, health, politics), a national story and a local story. Every life that lives through that year in that place reads the same news.
+- **Bounded world effects:** stories can carry small effects that fade after 1–3 years: hiring +8% / −10%, rent +12%, extra policing (+15% chance of being caught), heatwave (Health −1), flu season (Health −2), good mood (Happiness +1/+2). Effects stack but are capped at ±20, as specified above.
+- **The newspaper (Activities → News, or tap the headline in the Life feed):** $2 for adults, free for under-18s (the family's copy), re-read free all year. Masthead "The {city} Chronicle", lead story, **What this means for you** (active effects and end years), Business, World, national and local sections, announcements from people you know (engagements, weddings, retirements, moves), **From the archive** (5, 10, 20 and 30 years ago, plus earlier lives' deeds) and **Names in the news** (family name reputation).
+- **Notable deeds enter the history** (the World Ledger) and the papers: lottery jackpot, opening a restaurant, a start-up payout, an arrest, a family feud in court, reaching the top of a career, becoming a millionaire, and a generous gift that a bakery names a loaf after. Each feeds the family name's Fame / Infamy / Wealth / Philanthropy / Power.
+- **Echo events:** a new life is linked to the most relevant earlier notable life (same surname, then same city, then same country) and can meet it in three events: a teacher recognising the surname, a history-class front page, and an old stranger in town who remembers.
+- **Me tab "Your world" card:** the family name's reputation, the earlier lives and the latest history-book entries.
 
 ### UI entry point
 - **Character card / Dynasty tab:** family name reputation (five axes, plain-language summary).

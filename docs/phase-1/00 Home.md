@@ -3,7 +3,7 @@ title: "00 Home"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [relivable, phase-1, moc]
 ---
 
@@ -32,6 +32,9 @@ tags: [relivable, phase-1, moc]
 | 11 | [[11 Roadmap Team and Budget]] | Phases, team, budget, Phase 2 checklist |
 | 12 | [[12 Risks and KPIs]] | Risk register, KPI framework, stage gates |
 | 13 | [[13 Client Pitch Script and FAQ]] | What to say on each slide and how to answer client questions |
+
+> [!info] Kept up to date during Phase 2
+> The owner's changes from playing the prototype are recorded as decisions 21–32 in [[_Concept Brief]] (with a change log), as "Phase 2 prototype" sections in both App Breakdown notes, in [[05 UX and Screen Map]] and [[08 Technical Architecture]], and as progress in `phase-2/00 Phase 2 Development Route`.
 
 ## Other formats in this phase
 - **Feature matrix spreadsheet:** `Relivable Feature Matrix.xlsx` (every feature, BitLife equivalent, priority, phase, free/Plus, effort)

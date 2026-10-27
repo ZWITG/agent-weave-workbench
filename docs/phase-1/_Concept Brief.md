@@ -3,7 +3,7 @@ title: "Concept Brief"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [relivable, phase-1, brief]
 ---
 
@@ -79,10 +79,32 @@ These resolve conflicts between the Phase 1 notes. Every note follows them.
 19. **Name and codes:** the working title is **Relivable** everywhere; scenario seed codes use the `#RL-` prefix.
 20. **World legacy and history ("Echoes"):** past lives shape **one persistent world per player with one continuous history**, shared by every life and dynasty and never reset. MVP ships family name reputation and history-book (Almanac) mentions; Launch adds the World Ledger, Echo events, bounded world effects, persistent companies and the World Timeline; LiveOps adds cross-dynasty Echoes and visiting friends' world histories. Always free. Spec: [[04 App Breakdown - Core Life Systems]] Module 11.
 
+## Phase 2 decisions (2026-10-26 to 2026-10-27)
+Decisions the owner made while playing the Phase 2 prototype. They extend the list above, and every note follows them.
+
+21. **Look and way to play:** **B "Night Feed"** (dark, chat-style year feed) with the Hub + event card way to play. Money is always visible in the header ([[05 UX and Screen Map]] §7).
+22. **Activities are not a tab:** swiping up on the bottom search bar opens an Activities panel (suggested, categories, search), with locked items folded away and each lock explained. Decision 1 still holds: the search bar stays at the bottom.
+23. **Results are pop-ups:** every activity, interaction and job application shows its result in a centred pop-up card, never a bottom notification bar; events keep the outcome card.
+24. **Mini-games:** some activities can be played as short mini-games whose score shapes the result. "Skip" always gives a fair middle result, so mini-games never block progress.
+25. **The Path tab shows the options:** every education route, work action and job (with pay, requirements and hiring chance) and the career ladder with the next requirement.
+26. **The Wealth tab is a working economy** (prototype scope of Modules 6–7): a yearly cash flow that adds up exactly, a warning before overspending, lifestyle tiers, savings, an index fund that follows the world economy, loans, and asset cards. The family covers living costs while you live at home with no income, student loans are repaid only once you earn, and children never go into debt.
+27. **Sound:** an age-up chime, result sounds and haptics, with a Sound toggle.
+28. **Richer writing:** event cards are 2–4 sentences (about 30–50 words) and choice results 2–3 sentences (about 25–45 words), covering the scene, the people, the stakes, the reaction and what lingers.
+29. **A living world with a newspaper:** each year's world, national and local news is written once and shared by every life. News can have small, fading effects on hiring, rent, policing, health and mood. Players buy a **newspaper** ($2, free for children, re-read free all year) to read the big news, what it means for them, announcements and the archive. This year's headline appears in the Life feed. New lives start in the year the world has reached, so history moves forward and earlier lives become the past (extends decision 20).
+30. **People live their own lives:** family, partners and close friends get small yearly life updates in the Life feed (at most two a year) and on their People card.
+31. **Updates on phones:** the Android app and the Windows installer are published to a permanent "latest build" download. Installed Android copies check for updates on launch and install them in one tap (Android asks the player to confirm). Every Android build is signed with the same key so updates install over the old version. The web version is always current.
+32. **Keep the plan current:** planning notes are updated whenever the owner changes or adds to the game, and each change is logged below.
+
 ## Research sources
 All research notes live in `research_notes/Life sim game phase 1/` and `research_notes/BitLife complete feature guide/`, plus the report `reports/BitLife complete feature guide.md`. Research was gathered through web search (full reports and Reddit could not be reviewed directly), so figures are shown as estimates with sources.
 
 ## Change log
+
+**2026-10-27 (Phase 2, owner requests)**
+- Added Phase 2 decisions 21–32 above. Specs updated: [[05 UX and Screen Map]] (tab contents, Activities panel S15, result pop-up S18, mini-game S19, newspaper S64, Night Feed direction, Path and Wealth prototype layouts), [[04 App Breakdown - Core Life Systems]] (a "Phase 2 prototype" section in Modules 3, 4, 5, 6, 7, 8 and 11), [[04 App Breakdown - Social, Meta and Premium]] (people's life updates in §1; Activities panel and mini-games in §7), [[08 Technical Architecture]] (world save, distribution and auto-update), the feature matrix and the Phase 2 route.
+- **World legacy, prototype delivery:** the newspaper is the main surface for world news, effects and the archive; notable deeds (lottery wins, restaurants, arrests, start-up payouts, family feuds, top jobs, millionaires, generosity) enter the history and feed the family name; three Echo events link new lives to earlier ones by surname, city or country.
+- **Economy rules settled for the prototype:** tax bands, lifestyle costs, debt rates and the fair-start rules are listed in [[04 App Breakdown - Core Life Systems]] Module 6.
+
 
 **2026-10-26**
 - **New feature: World Legacy and History ("Echoes").** Notable past lives (criminals, leaders, tycoons, philanthropists, icons) enter in-game history books, shape the family name's reputation, and leave decaying effects on the economy, policing and landmarks of their world. MVP: name reputation + history-book mentions; Launch: World Ledger, Echo events, world effects; LiveOps: cross-dynasty Echoes and viewing a friend's history. One world per player, one continuous history, never reset. Added to both App Breakdown notes, the parity checklist and the feature matrix.
