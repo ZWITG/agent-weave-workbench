@@ -6,14 +6,18 @@ const _channel = MethodChannel('relivable/updater');
 
 /// Returns a short message for the player, or null when nothing happened.
 Future<String?> shareImage(Uint8List png, String name, String text) async {
-  if (Platform.isAndroid) {
+  if (Platform.isAndroid || Platform.isIOS) {
     try {
       final r = await _channel.invokeMethod<String>('shareImage', {
         'bytes': png,
         'name': name,
         'text': text,
       });
-      return r == 'shared' ? null : 'Saved to your gallery.';
+      return switch (r) {
+        'shared' => null,
+        'error' => 'Could not open the share sheet. Copy it as text instead.',
+        _ => 'Saved to your gallery.',
+      };
     } on PlatformException {
       return 'Sharing is not available on this phone.';
     } on MissingPluginException {

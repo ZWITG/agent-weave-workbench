@@ -8,6 +8,9 @@ name: Relivable game
 #   rolling "relivable-latest" pre-release, which the phone app reads to
 #   update itself (game/lib/updater.dart). It is never marked "latest", so
 #   the desktop app's own updater is unaffected.
+# - builds an unsigned iPhone app (Relivable.ipa) for sideloading, plus an
+#   AltStore/SideStore source (altstore.json) so those stores keep it
+#   updated, and version-ios.json for the in-game update prompt.
 
 on:
   push:
@@ -114,6 +117,7 @@ jobs:
           gh release edit relivable-latest --repo "$REPO" --prerelease --latest=false \
             --title "Relivable 0.1.${{ github.run_number }} (latest build)" \
             --notes "Android: download Relivable.apk and open it to install. Installed copies update themselves.
+          iPhone and iPad: in AltStore or SideStore, add the source https://github.com/$REPO/releases/download/relivable-latest/altstore.json and install Relivable; the store keeps it updated. Or install Relivable.ipa with Sideloadly.
           Windows: download RelivableSetup.exe and run it, or unzip Relivable-portable.zip."
           gh release upload relivable-latest Relivable.apk --repo "$REPO" --clobber
           gh release upload relivable-latest version.json --repo "$REPO" --clobber
@@ -152,3 +156,70 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload relivable-latest windows/installer/Output/RelivableSetup.exe windows/installer/Output/Relivable-portable.zip --repo "${{ github.repository }}" --clobber
+
+  # iOS only installs apps signed for the device, so this IPA is unsigned:
+  # AltStore, SideStore or Sideloadly sign it with the player's own Apple ID
+  # when installing. altstore.json lists each new build so those stores
+  # offer the update; version-ios.json goes up last, as on Android.
+  ios:
+    needs: build
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build iPhone app
+        run: |
+          flutter build ios --release --no-codesign \
+            --build-name=0.1.${{ github.run_number }} --build-number=${{ github.run_number }} \
+            --dart-define=RELIVABLE_BUILD=${{ github.run_number }}
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry Relivable.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-ios-ipa
+          path: game/Relivable.ipa
+      - name: Publish the iPhone update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$REPO/releases/download/relivable-latest"
+          cp web/icons/Icon-512.png relivable-icon.png
+          gh release upload relivable-latest Relivable.ipa relivable-icon.png --repo "$REPO" --clobber
+          notes="$(git log -1 --pretty=%s)"
+          jq -n --arg version "0.1.${{ github.run_number }}" --arg build "${{ github.run_number }}" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg notes "$notes" \
+            --arg ipa "$base/Relivable.ipa" --arg icon "$base/relivable-icon.png" \
+            --arg source "$base/altstore.json" --arg page "https://github.com/$REPO/releases/tag/relivable-latest" \
+            --argjson size "$(stat -f%z Relivable.ipa)" \
+            '{
+              name: "Relivable", identifier: "com.relivable.source", sourceURL: $source,
+              subtitle: "A life simulator where every choice is remembered.",
+              iconURL: $icon, website: $page, tintColor: "#7C9CFF",
+              apps: [{
+                name: "Relivable", bundleIdentifier: "com.relivable.relivable", developerName: "ZWITG",
+                subtitle: "Every choice is remembered.",
+                localizedDescription: "Live a whole life, one year at a time: school, love, work, money, crime, family and the world around you. People remember what you did, and your choices carry on through your children.",
+                iconURL: $icon, tintColor: "#7C9CFF", category: "games",
+                version: $version, versionDate: $date, versionDescription: $notes, downloadURL: $ipa, size: $size,
+                versions: [{version: $version, buildVersion: $build, date: $date,
+                  localizedDescription: $notes, downloadURL: $ipa, size: $size, minOSVersion: "15.0"}],
+                appPermissions: {entitlements: [], privacy: {
+                  NSPhotoLibraryAddUsageDescription: "Relivable saves your Life Recap cards to your photos when you ask it to."}}
+              }],
+              news: []
+            }' > altstore.json
+          jq -n --argjson build ${{ github.run_number }} --arg version "0.1.${{ github.run_number }}" \
+            --arg ipa "$base/Relivable.ipa" --arg notes "$notes" \
+            '{build: $build, version: $version, ipa: $ipa, notes: $notes}' > version-ios.json
+          gh release upload relivable-latest altstore.json --repo "$REPO" --clobber
+          gh release upload relivable-latest version-ios.json --repo "$REPO" --clobber

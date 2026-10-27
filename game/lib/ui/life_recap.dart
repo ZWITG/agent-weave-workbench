@@ -182,11 +182,11 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
                         child: FilledButton.icon(
                           style: orangeButton(),
                           icon: Icon(
-                            _isAndroid
+                            _isPhone
                                 ? Icons.share_rounded
                                 : Icons.download_rounded,
                           ),
-                          label: Text(_isAndroid ? 'Share card' : 'Save card'),
+                          label: Text(_isPhone ? 'Share card' : 'Save card'),
                           onPressed: _busy
                               ? null
                               : () => _save(life, cards, page),
@@ -214,8 +214,11 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
     );
   }
 
-  bool get _isAndroid =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  /// Phones get the share sheet; the web and computers save a file.
+  bool get _isPhone =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
 
   Widget _chip(String label, bool on, RecapPrivacy Function(bool) next) =>
       FilterChip(

@@ -111,6 +111,10 @@ Future<bool> showUpdatePrompt(BuildContext context, UpdateInfo u) async {
   if (!context.mounted) return true;
   final msg = switch (status) {
     'started' => 'Downloading the update. Android will ask you to install it when it is ready.',
+    'store' => 'Tap Update next to Relivable. Your life and settings are kept.',
+    'browser' =>
+      'Download Relivable.ipa and install it with AltStore, SideStore or '
+          'Sideloadly. Your life and settings are kept.',
     'needs_permission' =>
       'Allow Relivable to install apps on the screen that just opened, then '
           'come back and tap Update now again.',
@@ -130,7 +134,7 @@ Future<bool> showUpdatePrompt(BuildContext context, UpdateInfo u) async {
       ],
     ),
   );
-  return status == 'started';
+  return status == 'started' || status == 'store';
 }
 
 /// Me tab card: version and a manual "Check for updates".
@@ -164,7 +168,10 @@ class _VersionCardState extends State<VersionCard> {
     final sub = kIsWeb
         ? 'Web version · always up to date'
         : updatesSupported
-        ? (_status ?? 'Updates arrive automatically when you open the game')
+        ? (_status ??
+              (defaultTargetPlatform == TargetPlatform.iOS
+                  ? 'AltStore or SideStore keeps it updated'
+                  : 'Updates arrive automatically when you open the game'))
         : 'Development build';
     return Material(
       color: NF.surface,
