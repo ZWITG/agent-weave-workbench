@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'engine/actions.dart';
+import 'engine/careers.dart';
 import 'engine/engine.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
@@ -124,9 +125,17 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  ActionResult runAction(GameAction action) {
+  ActionResult applyForJob(Career career) {
     Sound.instance.tap();
-    final r = engine!.runAction(life!, action);
+    final r = engine!.applyForJob(life!, career);
+    _save();
+    notifyListeners();
+    return r;
+  }
+
+  ActionResult runAction(GameAction action, {double? score}) {
+    Sound.instance.tap();
+    final r = engine!.runAction(life!, action, score: score);
     _save();
     notifyListeners();
     return r;

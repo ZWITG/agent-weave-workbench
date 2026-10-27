@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'careers.dart';
 import 'models.dart';
 import 'relationships.dart';
 import 'storylet.dart';
@@ -291,6 +292,8 @@ class GameEngine {
           milestone('You finished secondary school.');
         }
     }
+    final done = graduateIfDone(life);
+    if (done != null) milestone(done);
   }
 
   String _quietYear(Life life, Random rng) {
@@ -307,13 +310,25 @@ class GameEngine {
 
   List<GameAction> get actions => allActions;
 
-  ActionResult runAction(Life life, GameAction action) {
+  /// Runs an activity. [score] (0..1) comes from its mini-game, if played.
+  ActionResult runAction(Life life, GameAction action, {double? score}) {
     final rng = _rngFor(life, action.id.hashCode);
     life.usedActions.add(action.id);
-    final result = action.run(life, rng);
+    final result = score != null && action.scored != null
+        ? action.scored!(life, rng, score.clamp(0, 1))
+        : action.run(life, rng);
     final text = fill(result.text, life);
     life.feed.add(FeedEntry(life.age, text, kind: 'action'));
     return ActionResult(text, result.notes);
+  }
+
+  /// Applies for a job on the Path tab's job board.
+  ActionResult applyForJob(Life life, Career career) {
+    final rng = _rngFor(life, 'apply:${career.id}'.hashCode);
+    final r = applyForCareer(life, career, rng);
+    final text = fill(r.text, life);
+    life.feed.add(FeedEntry(life.age, text, kind: 'action'));
+    return ActionResult(text, r.notes);
   }
 
   // ---------- Person interactions (People tab, action search) ----------

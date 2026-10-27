@@ -5,6 +5,7 @@ import '../engine/models.dart';
 import '../engine/relationships.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'minigames.dart';
 import 'people.dart';
 import 'widgets.dart';
 
@@ -189,7 +190,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         Text('Suggested for you', style: NF.sora(15, weight: FontWeight.w700)),
         const SizedBox(height: 10),
         for (final a in suggested) ...[
-          _row(context, a),
+          actionRow(context, c, a),
           const SizedBox(height: 8),
         ],
         const SizedBox(height: 14),
@@ -280,7 +281,10 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
             style: NF.sora(14, color: NF.muted),
           ),
         ),
-      for (final a in open) ...[_row(context, a), const SizedBox(height: 8)],
+      for (final a in open) ...[
+        actionRow(context, c, a),
+        const SizedBox(height: 8),
+      ],
       if (locked.isNotEmpty) ...[
         const SizedBox(height: 6),
         TextButton.icon(
@@ -294,7 +298,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         ),
         if (_showLocked)
           for (final a in locked) ...[
-            _row(context, a),
+            actionRow(context, c, a),
             const SizedBox(height: 8),
           ],
       ],
@@ -316,7 +320,10 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       ];
     }
     return [
-      for (final a in actions) ...[_row(context, a), const SizedBox(height: 8)],
+      for (final a in actions) ...[
+        actionRow(context, c, a),
+        const SizedBox(height: 8),
+      ],
       if (people.isNotEmpty) ...[
         const SizedBox(height: 8),
         Text('With people', style: NF.sora(15, weight: FontWeight.w700)),
@@ -330,77 +337,6 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   }
 
   // ---------------- Rows ----------------
-
-  /// One clean row: icon, name, one line of detail, and a clear state.
-  Widget _row(BuildContext context, GameAction a) {
-    final lock = a.lockReason(life);
-    final detail = lock ?? (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Free');
-    return Semantics(
-      button: lock == null,
-      label: '${a.label}. $detail',
-      excludeSemantics: true,
-      child: Material(
-        color: lock == null ? NF.surface2 : NF.surface2.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(14),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: lock != null ? null : () => _run(context, a),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: (lock == null ? NF.orange : NF.muted).withValues(
-                      alpha: 0.14,
-                    ),
-                    borderRadius: BorderRadius.circular(11),
-                  ),
-                  child: Icon(
-                    categoryIconFor(a.category),
-                    size: 19,
-                    color: lock == null ? NF.orange : NF.muted,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        a.label,
-                        style: NF.sora(
-                          15,
-                          weight: FontWeight.w600,
-                          color: lock == null ? NF.text : NF.muted,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        detail,
-                        style: NF.sora(
-                          12,
-                          color: lock == null ? NF.muted : NF.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  lock == null
-                      ? Icons.chevron_right_rounded
-                      : Icons.lock_outline_rounded,
-                  color: NF.muted,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _personRow(BuildContext context, Npc n, Interaction i) {
     final lock = i.lockReason(life, n);
@@ -457,21 +393,142 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       ),
     );
   }
+}
 
-  void _run(BuildContext context, GameAction a) {
-    final r = c.runAction(a);
-    Navigator.of(context).pop();
-    showActionResult(context, r);
+SnackBar _resultBar(ActionResult r) => SnackBar(
+  content: Text(r.notes.isEmpty ? r.text : '${r.text}\n${r.notes.join(' · ')}'),
+  duration: const Duration(seconds: 4),
+);
+
+void showActionResult(BuildContext context, ActionResult r) {
+  ScaffoldMessenger.of(context).showSnackBar(_resultBar(r));
+}
+
+/// One clean row: icon, name, one line of detail, and a clear state.
+/// Locked rows stay visible and show their reason in orange.
+class OptionRow extends StatelessWidget {
+  const OptionRow({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.detail,
+    this.locked = false,
+    this.trailing,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String detail;
+  final bool locked;
+  final IconData? trailing;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = locked ? NF.muted : NF.orange;
+    return Semantics(
+      button: !locked,
+      label: '$title. $detail',
+      excludeSemantics: true,
+      child: Material(
+        color: locked ? NF.surface2.withValues(alpha: 0.45) : NF.surface2,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: locked ? null : onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: Icon(icon, size: 19, color: accent),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: NF.sora(
+                          15,
+                          weight: FontWeight.w600,
+                          color: locked ? NF.muted : NF.text,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        detail,
+                        style: NF.sora(
+                          12,
+                          color: locked ? NF.orange : NF.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  locked
+                      ? Icons.lock_outline_rounded
+                      : trailing ?? Icons.chevron_right_rounded,
+                  color: NF.muted,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
-void showActionResult(BuildContext context, ActionResult r) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        r.notes.isEmpty ? r.text : '${r.text}\n${r.notes.join(' · ')}',
-      ),
-      duration: const Duration(seconds: 4),
-    ),
+/// A row for an activity. Tapping plays its mini-game (if it has one),
+/// runs it and shows the result. [closeSheet] pops the Activities sheet.
+Widget actionRow(
+  BuildContext context,
+  GameController c,
+  GameAction a, {
+  bool closeSheet = true,
+}) {
+  final life = c.life!;
+  final lock = a.lockReason(life);
+  final price = a.priceNote ?? (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Free');
+  return OptionRow(
+    icon: categoryIconFor(a.category),
+    title: a.label,
+    detail: lock ?? (a.miniGame != null ? '$price · Mini-game' : price),
+    locked: lock != null,
+    trailing: a.miniGame != null ? Icons.sports_esports_rounded : null,
+    onTap: () => runActionFlow(context, c, a, closeSheet: closeSheet),
   );
+}
+
+Future<void> runActionFlow(
+  BuildContext context,
+  GameController c,
+  GameAction a, {
+  bool closeSheet = true,
+}) async {
+  final nav = Navigator.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  double? score;
+  if (a.miniGame != null) {
+    score = await showMiniGame(
+      context,
+      a.miniGame!,
+      age: c.life!.age,
+      title: a.label,
+    );
+    if (score == null) return; // closed without playing
+  }
+  final r = c.runAction(a, score: score);
+  if (closeSheet) nav.pop();
+  messenger.showSnackBar(_resultBar(r));
 }

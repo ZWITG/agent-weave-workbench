@@ -238,10 +238,16 @@ class Effects {
             );
       npc.remember(mem);
     });
-    if (education != null) life.education = education!;
+    if (education != null) {
+      life.education = education!;
+      life.eduSince = life.age;
+    }
     if (job != null) {
       life.job = job == 'none' ? null : job;
       life.salary = salary ?? 0;
+      life.careerId = null;
+      life.careerRank = 0;
+      life.jobSince = life.age;
     }
     return notes;
   }

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'careers.dart';
+import 'minigame_rules.dart';
 import 'models.dart';
 
 /// The expanded Activities set: the genre's Activities menu (gym, doctor,
@@ -302,7 +304,7 @@ final moreActions = <GameAction>[
     extraCheck: (life) =>
         life.education == 'primary' ||
             life.education == 'secondary' ||
-            life.education == 'university'
+            studying(life)
         ? null
         : 'Only while in school',
     run: (life, rng) => statChange(
@@ -438,6 +440,8 @@ final moreActions = <GameAction>[
   ),
   GameAction(
     id: 'casino',
+    miniGame: 'cards',
+    scored: casinoScored,
     label: 'Play blackjack at the casino',
     category: 'Money',
     keywords: ['casino', 'blackjack', 'gamble', 'bet', 'cards'],
@@ -566,6 +570,8 @@ final moreActions = <GameAction>[
   // ---------- Hobbies ----------
   GameAction(
     id: 'instrument',
+    miniGame: 'memory',
+    scored: instrumentScored,
     label: 'Practise an instrument',
     category: 'Hobbies',
     keywords: [
@@ -661,6 +667,8 @@ final moreActions = <GameAction>[
   // ---------- Licences ----------
   GameAction(
     id: 'driving_lessons',
+    miniGame: 'reaction',
+    scored: drivingScored,
     label: 'Take driving lessons',
     category: 'Licences',
     keywords: ['driving', 'licence', 'license', 'drive', 'test', 'car'],
@@ -703,6 +711,8 @@ final moreActions = <GameAction>[
   // ---------- Crime ----------
   GameAction(
     id: 'pickpocket',
+    miniGame: 'timing',
+    scored: pickpocketScored,
     label: 'Pickpocket a stranger',
     category: 'Crime',
     keywords: ['pickpocket', 'steal', 'wallet', 'crime'],

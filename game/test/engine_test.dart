@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/relationships.dart';
@@ -191,5 +192,74 @@ void main() {
     );
     final favour = interactions.firstWhere((i) => i.id == 'ask_favour');
     expect(favour.lockReason(life, dad), contains('still resents'));
+  });
+
+  test('mini-game activities resolve at any score and keep stats in range', () {
+    final games = engine.actions.where((a) => a.miniGame != null).toList();
+    expect(games.length, greaterThanOrEqualTo(5));
+    for (final a in games) {
+      expect(a.scored, isNotNull, reason: a.id);
+      for (final score in [0.0, 0.6, 1.0]) {
+        final life = engine.newLife(seed: 21)
+          ..age = 30
+          ..money = 5000;
+        final r = engine.runAction(life, a, score: score);
+        expect(r.text, isNotEmpty);
+        for (final v in life.stats.values.values) {
+          expect(v, inInclusiveRange(0, 100));
+        }
+      }
+    }
+  });
+
+  test('university finishes after four years and opens degree jobs', () {
+    final life = engine.newLife(seed: 31)..age = 18;
+    life.education = 'high school graduate';
+    final nurse = careerById('nurse')!;
+    expect(nurse.lockReason(life), contains('University degree'));
+    final enrol = engine.actions.firstWhere((a) => a.id == 'enrol_university');
+    expect(enrol.lockReason(life), isNull);
+    engine.runAction(life, enrol);
+    expect(courseProgress(life), 'Year 1 of 4');
+    for (var i = 0; i < 4; i++) {
+      engine.ageUp(life);
+    }
+    expect(life.education, 'graduate');
+    life.stats.values['smarts'] = 80;
+    expect(nurse.lockReason(life), isNull);
+  });
+
+  test('career ladder: promotion needs time in role and says why', () {
+    final life = engine.newLife(seed: 32)..age = 20;
+    startCareer(life, careerById('retail')!);
+    final promo = engine.actions.firstWhere((a) => a.id == 'ask_promotion');
+    expect(promo.lockReason(life), 'Needs 2 more years in role');
+    life.age += 2;
+    expect(promo.lockReason(life), isNull);
+    life.stats.values['discipline'] = 100;
+    life.stats.values['smarts'] = 100;
+    var tries = 0;
+    while (life.careerRank == 0 && tries++ < 20) {
+      life.usedActions.clear();
+      engine.runAction(life, promo);
+      life.age++; // the roll is seeded per year
+    }
+    expect(life.careerRank, 1);
+    expect(life.job, 'Shift supervisor');
+    expect(life.salary, careerById('retail')!.salaryAt(1));
+  });
+
+  test('every job on the board is reachable by some education path', () {
+    for (final c in careers) {
+      final life = engine.newLife(seed: 33)..age = 25;
+      life.stats.values['smarts'] = 90;
+      life.education = switch (c.needs) {
+        'trade' => 'trade certificate',
+        'associate' => 'associate degree',
+        'degree' => 'graduate',
+        _ => 'high school graduate',
+      };
+      expect(c.lockReason(life), isNull, reason: c.id);
+    }
   });
 }

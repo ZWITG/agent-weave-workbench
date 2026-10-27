@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'careers.dart';
+import 'minigame_rules.dart';
 import 'models.dart';
 import 'more_actions.dart';
 
@@ -22,6 +24,9 @@ class GameAction {
     this.maxAge = 120,
     this.cost = 0,
     this.extraCheck,
+    this.miniGame,
+    this.scored,
+    this.priceNote,
   });
 
   final String id;
@@ -35,6 +40,16 @@ class GameAction {
 
   /// Returns a reason when the action is locked for another reason.
   final String? Function(Life life)? extraCheck;
+
+  /// Optional mini-game id (reps, quiz, timing, cards, reaction, memory).
+  final String? miniGame;
+
+  /// Outcome when played as a mini-game; [score] is 0..1.
+  final ActionResult Function(Life life, Random rng, double score)? scored;
+
+  /// Shown instead of "Free" when the price is paid inside [run]
+  /// (for example course fees that may go on a loan).
+  final String? priceNote;
 
   /// Null when the action can be used now, otherwise the reason it can't.
   String? lockReason(Life life) {
@@ -70,13 +85,15 @@ ActionResult statChange(Life life, String text, Map<String, int> deltas) {
 String? _inSchool(Life life) =>
     life.education == 'primary' ||
         life.education == 'secondary' ||
-        life.education == 'university'
+        studying(life)
     ? null
     : 'Only while in school';
 
 final _baseActions = <GameAction>[
   GameAction(
     id: 'study',
+    miniGame: 'quiz',
+    scored: studyScored,
     label: 'Study harder',
     category: 'School',
     keywords: ['study', 'homework', 'school', 'grades', 'learn'],
@@ -102,6 +119,8 @@ final _baseActions = <GameAction>[
   ),
   GameAction(
     id: 'gym',
+    miniGame: 'reps',
+    scored: gymScored,
     label: 'Work out',
     category: 'Wellbeing',
     keywords: ['gym', 'exercise', 'run', 'sport', 'fitness', 'workout'],
@@ -169,38 +188,15 @@ final _baseActions = <GameAction>[
     category: 'Work',
     keywords: ['job', 'work', 'career', 'apply', 'employment', 'hire'],
     minAge: 18,
-    extraCheck: (life) =>
-        life.education == 'university' ? 'Finish university first' : null,
+    extraCheck: (life) => studying(life) ? 'Finish your course first' : null,
     run: (life, rng) {
-      final smart = life.stats['smarts'];
-      final degree = life.education == 'graduate';
-      final options = degree
-          ? [
-              'Junior analyst',
-              'Teacher',
-              'Nurse',
-              'Software developer',
-              'Sous-chef',
-            ]
-          : [
-              'Line cook',
-              'Warehouse worker',
-              'Receptionist',
-              'Barista',
-              'Delivery driver',
-            ];
-      final chance = 45 + smart ~/ 2 + (degree ? 10 : 0);
-      if (rng.nextInt(100) < chance) {
-        final job = options[rng.nextInt(options.length)];
-        life.job = job;
-        life.salary = (degree ? 32000 : 21000) + rng.nextInt(9000);
-        return ActionResult('You were hired as a $job!', [
-          'Salary \$${life.salary}/year',
+      final open = careers.where((c) => c.lockReason(life) == null).toList();
+      if (open.isEmpty) {
+        return ActionResult('There were no openings you qualify for.', [
+          'See the job board on the Path tab',
         ]);
       }
-      return ActionResult('You applied, interviewed, and heard nothing back.', [
-        'Why: Smarts ${life.stats['smarts']}${degree ? '' : ', no degree'}',
-      ]);
+      return applyForCareer(life, open[rng.nextInt(open.length)], rng);
     },
   ),
   GameAction(
@@ -214,6 +210,8 @@ final _baseActions = <GameAction>[
       final old = life.job;
       life.job = null;
       life.salary = 0;
+      life.careerId = null;
+      life.careerRank = 0;
       return statChange(life, 'You quit your job as $old.', {'happiness': 3});
     },
   ),
@@ -238,6 +236,8 @@ final _baseActions = <GameAction>[
   ),
   GameAction(
     id: 'shoplift',
+    miniGame: 'timing',
+    scored: shopliftScored,
     label: 'Shoplift',
     category: 'Crime',
     keywords: ['steal', 'shoplift', 'crime', 'theft'],
@@ -295,4 +295,9 @@ final _baseActions = <GameAction>[
 ];
 
 /// Every action in the game: the starter set plus the expanded activities.
-final allActions = <GameAction>[..._baseActions, ...moreActions];
+final allActions = <GameAction>[
+  ..._baseActions,
+  ...moreActions,
+  ...educationActions,
+  ...careerActions,
+];

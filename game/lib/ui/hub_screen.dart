@@ -7,6 +7,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'outcome_card.dart';
+import 'path_tab.dart';
 import 'people.dart';
 import 'widgets.dart';
 
@@ -29,7 +30,7 @@ class _HubScreenState extends State<HubScreen> {
     final tabs = [
       _LifeTab(controller: c),
       PeopleTab(controller: c),
-      _PathTab(life: life),
+      PathTab(controller: c),
       _WealthTab(life: life),
       _MeTab(controller: c),
     ];
@@ -626,38 +627,6 @@ class _EventCard extends StatelessWidget {
   }
 }
 
-// ---------------- Path tab ----------------
-
-class _PathTab extends StatelessWidget {
-  const _PathTab({required this.life});
-  final Life life;
-
-  @override
-  Widget build(BuildContext context) {
-    final rows = <(String, String)>[
-      ('Life stage', life.stage),
-      ('Education', _cap(life.education)),
-      ('Job', life.job ?? 'None'),
-      ('Salary', life.salary > 0 ? '\$${life.salary}/year' : '—'),
-    ];
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-      children: [
-        const SectionLabel('Your path'),
-        const SizedBox(height: 10),
-        NFCard(
-          child: Column(children: [for (final r in rows) _kv(r.$1, r.$2)]),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Find jobs, school actions and more with the search bar.',
-          style: NF.sora(13, color: NF.muted),
-        ),
-      ],
-    );
-  }
-}
-
 // ---------------- Wealth tab ----------------
 
 class _WealthTab extends StatelessWidget {
@@ -795,17 +764,5 @@ class _MeTab extends StatelessWidget {
     );
   }
 }
-
-Widget _kv(String k, String v) => Padding(
-  padding: const EdgeInsets.symmetric(vertical: 8),
-  child: Row(
-    children: [
-      Expanded(
-        child: Text(k, style: NF.sora(14, color: NF.muted)),
-      ),
-      Text(v, style: NF.sora(14, weight: FontWeight.w600)),
-    ],
-  ),
-);
 
 String _cap(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);

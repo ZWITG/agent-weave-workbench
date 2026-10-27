@@ -323,6 +323,10 @@ class Life {
     this.education = 'none',
     this.job,
     this.salary = 0,
+    this.careerId,
+    this.careerRank = 0,
+    this.jobSince = 0,
+    this.eduSince = 0,
     List<FeedEntry>? feed,
     Map<String, Memory>? flags,
     Map<String, int>? lastSeen,
@@ -350,6 +354,14 @@ class Life {
   String education;
   String? job;
   int salary;
+
+  /// Career on the job board (careers.dart) and the step on its ladder.
+  String? careerId;
+  int careerRank;
+
+  /// Age the current role / course started (promotions and graduation).
+  int jobSince;
+  int eduSince;
   final List<FeedEntry> feed;
   final Map<String, Memory> flags;
 
@@ -399,6 +411,10 @@ class Life {
     'education': education,
     'job': job,
     'salary': salary,
+    'careerId': careerId,
+    'careerRank': careerRank,
+    'jobSince': jobSince,
+    'eduSince': eduSince,
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -425,6 +441,10 @@ class Life {
     education: j['education'],
     job: j['job'],
     salary: j['salary'] ?? 0,
+    careerId: j['careerId'],
+    careerRank: j['careerRank'] ?? 0,
+    jobSince: j['jobSince'] ?? 0,
+    eduSince: j['eduSince'] ?? 0,
     feed: (j['feed'] as List)
         .map((f) => FeedEntry.fromJson(Map<String, dynamic>.from(f)))
         .toList(),
