@@ -70,7 +70,7 @@ class OutcomeCard extends StatelessWidget {
               children: [
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.4, end: 1),
-                  duration: const Duration(milliseconds: 500),
+                  duration: motion(context, const Duration(milliseconds: 500)),
                   curve: Curves.elasticOut,
                   builder: (_, v, child) =>
                       Transform.scale(scale: v, child: child),
@@ -174,7 +174,7 @@ class _DeltaChip extends StatelessWidget {
         : '${up ? '+' : '−'}${delta.abs()}';
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
-      duration: Duration(milliseconds: 350 + index * 140),
+      duration: motion(context, Duration(milliseconds: 350 + index * 140)),
       curve: Curves.easeOutBack,
       builder: (_, v, child) => Opacity(
         opacity: v.clamp(0, 1),

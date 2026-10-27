@@ -5,10 +5,12 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/economy.dart';
+import 'package:relivable/engine/lifespan.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/npc_life.dart';
 import 'package:relivable/engine/relationships.dart';
+import 'package:relivable/engine/scenes.dart';
 import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/world.dart';
 
@@ -19,19 +21,21 @@ List<Storylet> loadStorylets() {
       .toList();
 }
 
-/// Plays a whole life (birth to the slice end) choosing at random.
+/// Plays a whole life (birth to death) choosing at random, like a player
+/// who only picks choices that are open.
 Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
   final rng = Random(seed);
   final life = engine.newLife(seed: seed);
   while (life.alive && life.age < sliceEndAge) {
-    final event = engine.ageUp(life);
-    if (event != null) {
+    var event = engine.ageUp(life);
+    while (event != null) {
       fired[event.id] = (fired[event.id] ?? 0) + 1;
-      engine.choose(
-        life,
-        event,
-        event.choices[rng.nextInt(event.choices.length)],
-      );
+      final open = event.choices
+          .where((c) => c.lockReason(life) == null)
+          .toList();
+      if (open.isEmpty) break;
+      engine.choose(life, event, open[rng.nextInt(open.length)]);
+      event = engine.nextScene(life);
     }
     final open = engine.actions
         .where((a) => a.lockReason(life) == null)
@@ -378,5 +382,78 @@ void main() {
     expect(paper.lockReason(life), isNull);
     engine.runAction(life, paper);
     expect(life.money, 8);
+  });
+
+  test('lives run to a natural end at believable ages', () {
+    final ages = <int>[];
+    for (var seed = 600; seed < 700; seed++) {
+      final life = simulate(engine, seed, {});
+      expect(life.alive, isFalse);
+      expect(life.causeOfDeath, isNotNull);
+      ages.add(life.age);
+    }
+    ages.sort();
+    final median = ages[ages.length ~/ 2];
+    expect(
+      median,
+      inInclusiveRange(55, 100),
+      reason: 'median age at death $median',
+    );
+  });
+
+  test('death risk rises with age and falls with good health', () {
+    final life = engine.newLife(seed: 61);
+    life.stats.values['health'] = 50;
+    life.age = 30;
+    final young = deathChance(life);
+    life.age = 85;
+    final old = deathChance(life);
+    expect(old, greaterThan(young * 50));
+    life.stats.values['health'] = 95;
+    expect(deathChance(life), lessThan(old));
+  });
+
+  test('retiring pays a pension every birthday', () {
+    final life = engine.newLife(seed: 62)..age = 64;
+    startCareer(life, careerById('teacher')!);
+    life.yearsWorked = 30;
+    retire(life);
+    expect(life.pension, greaterThan(statePension));
+    final before = life.money;
+    yearlyMoney(life, Random(1));
+    expect(life.lastYear.any((l) => l.$1 == 'Pension'), isTrue);
+    expect(life.money, isNot(before));
+  });
+
+  test('seed codes round-trip and the same seed gives the same start', () {
+    for (final seed in [1, 42, 123456789, 0x7ffffffe]) {
+      expect(parseSeedCode(seedCode(seed)), seed);
+    }
+    final a = engine.newLife(seed: 777, startYear: 2026);
+    final b = engine.newLife(seed: 777, startYear: 2026);
+    expect(a.fullName, b.fullName);
+    expect(a.city, b.city);
+    expect(parseSeedCode('not a code!'), isNull);
+  });
+
+  test('scenes: illness choices run, lock and log why stats changed', () {
+    final life = engine.newLife(seed: 63)..age = 30;
+    life.money = 0;
+    final scene = buildScene('illness:flu', life)!;
+    expect(scene.choices.first.lockReason(life), contains('Needs'));
+    final rest = scene.choices.firstWhere((c) => c.label == 'Rest at home');
+    final out = engine.choose(life, scene, rest);
+    expect(out.text, isNotEmpty);
+    life.stats.add('health', -5);
+    expect(life.statLog.last.stat, 'health');
+  });
+
+  test('energy limits activities unless Classic mode is on', () {
+    final life = engine.newLife(seed: 64)..age = 20;
+    life.energy = 0;
+    final read = engine.actions.firstWhere((a) => a.id == 'read');
+    expect(read.lockReason(life), contains('energy'));
+    life.classic = true;
+    expect(read.lockReason(life), isNull);
   });
 }

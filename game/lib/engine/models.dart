@@ -12,14 +12,23 @@ class Stats {
     'athleticism',
     'charisma',
     'creativity',
+    'fertility',
+    'impulsivity',
   ];
 
   final Map<String, int> values;
 
+  /// Told about every real change (after clamping), so the life can keep a
+  /// "Why did this change?" history.
+  void Function(String key, int delta)? onChange;
+
   int operator [](String key) => values[key] ?? 50;
 
   void add(String key, int delta) {
-    values[key] = (this[key] + delta).clamp(0, 100);
+    final before = this[key];
+    values[key] = (before + delta).clamp(0, 100);
+    final d = values[key]! - before;
+    if (d != 0) onChange?.call(key, d);
   }
 
   static Stats random(Random rng) => Stats({
@@ -418,7 +427,50 @@ class Life {
        flags = flags ?? {},
        lastSeen = lastSeen ?? {},
        usedActions = usedActions ?? {},
-       interactionCounts = interactionCounts ?? {};
+       interactionCounts = interactionCounts ?? {} {
+    stats.onChange = _logStat;
+  }
+
+  // ---- Lifespan, history and settings (lifespan.dart, scenes.dart) ----
+
+  /// What is changing stats right now ("Event: …", "Getting older"); set by
+  /// the engine around each step. Not saved.
+  String reason = 'Life';
+
+  /// "Why did this change?" history: newest last, capped.
+  final List<StatChange> statLog = [];
+
+  /// Stats at the start of this year, for trend arrows.
+  Map<String, int> lastYearStats = {};
+
+  /// Hidden stats the player has discovered through play.
+  final Set<String> discovered = {};
+
+  /// Energy for activities this year (Classic mode removes the limit).
+  int energy = 10;
+  bool classic = false;
+
+  /// easy, normal or hard; Ironman forbids Rewind.
+  String difficulty = 'normal';
+  bool ironman = false;
+  int rewindsUsed = 0;
+
+  int yearsWorked = 0;
+  bool retired = false;
+  int pension = 0;
+  int? jobLostAge;
+
+  /// Current life chapter title (changes are milestones in the feed).
+  String chapter = '';
+
+  /// Code-driven events waiting to be shown (scenes.dart ids).
+  final List<String> sceneQueue = [];
+
+  void _logStat(String key, int delta) {
+    statLog.add(StatChange(age, key, delta, reason));
+    if (statLog.length > 120) statLog.removeAt(0);
+    if (Stats.hidden.contains(key) && delta.abs() >= 2) discovered.add(key);
+  }
 
   final int seed;
   final String firstName;
@@ -504,7 +556,9 @@ class Life {
     if (age < 12) return 'Primary school';
     if (age < 18) return 'Secondary school';
     if (age < 25) return 'Young adult';
-    return 'Adult';
+    if (age < 40) return 'Adult';
+    if (age < 60) return 'Middle age';
+    return 'Senior';
   }
 
   Map<String, dynamic> toJson() => {
@@ -542,6 +596,20 @@ class Life {
     ],
     'echo': echo,
     'worldMods': worldMods,
+    'statLog': [for (final c in statLog) c.toJson()],
+    'lastYearStats': lastYearStats,
+    'discovered': discovered.toList(),
+    'energy': energy,
+    'classic': classic,
+    'difficulty': difficulty,
+    'ironman': ironman,
+    'rewindsUsed': rewindsUsed,
+    'yearsWorked': yearsWorked,
+    'retired': retired,
+    'pension': pension,
+    'jobLostAge': jobLostAge,
+    'chapter': chapter,
+    'sceneQueue': sceneQueue,
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -551,61 +619,84 @@ class Life {
     'causeOfDeath': causeOfDeath,
   };
 
-  factory Life.fromJson(Map<String, dynamic> j) => Life(
-    seed: j['seed'],
-    firstName: j['firstName'],
-    surname: j['surname'],
-    gender: j['gender'],
-    country: j['country'],
-    city: j['city'],
-    birthYear: j['birthYear'],
-    stats: Stats.fromJson(Map<String, dynamic>.from(j['stats'])),
-    npcs: (j['npcs'] as List)
-        .map((n) => Npc.fromJson(Map<String, dynamic>.from(n)))
-        .toList(),
-    age: j['age'],
-    money: j['money'],
-    education: j['education'],
-    job: j['job'],
-    salary: j['salary'] ?? 0,
-    careerId: j['careerId'],
-    careerRank: j['careerRank'] ?? 0,
-    jobSince: j['jobSince'] ?? 0,
-    eduSince: j['eduSince'] ?? 0,
-    savings: j['savings'] ?? 0,
-    invested: j['invested'] ?? 0,
-    lifestyle: j['lifestyle'] ?? 'comfortable',
-    economy: j['economy'] ?? 'Normal',
-    debts: Map<String, int>.from(j['debts'] ?? {}),
-    assets: j['assets'] == null
-        ? _assetsFromFlags(j)
-        : [
-            for (final a in j['assets'] as List)
-              Asset.fromJson(Map<String, dynamic>.from(a)),
-          ],
-    netWorthByAge: {
-      for (final e in Map<String, dynamic>.from(
-        j['netWorthByAge'] ?? {},
-      ).entries)
-        int.parse(e.key): e.value as int,
-    },
-    lastYear: _lines(j['lastYear']),
-    lastGrowth: _lines(j['lastGrowth']),
-    echo: Map<String, String>.from(j['echo'] ?? {}),
-    worldMods: Map<String, int>.from(j['worldMods'] ?? {}),
-    feed: (j['feed'] as List)
-        .map((f) => FeedEntry.fromJson(Map<String, dynamic>.from(f)))
-        .toList(),
-    flags: (j['flags'] as Map).map(
-      (k, v) =>
-          MapEntry(k as String, Memory.fromJson(Map<String, dynamic>.from(v))),
-    ),
-    lastSeen: Map<String, int>.from(j['lastSeen'] ?? {}),
-    usedActions: Set<String>.from(j['usedActions'] ?? []),
-    interactionCounts: Map<String, int>.from(j['interactionCounts'] ?? {}),
-    alive: j['alive'] ?? true,
-    causeOfDeath: j['causeOfDeath'],
-  );
+  factory Life.fromJson(Map<String, dynamic> j) {
+    final life = Life(
+      seed: j['seed'],
+      firstName: j['firstName'],
+      surname: j['surname'],
+      gender: j['gender'],
+      country: j['country'],
+      city: j['city'],
+      birthYear: j['birthYear'],
+      stats: Stats.fromJson(Map<String, dynamic>.from(j['stats'])),
+      npcs: (j['npcs'] as List)
+          .map((n) => Npc.fromJson(Map<String, dynamic>.from(n)))
+          .toList(),
+      age: j['age'],
+      money: j['money'],
+      education: j['education'],
+      job: j['job'],
+      salary: j['salary'] ?? 0,
+      careerId: j['careerId'],
+      careerRank: j['careerRank'] ?? 0,
+      jobSince: j['jobSince'] ?? 0,
+      eduSince: j['eduSince'] ?? 0,
+      savings: j['savings'] ?? 0,
+      invested: j['invested'] ?? 0,
+      lifestyle: j['lifestyle'] ?? 'comfortable',
+      economy: j['economy'] ?? 'Normal',
+      debts: Map<String, int>.from(j['debts'] ?? {}),
+      assets: j['assets'] == null
+          ? _assetsFromFlags(j)
+          : [
+              for (final a in j['assets'] as List)
+                Asset.fromJson(Map<String, dynamic>.from(a)),
+            ],
+      netWorthByAge: {
+        for (final e in Map<String, dynamic>.from(
+          j['netWorthByAge'] ?? {},
+        ).entries)
+          int.parse(e.key): e.value as int,
+      },
+      lastYear: _lines(j['lastYear']),
+      lastGrowth: _lines(j['lastGrowth']),
+      echo: Map<String, String>.from(j['echo'] ?? {}),
+      worldMods: Map<String, int>.from(j['worldMods'] ?? {}),
+      feed: (j['feed'] as List)
+          .map((f) => FeedEntry.fromJson(Map<String, dynamic>.from(f)))
+          .toList(),
+      flags: (j['flags'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          Memory.fromJson(Map<String, dynamic>.from(v)),
+        ),
+      ),
+      lastSeen: Map<String, int>.from(j['lastSeen'] ?? {}),
+      usedActions: Set<String>.from(j['usedActions'] ?? []),
+      interactionCounts: Map<String, int>.from(j['interactionCounts'] ?? {}),
+      alive: j['alive'] ?? true,
+      causeOfDeath: j['causeOfDeath'],
+    );
+    life
+      ..lastYearStats = Map<String, int>.from(j['lastYearStats'] ?? {})
+      ..energy = j['energy'] ?? 10
+      ..classic = j['classic'] ?? false
+      ..difficulty = j['difficulty'] ?? 'normal'
+      ..ironman = j['ironman'] ?? false
+      ..rewindsUsed = j['rewindsUsed'] ?? 0
+      ..yearsWorked = j['yearsWorked'] ?? 0
+      ..retired = j['retired'] ?? false
+      ..pension = j['pension'] ?? 0
+      ..jobLostAge = j['jobLostAge']
+      ..chapter = j['chapter'] ?? ''
+      ..statLog.addAll([
+        for (final c in (j['statLog'] as List?) ?? const [])
+          StatChange.fromJson(Map<String, dynamic>.from(c)),
+      ])
+      ..discovered.addAll(List<String>.from(j['discovered'] ?? []))
+      ..sceneQueue.addAll(List<String>.from(j['sceneQueue'] ?? []));
+    return life;
+  }
 }
 
 List<(String, int)> _lines(dynamic raw) => [
@@ -645,4 +736,17 @@ List<Asset> _assetsFromFlags(Map<String, dynamic> j) {
         since: age,
       ),
   ];
+}
+
+/// One entry in the "Why did this change?" history.
+class StatChange {
+  StatChange(this.age, this.stat, this.delta, this.why);
+  final int age;
+  final String stat;
+  final int delta;
+  final String why;
+
+  Map<String, dynamic> toJson() => {'a': age, 's': stat, 'd': delta, 'w': why};
+  factory StatChange.fromJson(Map<String, dynamic> j) =>
+      StatChange(j['a'], j['s'], j['d'], j['w']);
 }

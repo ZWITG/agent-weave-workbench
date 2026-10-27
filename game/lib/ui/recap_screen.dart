@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../engine/lifespan.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'me_screens.dart';
 import 'widgets.dart';
 
-/// End of the prototype slice (age 30) or an early death: a Life Recap card.
+/// The end of a life (plan S60/S61): tombstone with epitaph and cause, the
+/// Life Title with its rule, the moments that mattered, the life's place in
+/// history, then Rewind or a new life.
 class RecapScreen extends StatelessWidget {
   const RecapScreen({super.key, required this.controller});
   final GameController controller;
@@ -13,90 +17,227 @@ class RecapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final life = controller.life!;
     final engine = controller.engine!;
+    final title = titleFor(life);
     final closest = [...life.npcs]..sort((a, b) => b.bond.compareTo(a.bond));
     final memories = life.flags.values.toList()
       ..sort((a, b) => a.age.compareTo(b.age));
+    final mine = engine.world.ledger
+        .where((s) => s.person == life.fullName)
+        .toList();
+    final rarityColor = switch (title.rarity) {
+      'Legendary' => NF.orange,
+      'Rare' => NF.blue,
+      'Uncommon' => const Color(0xFF5EE6A8),
+      _ => NF.soft,
+    };
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: ListView(
-              padding: const EdgeInsets.all(24),
-              children: [
-                NFCard(
-                  color: NF.nav,
-                  padding: const EdgeInsets.all(28),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SectionLabel(
-                        life.alive
-                            ? 'Life recap · first 30 years'
-                            : 'Life recap',
+      backgroundColor: NF.bg,
+      body: GlowBackground(
+        child: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  // Tombstone
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
+                    decoration: BoxDecoration(
+                      color: NF.surface,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(120),
+                        bottom: Radius.circular(18),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        life.fullName,
-                        style: NF.sora(28, weight: FontWeight.w700),
-                      ),
-                      Text(
-                        life.alive
-                            ? '${life.birthYear}–${life.year} · ${life.city}, ${life.country}'
-                            : '${life.birthYear}–${life.year} · died at ${life.age} (${life.causeOfDeath})',
-                        style: NF.sora(14, color: NF.muted),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        '${life.job ?? 'No job'} · \$${life.money} in the bank',
-                        style: NF.sora(15, color: NF.soft),
-                      ),
-                      if (closest.isNotEmpty)
+                      border: Border.all(color: NF.borderStrong),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.local_florist_rounded,
+                          color: NF.orange,
+                          size: 28,
+                        ),
+                        const SizedBox(height: 10),
                         Text(
-                          'Closest to ${closest.first.name} (${closest.first.bond}%)',
+                          life.fullName,
+                          textAlign: TextAlign.center,
+                          style: NF.sora(26, weight: FontWeight.w700),
+                        ),
+                        Text(
+                          '${life.birthYear} – ${life.year}',
                           style: NF.sora(15, color: NF.soft),
                         ),
-                      const SizedBox(height: 20),
-                      const SectionLabel(
-                        'Moments that mattered',
-                        color: NF.blue,
-                      ),
-                      const SizedBox(height: 8),
-                      if (memories.isEmpty)
+                        const SizedBox(height: 14),
                         Text(
-                          'A quiet life.',
-                          style: NF.sora(14, color: NF.muted),
+                          '"${title.epitaph}"',
+                          textAlign: TextAlign.center,
+                          style: NF
+                              .sora(16, color: NF.text, height: 1.5)
+                              .copyWith(fontStyle: FontStyle.italic),
                         ),
-                      for (final m in memories.take(6))
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            'Age ${m.age} · ${engine.fill(m.label, life)}',
-                            style: NF.sora(14, color: NF.soft),
-                          ),
+                        const SizedBox(height: 12),
+                        Text(
+                          life.alive
+                              ? 'Lived to ${life.age}'
+                              : 'Died at ${life.age} · ${life.causeOfDeath}',
+                          style: NF.sora(13, color: NF.muted),
                         ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  life.alive
-                      ? 'This prototype ends at 30. The full game goes on to old age, children and the history books.'
-                      : 'Your story ends here.',
-                  textAlign: TextAlign.center,
-                  style: NF.sora(13, color: NF.muted),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  style: orangeButton().copyWith(
-                    minimumSize: const WidgetStatePropertyAll(
-                      Size.fromHeight(56),
+                      ],
                     ),
                   ),
-                  onPressed: controller.endLife,
-                  child: const Text('Live another life'),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  // Life Title with transparent scoring
+                  NFCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.workspace_premium_rounded,
+                              color: rarityColor,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Life Title',
+                              style: NF.sora(13, color: NF.muted),
+                            ),
+                            const Spacer(),
+                            Text(
+                              title.rarity,
+                              style: NF.sora(
+                                12,
+                                weight: FontWeight.w700,
+                                color: rarityColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          title.name,
+                          style: NF.sora(22, weight: FontWeight.w700),
+                        ),
+                        Text(
+                          'Earned for: ${title.why}',
+                          style: NF.sora(13, color: NF.soft),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  NFCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${life.job ?? (life.retired ? 'Retired' : 'No job')} · net worth ${money(life.netWorth)}',
+                          style: NF.sora(15, color: NF.soft),
+                        ),
+                        if (closest.isNotEmpty)
+                          Text(
+                            'Closest to ${closest.first.name} (${closest.first.bond}%)',
+                            style: NF.sora(15, color: NF.soft),
+                          ),
+                        const SizedBox(height: 16),
+                        const SectionLabel(
+                          'Moments that mattered',
+                          color: NF.blue,
+                        ),
+                        const SizedBox(height: 8),
+                        if (memories.isEmpty)
+                          Text(
+                            'A quiet life.',
+                            style: NF.sora(14, color: NF.muted),
+                          ),
+                        for (final m in memories.take(8))
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              'Age ${m.age} · ${engine.fill(m.label, life)}',
+                              style: NF.sora(14, color: NF.soft),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Your place in history (plan WL-006)
+                  NFCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.public_rounded,
+                              color: NF.blue,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Your place in history',
+                              style: NF.sora(15, weight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        if (mine.isEmpty)
+                          Text(
+                            'The papers never wrote about you. The people who loved you will remember.',
+                            style: NF.sora(14, color: NF.soft),
+                          ),
+                        for (final s in mine)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '${s.year} · ${s.headline}',
+                              style: NF.sora(14, color: NF.soft),
+                            ),
+                          ),
+                        if (engine.world.reputation(life.surname) != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            engine.world.reputation(life.surname)!,
+                            style: NF.sora(13, color: NF.muted),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (controller.rewindLock == null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: OutlinedButton.icon(
+                        style: secondaryButton().copyWith(
+                          minimumSize: const WidgetStatePropertyAll(
+                            Size.fromHeight(52),
+                          ),
+                        ),
+                        icon: const Icon(Icons.history_toggle_off_rounded),
+                        label: const Text('Rewind'),
+                        onPressed: () => showRewind(context, controller),
+                      ),
+                    ),
+                  FilledButton(
+                    style: orangeButton().copyWith(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size.fromHeight(56),
+                      ),
+                    ),
+                    onPressed: controller.endLife,
+                    child: const Text('Live another life'),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Your world remembers this life. The next one starts in ${life.year}.',
+                    textAlign: TextAlign.center,
+                    style: NF.sora(12, color: NF.muted),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

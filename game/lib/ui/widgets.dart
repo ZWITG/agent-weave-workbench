@@ -227,83 +227,111 @@ class GlowBackground extends StatelessWidget {
 
 /// Stat tile: icon, label, animated value and a gradient bar.
 class StatTile extends StatelessWidget {
-  const StatTile({super.key, required this.statKey, required this.value});
+  const StatTile({
+    super.key,
+    required this.statKey,
+    required this.value,
+    this.trend = 0,
+    this.onTap,
+  });
   final String statKey;
   final int value;
+
+  /// Change since the start of the year (trend arrow).
+  final int trend;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final (color, icon) = statStyle[statKey]!;
     final label = statKey[0].toUpperCase() + statKey.substring(1);
     return Semantics(
-      label: '$label $value percent',
+      label:
+          '$label $value percent${trend == 0 ? '' : ', ${trend > 0 ? 'up' : 'down'} ${trend.abs()} this year'}. Tap for why',
+      button: onTap != null,
       excludeSemantics: true,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-        decoration: BoxDecoration(
-          color: NF.surface.withValues(alpha: 0.85),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: color.withValues(alpha: 0.28)),
-        ),
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(end: value.toDouble()),
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeOutCubic,
-          builder: (context, v, _) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Icon(icon, size: 17, color: color),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: NF.sora(12, color: NF.muted),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text(
-                    '${v.round()}',
-                    style: NF.sora(17, weight: FontWeight.w700),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(999),
-                child: Stack(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+          decoration: BoxDecoration(
+            color: NF.surface.withValues(alpha: 0.85),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: color.withValues(alpha: 0.28)),
+          ),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(end: value.toDouble()),
+            duration: motion(context, const Duration(milliseconds: 600)),
+            curve: Curves.easeOutCubic,
+            builder: (context, v, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Container(height: 7, color: NF.surface2),
-                    FractionallySizedBox(
-                      widthFactor: (v / 100).clamp(0.0, 1.0),
-                      child: Container(
-                        height: 7,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [color.withValues(alpha: 0.65), color],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: color.withValues(alpha: 0.5),
-                              blurRadius: 8,
-                            ),
-                          ],
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.16),
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Icon(icon, size: 17, color: color),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(label, style: NF.sora(12, color: NF.muted)),
+                      ),
+                    ),
+                    if (trend != 0)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 3),
+                        child: Icon(
+                          trend > 0
+                              ? Icons.arrow_drop_up_rounded
+                              : Icons.arrow_drop_down_rounded,
+                          size: 22,
+                          color: trend > 0
+                              ? const Color(0xFF5EE6A8)
+                              : NF.danger,
                         ),
                       ),
+                    Text(
+                      '${v.round()}',
+                      style: NF.sora(17, weight: FontWeight.w700),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: Stack(
+                    children: [
+                      Container(height: 7, color: NF.surface2),
+                      FractionallySizedBox(
+                        widthFactor: (v / 100).clamp(0.0, 1.0),
+                        child: Container(
+                          height: 7,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [color.withValues(alpha: 0.65), color],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: color.withValues(alpha: 0.5),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -337,7 +365,7 @@ class AgeRingAvatar extends StatelessWidget {
               height: size,
               child: TweenAnimationBuilder<double>(
                 tween: Tween(end: progress.clamp(0, 1)),
-                duration: const Duration(milliseconds: 700),
+                duration: motion(context, const Duration(milliseconds: 700)),
                 builder: (_, p, _) => CircularProgressIndicator(
                   value: p,
                   strokeWidth: 3.5,
@@ -400,3 +428,7 @@ String money(int amount) {
   }
   return '${amount < 0 ? '−' : ''}\$$buf';
 }
+
+/// Animation length that honours Reduce motion (Settings or the OS).
+Duration motion(BuildContext context, Duration d) =>
+    MediaQuery.disableAnimationsOf(context) ? Duration.zero : d;

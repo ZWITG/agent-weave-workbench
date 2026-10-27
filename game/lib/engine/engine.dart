@@ -3,15 +3,18 @@ import 'dart:math';
 import 'actions.dart';
 import 'careers.dart';
 import 'economy.dart';
+import 'lifespan.dart';
 import 'npc_life.dart';
 import 'models.dart';
 import 'relationships.dart';
+import 'scenes.dart';
 import 'storylet.dart';
 import 'world.dart';
 import 'world_data.dart';
 
 /// The prototype slice runs from birth to this age (Phase 2 scope).
-const sliceEndAge = 30;
+/// Lives run from birth to death; this is only the hard upper bound.
+const sliceEndAge = 120;
 
 /// The result of choosing an option on an event card.
 class Outcome {
@@ -153,9 +156,12 @@ class GameEngine {
   /// Ages the character one year and returns the event to show, if any.
   Storylet? ageUp(Life life) {
     if (!life.alive || life.age >= sliceEndAge) return null;
+    life.lastYearStats = Map.of(life.stats.values);
     life.age += 1;
     life.usedActions.clear();
     life.interactionCounts.clear();
+    life.energy = 10;
+    if (life.job != null) life.yearsWorked++;
     for (final line in yearlyRelationships(life, _rngFor(life, 17))) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
@@ -169,27 +175,93 @@ class GameEngine {
     life.feed.addAll(npcUpdates(life, _rngFor(life, 23)));
     checkDeeds(life);
     // Gentle drift so idle years still matter.
+    life.reason = 'Ups and downs';
     life.stats.add('happiness', rng.nextInt(5) - 2);
-    if (life.age > 25) life.stats.add('health', -rng.nextInt(2));
+    if (life.difficulty == 'hard') life.stats.add('happiness', -1);
+    final body = ageBody(life, rng);
+    if (body != null) {
+      life.feed.add(FeedEntry(life.age, body, kind: 'milestone'));
+    }
 
-    if (life.stats['health'] <= 0) {
+    if (life.stats['health'] <= 0 || rng.nextDouble() < deathChance(life)) {
       life.alive = false;
-      life.causeOfDeath = 'Illness';
+      life.causeOfDeath = life.stats['health'] <= 0
+          ? 'Illness'
+          : causeOfDeath(life, rng);
       life.feed.add(
         FeedEntry(
           life.age,
-          'Your body gave out. You died at ${life.age}.',
+          'Your story ended at ${life.age}. Cause: ${life.causeOfDeath}.',
           kind: 'milestone',
         ),
       );
       return null;
     }
 
+    final chapter = chapterFor(life);
+    if (chapter != life.chapter) {
+      if (life.chapter.isNotEmpty) {
+        life.feed.add(
+          FeedEntry(
+            life.age,
+            'A new chapter begins: $chapter',
+            kind: 'milestone',
+          ),
+        );
+      }
+      life.chapter = chapter;
+    }
+    _birthdaySummary(life);
+
+    // Scenes (scenes.dart) come before ordinary events.
+    if (life.job != null &&
+        !life.retired &&
+        life.age >= 65 &&
+        !life.lastSeen.containsKey('scene:retire_offer')) {
+      life.sceneQueue.add('retire_offer');
+    }
+    final sick = life.age < 10 ? 0.16 : (life.age > 60 ? 0.2 : 0.09);
+    if (rng.nextDouble() < sick) {
+      final ill = pickIllness(life, rng);
+      if (ill != null) life.sceneQueue.add('illness:$ill');
+    }
+    final scene = nextScene(life);
+    if (scene != null) return scene;
+
     final event = pickStorylet(life, rng);
     if (event == null) {
       life.feed.add(FeedEntry(life.age, _quietYear(life, rng)));
     }
     return event;
+  }
+
+  /// The next queued scene that still makes sense, if any.
+  Storylet? nextScene(Life life) {
+    while (life.sceneQueue.isNotEmpty) {
+      final s = buildScene(life.sceneQueue.removeAt(0), life);
+      if (s != null) return s;
+    }
+    return null;
+  }
+
+  /// One feed line with what changed over the birthday itself.
+  void _birthdaySummary(Life life) {
+    final parts = <String>[
+      for (final k in Stats.visible)
+        if ((life.stats[k] - (life.lastYearStats[k] ?? life.stats[k])) != 0)
+          '${k[0].toUpperCase()}${k.substring(1)} ${_signed(life.stats[k] - life.lastYearStats[k]!)}',
+    ];
+    final cash = life.lastYear.fold(0, (a, l) => a + l.$2);
+    if (cash != 0) {
+      final digits = cash.abs().toString().replaceAllMapped(
+        RegExp(r'\B(?=(\d{3})+(?!\d))'),
+        (_) => ',',
+      );
+      parts.add('Cash ${cash > 0 ? '+' : '−'}\$$digits');
+    }
+    if (parts.isNotEmpty) {
+      life.feed.add(FeedEntry(life.age, parts.join(' · '), kind: 'summary'));
+    }
   }
 
   Storylet? pickStorylet(Life life, Random rng) {
@@ -210,7 +282,9 @@ class GameEngine {
     final bondsBefore = {for (final n in life.npcs) n.id: n.bond};
     final npcsBefore = life.npcs.map((n) => n.id).toSet();
     final moneyBefore = life.money;
+    life.reason = event.scene ? choice.label : 'Choice: ${choice.label}';
     final notes = choice.effects.apply(life);
+    final custom = choice.run?.call(life, _rngFor(life, event.id.hashCode));
     checkDeeds(life);
     final statDeltas = <String, int>{
       for (final k in Stats.visible)
@@ -267,7 +341,7 @@ class GameEngine {
         'This moment may come back years from now',
     ];
     final text = fill(
-      choice.outcome.isEmpty ? choice.label : choice.outcome,
+      custom ?? (choice.outcome.isEmpty ? choice.label : choice.outcome),
       life,
     );
     life.feed.add(FeedEntry(life.age, text));
@@ -339,6 +413,10 @@ class GameEngine {
   ActionResult runAction(Life life, GameAction action, {double? score}) {
     final rng = _rngFor(life, action.id.hashCode);
     final again = life.usedActions.contains(action.id);
+    life.reason = action.label;
+    if (!life.classic && !action.repeatable) {
+      life.energy = max(0, life.energy - 1);
+    }
     life.usedActions.add(action.id);
     final result = score != null && action.scored != null
         ? action.scored!(life, rng, score.clamp(0, 1))
@@ -371,6 +449,7 @@ class GameEngine {
     world.year = max(world.year, year);
     life.economy = world.economyFor(year);
     life.worldMods = world.modsFor(year, life.country, life.city, life.surname);
+    life.reason = 'In the news';
     life.stats.add('health', life.worldMods['health'] ?? 0);
     life.stats.add('happiness', life.worldMods['happiness'] ?? 0);
     final news = world.headlineFor(year, life.country, life.city);
@@ -486,9 +565,12 @@ class GameEngine {
 
   ActionResult interact(Life life, Npc npc, Interaction i) {
     final rng = _rngFor(life, i.key(npc).hashCode);
+    life.reason = '${i.label} · ${npc.name}';
     final r = runInteraction(life, npc, i, rng);
     final text = fill(r.text, life);
     life.feed.add(FeedEntry(life.age, text, kind: 'action'));
     return ActionResult(text, r.notes);
   }
 }
+
+String _signed(int v) => v > 0 ? '+$v' : '−${v.abs()}';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
 import '../engine/engine.dart';
+import '../engine/lifespan.dart';
 import '../engine/models.dart';
 import '../engine/storylet.dart';
 import '../game_controller.dart';
@@ -10,6 +11,7 @@ import 'activities.dart';
 import 'outcome_card.dart';
 import 'result_popup.dart';
 import 'path_tab.dart';
+import 'me_screens.dart';
 import 'update_prompt.dart';
 import 'wealth_tab.dart';
 import 'people.dart';
@@ -134,7 +136,7 @@ class _Header extends StatelessWidget {
         children: [
           AgeRingAvatar(
             initials: life.initials,
-            progress: life.age / sliceEndAge,
+            progress: (life.age / 100).clamp(0.0, 1.0),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -157,6 +159,29 @@ class _Header extends StatelessWidget {
                   style: NF.sora(12, color: NF.muted),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (isFrail(life))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.monitor_heart_rounded,
+                          size: 14,
+                          color: NF.danger,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          frailtyLabel(life),
+                          style: NF.sora(
+                            12,
+                            weight: FontWeight.w600,
+                            color: NF.danger,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -357,11 +382,25 @@ class _LifeTab extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: StatTile(statKey: row[0], value: life.stats[row[0]]),
+                child: StatTile(
+                  statKey: row[0],
+                  value: life.stats[row[0]],
+                  trend:
+                      life.stats[row[0]] -
+                      (life.lastYearStats[row[0]] ?? life.stats[row[0]]),
+                  onTap: () => showStatHistory(context, life, row[0]),
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: StatTile(statKey: row[1], value: life.stats[row[1]]),
+                child: StatTile(
+                  statKey: row[1],
+                  value: life.stats[row[1]],
+                  trend:
+                      life.stats[row[1]] -
+                      (life.lastYearStats[row[1]] ?? life.stats[row[1]]),
+                  onTap: () => showStatHistory(context, life, row[1]),
+                ),
               ),
             ],
           ),
@@ -369,7 +408,7 @@ class _LifeTab extends StatelessWidget {
         ],
         const SizedBox(height: 4),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 350),
+          duration: motion(context, const Duration(milliseconds: 350)),
           switchInCurve: Curves.easeOutCubic,
           transitionBuilder: (child, a) => FadeTransition(
             opacity: a,
@@ -468,6 +507,7 @@ class _FeedBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     if (entry.kind == 'world') return _newsBubble();
     if (entry.kind == 'npc') return _npcBubble();
+    if (entry.kind == 'summary') return _summaryBubble();
     final milestone = entry.kind == 'milestone';
     final action = entry.kind == 'action';
     return Align(
@@ -580,6 +620,46 @@ class _FeedBubble extends StatelessWidget {
     ),
   );
 
+  /// What changed over the birthday (plan CL-002 year summary).
+  Widget _summaryBubble() => Semantics(
+    label: 'Birthday changes: ${entry.text}',
+    excludeSemantics: true,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        children: [
+          for (final part in entry.text.split(' · '))
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: NF.surface,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: NF.border),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    part.contains('−')
+                        ? Icons.arrow_downward_rounded
+                        : Icons.arrow_upward_rounded,
+                    size: 12,
+                    color: part.contains('−')
+                        ? NF.danger
+                        : const Color(0xFF5EE6A8),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(part, style: NF.sora(12, color: NF.soft)),
+                ],
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+
   /// A life update from someone you know, with their avatar.
   Widget _npcBubble() => Align(
     alignment: Alignment.centerLeft,
@@ -621,7 +701,12 @@ class _EventCard extends StatelessWidget {
     final mem = event.remembers != null ? life.flags[event.remembers] : null;
     final compact =
         event.choices.length == 3 &&
-        event.choices.every((c) => engine.fill(c.label, life).length <= 18);
+        event.choices.every(
+          (c) =>
+              engine.fill(c.label, life).length <= 18 &&
+              c.risk == null &&
+              c.lockReason(life) == null,
+        );
     return Semantics(
       container: true,
       liveRegion: true,
@@ -731,19 +816,39 @@ class _EventCard extends StatelessWidget {
 
   Widget _choiceButton(int i, Life life, GameEngine engine) {
     final choice = event.choices[i];
-    final label = Text(
-      engine.fill(choice.label, life),
-      textAlign: TextAlign.center,
-    );
-    return i == 0
+    final lock = choice.lockReason(life);
+    final hint = lock ?? choice.risk;
+    final label = hint == null
+        ? Text(engine.fill(choice.label, life), textAlign: TextAlign.center)
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                engine.fill(choice.label, life),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                lock != null ? '🔒 $lock' : hint,
+                textAlign: TextAlign.center,
+                style: lock != null
+                    ? NF.sora(11, weight: FontWeight.w500, color: NF.orange)
+                    : const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+              ),
+            ],
+          );
+    final onPressed = lock == null ? () => controller.choose(choice) : null;
+    return i == 0 && lock == null
         ? FilledButton(
             style: primaryButton(),
-            onPressed: () => controller.choose(choice),
+            onPressed: onPressed,
             child: label,
           )
         : OutlinedButton(
             style: secondaryButton(),
-            onPressed: () => controller.choose(choice),
+            onPressed: onPressed,
             child: label,
           );
   }
@@ -778,16 +883,39 @@ class _MeTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                style: secondaryButton(),
+                icon: const Icon(Icons.settings_rounded),
+                label: const Text('Settings'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SettingsScreen(controller: controller),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: OutlinedButton.icon(
+                style: secondaryButton(),
+                icon: const Icon(Icons.history_toggle_off_rounded),
+                label: const Text('Rewind'),
+                onPressed: () => showRewind(context, controller),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         const VersionCard(),
         const SizedBox(height: 16),
         _WorldCard(controller: controller),
         const SizedBox(height: 16),
         const SectionLabel('Hidden stats'),
         const SizedBox(height: 10),
-        for (final k in Stats.hidden) ...[
-          StatBar(label: _cap(k), value: life.stats[k], color: NF.orange),
-          const SizedBox(height: 8),
-        ],
+        HiddenStats(life: life),
         const SizedBox(height: 16),
         const SectionLabel('Memories', color: NF.blue),
         const SizedBox(height: 10),
@@ -832,8 +960,6 @@ class _MeTab extends StatelessWidget {
     );
   }
 }
-
-String _cap(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
 /// Me tab: your world's memory (plan Module 11): family name, earlier
 /// notable lives and the history they wrote.

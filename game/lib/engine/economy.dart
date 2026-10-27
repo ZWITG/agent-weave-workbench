@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
 
 /// Money as a system (plan Module 6/7, prototype scope): every birthday runs
@@ -94,7 +95,8 @@ int yearlyCostOf(Life life, Asset a) => a.kind == 'rental'
     : a.yearlyCost;
 
 /// Living at home with no income, your family covers your living costs.
-bool familyCovers(Life life) => livesWithFamily(life) && life.salary <= 0;
+bool familyCovers(Life life) =>
+    livesWithFamily(life) && life.salary <= 0 && life.age < 30 && !life.retired;
 
 /// Student loans are only repaid once you earn.
 bool _owesPayment(Life life, String name) =>
@@ -177,9 +179,21 @@ List<String> yearlyMoney(Life life, Random rng) {
     lines.add((label, amount));
   }
 
+  life.reason = 'Money';
   if (life.job != null && life.salary > 0) {
     cash('Salary', life.salary);
     cash('Income tax', -incomeTax(life.salary));
+  }
+  if (life.retired) {
+    cash('Pension', life.pension);
+  } else if (life.job == null && life.age >= statePensionAge) {
+    cash('State pension', statePension);
+  } else if (life.job == null &&
+      life.age >= 18 &&
+      !studying(life) &&
+      life.jobLostAge != null &&
+      life.age - life.jobLostAge! <= 2) {
+    cash('Unemployment benefit', 6000);
   }
 
   if (life.age >= 18) {

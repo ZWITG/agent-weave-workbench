@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
+import '../engine/profile.dart';
 import '../engine/models.dart';
 import '../engine/relationships.dart';
 import '../game_controller.dart';
@@ -70,14 +71,19 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
     super.dispose();
   }
 
+  /// Every activity, minus those hidden by the content filters.
+  List<GameAction> get _actions => c.engine!.actions
+      .where((a) => !filteredOut(c.profile, a.category, a.id))
+      .toList();
+
   List<GameAction> _in(String cat) =>
-      c.engine!.actions.where((a) => a.category == cat).toList();
+      _actions.where((a) => a.category == cat).toList();
 
   bool _open(GameAction a) => a.lockReason(life) == null;
 
   /// Up to four relevant, available actions for this moment in life.
   List<GameAction> _suggested() {
-    final byId = {for (final a in c.engine!.actions) a.id: a};
+    final byId = {for (final a in _actions) a.id: a};
     final ids = <String>[
       if (life.education == 'primary' ||
           life.education == 'secondary' ||
@@ -151,7 +157,31 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       children: [
         Text('Activities', style: NF.sora(22, weight: FontWeight.w700)),
         const Spacer(),
-        Text('Age ${life.age}', style: NF.sora(13, color: NF.muted)),
+        if (!life.classic)
+          Semantics(
+            label: 'Energy ${life.energy} of 10 this year',
+            excludeSemantics: true,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: NF.blue.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.bolt_rounded, size: 16, color: NF.blue),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${life.energy}/10',
+                    style: NF.sora(13, weight: FontWeight.w700, color: NF.blue),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          Text('Age ${life.age}', style: NF.sora(13, color: NF.muted)),
       ],
     );
   }
@@ -311,7 +341,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   // ---------------- Search ----------------
 
   List<Widget> _searchResults(BuildContext context) {
-    final actions = c.engine!.actions.where((a) => a.matches(_q)).toList()
+    final actions = _actions.where((a) => a.matches(_q)).toList()
       ..sort((a, b) => (_open(a) ? 0 : 1).compareTo(_open(b) ? 0 : 1));
     final people = searchInteractions(life, _q).take(8).toList();
     if (actions.isEmpty && people.isEmpty) {

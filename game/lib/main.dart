@@ -19,10 +19,26 @@ class RelivableApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => _app(),
+    );
+  }
+
+  Widget _app() {
+    final p = controller.profile;
     return MaterialApp(
       title: 'Relivable',
       debugShowCheckedModeBanner: false,
       theme: NF.theme(),
+      // Text size and reduce motion from Settings (plan SOC-SE-003/005).
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: TextScaler.linear(p.textScale),
+          disableAnimations: p.reduceMotion,
+        ),
+        child: child!,
+      ),
       home: UpdateGate(
         child: ListenableBuilder(
           listenable: controller,

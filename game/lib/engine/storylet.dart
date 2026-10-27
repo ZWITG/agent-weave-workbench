@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'models.dart';
 
 /// A data-driven event. Storylets live in assets/storylets/*.json so new
@@ -18,7 +20,11 @@ class Storylet {
     this.requiresNpcs = const [],
     this.statRules = const {},
     this.remembers,
+    this.scene = false,
   });
+
+  /// True for code-driven events built by scenes.dart.
+  final bool scene;
 
   final String id;
   final String text;
@@ -104,16 +110,54 @@ class Storylet {
 }
 
 class Choice {
-  Choice({required this.label, required this.outcome, required this.effects});
+  Choice({
+    required this.label,
+    required this.outcome,
+    Effects? effects,
+    this.run,
+    this.needs = const {},
+    this.needsMoney = 0,
+    this.lock,
+    this.risk,
+  }) : effects = effects ?? Effects();
 
   final String label;
   final String outcome;
   final Effects effects;
 
+  /// Scenes (scenes.dart): code that runs when chosen. It may return an
+  /// outcome text that replaces [outcome].
+  final String? Function(Life life, Random rng)? run;
+
+  /// Requirements shown as a lock reason when unmet (plan: locked choices
+  /// stay visible with the reason). Stats as rules, e.g. {"smarts": ">=60"}.
+  final Map<String, String> needs;
+  final int needsMoney;
+
+  /// Code lock for scenes: returns a reason when the choice is unavailable.
+  final String? Function(Life life)? lock;
+
+  /// Odds hint shown on the button for risky choices ("Risky", "Likely").
+  final String? risk;
+
+  /// Null when the choice can be taken, otherwise why not.
+  String? lockReason(Life life) {
+    for (final e in needs.entries) {
+      if (!Storylet._compare(life.stats[e.key], e.value)) {
+        return 'Needs ${e.key[0].toUpperCase()}${e.key.substring(1)} ${e.value.replaceAll('>=', '')}+';
+      }
+    }
+    if (needsMoney > 0 && life.money < needsMoney) return 'Needs \$$needsMoney';
+    return lock?.call(life);
+  }
+
   factory Choice.fromJson(Map<String, dynamic> j) => Choice(
     label: j['label'],
     outcome: j['outcome'] ?? '',
     effects: Effects.fromJson(Map<String, dynamic>.from(j['effects'] ?? {})),
+    needs: Map<String, String>.from(j['needs'] ?? {}),
+    needsMoney: j['needsMoney'] ?? 0,
+    risk: j['risk'],
   );
 }
 

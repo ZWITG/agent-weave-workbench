@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'careers.dart';
 import 'economy.dart';
+import 'lifespan.dart';
 import 'minigame_rules.dart';
 import 'models.dart';
 import 'more_actions.dart';
@@ -65,6 +66,9 @@ class GameAction {
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.age > maxAge) return 'Only up to age $maxAge';
     if (!repeatable && life.usedActions.contains(id)) return 'Done this year';
+    if (!repeatable && !life.classic && life.energy <= 0) {
+      return 'No energy left this year';
+    }
     if (cost > 0 && life.money < cost) return 'Needs \$$cost';
     return extraCheck?.call(life);
   }
@@ -221,6 +225,7 @@ final _baseActions = <GameAction>[
       life.salary = 0;
       life.careerId = null;
       life.careerRank = 0;
+      life.jobLostAge = life.age;
       return statChange(life, 'You quit your job as $old.', {'happiness': 3});
     },
   ),
@@ -305,7 +310,33 @@ final _baseActions = <GameAction>[
 ];
 
 /// Every action in the game: the starter set plus the expanded activities.
+final _lifeActions = <GameAction>[
+  GameAction(
+    id: 'retire',
+    label: 'Retire',
+    category: 'Work',
+    keywords: ['retire', 'pension', 'stop working', 'old'],
+    minAge: 55,
+    extraCheck: (life) => life.retired
+        ? 'You are already retired'
+        : life.job == null
+        ? 'You don\'t have a job'
+        : null,
+    run: (life, rng) {
+      final text = retire(life);
+      final r = statChange(life, '$text Your pension starts next birthday.', {
+        'happiness': 5,
+      });
+      return ActionResult(r.text, [
+        ...r.notes,
+        'Pension \$${life.pension}/year',
+      ]);
+    },
+  ),
+];
+
 final allActions = <GameAction>[
+  ..._lifeActions,
   ..._baseActions,
   ...moreActions,
   ...educationActions,

@@ -262,7 +262,12 @@ class Career {
               life.stats['charisma'] ~/ 5 -
               baseSalary ~/ 2000 +
               (life.worldMods['hiring'] ?? 0) +
-              (life.worldMods['name'] ?? 0))
+              (life.worldMods['name'] ?? 0) +
+              (life.difficulty == 'easy'
+                  ? 10
+                  : life.difficulty == 'hard'
+                  ? -10
+                  : 0))
           .clamp(5, 95);
 }
 

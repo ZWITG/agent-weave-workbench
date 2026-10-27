@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../engine/lifespan.dart';
 import '../engine/world_data.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -15,12 +16,15 @@ class NewLifeScreen extends StatefulWidget {
 
 class _NewLifeScreenState extends State<NewLifeScreen> {
   final _name = TextEditingController();
+  final _seed = TextEditingController();
+  String? _seedError;
   String? _gender;
   String? _country;
 
   @override
   void dispose() {
     _name.dispose();
+    _seed.dispose();
     super.dispose();
   }
 
@@ -57,6 +61,59 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                     ),
                     onPressed: () => widget.controller.startLife(),
                     child: const Text('Surprise me'),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    style: secondaryButton().copyWith(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size.fromHeight(52),
+                      ),
+                    ),
+                    icon: const Icon(Icons.today_rounded),
+                    label: Text(
+                      'Daily Seed · ${seedCode(dailySeed(DateTime.now()))}',
+                    ),
+                    onPressed: () => widget.controller.startLife(
+                      seed: dailySeed(DateTime.now()),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  NFCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionLabel('How hard?', color: NF.blue),
+                        const SizedBox(height: 10),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final e in difficulties.entries)
+                              ChoiceChip(
+                                label: Text(e.value.label),
+                                tooltip: e.value.blurb,
+                                selected:
+                                    widget.controller.profile.difficulty ==
+                                    e.key,
+                                onSelected: (_) => setState(
+                                  () => widget.controller.updateProfile(
+                                    (p) => p.difficulty = e.key,
+                                  ),
+                                ),
+                              ),
+                            FilterChip(
+                              label: const Text('Ironman (no Rewind)'),
+                              selected: widget.controller.profile.ironman,
+                              onSelected: (v) => setState(
+                                () => widget.controller.updateProfile(
+                                  (p) => p.ironman = v,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 28),
                   NFCard(
@@ -138,9 +195,49 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 18),
+                  NFCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionLabel('Have a seed code?', color: NF.blue),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _seed,
+                          style: NF.sora(15),
+                          textCapitalization: TextCapitalization.characters,
+                          decoration: InputDecoration(
+                            hintText: '#RL-1A2B3C',
+                            errorText: _seedError,
+                            filled: true,
+                            fillColor: NF.surface2,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        OutlinedButton(
+                          style: secondaryButton(),
+                          onPressed: () {
+                            final seed = parseSeedCode(_seed.text);
+                            if (seed == null) {
+                              setState(
+                                () => _seedError =
+                                    'That code doesn\'t look right',
+                              );
+                              return;
+                            }
+                            widget.controller.startLife(seed: seed);
+                          },
+                          child: const Text('Live this seed'),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
-                    'Prototype: lives run from birth to age 30.',
+                    'Lives run from birth to old age. Your world remembers every one.',
                     textAlign: TextAlign.center,
                     style: NF.sora(12, color: NF.muted),
                   ),

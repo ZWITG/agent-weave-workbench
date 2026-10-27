@@ -50,7 +50,7 @@ Future<void> showResultPopup(
     barrierDismissible: true,
     barrierLabel: 'Close',
     barrierColor: Colors.black.withValues(alpha: 0.55),
-    transitionDuration: const Duration(milliseconds: 260),
+    transitionDuration: motion(context, const Duration(milliseconds: 260)),
     transitionBuilder: (_, anim, _, child) {
       final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutBack);
       return FadeTransition(
@@ -239,7 +239,7 @@ class _NoteChip extends StatelessWidget {
     final c = up ? color : NF.danger;
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
-      duration: Duration(milliseconds: 350 + index * 140),
+      duration: motion(context, Duration(milliseconds: 350 + index * 140)),
       curve: Curves.easeOutBack,
       builder: (_, v, child) => Opacity(
         opacity: v.clamp(0, 1),
