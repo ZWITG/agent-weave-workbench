@@ -6,6 +6,7 @@ import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
 import 'heists.dart';
+import 'possessions.dart';
 import 'recap.dart';
 import 'pets.dart';
 import 'social.dart';
@@ -108,6 +109,11 @@ Storylet? buildScene(String id, Life life) {
     'party' ||
     'black_market' => communityScene(parts.first, parts.sublist(1), life),
     'funeral_wish' => funeralWishScene(),
+    'collect_market' ||
+    'boat_dealer' ||
+    'plane_dealer' ||
+    'home_upgrade' ||
+    'disaster' => possessionScene(parts.first, parts.sublist(1), life),
     _ => null,
   };
 }

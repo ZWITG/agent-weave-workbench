@@ -20,6 +20,7 @@ import 'package:relivable/engine/pets.dart';
 import 'package:relivable/engine/social.dart';
 import 'package:relivable/engine/love.dart';
 import 'package:relivable/engine/meta.dart';
+import 'package:relivable/engine/possessions.dart';
 import 'package:relivable/engine/profile.dart';
 import 'package:relivable/engine/recap.dart';
 import 'package:relivable/engine/engine.dart';
@@ -1480,5 +1481,147 @@ void main() {
     expect(lines.length, 2);
     expect(lines.first, contains('Ada Stone'));
     expect(lines.last, contains('Generation 2'));
+  });
+
+  // ---------------- Wave G3: possessions ----------------
+
+  Asset house(Life l, {int value = 300000}) => Asset(
+    id: 'house_test',
+    kind: 'house',
+    name: 'Terraced house',
+    value: value,
+    yearlyCost: 3000,
+    since: l.age,
+    info: {'bedrooms': 3},
+  );
+
+  test('heirlooms pass down with their owners and stay out of the estate', () {
+    final old = engine.newLife(seed: 170)..age = 75;
+    old.assets
+      ..clear()
+      ..add(
+        makeHeirloom(old, heirloomById('pocket_watch')!, ['Great-grandpa']),
+      );
+    old.money = 100000;
+    old.savings = 0;
+    old.invested = 0;
+    final child = newChild(old, Random(3), ageNow: 40);
+    old.npcs.add(child);
+    old.npcs.add(newChild(old, Random(4), ageNow: 38));
+    expect(estateOf(old), 100000);
+    final heir = heirLife(old, child);
+    final watch = heir.assets.singleWhere((a) => a.kind == 'heirloom');
+    expect(heirloomHistory(watch), ['Great-grandpa', contains(old.fullName)]);
+    expect(heir.feed.any((f) => f.text.contains('pocket watch')), isTrue);
+    final sibling = heir.npcs.firstWhere(
+      (n) => n.circle == 'Family' && n.alive,
+    );
+    final before = sibling.bond;
+    final r = sellAsset(heir, watch);
+    expect(r.text, contains('pocket watch'));
+    expect(heir.flags.containsKey('sold_heirloom'), isTrue);
+    expect(sibling.bond, lessThan(before));
+  });
+
+  test('collectibles follow trends, and fakes are found by an expert', () {
+    expect(
+      collectibleTrend('sneakers', 2040),
+      collectibleTrend('sneakers', 2040),
+    );
+    final trends = [
+      for (var y = 2000; y < 2100; y++) collectibleTrend('cards', y),
+    ];
+    expect(trends.any((t) => t >= 30), isTrue);
+    expect(trends.any((t) => t <= -20), isTrue);
+    final life = engine.newLife(seed: 171)..age = 30;
+    life.money = 100000;
+    life.sceneQueue.add('collect_market');
+    final scene = engine.nextScene(life)!;
+    expect(scene.choices.length, 4);
+    engine.choose(life, scene, scene.choices.first);
+    final item = life.assets.singleWhere((a) => a.kind == 'collectible');
+    item.info['fake'] = true;
+    item.info['checked'] = false;
+    item.value = 2000;
+    final r = appraiseCollection(life);
+    expect(r.text, contains('fake'));
+    expect(item.value, 100);
+    expect(collectibleSale(item).$1, 100);
+  });
+
+  test('boats and planes need licences and cost upkeep', () {
+    final life = engine.newLife(seed: 172)..age = 30;
+    life.money = 400000;
+    final buyBoat = allActions.firstWhere((a) => a.id == 'buy_boat');
+    expect(buyBoat.lockReason(life), 'Needs a boat licence');
+    life.flags['boat_licence'] = Memory(29, 'boat licence');
+    expect(buyBoat.lockReason(life), isNull);
+    life.sceneQueue.add('boat_dealer');
+    final scene = engine.nextScene(life)!;
+    engine.choose(
+      life,
+      scene,
+      scene.choices.firstWhere((c) => c.label.startsWith('Speedboat')),
+    );
+    final boat = life.assets.singleWhere((a) => a.kind == 'boat');
+    expect(boat.yearlyCost, 3000);
+    expect(
+      allActions.firstWhere((a) => a.id == 'buy_plane').lockReason(life),
+      'Needs a pilot licence',
+    );
+    expect(
+      allActions.firstWhere((a) => a.id == 'go_sailing').lockReason(life),
+      isNull,
+    );
+  });
+
+  test('home upgrades change life and how many guests you can host', () {
+    final life = engine.newLife(seed: 173)..age = 35;
+    life.money = 200000;
+    final h = house(life);
+    life.assets.add(h);
+    final room = hostingCapacity(life);
+    life.sceneQueue.add('home_upgrade');
+    final scene = engine.nextScene(life)!;
+    engine.choose(
+      life,
+      scene,
+      scene.choices.firstWhere((c) => c.label.startsWith('Games room')),
+    );
+    expect(roomsOf(h), ['games']);
+    expect(hostingCapacity(life), room + 6);
+    expect(h.value, greaterThan(300000));
+    final happy = life.stats['happiness'];
+    possessionsYear(life, Random(1));
+    expect(life.stats['happiness'], greaterThanOrEqualTo(min(100, happy)));
+  });
+
+  test('disasters strike homes, and insurance covers all but the excess', () {
+    final life = engine.newLife(seed: 174, countryName: 'Japan')..age = 40;
+    life.money = 50000;
+    final h = house(life);
+    life.assets.add(h);
+    final insure = allActions.firstWhere((a) => a.id == 'home_insurance');
+    insure.run(life, Random(1));
+    expect(insured(h), isTrue);
+    final premium = homeInsuranceCost(life);
+    expect(premium, greaterThan(300));
+    var hit = false;
+    for (var i = 0; i < 300 && !hit; i++) {
+      possessionsYear(life, Random(i));
+      hit = life.sceneQueue.any((q) => q.startsWith('disaster:'));
+    }
+    expect(hit, isTrue);
+    final scene = engine.nextScene(life)!;
+    expect(scene.text, contains('insured'));
+    final before = life.money;
+    engine.choose(life, scene, scene.choices.first);
+    expect(life.money, before - insuranceExcess);
+    expect(h.condition, greaterThanOrEqualTo(90));
+    expect(premiumFor(life, h), greaterThan(premium));
+    life.sceneQueue.clear();
+    life.lastYear = [];
+    yearlyMoney(life, Random(2));
+    expect(life.lastYear.any((l) => l.$1 == 'Home insurance'), isTrue);
   });
 }

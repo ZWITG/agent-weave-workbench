@@ -6,6 +6,7 @@ import 'health.dart' show exposeTo;
 import 'jobs.dart' show leaveJob;
 import 'justice.dart' show caughtInTheAct, convictions, hasSeriousRecord;
 import 'models.dart';
+import 'possessions.dart' show hostingCapacity;
 import 'school.dart' show inSchool;
 import 'storylet.dart';
 import 'world.dart';
@@ -240,6 +241,13 @@ Storylet? communityScene(String id, List<String> args, Life l) {
           ...family,
         ].where((n) => !guests.contains(n)).toList();
         final events = <String>[];
+        final room = hostingCapacity(l);
+        if (guests.length > room) {
+          l.stats.add('happiness', -1);
+          events.add(
+            'With ${guests.length} people in a home built for $room, the queue for the bathroom became its own party.',
+          );
+        }
         final ex = l.npcs.where((n) => n.circle == 'Exes' && n.alive);
         if (ex.isNotEmpty &&
             l.who('@partner') != null &&

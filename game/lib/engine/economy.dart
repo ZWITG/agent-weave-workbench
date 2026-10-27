@@ -7,6 +7,7 @@ import 'health.dart' show healthCosts;
 import 'homes.dart' show homeOf, lettingOf, rentFor;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
+import 'possessions.dart';
 import 'pets.dart' show petCosts;
 import 'social.dart' show socialIncome;
 
@@ -139,6 +140,7 @@ int forecastNextYear(Life life) {
     total += c.$2;
   }
   if (life.business != null) total += life.business!.profit;
+  if (life.age + 1 >= 18) total -= homeInsuranceCost(life);
   return total;
 }
 
@@ -252,6 +254,7 @@ List<String> yearlyMoney(Life life, Random rng) {
   for (final (label, amount) in healthCosts(life)) {
     cash(label, amount);
   }
+  if (life.age >= 18) cash('Home insurance', -homeInsuranceCost(life));
   if (life.age >= 18 && jailed) {
     lines.add(('Prison covers food and a bed', 0));
     for (final a in life.assets) {
@@ -407,6 +410,19 @@ ActionResult repay(Life life, String name, int amount) {
 ActionResult sellAsset(Life life, Asset a) {
   life.assets.remove(a);
   switch (a.kind) {
+    case 'collectible':
+      final (price, why) = collectibleSale(a);
+      life.money += price;
+      return ActionResult('You sold your ${a.name.toLowerCase()}.', [
+        'Money +${_m(price)}',
+        if (why != null) 'Why: $why',
+      ]);
+    case 'heirloom':
+      life.money += a.value;
+      return ActionResult(
+        'You sold the family ${a.name.toLowerCase()}. ${sellHeirloomFallout(life, a)}',
+        ['Money +${_m(a.value)}'],
+      );
     case 'rental':
       life.flags.remove('own_flat');
       final deposit = (a.info['deposit'] as int?) ?? 0;

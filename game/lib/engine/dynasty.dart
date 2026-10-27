@@ -6,6 +6,7 @@ import 'family.dart';
 import 'lifespan.dart';
 import 'love.dart';
 import 'models.dart';
+import 'possessions.dart';
 import 'storylet.dart';
 
 /// Generations and dynasty (plan Social §4): continue as an heir, the heir
@@ -20,7 +21,7 @@ List<Npc> heirsOf(Life l) => childrenOf(l).where((c) => c.alive).toList();
 /// Estate after debts and estate tax (20% above \$500,000). Heirs never
 /// inherit negative net worth (plan GE-005).
 int estateOf(Life l) {
-  final gross = max(0, l.netWorth);
+  final gross = max(0, l.netWorth - heirloomValue(l));
   final tax = gross > 500000 ? ((gross - 500000) * 0.2).round() : 0;
   return gross - tax;
 }
@@ -143,6 +144,17 @@ Life heirLife(Life old, Npc heir) {
     life.trust = share;
   }
   life.flags['heir'] = Memory(age, 'inheriting from ${old.firstName}');
+  final heirlooms = passHeirlooms(old);
+  life.assets.addAll(heirlooms);
+  for (final h in heirlooms) {
+    life.feed.add(
+      FeedEntry(
+        age,
+        'You inherited the family ${h.name.toLowerCase()}: ${h.info['about']}. ${heirloomHistory(h).length} people have owned it before you.',
+        kind: 'milestone',
+      ),
+    );
+  }
   life.feed.add(
     FeedEntry(
       age,

@@ -19,6 +19,7 @@ import 'jobs.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
 import 'models.dart';
+import 'possessions.dart';
 import 'relationships.dart';
 import 'scenes.dart';
 import 'school.dart';
@@ -216,6 +217,7 @@ class GameEngine {
     life.quotes = Map.of(world.pricesFor(life.year));
     life.marks.add('lived:${life.country}');
     if (shape != 'two') life.flags['family_$shape'] = Memory(0, 'your family');
+    maybeFamilyHeirloom(life, Random(s * 17 + 3));
     return life;
   }
 
@@ -255,6 +257,7 @@ class GameEngine {
     for (final line in [
       ...prisonYear(life, _rngFor(life, 67)),
       ...homeYear(life, _rngFor(life, 71)),
+      ...possessionsYear(life, _rngFor(life, 73)),
     ]) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }

@@ -13,6 +13,7 @@ import 'activities.dart';
 import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'wealth_more.dart';
+import '../engine/possessions.dart';
 import 'widgets.dart';
 
 const _good = Color(0xFF5EE6A8);
@@ -423,11 +424,7 @@ class _WealthTabState extends State<WealthTab> {
   // ---------------- Home and vehicles ----------------
 
   List<Widget> _assets(BuildContext context, Life life) {
-    final shop = allActions
-        .where(
-          (a) => const {'rent_flat', 'buy_house', 'buy_car'}.contains(a.id),
-        )
-        .toList();
+    final shop = allActions.where((a) => a.category == 'Assets').toList();
     return [
       if (life.assets.isEmpty)
         Padding(
@@ -517,6 +514,10 @@ IconData _assetIcon(Asset a) => switch (a.kind) {
   'house' => Icons.home_rounded,
   'rental' => Icons.key_rounded,
   'valuable' => Icons.diamond_rounded,
+  'boat' => Icons.sailing_rounded,
+  'plane' => Icons.flight_rounded,
+  'collectible' => Icons.style_rounded,
+  'heirloom' => Icons.auto_awesome_rounded,
   _ => Icons.directions_car_rounded,
 };
 
@@ -1170,7 +1171,7 @@ class _AssetCard extends StatelessWidget {
               ),
             ],
           ),
-          if (!rental) ...[
+          if (!rental && a.kind != 'collectible' && a.kind != 'heirloom') ...[
             const SizedBox(height: 10),
             Row(
               children: [
@@ -1241,6 +1242,20 @@ String _details(Asset a) {
     for (final t in traits) homeTraits[t]?.$1 ?? t,
     if (i['deposit'] != null) 'deposit ${money(i['deposit'] as int)}',
     if (a.kind == 'car' && (i['dep'] as int? ?? 15) < 0) 'classic: gains value',
+    if (a.kind == 'house') ...[
+      for (final r in roomsOf(a))
+        homeUpgrades.where((u) => u.id == r).firstOrNull?.name.toLowerCase() ??
+            r,
+      insured(a) ? 'insured' : 'not insured',
+    ],
+    if (a.kind == 'collectible') ...[
+      '${collectibleTypes[i['type']] ?? 'Collectible'}: ${trendLabel(-(i['dep'] as int? ?? 0))} this year',
+      i['checked'] == true
+          ? (i['fake'] == true ? 'a fake' : 'genuine')
+          : 'no papers, not checked',
+    ],
+    if (a.kind == 'heirloom')
+      'Owned before you by ${heirloomHistory(a).join(', ')}',
   ].join(' · ');
 }
 
