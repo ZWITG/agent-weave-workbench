@@ -417,11 +417,19 @@ final moreActions = <GameAction>[
               'delivered food all weekend',
               'tutored a student',
             ];
-      final pay =
+      // Reviews build a reputation that raises your rates (plan CA-002).
+      final rep = life.freelanceRep;
+      final base =
           (life.age < 18 ? 30 : 200) + rng.nextInt(life.age < 18 ? 60 : 400);
+      final pay = (base * (1 + rep / 100)).round();
       life.money += pay;
+      final good = rng.nextInt(100) < 55 + life.stats['discipline'] ~/ 4;
+      life.freelanceRep = (rep + (good ? 6 : -4)).clamp(0, 100);
       return ActionResult('You ${gigs[rng.nextInt(gigs.length)]}.', [
         'Money +\$$pay',
+        good
+            ? 'A 5-star review: reputation ${life.freelanceRep}'
+            : 'A grumpy review: reputation ${life.freelanceRep}',
       ]);
     },
   ),

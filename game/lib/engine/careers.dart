@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'jobs.dart';
 import 'models.dart';
 
 /// The Path tab: education routes, the job board and career ladders.
@@ -211,8 +212,8 @@ final educationActions = <GameAction>[
 
 // ---------------- Careers ----------------
 
-/// Ladder salary multipliers per step.
-const _rankPay = [1.0, 1.3, 1.7, 2.4];
+/// Ladder salary multipliers per step (up to 5 steps).
+const _rankPay = [1.0, 1.3, 1.7, 2.4, 3.6];
 
 /// Years in a role before the next promotion can be asked for.
 const yearsPerPromotion = 2;
@@ -226,6 +227,12 @@ class Career {
     required this.needs,
     this.minAge = 18,
     this.minSmarts = 0,
+    this.keyStat = 'smarts',
+    this.special = false,
+    this.extra,
+    this.interview = 'office',
+    this.elected = false,
+    this.blurb,
   });
 
   final String id;
@@ -237,6 +244,22 @@ class Career {
   final String needs;
   final int minAge;
   final int minSmarts;
+
+  /// The stat that drives performance in this job (plan: 1–2 key stats).
+  final String keyStat;
+
+  /// Special careers (all free; plan Module 5) have their own entry rules
+  /// and a signature mechanic (jobs.dart).
+  final bool special;
+  final String? Function(Life life)? extra;
+
+  /// Interview question family: office, care, tech, service, uniform,
+  /// creative.
+  final String interview;
+
+  /// Politicians move up by winning elections, not promotions.
+  final bool elected;
+  final String? blurb;
 
   String get title => ladder.first;
   int salaryAt(int rank) => (baseSalary * _rankPay[rank]).round();
@@ -262,20 +285,22 @@ class Career {
   String? lockReason(Life life) {
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.careerId == id) return 'Your current job';
+    if (life.retired) return 'You are retired';
     if (life.usedActions.contains('apply:$id')) return 'Applied this year';
     if (studying(life) && needs != 'any') return 'Finish your course first';
     if (!_meetsEducation(life)) return 'Needs: $needsLabel';
     if (life.stats['smarts'] < minSmarts) return 'Needs Smarts $minSmarts+';
-    return null;
+    return extra?.call(life);
   }
 
-  /// Hiring chance in percent (shown on the job board).
-  /// Better-paid jobs are more competitive.
+  /// Hiring chance in percent before the interview (shown on the job
+  /// board). Better-paid jobs are more competitive.
   int chance(Life life) =>
       (49 +
               life.stats['smarts'] ~/ 3 +
               life.stats['charisma'] ~/ 5 -
               baseSalary ~/ 2000 +
+              (special ? -10 : 0) +
               (life.worldMods['hiring'] ?? 0) +
               (life.worldMods['name'] ?? 0) +
               (life.difficulty == 'easy'
@@ -285,6 +310,54 @@ class Career {
                   : 0))
           .clamp(5, 95);
 }
+
+bool _has(Life l, String degree) => l.school.degrees.contains(degree);
+String? _stat(Life l, String s, int min) => l.stats[s] >= min
+    ? null
+    : 'Needs ${s[0].toUpperCase()}${s.substring(1)} $min+';
+
+String? _actorReq(Life l) =>
+    l.school.electives.contains('Drama') ||
+        l.school.clubs.contains('Drama club') ||
+        l.flags.containsKey('clique_stage') ||
+        l.school.major == 'Fine Arts'
+    ? null
+    : _stat(l, 'charisma', 60) ?? _stat(l, 'looks', 55);
+String? _musicianReq(Life l) =>
+    _stat(l, 'creativity', 55) ??
+    (l.school.lessons == 'Piano' ||
+            l.school.clubs.contains('Band') ||
+            l.school.clubs.contains('Choir') ||
+            l.school.electives.contains('Music') ||
+            l.flags.containsKey('instrument')
+        ? null
+        : 'Needs music lessons, band, choir or the Music elective');
+String? _athleteReq(Life l) =>
+    _stat(l, 'athleticism', 70) ??
+    (l.school.seasons > 0 || l.flags.containsKey('captain')
+        ? null
+        : 'Needs a school team season');
+String? _modelReq(Life l) => _stat(l, 'looks', 70);
+String? _politicsReq(Life l) =>
+    _stat(l, 'charisma', 55) ??
+    (l.flags.containsKey('arrested')
+        ? 'A criminal record rules this out'
+        : null);
+String? _militaryReq(Life l) =>
+    _stat(l, 'health', 60) ?? _stat(l, 'athleticism', 50);
+String? _lawyerReq(Life l) => !_has(l, 'Law')
+    ? 'Needs a Law degree (graduate school)'
+    : l.flags.containsKey('passed_bar')
+    ? null
+    : 'Needs to pass the bar exam';
+String? _doctorReq(Life l) =>
+    _has(l, 'Medicine') ? null : 'Needs a Medicine degree (graduate school)';
+String? _pilotReq(Life l) => l.flags.containsKey('pilot_licence')
+    ? null
+    : 'Needs a commercial pilot licence (flight school)';
+String? _hustlerReq(Life l) => null;
+String? _vetReq(Life l) =>
+    _has(l, 'Veterinary Medicine') ? null : 'Needs a Veterinary degree';
 
 const careers = <Career>[
   Career(
@@ -299,6 +372,8 @@ const careers = <Career>[
     baseSalary: 19000,
     needs: 'any',
     minAge: 16,
+    keyStat: 'charisma',
+    interview: 'service',
   ),
   Career(
     id: 'cook',
@@ -307,6 +382,8 @@ const careers = <Career>[
     baseSalary: 21000,
     needs: 'any',
     minAge: 16,
+    keyStat: 'creativity',
+    interview: 'service',
   ),
   Career(
     id: 'office',
@@ -319,13 +396,23 @@ const careers = <Career>[
     ],
     baseSalary: 23000,
     needs: 'school',
+    keyStat: 'discipline',
   ),
   Career(
     id: 'police',
     field: 'Public service',
-    ladder: ['Police cadet', 'Police officer', 'Detective', 'Police chief'],
+    ladder: [
+      'Police cadet',
+      'Police officer',
+      'Sergeant',
+      'Detective',
+      'Police chief',
+    ],
     baseSalary: 30000,
     needs: 'school',
+    keyStat: 'discipline',
+    interview: 'uniform',
+    extra: _noRecord,
   ),
   Career(
     id: 'electrician',
@@ -338,6 +425,8 @@ const careers = <Career>[
     ],
     baseSalary: 29000,
     needs: 'trade',
+    keyStat: 'discipline',
+    interview: 'tech',
   ),
   Career(
     id: 'lab',
@@ -351,6 +440,7 @@ const careers = <Career>[
     baseSalary: 30000,
     needs: 'associate',
     minSmarts: 50,
+    interview: 'tech',
   ),
   Career(
     id: 'nurse',
@@ -359,6 +449,8 @@ const careers = <Career>[
     baseSalary: 35000,
     needs: 'degree',
     minSmarts: 55,
+    keyStat: 'karma',
+    interview: 'care',
   ),
   Career(
     id: 'teacher',
@@ -367,6 +459,8 @@ const careers = <Career>[
     baseSalary: 33000,
     needs: 'degree',
     minSmarts: 50,
+    keyStat: 'charisma',
+    interview: 'care',
   ),
   Career(
     id: 'analyst',
@@ -388,8 +482,168 @@ const careers = <Career>[
     baseSalary: 45000,
     needs: 'degree',
     minSmarts: 65,
+    interview: 'tech',
+  ),
+  // ---- Special careers (all free) ----
+  Career(
+    id: 'actor',
+    field: 'Acting',
+    ladder: [
+      'Extra',
+      'Bit-part actor',
+      'Supporting actor',
+      'Lead actor',
+      'Movie star',
+    ],
+    baseSalary: 14000,
+    needs: 'any',
+    keyStat: 'charisma',
+    special: true,
+    extra: _actorReq,
+    interview: 'creative',
+    blurb: 'Auditions decide every step; big breaks happen.',
+  ),
+  Career(
+    id: 'musician',
+    field: 'Music',
+    ladder: [
+      'Busker',
+      'Open-mic regular',
+      'Signed artist',
+      'Touring headliner',
+    ],
+    baseSalary: 9000,
+    needs: 'any',
+    minAge: 16,
+    keyStat: 'creativity',
+    special: true,
+    extra: _musicianReq,
+    interview: 'creative',
+    blurb: 'Write and release songs; a hit changes everything.',
+  ),
+  Career(
+    id: 'athlete',
+    field: 'Sport',
+    ladder: ['Amateur', 'Semi-pro', 'Professional', 'All-star'],
+    baseSalary: 15000,
+    needs: 'any',
+    keyStat: 'athleticism',
+    special: true,
+    extra: _athleteReq,
+    interview: 'uniform',
+    blurb: 'Seasons, injuries and an early retirement.',
+  ),
+  Career(
+    id: 'model',
+    field: 'Modelling',
+    ladder: ['Catalogue model', 'Runway model', 'Campaign model', 'Supermodel'],
+    baseSalary: 16000,
+    needs: 'any',
+    keyStat: 'looks',
+    special: true,
+    extra: _modelReq,
+    interview: 'creative',
+    blurb: 'Castings and campaigns; looks are everything here.',
+  ),
+  Career(
+    id: 'politician',
+    field: 'Politics',
+    ladder: [
+      'Council member',
+      'Mayor',
+      'Member of parliament',
+      'Head of government',
+    ],
+    baseSalary: 26000,
+    needs: 'school',
+    minAge: 21,
+    keyStat: 'charisma',
+    special: true,
+    extra: _politicsReq,
+    elected: true,
+    interview: 'office',
+    blurb: 'Win elections to move up; scandals end careers.',
+  ),
+  Career(
+    id: 'military',
+    field: 'Armed forces',
+    ladder: ['Private', 'Corporal', 'Sergeant', 'Lieutenant', 'Colonel'],
+    baseSalary: 24000,
+    needs: 'any',
+    keyStat: 'athleticism',
+    special: true,
+    extra: _militaryReq,
+    interview: 'uniform',
+    blurb: 'Deployments bring risk, medals and respect.',
+  ),
+  Career(
+    id: 'lawyer',
+    field: 'Law',
+    ladder: ['Associate', 'Senior associate', 'Partner', 'Judge'],
+    baseSalary: 52000,
+    needs: 'degree',
+    keyStat: 'smarts',
+    special: true,
+    extra: _lawyerReq,
+    blurb: 'Pass the bar exam, win cases, maybe take the bench.',
+  ),
+  Career(
+    id: 'doctor',
+    field: 'Medicine',
+    ladder: [
+      'Resident doctor',
+      'Attending physician',
+      'Surgeon',
+      'Chief of medicine',
+    ],
+    baseSalary: 58000,
+    needs: 'degree',
+    keyStat: 'smarts',
+    special: true,
+    extra: _doctorReq,
+    interview: 'care',
+    blurb: 'Long shifts, life-and-death calls.',
+  ),
+  Career(
+    id: 'pilot',
+    field: 'Aviation',
+    ladder: ['First officer', 'Captain', 'Senior captain', 'Chief pilot'],
+    baseSalary: 48000,
+    needs: 'school',
+    keyStat: 'discipline',
+    special: true,
+    extra: _pilotReq,
+    interview: 'uniform',
+    blurb: 'Needs a licence from flight school.',
+  ),
+  Career(
+    id: 'vet',
+    field: 'Animal care',
+    ladder: ['Junior vet', 'Veterinarian', 'Senior vet', 'Practice owner'],
+    baseSalary: 46000,
+    needs: 'degree',
+    keyStat: 'karma',
+    special: true,
+    extra: _vetReq,
+    interview: 'care',
+  ),
+  Career(
+    id: 'hustler',
+    field: 'The street',
+    ladder: ['Busker', 'Street seller', 'Market regular', 'Street legend'],
+    baseSalary: 6000,
+    needs: 'any',
+    minAge: 14,
+    keyStat: 'charisma',
+    special: true,
+    extra: _hustlerReq,
+    interview: 'service',
+    blurb: 'Earnings vary every year. Legal hustles only here.',
   ),
 ];
+
+String? _noRecord(Life l) =>
+    l.flags.containsKey('arrested') ? 'Needs a clean record' : null;
 
 Career? careerById(String? id) {
   for (final c in careers) {
@@ -398,35 +652,31 @@ Career? careerById(String? id) {
   return null;
 }
 
-/// Puts the player into [c] at its first step.
+/// Puts the player into [c] at its first step, with a new boss and
+/// colleagues (jobs.dart).
 void startCareer(Life life, Career c) {
+  leaveWorkplace(life);
   life.careerId = c.id;
   life.careerRank = 0;
   life.jobSince = life.age;
   life.job = c.title;
   life.salary = c.salaryAt(0);
+  life.retired = false;
+  life.performance = 55;
+  life.lowPerfYears = 0;
+  life.jobLostAge = null;
+  newWorkplace(life, c);
 }
 
-/// Applies for a job on the board. Rejections list the main reasons.
+/// Applying starts a 3-question interview (jobs.dart); the last answer
+/// decides the job.
 ActionResult applyForCareer(Life life, Career c, Random rng) {
   life.usedActions.add('apply:${c.id}');
-  if (rng.nextInt(100) < c.chance(life)) {
-    final had = life.job;
-    startCareer(life, c);
-    return ActionResult(
-      had == null
-          ? 'You were hired as a ${c.title}!'
-          : 'You left your job as $had and were hired as a ${c.title}!',
-      ['Salary \$${life.salary}/year'],
-    );
-  }
-  return ActionResult(
-    'The ${c.field.toLowerCase()} job went to someone else.',
-    [
-      'Why: Smarts ${life.stats['smarts']}, Charisma ${life.stats['charisma']}',
-      'Try again next year',
-    ],
-  );
+  life.interview = InterviewState();
+  life.sceneQueue.add('interview:${c.id}:0');
+  return ActionResult('Your application for ${c.title} got you an interview.', [
+    'Answer three questions',
+  ]);
 }
 
 /// What the next ladder step needs, or null at the top / with no career.
@@ -434,9 +684,24 @@ String? promotionLock(Life life) {
   final c = careerById(life.careerId);
   if (c == null) return 'Needs a job from the job board';
   if (life.careerRank >= c.ladder.length - 1) return 'Top of the ladder';
+  if (c.elected) return 'Politicians move up by winning elections';
   final left = yearsPerPromotion - (life.age - life.jobSince);
   if (left > 0) return 'Needs $left more year${left == 1 ? '' : 's'} in role';
+  if (c.id == 'lawyer' && life.careerRank == 2 && life.stats['karma'] < 50) {
+    return 'Judges need Karma 50+';
+  }
   return null;
+}
+
+/// Plan formula: p = clamp(0.05 + (Perf − 60)/100 + tenure×0.03 +
+/// bossRel/400, 0, 0.6), plus 10 points for working hard this year.
+int promotionOdds(Life life) {
+  final tenure = life.age - life.jobSince;
+  final boss = bossOf(life)?.bond ?? 50;
+  final p = (0.05 + (life.performance - 60) / 100 + tenure * 0.03 + boss / 400)
+      .clamp(0.0, 0.6);
+  return (p * 100).round() +
+      (life.usedActions.contains('work_harder') ? 10 : 0);
 }
 
 final careerActions = <GameAction>[
@@ -449,18 +714,19 @@ final careerActions = <GameAction>[
     extraCheck: promotionLock,
     run: (life, rng) {
       final c = careerById(life.careerId)!;
-      final worked = life.usedActions.contains('work_harder');
-      final chance =
-          30 +
-          life.stats['discipline'] ~/ 3 +
-          life.stats['smarts'] ~/ 6 +
-          (worked ? 15 : 0);
-      if (rng.nextInt(100) < chance) {
+      final odds = promotionOdds(life);
+      if (rng.nextInt(100) < odds) {
         life.careerRank++;
         life.jobSince = life.age;
         life.job = c.ladder[life.careerRank];
         final raise = c.salaryAt(life.careerRank) - life.salary;
         life.salary = c.salaryAt(life.careerRank);
+        if (life.careerRank == c.ladder.length - 1) {
+          life.flags['top_of_career'] = Memory(
+            life.age,
+            'becoming ${life.job}',
+          );
+        }
         return ActionResult('You were promoted to ${life.job}!', [
           'Salary +\$$raise/year',
         ]);
@@ -471,8 +737,9 @@ final careerActions = <GameAction>[
           {'happiness': -2},
         )
         ..notes.addAll([
-          'Why: Discipline ${life.stats['discipline']}',
-          if (!worked) 'Tip: work harder this year first',
+          'Why: odds were $odds% (performance ${life.performance}%, ${life.age - life.jobSince} years in role, boss ${bossOf(life)?.bond ?? 50}%)',
+          if (!life.usedActions.contains('work_harder'))
+            'Tip: work harder this year first',
         ]);
     },
   ),

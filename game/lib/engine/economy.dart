@@ -184,6 +184,9 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash('Salary', life.salary);
     cash('Income tax', -incomeTax(life.salary));
   }
+  if (life.age >= 8 && life.age <= 17) {
+    cash('Pocket money', 50 + life.age * 10);
+  }
   if (studying(life) && life.school.tuition > 0) {
     cash('Tuition', -life.school.tuition);
   }

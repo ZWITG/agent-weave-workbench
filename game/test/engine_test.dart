@@ -7,6 +7,7 @@ import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/lifespan.dart';
 import 'package:relivable/engine/engine.dart';
+import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/npc_life.dart';
 import 'package:relivable/engine/relationships.dart';
@@ -266,7 +267,7 @@ void main() {
   });
 
   test('every job on the board is reachable by some education path', () {
-    for (final c in careers) {
+    for (final c in careers.where((c) => !c.special)) {
       final life = engine.newLife(seed: 33)..age = 25;
       life.stats.values['smarts'] = 90;
       life.education = switch (c.needs) {
@@ -545,5 +546,54 @@ void main() {
     expect(hug.appliesTo(t), isFalse);
     expect(help.appliesTo(t), isTrue);
     expect(help.appliesTo(life.npc('mother')!), isFalse);
+  });
+
+  test('special careers explain their entry rules', () {
+    final life = engine.newLife(seed: 80)..age = 25;
+    life.education = 'high school graduate';
+    for (final c in careers.where((c) => c.special && c.id != 'hustler')) {
+      for (final st in [...Stats.visible, ...Stats.hidden]) {
+        life.stats.values[st] = 10;
+      }
+      expect(c.lockReason(life), isNotNull, reason: c.id);
+    }
+    life.stats.values['looks'] = 80;
+    expect(careerById('model')!.lockReason(life), isNull);
+  });
+
+  test('interviews take three answers and explain the result', () {
+    final life = engine.newLife(seed: 81)..age = 22;
+    life.education = 'high school graduate';
+    final office = careerById('office')!;
+    applyForCareer(life, office, Random(1));
+    var scene = engine.nextScene(life);
+    var answers = 0;
+    Outcome? last;
+    while (scene != null) {
+      last = engine.choose(life, scene, scene.choices.first);
+      answers++;
+      scene = engine.nextScene(life);
+    }
+    expect(answers, 3);
+    expect(last!.text, contains('Interview score'));
+  });
+
+  test('performance drives firing and promotions show their odds', () {
+    final life = engine.newLife(seed: 82)..age = 30;
+    startCareer(life, careerById('office')!);
+    expect(bossOf(life), isNotNull);
+    life.performance = 10;
+    life.stats.values['discipline'] = 5;
+    life.stress = 90;
+    for (var y = 0; y < 3 && life.job != null; y++) {
+      life.age++;
+      workYear(life, Random(y), hard: false, slack: true);
+    }
+    expect(life.job, isNull);
+    expect(life.flags.containsKey('fired'), isTrue);
+    startCareer(life, careerById('office')!);
+    life.performance = 90;
+    life.jobSince = life.age - 4;
+    expect(promotionOdds(life), greaterThan(30));
   });
 }

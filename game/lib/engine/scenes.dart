@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'lifespan.dart';
+import 'jobs.dart';
 import 'models.dart';
 import 'school.dart';
 import 'storylet.dart';
@@ -23,6 +24,17 @@ Storylet? buildScene(String id, Life life) {
     'lessons' => lessonsScene(),
     'tryouts' => tryoutsScene(life),
     'cheat' => cheatScene(),
+    'interview' =>
+      parts.length == 3
+          ? interviewScene(life, parts[1], int.tryParse(parts[2]) ?? 0)
+          : null,
+    'burnout' ||
+    'audition' ||
+    'election' ||
+    'deployment' ||
+    'hospital_case' ||
+    'big_case' ||
+    'police_case' => jobScene(parts.first, life),
     _ => null,
   };
 }

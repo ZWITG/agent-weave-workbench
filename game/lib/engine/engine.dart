@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'careers.dart';
 import 'economy.dart';
+import 'jobs.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
 import 'models.dart';
@@ -139,10 +140,15 @@ class GameEngine {
     final echo = world.echoFor(life);
     if (echo != null) {
       life.echo.addAll(echo);
-      life.flags['echo_${echo['relation']}'] = Memory(
-        0,
-        'hearing about ${echo['person']}',
-      );
+      final memory = Memory(0, 'hearing about ${echo['person']}');
+      life.flags['echo_${echo['relation']}'] = memory;
+      // Every link that applies: a story from your city is also part of
+      // your country's history.
+      final scope = echo['scope'];
+      if (scope == life.city) life.flags['echo_city'] = memory;
+      if (scope == life.country || country.cities.contains(scope)) {
+        life.flags['echo_country'] = memory;
+      }
     }
     world.ensureYear(life.year, life.country, life.city);
     life.economy = world.economyFor(life.year);
@@ -158,6 +164,8 @@ class GameEngine {
   Storylet? ageUp(Life life) {
     if (!life.alive || life.age >= sliceEndAge) return null;
     life.lastYearStats = Map.of(life.stats.values);
+    final workedHard = life.usedActions.contains('work_harder');
+    final slacked = life.usedActions.contains('slack_off');
     life.age += 1;
     life.usedActions.clear();
     life.interactionCounts.clear();
@@ -177,6 +185,14 @@ class GameEngine {
     }
     _worldYear(life);
     for (final line in yearlyMoney(life, rng)) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+    }
+    for (final line in workYear(
+      life,
+      _rngFor(life, 41),
+      hard: workedHard,
+      slack: slacked,
+    )) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
     life.feed.addAll(npcUpdates(life, _rngFor(life, 23)));

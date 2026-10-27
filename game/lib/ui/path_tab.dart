@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
 import '../engine/careers.dart';
+import '../engine/jobs.dart';
 import '../engine/models.dart';
 import '../engine/school.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'school_card.dart';
-import 'result_popup.dart';
 import 'widgets.dart';
 
 /// The Path tab: where you are (school or job), the career ladder with the
@@ -24,6 +24,9 @@ class PathTab extends StatefulWidget {
 
 class _PathTabState extends State<PathTab> {
   final _showLocked = <String>{};
+
+  /// Job board filter: all, open or special (plan CA-007).
+  String _jobFilter = 'all';
 
   GameController get c => widget.controller;
   Life get life => c.life!;
@@ -43,6 +46,11 @@ class _PathTabState extends State<PathTab> {
   static const _workIds = {
     'ask_promotion',
     'work_harder',
+    'slack_off',
+    'chores',
+    'retire',
+    'bar_exam',
+    'flight_school',
     'ask_raise',
     'part_time',
     'freelance',
@@ -86,10 +94,20 @@ class _PathTabState extends State<PathTab> {
           (a) => actionRow(context, c, a, closeSheet: false),
           (a) => a.lockReason(life) == null,
         ),
+        const SizedBox(height: 18),
+        _jobFilters(),
         _section(
           'Job board',
           'jobs',
-          careers,
+          careers
+              .where(
+                (j) => switch (_jobFilter) {
+                  'open' => j.lockReason(life) == null,
+                  'special' => j.special,
+                  _ => true,
+                },
+              )
+              .toList(),
           _jobRow,
           (j) => j.lockReason(life) == null,
           empty: life.age < 16
@@ -141,6 +159,7 @@ class _PathTabState extends State<PathTab> {
   /// Career ladder: done steps, "you", and the next step's requirement.
   Widget _ladder(Career career) {
     final next = promotionLock(life);
+    final boss = bossOf(life);
     return NFCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,6 +168,46 @@ class _PathTabState extends State<PathTab> {
             '${career.field} ladder',
             style: NF.sora(15, weight: FontWeight.w700),
           ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text('Performance', style: NF.sora(12, color: NF.muted)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: life.performance / 100,
+                    minHeight: 7,
+                    backgroundColor: NF.surface2,
+                    color: life.performance >= 60
+                        ? const Color(0xFF5EE6A8)
+                        : life.performance >= 30
+                        ? NF.orange
+                        : NF.danger,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                '${life.performance}%',
+                style: NF.sora(12, weight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Moves with effort, ${career.keyStat}, your boss and stress.${next == null ? ' Promotion odds now: ${promotionOdds(life)}%.' : ''}${life.stress > 70 ? ' Stress is high.' : ''}',
+            style: NF.sora(11, color: NF.muted),
+          ),
+          if (boss != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'Boss: ${boss.name} (${boss.bond}%)',
+                style: NF.sora(12, color: NF.soft),
+              ),
+            ),
           const SizedBox(height: 10),
           for (var i = 0; i < career.ladder.length; i++)
             Padding(
@@ -211,20 +270,29 @@ class _PathTabState extends State<PathTab> {
       title: j.title,
       detail:
           lock ??
-          '${j.field} · ${money(j.salaryAt(0))}/year · ${j.chance(life)}% chance',
+          '${j.field} · ${money(j.salaryAt(0))}/year${j.special ? ' · ${j.blurb ?? 'Special career'}' : ''}',
       locked: lock != null,
       trailing: Icons.send_rounded,
-      onTap: () {
-        final r = c.applyForJob(j);
-        showResultPopup(
-          context,
-          r,
-          title: life.careerId == j.id ? 'Hired!' : 'Application: ${j.title}',
-          icon: Icons.work_outline_rounded,
-        );
-      },
+      // Applying opens a 3-question interview on the Life tab.
+      onTap: () => c.applyForJob(j),
     );
   }
+
+  Widget _jobFilters() => Wrap(
+    spacing: 8,
+    children: [
+      for (final (k, label) in const [
+        ('all', 'All jobs'),
+        ('open', 'Open to me'),
+        ('special', 'Special careers'),
+      ])
+        ChoiceChip(
+          label: Text(label),
+          selected: _jobFilter == k,
+          onSelected: (_) => setState(() => _jobFilter = k),
+        ),
+    ],
+  );
 
   /// Open options first; locked ones fold under "Show n locked".
   Widget _section<T>(

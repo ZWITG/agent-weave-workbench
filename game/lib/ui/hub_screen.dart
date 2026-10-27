@@ -27,12 +27,22 @@ class HubScreen extends StatefulWidget {
 
 class _HubScreenState extends State<HubScreen> {
   int _tab = 0;
+  String? _lastEvent;
 
   GameController get c => widget.controller;
   Life get life => c.life!;
 
   @override
   Widget build(BuildContext context) {
+    // A new event or scene (an interview from the Path tab, say) brings
+    // you back to the Life tab, where its card is.
+    final event = c.pendingEvent?.id;
+    if (event != null && event != _lastEvent && _tab != 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _tab = 0);
+      });
+    }
+    _lastEvent = event;
     final tabs = [
       _LifeTab(controller: c),
       PeopleTab(controller: c),

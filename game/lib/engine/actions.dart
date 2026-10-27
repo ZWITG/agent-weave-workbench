@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'careers.dart';
 import 'economy.dart';
+import 'jobs.dart';
 import 'lifespan.dart';
 import 'school.dart';
 import 'minigame_rules.dart';
@@ -225,11 +226,7 @@ final _baseActions = <GameAction>[
     extraCheck: (life) => life.job == null ? 'You don\'t have a job' : null,
     run: (life, rng) {
       final old = life.job;
-      life.job = null;
-      life.salary = 0;
-      life.careerId = null;
-      life.careerRank = 0;
-      life.jobLostAge = life.age;
+      leaveJob(life);
       return statChange(life, 'You quit your job as $old.', {'happiness': 3});
     },
   ),
@@ -342,6 +339,7 @@ final _lifeActions = <GameAction>[
 final allActions = <GameAction>[
   ..._lifeActions,
   ...schoolActions,
+  ...jobActions,
   ..._baseActions,
   ...moreActions,
   ...educationActions,

@@ -320,6 +320,7 @@ class World {
       'person': s.person!,
       'deed': s.headline,
       'year': '${s.year}',
+      'scope': s.scope,
     };
   }
 

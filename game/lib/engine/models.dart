@@ -469,6 +469,17 @@ class Life {
   /// School and university record (school.dart).
   SchoolRecord school = SchoolRecord();
 
+  // ---- Work (jobs.dart) ----
+  /// Performance in the current job, 0–100 (plan CA-005).
+  int performance = 55;
+  int lowPerfYears = 0;
+  int freelanceRep = 0;
+  InterviewState? interview;
+
+  /// One stress meter for school and work (plan Module 2).
+  int get stress => school.stress;
+  set stress(int v) => school.stress = v.clamp(0, 100);
+
   void _logStat(String key, int delta) {
     statLog.add(StatChange(age, key, delta, reason));
     if (statLog.length > 120) statLog.removeAt(0);
@@ -614,6 +625,10 @@ class Life {
     'chapter': chapter,
     'sceneQueue': sceneQueue,
     'school': school.toJson(),
+    'performance': performance,
+    'lowPerfYears': lowPerfYears,
+    'freelanceRep': freelanceRep,
+    if (interview != null) 'interview': interview!.toJson(),
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -699,6 +714,12 @@ class Life {
       ])
       ..discovered.addAll(List<String>.from(j['discovered'] ?? []))
       ..sceneQueue.addAll(List<String>.from(j['sceneQueue'] ?? []))
+      ..performance = j['performance'] ?? 55
+      ..lowPerfYears = j['lowPerfYears'] ?? 0
+      ..freelanceRep = j['freelanceRep'] ?? 0
+      ..interview = j['interview'] == null
+          ? null
+          : InterviewState.fromJson(Map<String, dynamic>.from(j['interview']))
       ..school = j['school'] == null
           ? SchoolRecord()
           : SchoolRecord.fromJson(Map<String, dynamic>.from(j['school']));
@@ -836,4 +857,47 @@ class SchoolRecord {
     ..gradProgramme = j['gradProgramme']
     ..gradYears = j['gradYears'] ?? 0
     ..degrees = List<String>.from(j['degrees'] ?? []);
+}
+
+/// A job interview in progress: three questions, scored by job-relevant
+/// stats (plan CA-008). Keeps the best and worst answer for the result.
+class InterviewState {
+  InterviewState();
+
+  double score = 0;
+  int answered = 0;
+  String best = '';
+  String worst = '';
+  double bestScore = -1;
+  double worstScore = 2;
+
+  void record(String answer, double s) {
+    score += s;
+    answered++;
+    if (s > bestScore) {
+      bestScore = s;
+      best = answer;
+    }
+    if (s < worstScore) {
+      worstScore = s;
+      worst = answer;
+    }
+  }
+
+  Map<String, dynamic> toJson() => {
+    'score': score,
+    'answered': answered,
+    'best': best,
+    'worst': worst,
+    'bestScore': bestScore,
+    'worstScore': worstScore,
+  };
+
+  factory InterviewState.fromJson(Map<String, dynamic> j) => InterviewState()
+    ..score = (j['score'] as num).toDouble()
+    ..answered = j['answered']
+    ..best = j['best']
+    ..worst = j['worst']
+    ..bestScore = (j['bestScore'] as num).toDouble()
+    ..worstScore = (j['worstScore'] as num).toDouble();
 }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'careers.dart' show careers, startCareer;
 import 'models.dart';
 
 /// A data-driven event. Storylets live in assets/storylets/*.json so new
@@ -287,11 +288,21 @@ class Effects {
       life.eduSince = life.age;
     }
     if (job != null) {
-      life.job = job == 'none' ? null : job;
-      life.salary = salary ?? 0;
-      life.careerId = null;
-      life.careerRank = 0;
-      life.jobSince = life.age;
+      // A job title on a career ladder joins that career properly (ladder,
+      // boss, performance); anything else is a one-off job.
+      final career = careers.where((c) => c.ladder.contains(job)).firstOrNull;
+      if (career != null) {
+        startCareer(life, career);
+        life.careerRank = career.ladder.indexOf(job!);
+        life.job = job;
+        life.salary = salary ?? career.salaryAt(life.careerRank);
+      } else {
+        life.job = job == 'none' ? null : job;
+        life.salary = salary ?? 0;
+        life.careerId = null;
+        life.careerRank = 0;
+        life.jobSince = life.age;
+      }
     }
     return notes;
   }

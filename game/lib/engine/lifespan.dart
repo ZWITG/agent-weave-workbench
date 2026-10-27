@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'careers.dart';
+import 'jobs.dart' show leaveJob;
 import 'models.dart';
 
 /// A whole life, birth to death (plan Modules 3 and 9): aging, a
@@ -81,18 +82,16 @@ const statePension = 8000;
 
 /// Retiring turns part of your salary into a yearly pension (at least the
 /// state pension, more after 10+ working years).
+/// Employer pension = 0.015 × years worked × final salary (plan), at least
+/// the state pension.
 String retire(Life life) {
   final years = life.yearsWorked;
-  final earned = years >= 10
-      ? (life.salary * min(0.6, 0.02 * years)).round()
-      : 0;
+  final earned = (0.015 * years * life.salary).round();
   life.pension = max(statePension, earned);
   final old = life.job;
+  leaveJob(life);
+  life.jobLostAge = null;
   life.retired = true;
-  life.job = null;
-  life.salary = 0;
-  life.careerId = null;
-  life.careerRank = 0;
   life.flags['retired'] = Memory(life.age, 'retiring');
   return 'You retired${old == null ? '' : ' from your job as $old'} after $years working years.';
 }
