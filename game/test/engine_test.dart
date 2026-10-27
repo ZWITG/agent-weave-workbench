@@ -7,8 +7,10 @@ import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/models.dart';
+import 'package:relivable/engine/npc_life.dart';
 import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/engine/storylet.dart';
+import 'package:relivable/engine/world.dart';
 
 List<Storylet> loadStorylets() {
   final raw = File('assets/storylets/core.json').readAsStringSync();
@@ -70,6 +72,10 @@ void main() {
       final settable = <String>{
         'caught_shoplifting',
         'owns_car',
+        // set by the world when a new life is linked to an earlier one
+        'echo_surname',
+        'echo_city',
+        'echo_country',
       }; // set by actions
       for (final s in storylets) {
         for (final c in s.choices) {
@@ -304,5 +310,73 @@ void main() {
     yearlyMoney(life, Random(2));
     expect(life.debts['Mortgage'], lessThan(owed));
     expect(annuity(100000, 0.05, 25), inInclusiveRange(7090, 7100));
+  });
+
+  test('one world, one history: every life in a year reads the same news', () {
+    final world = World(seed: 7);
+    final e = GameEngine(loadStorylets(), world: world);
+    final a = e.newLife(seed: 1, countryName: 'Portugal');
+    final b = e.newLife(seed: 2, countryName: 'Portugal');
+    for (var i = 0; i < 6; i++) {
+      e.ageUp(a);
+    }
+    final seen = world
+        .storiesFor(a.year, 'Portugal', a.city)
+        .map((s) => s.headline)
+        .toList();
+    while (b.year < a.year) {
+      e.ageUp(b);
+    }
+    final global = world
+        .storiesFor(b.year, 'Portugal', b.city)
+        .where((s) => s.scope == 'global');
+    for (final s in global) {
+      expect(seen, contains(s.headline));
+    }
+    expect(world.economyFor(a.year), a.economy);
+    // The world survives saving.
+    final copy = World.fromJson(jsonDecode(jsonEncode(world.toJson())));
+    expect(
+      copy.storiesFor(a.year, 'Portugal', a.city).length,
+      world.storiesFor(a.year, 'Portugal', a.city).length,
+    );
+  });
+
+  test('a notable deed enters the history and echoes into a later life', () {
+    final world = World(seed: 9);
+    final e = GameEngine(loadStorylets(), world: world);
+    final first = e.newLife(seed: 3, countryName: 'Ireland');
+    first.age = 26;
+    first.flags['jackpot'] = Memory(26, 'winning the lottery');
+    e.checkDeeds(first);
+    expect(world.ledger.single.headline, contains('lottery'));
+    expect(world.reputation(first.surname), isNotNull);
+    world.recordLife(first);
+    // The next life starts later in the same world and can meet that story.
+    final next = e.newLife(seed: 4, countryName: 'Ireland');
+    expect(next.birthYear, greaterThanOrEqualTo(first.year));
+    expect(next.echo['person'], '${first.firstName} ${first.surname}');
+    expect(e.fill('{echo_person}', next), next.echo['person']);
+  });
+
+  test('people you know get yearly updates in the feed', () {
+    final life = engine.newLife(seed: 51)..age = 30;
+    var updates = 0;
+    for (var y = 0; y < 20; y++) {
+      updates += npcUpdates(life, Random(y)).length;
+    }
+    expect(updates, greaterThan(3));
+    expect(life.npcs.any((n) => n.news.isNotEmpty), isTrue);
+  });
+
+  test('the newspaper costs \$2 once a year and can be re-read', () {
+    final life = engine.newLife(seed: 52)..age = 20;
+    life.money = 10;
+    final paper = engine.actions.firstWhere((a) => a.id == 'newspaper');
+    engine.runAction(life, paper);
+    expect(life.money, 8);
+    expect(paper.lockReason(life), isNull);
+    engine.runAction(life, paper);
+    expect(life.money, 8);
   });
 }

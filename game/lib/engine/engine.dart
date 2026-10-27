@@ -3,9 +3,11 @@ import 'dart:math';
 import 'actions.dart';
 import 'careers.dart';
 import 'economy.dart';
+import 'npc_life.dart';
 import 'models.dart';
 import 'relationships.dart';
 import 'storylet.dart';
+import 'world.dart';
 import 'world_data.dart';
 
 /// The prototype slice runs from birth to this age (Phase 2 scope).
@@ -49,9 +51,13 @@ class Outcome {
 /// Pure-Dart game rules: no Flutter imports, so the simulator bot and unit
 /// tests can run lives headlessly.
 class GameEngine {
-  GameEngine(this.storylets);
+  GameEngine(this.storylets, {World? world}) : world = world ?? World(seed: 1);
 
   final List<Storylet> storylets;
+
+  /// The player's one persistent world (world.dart). The controller swaps
+  /// in the saved world; tests use a fresh one.
+  World world;
 
   // ---------- New life ----------
 
@@ -60,8 +66,9 @@ class GameEngine {
     String? firstName,
     String? gender,
     String? countryName,
-    int startYear = 2026,
+    int? startYear,
   }) {
+    final start = startYear ?? world.year;
     final s = seed ?? DateTime.now().microsecondsSinceEpoch & 0x7fffffff;
     final rng = Random(s);
     final country = countryName != null
@@ -77,14 +84,14 @@ class GameEngine {
         id: 'mother',
         role: 'Mother',
         name: pick(country.female),
-        birthYear: startYear - 24 - rng.nextInt(14),
+        birthYear: start - 24 - rng.nextInt(14),
         bond: 70 + rng.nextInt(25),
       ),
       Npc(
         id: 'father',
         role: 'Father',
         name: pick(country.male),
-        birthYear: startYear - 25 - rng.nextInt(16),
+        birthYear: start - 25 - rng.nextInt(16),
         bond: 60 + rng.nextInt(30),
       ),
       if (rng.nextDouble() < 0.75)
@@ -92,7 +99,7 @@ class GameEngine {
           id: 'sibling',
           role: 'Brother',
           name: pick(country.male),
-          birthYear: startYear - 1 - rng.nextInt(4),
+          birthYear: start - 1 - rng.nextInt(4),
           bond: 55 + rng.nextInt(30),
         ),
     ];
@@ -106,7 +113,7 @@ class GameEngine {
       gender: g,
       country: country.name,
       city: pick(country.cities),
-      birthYear: startYear,
+      birthYear: start,
       stats: Stats.random(rng),
       npcs: npcs,
     );
@@ -125,6 +132,16 @@ class GameEngine {
         ),
       );
     }
+    final echo = world.echoFor(life);
+    if (echo != null) {
+      life.echo.addAll(echo);
+      life.flags['echo_${echo['relation']}'] = Memory(
+        0,
+        'hearing about ${echo['person']}',
+      );
+    }
+    world.ensureYear(life.year, life.country, life.city);
+    life.economy = world.economyFor(life.year);
     return life;
   }
 
@@ -145,9 +162,12 @@ class GameEngine {
     final rng = _rngFor(life);
 
     _schoolMilestones(life);
+    _worldYear(life);
     for (final line in yearlyMoney(life, rng)) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
+    life.feed.addAll(npcUpdates(life, _rngFor(life, 23)));
+    checkDeeds(life);
     // Gentle drift so idle years still matter.
     life.stats.add('happiness', rng.nextInt(5) - 2);
     if (life.age > 25) life.stats.add('health', -rng.nextInt(2));
@@ -191,6 +211,7 @@ class GameEngine {
     final npcsBefore = life.npcs.map((n) => n.id).toSet();
     final moneyBefore = life.money;
     final notes = choice.effects.apply(life);
+    checkDeeds(life);
     final statDeltas = <String, int>{
       for (final k in Stats.visible)
         if (life.stats[k] != statsBefore[k]) k: life.stats[k] - statsBefore[k]!,
@@ -275,7 +296,10 @@ class GameEngine {
       .replaceAll('{country}', life.country)
       .replaceAll('{mother}', life.npc('mother')?.name ?? 'your mother')
       .replaceAll('{father}', life.npc('father')?.name ?? 'your father')
-      .replaceAll('{sibling}', life.npc('sibling')?.name ?? 'your cousin');
+      .replaceAll('{sibling}', life.npc('sibling')?.name ?? 'your cousin')
+      .replaceAll('{echo_person}', life.echo['person'] ?? 'someone')
+      .replaceAll('{echo_deed}', life.echo['deed'] ?? 'something')
+      .replaceAll('{echo_year}', life.echo['year'] ?? 'years ago');
 
   void _schoolMilestones(Life life) {
     void milestone(String text) =>
@@ -314,12 +338,16 @@ class GameEngine {
   /// Runs an activity. [score] (0..1) comes from its mini-game, if played.
   ActionResult runAction(Life life, GameAction action, {double? score}) {
     final rng = _rngFor(life, action.id.hashCode);
+    final again = life.usedActions.contains(action.id);
     life.usedActions.add(action.id);
     final result = score != null && action.scored != null
         ? action.scored!(life, rng, score.clamp(0, 1))
         : action.run(life, rng);
     final text = fill(result.text, life);
-    life.feed.add(FeedEntry(life.age, text, kind: 'action'));
+    if (!(action.repeatable && again)) {
+      life.feed.add(FeedEntry(life.age, text, kind: 'action'));
+    }
+    checkDeeds(life);
     return ActionResult(text, result.notes);
   }
 
@@ -327,9 +355,131 @@ class GameEngine {
   ActionResult applyForJob(Life life, Career career) {
     final rng = _rngFor(life, 'apply:${career.id}'.hashCode);
     final r = applyForCareer(life, career, rng);
+    checkDeeds(life);
     final text = fill(r.text, life);
     life.feed.add(FeedEntry(life.age, text, kind: 'action'));
     return ActionResult(text, r.notes);
+  }
+
+  // ---------- The world ----------
+
+  /// The world's side of a birthday: this year's news (made once, shared by
+  /// every life), the world economy, and effects that reach the player.
+  void _worldYear(Life life) {
+    final year = life.year;
+    world.ensureYear(year, life.country, life.city);
+    world.year = max(world.year, year);
+    life.economy = world.economyFor(year);
+    life.worldMods = world.modsFor(year, life.country, life.city, life.surname);
+    life.stats.add('health', life.worldMods['health'] ?? 0);
+    life.stats.add('happiness', life.worldMods['happiness'] ?? 0);
+    final news = world.headlineFor(year, life.country, life.city);
+    if (news != null) {
+      life.feed.add(FeedEntry(life.age, news.headline, kind: 'world'));
+    }
+  }
+
+  /// Notable things this life did join the world's history (and the papers).
+  void checkDeeds(Life life) {
+    final who = '${life.firstName} ${life.surname}';
+    final city = life.city;
+    void deed(
+      String key,
+      String headline,
+      String body, {
+      Map<String, int> axes = const {},
+      bool national = false,
+      String category = 'local',
+    }) => world.recordDeed(
+      life,
+      key,
+      headline: headline,
+      body: body,
+      axes: axes,
+      national: national,
+      category: category,
+    );
+
+    if (life.flags.containsKey('sued_sibling')) {
+      deed(
+        'feud',
+        'Family feud over a $city flat ends in court',
+        '$who has won sole ownership of a family flat after taking a brother '
+            'to court. Neighbours say the two no longer speak.',
+        axes: {'infamy': 5},
+      );
+    }
+    if (life.job == 'Restaurant owner') {
+      deed(
+        'restaurant',
+        'New restaurant opens in $city',
+        'Local cook $who has opened a restaurant of their own. Early reviews '
+            'praise the food and the warm welcome.',
+        axes: {'fame': 6},
+      );
+    }
+    if (life.lastSeen.containsKey('startup_result')) {
+      deed(
+        'startup',
+        'Supermarket giant buys the app LeftOver',
+        'The leftover-sharing app has been bought outright. Early backers, '
+            'including $who of $city, are celebrating a surprise payday.',
+        axes: {'wealth': 8},
+        national: true,
+        category: 'economy',
+      );
+    }
+    if (life.flags.containsKey('jackpot')) {
+      deed(
+        'jackpot',
+        '$who wins the lottery jackpot',
+        'The \$250,000 winner from $city said they would "probably still go '
+            'to work on Monday".',
+        axes: {'fame': 8, 'wealth': 10},
+        national: true,
+      );
+    }
+    if (life.flags.containsKey('arrested')) {
+      deed(
+        'arrest',
+        'Pickpocket caught on a $city tram',
+        life.age >= 18
+            ? '$who, ${life.age}, was arrested after a passenger felt a hand '
+                  'in her bag. Police say patrols will continue.'
+            : 'A local teenager was arrested after a passenger felt a hand in '
+                  'her bag. Police say patrols will continue.',
+        axes: {'infamy': 8},
+        category: 'crime',
+      );
+    }
+    if (life.netWorth >= 1000000) {
+      deed(
+        'millionaire',
+        '$city\'s newest millionaire is just ${life.age}',
+        '$who has built a fortune of over \$1 million. Asked for advice, '
+            'they said: "Spend less than you earn. Also, luck."',
+        axes: {'wealth': 20, 'fame': 5},
+        national: true,
+      );
+    }
+    if (life.careerRank >= 3 && life.job != null) {
+      deed(
+        'top_${life.careerId}',
+        '$who named ${life.job}',
+        'After years working their way up, $who has reached the top of their '
+            'field in $city.',
+        axes: {'power': 8, 'fame': 4},
+      );
+    }
+    if (life.lastSeen.containsKey('sibling_generous_thanks')) {
+      deed(
+        'bakery',
+        'Bakery names its best loaf after a generous sibling',
+        'A small $city bakery\'s bestselling sourdough is named after $who, '
+            'who gave the shop\'s owner the building it stands in.',
+        axes: {'philanthropy': 6},
+      );
+    }
   }
 
   // ---------- Person interactions (People tab, action search) ----------

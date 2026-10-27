@@ -126,6 +126,11 @@ class Npc {
   /// Money this person owes the player.
   int debt = 0;
 
+  /// Their own life updates ("started a pottery class"), newest last, and
+  /// the one-off ones that already happened.
+  final List<String> news = [];
+  final Set<String> done = {};
+
   int ageIn(int year) => year - birthYear;
 
   int get bond =>
@@ -254,6 +259,8 @@ class Npc {
     'lastContactAge': lastContactAge,
     'refusals': refusals,
     'debt': debt,
+    'news': news,
+    'done': done.toList(),
   };
 
   factory Npc.fromJson(Map<String, dynamic> j) {
@@ -281,20 +288,32 @@ class Npc {
       ..contactCut = j['contactCut'] ?? false
       ..lastContactAge = j['lastContactAge'] ?? 0
       ..refusals = j['refusals'] ?? 0
-      ..debt = j['debt'] ?? 0;
+      ..debt = j['debt'] ?? 0
+      ..news.addAll(List<String>.from(j['news'] ?? []))
+      ..done.addAll(List<String>.from(j['done'] ?? []));
   }
 }
 
 /// One line of the life feed (a chat bubble in the Night Feed design).
 class FeedEntry {
-  FeedEntry(this.age, this.text, {this.kind = 'event'});
+  FeedEntry(this.age, this.text, {this.kind = 'event', this.who});
   final int age;
   final String text;
+
+  /// event, action, milestone, nudge, npc (someone you know) or world (news).
   final String kind;
 
-  Map<String, dynamic> toJson() => {'age': age, 'text': text, 'kind': kind};
+  /// For 'npc' entries: the person's name, shown with their avatar.
+  final String? who;
+
+  Map<String, dynamic> toJson() => {
+    'age': age,
+    'text': text,
+    'kind': kind,
+    if (who != null) 'who': who,
+  };
   factory FeedEntry.fromJson(Map<String, dynamic> j) =>
-      FeedEntry(j['age'], j['text'], kind: j['kind'] ?? 'event');
+      FeedEntry(j['age'], j['text'], kind: j['kind'] ?? 'event', who: j['who']);
 }
 
 /// A remembered fact that later storylets can read ("memory over randomness").
@@ -379,6 +398,8 @@ class Life {
     Map<int, int>? netWorthByAge,
     List<(String, int)>? lastYear,
     List<(String, int)>? lastGrowth,
+    Map<String, String>? echo,
+    Map<String, int>? worldMods,
     List<FeedEntry>? feed,
     Map<String, Memory>? flags,
     Map<String, int>? lastSeen,
@@ -391,6 +412,8 @@ class Life {
        netWorthByAge = netWorthByAge ?? {},
        lastYear = lastYear ?? [],
        lastGrowth = lastGrowth ?? [],
+       echo = echo ?? {},
+       worldMods = worldMods ?? {},
        feed = feed ?? [],
        flags = flags ?? {},
        lastSeen = lastSeen ?? {},
@@ -439,6 +462,13 @@ class Life {
   /// growth that happened outside cash (savings interest, fund, home value).
   List<(String, int)> lastYear;
   List<(String, int)> lastGrowth;
+
+  /// An earlier life this character can run into (world.dart echoFor):
+  /// relation, person, deed, year.
+  final Map<String, String> echo;
+
+  /// This year's world modifiers (hiring, rent, policing, name...).
+  Map<String, int> worldMods;
 
   int get totalDebt => debts.values.fold(0, (a, b) => a + b);
   int get assetValue => assets.fold(0, (a, b) => a + b.value);
@@ -510,6 +540,8 @@ class Life {
     'lastGrowth': [
       for (final l in lastGrowth) [l.$1, l.$2],
     ],
+    'echo': echo,
+    'worldMods': worldMods,
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -559,6 +591,8 @@ class Life {
     },
     lastYear: _lines(j['lastYear']),
     lastGrowth: _lines(j['lastGrowth']),
+    echo: Map<String, String>.from(j['echo'] ?? {}),
+    worldMods: Map<String, int>.from(j['worldMods'] ?? {}),
     feed: (j['feed'] as List)
         .map((f) => FeedEntry.fromJson(Map<String, dynamic>.from(f)))
         .toList(),

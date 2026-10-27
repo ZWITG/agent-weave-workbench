@@ -260,7 +260,9 @@ class Career {
       (49 +
               life.stats['smarts'] ~/ 3 +
               life.stats['charisma'] ~/ 5 -
-              baseSalary ~/ 2000)
+              baseSalary ~/ 2000 +
+              (life.worldMods['hiring'] ?? 0) +
+              (life.worldMods['name'] ?? 0))
           .clamp(5, 95);
 }
 

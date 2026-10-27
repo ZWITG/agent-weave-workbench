@@ -5,11 +5,11 @@
   "maxAge": 2,
   "weight": 20,
   "category": "family",
-  "text": "You're learning to talk. {mother} and {father} lean in, waiting for your first word.",
+  "text": "The kitchen goes quiet. {mother} has stopped stirring the soup and {father} has put his phone face down, which never happens. They have both been coaching you for weeks, each secretly hoping to be first. Your mouth opens.",
   "choices": [
    {
     "label": "Say \"Mama\"",
-    "outcome": "Your first word was \"Mama\". {mother} cried a little.",
+    "outcome": "\"Mama!\" {mother} dropped the spoon and burst into happy tears. {father} pretended to be fine about it, then spent the evening whispering \"Dada\" at you like a spy.",
     "effects": {
      "bond": {
       "mother": 6
@@ -21,7 +21,7 @@
    },
    {
     "label": "Say \"Dada\"",
-    "outcome": "Your first word was \"Dada\". {father} told everyone.",
+    "outcome": "\"Dada!\" {father} punched the air and phoned three relatives before dinner. {mother} rolled her eyes, but she was smiling, and she wrote the date in your baby book.",
     "effects": {
      "bond": {
       "father": 6
@@ -33,7 +33,7 @@
    },
    {
     "label": "Say \"No\"",
-    "outcome": "Your first word was \"No\". It set the tone.",
+    "outcome": "\"No.\" Firm, clear, and aimed at the soup. Your parents stared at each other, then laughed until they cried. It became the family story told at every birthday after.",
     "effects": {
      "stats": {
       "willpower": 4
@@ -48,11 +48,11 @@
   "maxAge": 4,
   "weight": 12,
   "category": "family",
-  "text": "You found the crayons. The living-room wall looks very empty.",
+  "text": "Someone left the crayon box on the low shelf. Forty-eight colours, unguarded. The living-room wall stretches out before you, white and empty and, frankly, begging for it. Down the hall, nobody is watching.",
   "choices": [
    {
     "label": "Draw a masterpiece",
-    "outcome": "You drew a sun with a face on the wall. {father} took a photo before scrubbing it off.",
+    "outcome": "You drew a huge sun with a face, a purple dog and what was probably the whole family. {father} came in ready to shout, then quietly took a photo before scrubbing it off. The photo is still on his phone.",
     "effects": {
      "stats": {
       "creativity": 5
@@ -64,7 +64,7 @@
    },
    {
     "label": "Draw on paper instead",
-    "outcome": "You drew on paper like a tiny professional.",
+    "outcome": "You found a stack of paper and drew with your tongue poking out in concentration. {father} stuck the best one to the fridge and told visitors you were \"a natural\". You started to believe him.",
     "effects": {
      "stats": {
       "discipline": 3
@@ -76,7 +76,7 @@
    },
    {
     "label": "Eat a crayon",
-    "outcome": "You ate the blue one. No regrets.",
+    "outcome": "You chose the blue one and ate it. It tasted like wax and disappointment. Your tongue stayed blue for a day and {mother} still brings it up whenever you claim to have good judgement.",
     "effects": {
      "stats": {
       "health": -1,
@@ -97,11 +97,11 @@
     "sibling"
    ]
   },
-  "text": "{sibling} grabbed your favourite toy and won't give it back.",
+  "text": "{sibling} has snatched your favourite toy right out of your hands and is holding it high above his head, grinning. You can feel your face going hot. He knows exactly how much you love it.",
   "choices": [
    {
     "label": "Bite him",
-    "outcome": "You bit {sibling}. You both got sent to your rooms.",
+    "outcome": "You bit {sibling} on the arm. He howled, you howled, and you were both marched to your rooms. Through the wall you could hear him sulking, and it was strangely satisfying, until it wasn't.",
     "effects": {
      "bond": {
       "sibling": -6
@@ -116,7 +116,7 @@
    },
    {
     "label": "Tell {mother}",
-    "outcome": "{mother} made {sibling} give it back. He sulked all day.",
+    "outcome": "You ran to {mother}, who made {sibling} hand it back with a look that could stop traffic. He sulked for the rest of the day and called you a tattletale every chance he got.",
     "effects": {
      "bond": {
       "sibling": -2,
@@ -126,7 +126,7 @@
    },
    {
     "label": "Let him have it",
-    "outcome": "You let {sibling} keep it. He shared his biscuits later.",
+    "outcome": "You let him keep it. {sibling} looked confused, then suspicious, then guilty. That evening he slid half his biscuits across the table to you without a word. Somehow that felt better than winning.",
     "effects": {
      "bond": {
       "sibling": 6
@@ -144,11 +144,11 @@
   "maxAge": 5,
   "weight": 30,
   "category": "school",
-  "text": "Your first day of school. A boy in a dinosaur jumper is crying by the gate.",
+  "text": "Your first day of school. The playground is enormous and loud, and your new shoes pinch. By the gate, a small boy in a green dinosaur jumper is crying into his sleeve while everyone else rushes past him.",
   "choices": [
    {
     "label": "Hold his hand",
-    "outcome": "You held his hand. His name is Tomás, and he is now your best friend.",
+    "outcome": "You walked over and held his hand. He sniffed and said his name was Tomás. By lunch you had swapped sandwiches; by home time you were inseparable. You had made your first best friend.",
     "effects": {
      "stats": {
       "karma": 4,
@@ -170,7 +170,7 @@
    },
    {
     "label": "Run to the swings",
-    "outcome": "You ran straight to the swings and claimed them.",
+    "outcome": "You sprinted for the swings and claimed the best one before anyone else could. You swung higher than anyone that day, though once or twice you glanced back at the crying boy by the gate.",
     "effects": {
      "stats": {
       "happiness": 3,
@@ -180,7 +180,7 @@
    },
    {
     "label": "Cry too",
-    "outcome": "You cried too. Solidarity.",
+    "outcome": "His crying set you off too, and the two of you stood there sobbing together until a teacher scooped you both up. It was not dignified, but you never felt alone that first morning.",
     "effects": {
      "stats": {
       "happiness": -2
@@ -195,11 +195,11 @@
   "maxAge": 8,
   "weight": 12,
   "category": "school",
-  "text": "It's show-and-tell. Everyone else brought a pet or a trophy.",
+  "text": "It's show-and-tell. Your classmates have brought a hamster, a swimming trophy and a real fossil. You are holding nothing, and your name is next on the teacher's list.",
   "choices": [
    {
     "label": "Bring a rock",
-    "outcome": "You gave a passionate talk about a rock. The teacher loved it.",
+    "outcome": "You held up a grey rock from the garden and gave a passionate, ten-minute talk about where it might have come from. The class was baffled. The teacher wrote \"wonderful curiosity\" on your report.",
     "effects": {
      "stats": {
       "smarts": 2,
@@ -209,7 +209,7 @@
    },
    {
     "label": "Bring {father}'s phone",
-    "outcome": "You showed the class {father}'s photos. Some were embarrassing.",
+    "outcome": "You brought {father}'s phone and showed the class his photos. Some were lovely. One was him asleep with his mouth open on the beach. He heard about it at the school gate for weeks.",
     "effects": {
      "bond": {
       "father": -4
@@ -221,7 +221,7 @@
    },
    {
     "label": "Pretend you forgot",
-    "outcome": "You said you forgot. Nobody noticed.",
+    "outcome": "You mumbled that you forgot. The teacher sighed and moved on, and the hamster stole the show. Nobody remembered by lunch, but you felt a small, odd disappointment in yourself.",
     "effects": {
      "stats": {
       "charisma": -1
@@ -245,11 +245,11 @@
    ]
   },
   "remembers": "friend_tomas",
-  "text": "Tomás invites you to his birthday. The same day, the coolest kid in class has a party too.",
+  "text": "Tomás has been talking about his birthday for weeks: a cake shaped like a dinosaur, his idea. Then the most popular kid in class hands out shiny invitations to a party on the very same afternoon, and you get one.",
   "choices": [
    {
     "label": "Go to Tomás's party",
-    "outcome": "You went to Tomás's party. He didn't stop smiling.",
+    "outcome": "You went to Tomás's party. There were only six kids and a slightly lopsided dinosaur cake, but he did not stop smiling the whole afternoon. When you left, he said, \"Best birthday ever.\"",
     "effects": {
      "stats": {
       "karma": 3,
@@ -265,7 +265,7 @@
    },
    {
     "label": "Go to the cool party",
-    "outcome": "The cool party was fun. Tomás saw the photos.",
+    "outcome": "The cool party had a bouncy castle and a magician, and it was brilliant. On Monday, Tomás had seen the photos. He did not say anything. He just sat somewhere else at lunch, and he remembered.",
     "effects": {
      "stats": {
       "happiness": 3,
@@ -303,11 +303,11 @@
   "once": false,
   "cooldown": 4,
   "category": "school",
-  "text": "Big maths test tomorrow. You haven't opened the book.",
+  "text": "Big maths test tomorrow, and it counts towards your report. Your textbook is still in your bag, spine uncracked. It's already getting dark, and the boy who sits next to you is famously good at fractions.",
   "choices": [
    {
     "label": "Study all night",
-    "outcome": "You studied all night and passed with a good mark.",
+    "outcome": "You stayed up with the book and a torch until the numbers finally made sense. You were exhausted the next morning, but you recognised every question and walked out with a good mark and a quiet pride.",
     "effects": {
      "stats": {
       "smarts": 4,
@@ -318,7 +318,7 @@
    },
    {
     "label": "Copy from your neighbour",
-    "outcome": "You copied answers. You passed, barely.",
+    "outcome": "You copied from your neighbour, heart pounding, eyes flicking to the teacher. You passed, barely. Nobody caught you, but you couldn't quite meet your neighbour's eye for the rest of the week.",
     "effects": {
      "stats": {
       "karma": -3
@@ -330,7 +330,7 @@
    },
    {
     "label": "Wing it",
-    "outcome": "You winged it. The result is not going on the fridge.",
+    "outcome": "You winged it and hoped for the best. The best did not arrive. The mark that came back was not going on the fridge, and you hid it at the bottom of your bag for a month.",
     "effects": {
      "stats": {
       "smarts": -1,
@@ -346,11 +346,11 @@
   "maxAge": 14,
   "weight": 12,
   "category": "school",
-  "text": "A kid called Duarte keeps knocking your books out of your hands in the corridor.",
+  "text": "A kid called Duarte has made a game of knocking your books out of your hands in the corridor. Every day, the same smirk, the same laughter from his friends. Today he is waiting by your locker again.",
   "choices": [
    {
     "label": "Stand up to him",
-    "outcome": "You told Duarte to stop, loudly, in front of everyone. He did.",
+    "outcome": "You stopped, looked him in the eye and told him to cut it out, loudly, in front of everyone. The corridor went silent. Duarte muttered something and walked off. He never touched your books again.",
     "effects": {
      "stats": {
       "willpower": 5,
@@ -363,7 +363,7 @@
    },
    {
     "label": "Tell a teacher",
-    "outcome": "You told a teacher. Duarte got detention and a reputation.",
+    "outcome": "You told your form teacher everything. Duarte got a week of detention and a reputation he did not want. Some kids called you a snitch, but the corridor became a lot quieter.",
     "effects": {
      "stats": {
       "happiness": 1
@@ -372,7 +372,7 @@
    },
    {
     "label": "Take another route",
-    "outcome": "You took the long way round for the rest of the year.",
+    "outcome": "You started taking the long way round, past the bins, to avoid him. It worked, mostly. But for the rest of the year you were always a little late, and a little smaller than you wanted to be.",
     "effects": {
      "stats": {
       "happiness": -3
@@ -390,11 +390,11 @@
   "maxAge": 12,
   "weight": 10,
   "category": "family",
-  "text": "You've been begging for a pet for months. {mother} finally sighs: \"Fine. One.\"",
+  "text": "You have begged for a pet at every meal for six months, drawn pictures, and promised to clean up after it forever. Tonight {mother} puts down her fork, sighs a very long sigh and says, \"Fine. One. You look after it.\"",
   "choices": [
    {
     "label": "A dog",
-    "outcome": "You named the dog Biscoito. He chewed everything you owned.",
+    "outcome": "You picked a scruffy dog from the shelter and named him Biscoito. He chewed your shoes, your homework and one of {mother}'s good cushions. He also slept at the end of your bed every single night.",
     "effects": {
      "stats": {
       "happiness": 6,
@@ -407,7 +407,7 @@
    },
    {
     "label": "A cat",
-    "outcome": "The cat chose you. Then ignored you. Perfect.",
+    "outcome": "You chose a cat. Or rather, the cat chose you, climbed onto your lap at the shelter, and then ignored you for the next three years. You adored it completely.",
     "effects": {
      "stats": {
       "happiness": 4
@@ -416,7 +416,7 @@
    },
    {
     "label": "A goldfish",
-    "outcome": "The goldfish lived for eleven glorious days.",
+    "outcome": "You chose a goldfish and named it Captain. Captain lived for eleven glorious days, and you held a small funeral in the garden that the whole family was made to attend.",
     "effects": {
      "stats": {
       "happiness": -1
@@ -437,11 +437,11 @@
    ]
   },
   "remembers": "dog_biscoito",
-  "text": "Biscoito is old now. The vet says it's time.",
+  "text": "Biscoito is old now: grey around the nose, slow on the stairs, sleeping most of the day. This morning the vet looks at you kindly and says it is time to let him go. Your parents ask whether you want to be there.",
   "choices": [
    {
     "label": "Be there with him",
-    "outcome": "You held Biscoito until the end. It was the right thing.",
+    "outcome": "You held Biscoito's head in your lap and told him he was a good boy until he fell asleep for the last time. It broke your heart, but you knew you had been there for him, the way he had always been there for you.",
     "effects": {
      "stats": {
       "happiness": -6,
@@ -457,7 +457,7 @@
    },
    {
     "label": "Let your parents go",
-    "outcome": "You couldn't face it. {mother} told you he went peacefully.",
+    "outcome": "You couldn't face it and stayed home. {mother} came back red-eyed and told you he went peacefully, with his tail still wagging. You wondered for years whether you should have gone.",
     "effects": {
      "stats": {
       "happiness": -4
@@ -475,11 +475,11 @@
   "maxAge": 15,
   "weight": 14,
   "category": "school",
-  "text": "Secondary school is all about groups. Three of them have noticed you.",
+  "text": "Secondary school runs on groups, and three of them have noticed you. The drama kids want you for the spring play, the athletes saw you sprint in PE, and the coding club needs one more member to keep its room.",
   "choices": [
    {
     "label": "The drama kids",
-    "outcome": "You joined the drama kids. You learned to cry on cue.",
+    "outcome": "You joined the drama kids. Rehearsals ran late, everyone was loud, and you learned to cry on cue. You found people who were a bit too much, exactly like you.",
     "effects": {
      "stats": {
       "charisma": 4,
@@ -492,7 +492,7 @@
    },
    {
     "label": "The athletes",
-    "outcome": "You joined the athletes. Training at 7 a.m. became your life.",
+    "outcome": "You joined the athletes. Training at seven every morning, mud, team chants and sore legs became your whole life. You got fitter, louder and fiercely loyal to the team.",
     "effects": {
      "stats": {
       "athleticism": 5,
@@ -505,7 +505,7 @@
    },
    {
     "label": "The coders",
-    "outcome": "You joined the coding club and built a terrible game.",
+    "outcome": "You joined the coding club and, by the end of term, had built a truly terrible game about a frog. The others played it anyway. It was the first thing you'd ever made that other people used.",
     "effects": {
      "stats": {
       "smarts": 4,
@@ -524,11 +524,11 @@
   "maxAge": 15,
   "weight": 14,
   "category": "school",
-  "text": "Time to pick an elective for next year.",
+  "text": "The elective form is due on Friday. You get one extra subject for next year, and everyone says it shapes what you'll be good at. The three that catch your eye could not be more different.",
   "choices": [
    {
     "label": "Cooking",
-    "outcome": "You chose cooking. Your first omelette was a crime scene, the second was art.",
+    "outcome": "You picked cooking. Your first omelette was a crime scene and set off the smoke alarm, but your second was golden and perfect. You started cooking dinner at home on Sundays, and nobody complained.",
     "effects": {
      "stats": {
       "creativity": 3,
@@ -541,7 +541,7 @@
    },
    {
     "label": "Music",
-    "outcome": "You chose music and fell for the drums. Your family did not.",
+    "outcome": "You picked music and fell head over heels for the drums. You practised on everything: tables, books, your knees. Your family bought earplugs and stopped saying good morning to you.",
     "effects": {
      "stats": {
       "creativity": 4
@@ -553,7 +553,7 @@
    },
    {
     "label": "Economics",
-    "outcome": "You chose economics and started reading the business news.",
+    "outcome": "You picked economics. Something clicked: markets, prices, why things cost what they cost. You started reading the business news on the bus and explaining inflation to people who did not ask.",
     "effects": {
      "stats": {
       "smarts": 3
@@ -571,11 +571,11 @@
   "maxAge": 16,
   "weight": 12,
   "category": "love",
-  "text": "You can't stop thinking about someone in your class. They just smiled at you.",
+  "text": "There is someone in your class you can't stop thinking about. You know their laugh, their handwriting and which bus they take. Today, when you passed them in the corridor, they looked up and smiled right at you.",
   "choices": [
    {
     "label": "Write them a note",
-    "outcome": "You wrote a note. They wrote back \"maybe\". It was the best day of the year.",
+    "outcome": "You wrote a note, rewrote it five times and slipped it into their bag. The next day, a reply: \"maybe\". Just that one word. You read it about two hundred times. It was the best day of the year.",
     "effects": {
      "stats": {
       "happiness": 5,
@@ -585,7 +585,7 @@
    },
    {
     "label": "Tell your friends",
-    "outcome": "You told your friends. By lunch, the whole school knew.",
+    "outcome": "You told your closest friends, swearing them to secrecy. By lunch, the whole school knew, including them. You wanted the ground to swallow you, but they smiled at you again the next day.",
     "effects": {
      "stats": {
       "happiness": -3
@@ -594,7 +594,7 @@
    },
    {
     "label": "Keep it secret",
-    "outcome": "You kept it secret. Some things are just for you.",
+    "outcome": "You kept it to yourself and wrote about it in a notebook nobody will ever see. Nothing happened, and that was fine. Some feelings are just for you.",
     "effects": {
      "stats": {
       "willpower": 2
@@ -609,11 +609,11 @@
   "maxAge": 17,
   "weight": 12,
   "category": "friends",
-  "text": "There's a party at a friend's house. Their parents are away. {mother} thinks you're at the library.",
+  "text": "There's a party tonight at a friend's house. Their parents are away for the weekend, half your year is going, and the group chat hasn't stopped buzzing. {mother} thinks you're spending the evening at the library.",
   "choices": [
    {
     "label": "Go to the party",
-    "outcome": "You went. It was loud, messy and unforgettable.",
+    "outcome": "You went. The music was too loud, someone broke a lamp and you danced on a sofa. You got home at two in the morning, buzzing, with photos you probably should not have let anyone take.",
     "effects": {
      "stats": {
       "happiness": 4,
@@ -626,7 +626,7 @@
    },
    {
     "label": "Actually go to the library",
-    "outcome": "You went to the library. Your grades thanked you.",
+    "outcome": "You actually went to the library and studied until it closed. You missed some stories that were retold for weeks, but your next test results made {mother} very proud.",
     "effects": {
      "stats": {
       "smarts": 3,
@@ -636,7 +636,7 @@
    },
    {
     "label": "Ask {mother} for permission",
-    "outcome": "{mother} said yes, if you're home by eleven. You were.",
+    "outcome": "You told {mother} the truth and asked if you could go. She thought about it for a long moment, then said yes, as long as you were home by eleven. You were home at ten fifty-eight. She noticed.",
     "effects": {
      "bond": {
       "mother": 5
@@ -660,11 +660,11 @@
    ]
   },
   "remembers": "snuck_out",
-  "text": "{mother} found the photos from that party. She knows you weren't at the library.",
+  "text": "{mother} is sitting at the kitchen table with her phone in her hand. On the screen is a photo from that party: you, on a sofa, very much not at the library. She asks you to sit down.",
   "choices": [
    {
     "label": "Apologise",
-    "outcome": "You apologised properly. It took a while, but she forgave you.",
+    "outcome": "You didn't make excuses. You told her you were sorry and that you understood why she was hurt. It took a few frosty weeks, but she forgave you, and she started trusting you again.",
     "effects": {
      "bond": {
       "mother": 2
@@ -679,7 +679,7 @@
    },
    {
     "label": "Argue back",
-    "outcome": "You argued. Doors were slammed. Nobody won.",
+    "outcome": "You argued that everyone goes to parties and she was overreacting. Voices rose, doors were slammed and dinner was silent for days. Nobody won, and the house felt colder for a while.",
     "effects": {
      "bond": {
       "mother": -8
@@ -697,11 +697,11 @@
   "maxAge": 19,
   "weight": 14,
   "category": "life",
-  "text": "Driving test day. The examiner has a clipboard and no sense of humour.",
+  "text": "Driving test day. Your palms are sweating on the steering wheel. The examiner has a clipboard, a grey anorak and absolutely no sense of humour. \"In your own time,\" he says, as if that helps.",
   "choices": [
    {
     "label": "Drive carefully",
-    "outcome": "You passed first time.",
+    "outcome": "You checked every mirror, signalled for everything and parked like a professional. The examiner almost smiled. You passed first time and drove home with the windows down, singing.",
     "effects": {
      "stats": {
       "happiness": 4
@@ -713,7 +713,7 @@
    },
    {
     "label": "Show off a bit",
-    "outcome": "You failed for \"unnecessary confidence\".",
+    "outcome": "You took the roundabout a little fast and did a stylish one-handed reverse. The examiner wrote for a very long time. You failed for \"unnecessary confidence\" and had to book again.",
     "effects": {
      "stats": {
       "happiness": -3
@@ -728,11 +728,11 @@
   "maxAge": 18,
   "weight": 40,
   "category": "school",
-  "text": "School is over. What's next?",
+  "text": "Your last exam is over and school is finished for good. Everyone is asking what's next. University in {city} would cost money but open doors. A job would mean money now. And there is the whole world out there, waiting.",
   "choices": [
    {
     "label": "Go to university",
-    "outcome": "You enrolled at university in {city}.",
+    "outcome": "You enrolled at university in {city}. The fees bit into your savings, but walking onto campus on the first day felt like the start of something big. You bought too many highlighters.",
     "effects": {
      "education": "university",
      "money": -3000,
@@ -746,7 +746,7 @@
    },
    {
     "label": "Start working",
-    "outcome": "You decided to start working straight away.",
+    "outcome": "You decided to start working straight away. Your friends went off to lectures while you learned about early shifts, payslips and how to get along with a difficult boss. You grew up fast.",
     "effects": {
      "stats": {
       "discipline": 3
@@ -758,7 +758,7 @@
    },
    {
     "label": "Take a gap year",
-    "outcome": "You took a gap year and travelled with a backpack and no plan.",
+    "outcome": "You took a gap year with a backpack, a cheap ticket and no plan at all. You slept in hostels, got lost in cities you could not pronounce and came home with stories you would tell for years.",
     "effects": {
      "money": -1500,
      "stats": {
@@ -780,11 +780,11 @@
     "went_uni"
    ]
   },
-  "text": "You need to choose your major.",
+  "text": "Week one at university, and the registration deadline is Friday. You have to choose a major, and the advisers keep saying it doesn't decide your whole life, which is exactly what people say when it does.",
   "choices": [
    {
     "label": "Culinary arts",
-    "outcome": "You chose culinary arts. Your flatmates ate very well.",
+    "outcome": "You chose culinary arts. You spent your days in a hot teaching kitchen with knives you weren't allowed to touch yet. Your flatmates ate very, very well all year.",
     "effects": {
      "flags": {
       "major_culinary": "studying culinary arts"
@@ -796,7 +796,7 @@
    },
    {
     "label": "Law",
-    "outcome": "You chose law. The reading list is enormous.",
+    "outcome": "You chose law. The reading list was longer than some novels and your desk disappeared under paper. But the first time you won a mock trial argument, you felt ten feet tall.",
     "effects": {
      "flags": {
       "major_law": "studying law"
@@ -808,7 +808,7 @@
    },
    {
     "label": "Computer science",
-    "outcome": "You chose computer science and discovered coffee.",
+    "outcome": "You chose computer science. You discovered coffee, late-night debugging and the deep joy of code finally working at three in the morning. Sleep became a distant memory.",
     "effects": {
      "flags": {
       "major_cs": "studying computer science"
@@ -832,11 +832,11 @@
    ]
   },
   "remembers": "went_uni",
-  "text": "Graduation day. {mother} brought a sign with your name on it. It is very large.",
+  "text": "Graduation day. You are wearing a gown that doesn't fit and a hat that won't stay on. In the third row, {mother} is holding up a homemade sign with your name on it. It is very, very large.",
   "choices": [
    {
     "label": "Wave at {mother}",
-    "outcome": "You graduated and waved at {mother} from the stage.",
+    "outcome": "As they called your name, you looked straight at {mother} and waved. She cried, stood on her chair and cheered louder than anyone in the hall. The photo of that moment is still on her wall.",
     "effects": {
      "education": "graduate",
      "bond": {
@@ -855,7 +855,7 @@
    },
    {
     "label": "Pretend you don't know her",
-    "outcome": "You graduated. You pretended not to see the sign. She noticed.",
+    "outcome": "You crossed the stage and pretended not to see the sign. She noticed. She clapped anyway and said nothing, but on the drive home she was very quiet, and the sign went in the bin.",
     "effects": {
      "education": "graduate",
      "bond": {
@@ -886,11 +886,11 @@
    ]
   },
   "remembers": "stood_up_duarte",
-  "text": "Duarte, the kid who knocked your books over at school, is serving you coffee. He recognises you.",
+  "text": "You order a coffee in a café in town and freeze. The barista is Duarte, the kid who used to knock your books out of your hands at school. He looks tired. He recognises you, and his face goes pale.",
   "choices": [
    {
     "label": "Be kind",
-    "outcome": "You chatted. He apologised for school. You tipped well.",
+    "outcome": "You smiled and asked how he'd been. He told you school had been rough at home too, and apologised, properly. You left a big tip. Walking out, you felt a weight lift you didn't know you'd carried.",
     "effects": {
      "stats": {
       "karma": 4,
@@ -900,7 +900,7 @@
    },
    {
     "label": "Remind him",
-    "outcome": "You reminded him. He went red and gave you a free pastry.",
+    "outcome": "You mentioned, lightly, that he used to knock your books over. He went bright red, apologised twice and slid a free pastry onto your tray. It was a very good pastry.",
     "effects": {
      "stats": {
       "happiness": 3,
@@ -925,11 +925,11 @@
    ]
   },
   "remembers": "loyal_to_tomas",
-  "text": "Tomás is getting married. He asks you to be his best person: \"You were there on day one.\"",
+  "text": "Tomás is getting married. He calls you, nervous, and asks if you'll be his best person. \"You were there on day one,\" he says. \"By the gate. In the dinosaur jumper. It has to be you.\"",
   "choices": [
    {
     "label": "Say yes",
-    "outcome": "You gave a speech about a boy in a dinosaur jumper. Nobody had dry eyes.",
+    "outcome": "You said yes and wrote the speech three times. When you told the story of a crying boy in a dinosaur jumper and the hand that held his, there wasn't a dry eye in the room, including Tomás's.",
     "effects": {
      "stats": {
       "happiness": 7,
@@ -942,7 +942,7 @@
    },
    {
     "label": "Say you're too busy",
-    "outcome": "You said you were too busy. He understood. Mostly.",
+    "outcome": "You said work was too busy right now. He said he understood, but his voice went flat. Someone else gave the speech, and you watched the photos online that night, feeling oddly left out of your own story.",
     "effects": {
      "stats": {
       "karma": -3
@@ -982,11 +982,11 @@
    ]
   },
   "remembers": "ditched_tomas",
-  "text": "You bump into Tomás in town. He's polite, but cold. He still remembers his birthday.",
+  "text": "Walking through town, you nearly bump into Tomás. He is polite, says hello, asks about work. But his smile doesn't reach his eyes. He still remembers which birthday party you chose all those years ago.",
   "choices": [
    {
     "label": "Apologise, finally",
-    "outcome": "You apologised, years late. He laughed. \"We were eight.\" You got coffee.",
+    "outcome": "You finally said it: \"I'm sorry about your birthday. I should have come.\" He stared, then burst out laughing. \"We were eight!\" he said. You went for coffee and talked for three hours. It felt like coming home.",
     "effects": {
      "stats": {
       "karma": 4,
@@ -1008,7 +1008,7 @@
    },
    {
     "label": "Keep walking",
-    "outcome": "You nodded and kept walking.",
+    "outcome": "You nodded, said it was good to see him and kept walking. Neither of you looked back. Later, you scrolled through old school photos for a long time.",
     "effects": {
      "stats": {
       "happiness": -1
@@ -1029,11 +1029,11 @@
    ]
   },
   "remembers": "caught_shoplifting",
-  "text": "A job interview is going well, until they ask about the shoplifting incident.",
+  "text": "The job interview is going brilliantly: good answers, a few laughs, nods across the table. Then the manager glances at a sheet of paper and asks, carefully, about \"the shoplifting incident\" on your record.",
   "choices": [
    {
     "label": "Tell the truth",
-    "outcome": "You told the truth. They appreciated it, and offered you a trial shift.",
+    "outcome": "You took a breath and told the truth: you were young, it was stupid, and you'd learned from it. The manager put the paper down. \"Thank you for being honest,\" she said, and offered you a trial shift.",
     "effects": {
      "stats": {
       "karma": 3
@@ -1044,7 +1044,7 @@
    },
    {
     "label": "Deny it",
-    "outcome": "You denied it. They had the record. The interview ended there.",
+    "outcome": "You said there must be some mistake. She turned the paper round so you could see it. The room went quiet, the interview ended politely, and you never heard back.",
     "effects": {
      "stats": {
       "karma": -3,
@@ -1060,11 +1060,11 @@
   "maxAge": 25,
   "weight": 14,
   "category": "life",
-  "text": "You found your first flat. It's tiny, and the shower has opinions.",
+  "text": "You've found a flat. It's on the fourth floor with no lift, the kitchen is basically a cupboard and the shower has strong opinions about temperature. But the window looks out over the rooftops of {city}, and it would be yours.",
   "choices": [
    {
     "label": "Take it",
-    "outcome": "You moved into your first flat. You ate cereal for dinner and loved it.",
+    "outcome": "You signed the lease and carried everything up four flights in one exhausting day. That night you ate cereal for dinner on the floor, surrounded by boxes, and it was one of the best meals of your life.",
     "effects": {
      "money": -1200,
      "stats": {
@@ -1078,7 +1078,7 @@
    },
    {
     "label": "Stay at home a bit longer",
-    "outcome": "You stayed home and saved money. {mother} kept doing your laundry.",
+    "outcome": "You decided to stay at home a while longer and save. Your bank balance grew, {mother} kept doing your laundry without being asked, and you got to know your parents as people, not just parents.",
     "effects": {
      "money": 2000,
      "bond": {
@@ -1102,11 +1102,11 @@
     "sibling"
    ]
   },
-  "text": "Your grandmother left the family flat in {city} to you and {sibling}. He wants to sell it now. You don't.",
+  "text": "Your grandmother has died, and her will leaves the old family flat in {city} to you and {sibling}, half each. You spent every summer there as a child. {sibling} wants to sell it right away. You can't bear the thought.",
   "choices": [
    {
     "label": "Sue him for it",
-    "outcome": "You took {sibling} to court and won the flat. He stopped answering your calls.",
+    "outcome": "You hired a lawyer and took {sibling} to court. It was long, bitter and expensive, and you won the flat. {sibling} stopped answering your calls, and at family gatherings he leaves the room when you arrive.",
     "effects": {
      "bond": {
       "sibling": -40
@@ -1130,7 +1130,7 @@
    },
    {
     "label": "Sell and split it",
-    "outcome": "You sold the flat and split the money. Nobody was thrilled, but nobody was hurt.",
+    "outcome": "You agreed to sell and split the money down the middle. Clearing out Gran's things together was hard, and nobody was thrilled with the outcome, but nobody was hurt either. You kept her old teapot.",
     "effects": {
      "money": 30000,
      "bond": {
@@ -1140,7 +1140,7 @@
    },
    {
     "label": "Give him your share",
-    "outcome": "You signed your half over to {sibling}. He hugged you for the first time in years.",
+    "outcome": "You signed your half over to {sibling}. He stared at the paperwork, then at you, and hugged you for the first time since you were kids. \"I won't forget this,\" he said, and he meant it.",
     "effects": {
      "bond": {
       "sibling": 25
@@ -1170,11 +1170,11 @@
    ]
   },
   "remembers": "sued_sibling",
-  "text": "{sibling}, the brother you sued over the flat, is at your door. He is holding a baby.",
+  "text": "The doorbell rings on a rainy Sunday. It's {sibling}, the brother you took to court over Gran's flat. You haven't spoken in years. He looks older and nervous, and in his arms, wrapped in a yellow blanket, is a baby.",
   "choices": [
    {
     "label": "Let him in",
-    "outcome": "You let him in. He said, \"She's called Rosa. I wanted her to know her family.\" You both cried.",
+    "outcome": "You stepped aside and let him in. Over tea he said, \"She's called Rosa. I wanted her to know her family.\" You held your niece for the first time, and you both cried at the kitchen table like kids.",
     "effects": {
      "bond": {
       "sibling": 30
@@ -1206,7 +1206,7 @@
    },
    {
     "label": "Talk at the door",
-    "outcome": "You talked at the door. It was stiff, but it was a start.",
+    "outcome": "You talked on the doorstep, both of you stiff and careful, the rain dripping off the porch. It wasn't a reunion, not yet. But when he left, he said, \"Maybe next time,\" and you found yourself hoping so.",
     "effects": {
      "bond": {
       "sibling": 10
@@ -1215,7 +1215,7 @@
    },
    {
     "label": "Close the door",
-    "outcome": "You closed the door. Later you saw the stroller tracks in the rain.",
+    "outcome": "You said you weren't ready and closed the door. Later, looking out of the window, you saw the stroller tracks in the wet pavement leading away, and you thought about them for a long time.",
     "effects": {
      "bond": {
       "sibling": -10
@@ -1243,11 +1243,11 @@
    ]
   },
   "remembers": "generous_to_sibling",
-  "text": "{sibling} turned Gran's flat into a little bakery. He wants to name a bread after you.",
+  "text": "{sibling} calls, buzzing with news. He has turned Gran's flat into a tiny bakery, the one you gave him your half of. It's doing well, and he wants to name his best bread after you, \"because none of this happens without you\".",
   "choices": [
    {
     "label": "Accept the honour",
-    "outcome": "There is now a sourdough named after you. It sells out daily.",
+    "outcome": "You said yes, embarrassed and touched. There is now a sourdough with your name chalked above it in the window. It sells out every morning, and strangers say your name without knowing who you are.",
     "effects": {
      "stats": {
       "happiness": 6
@@ -1259,7 +1259,7 @@
    },
    {
     "label": "Ask for free bread instead",
-    "outcome": "You negotiated lifetime free bread. A wise deal.",
+    "outcome": "You laughed and said you'd rather have free bread for life. He shook on it. Every Saturday since, a warm loaf has been waiting for you on the counter. You consider it the best deal you have ever made.",
     "effects": {
      "stats": {
       "happiness": 4
@@ -1280,11 +1280,11 @@
    ]
   },
   "remembers": "likes_cooking",
-  "text": "A small restaurant in {city} needs a cook. The pay is bad. The kitchen smells amazing.",
+  "text": "A small family restaurant on a side street in {city} has a handwritten sign in the window: \"Cook wanted\". The pay is bad and the hours are worse, but the smell of garlic drifting out the door is incredible.",
   "choices": [
    {
     "label": "Take the job",
-    "outcome": "You started as a line cook. Your hands burn and your heart sings.",
+    "outcome": "You walked in and asked for the job. The owner made you chop onions for twenty minutes as an interview, then hired you on the spot. Your hands burn, your feet ache, and your heart sings every shift.",
     "effects": {
      "job": "Line cook",
      "salary": 19000,
@@ -1298,7 +1298,7 @@
    },
    {
     "label": "Keep it a hobby",
-    "outcome": "You kept cooking as a hobby. Your friends are grateful.",
+    "outcome": "You decided to keep cooking as a hobby. Your Sunday dinners became famous among your friends, who now invite themselves over every week and occasionally bring wine.",
     "effects": {
      "stats": {
       "happiness": 1
@@ -1319,11 +1319,11 @@
    ]
   },
   "remembers": "cook_career",
-  "text": "You've saved a little and there's an empty shop on your street. A restaurant of your own?",
+  "text": "You've been saving every spare coin, and now the empty shop at the end of your street has a \"To let\" sign. It has a kitchen and big windows. You can already picture the tables, the menu and your name above the door.",
   "choices": [
    {
     "label": "Go for it",
-    "outcome": "You opened your own restaurant. Your name is on the door.",
+    "outcome": "You signed the lease, painted the walls yourself and opened six weeks later. The first night, half the street came. Your name is on the door, and the stress is enormous, but so is the pride.",
     "effects": {
      "money": -8000,
      "job": "Restaurant owner",
@@ -1336,7 +1336,7 @@
    },
    {
     "label": "Not yet",
-    "outcome": "You decided to wait. The shop became a phone repair store.",
+    "outcome": "You decided the time wasn't right. A month later, the shop became a phone repair store. You walk past it every day and sometimes picture what might have been.",
     "effects": {
      "stats": {
       "happiness": -1
@@ -1357,11 +1357,11 @@
    ]
   },
   "remembers": "likes_business",
-  "text": "A friend pitches you a start-up idea: an app for sharing leftovers with neighbours.",
+  "text": "An old friend corners you at a party, eyes shining. They're building an app called LeftOver that lets neighbours share spare food, and they need one more early investor. \"Get in now,\" they say, \"and you'll thank me later.\"",
   "choices": [
    {
     "label": "Invest your savings",
-    "outcome": "You invested. The app was clever, and so were the competitors.",
+    "outcome": "You put your savings in. The app was clever and your friend worked day and night, but big competitors noticed too. For now your money is tied up, and all you can do is wait and check the news.",
     "effects": {
      "money": -3000,
      "flags": {
@@ -1374,7 +1374,7 @@
    },
    {
     "label": "Pass",
-    "outcome": "You passed. You'll never know.",
+    "outcome": "You wished them luck and kept your money. They didn't seem to mind. Every so often you remember the pitch and wonder how it turned out. You'll probably never know.",
     "effects": {}
    }
   ]
@@ -1391,11 +1391,11 @@
    ]
   },
   "remembers": "startup_investor",
-  "text": "News about LeftOver, the start-up you invested in, is everywhere this morning.",
+  "text": "Your phone won't stop buzzing. LeftOver, the start-up you put your savings into years ago, is all over the news this morning. Your heart is racing as you open the first article.",
   "choices": [
    {
     "label": "Open the news",
-    "outcome": "LeftOver was bought by a supermarket chain. Your share came to $22,000.",
+    "outcome": "A national supermarket chain has bought LeftOver outright. Your small early share is suddenly worth $22,000. Your friend called you, screaming with joy, and you both laughed until you couldn't breathe.",
     "effects": {
      "money": 22000,
      "stats": {
@@ -1414,11 +1414,11 @@
   "maxAge": 30,
   "weight": 6,
   "category": "health",
-  "text": "You've been exhausted for weeks. A friend says you look grey.",
+  "text": "For weeks you've been exhausted: climbing stairs leaves you breathless, and you've been sleeping ten hours and waking up tired. Today a friend looks at you over lunch and says, gently, that you look grey.",
   "choices": [
    {
     "label": "See a doctor",
-    "outcome": "You saw a doctor. Low iron. A month of supplements and you felt human again.",
+    "outcome": "You booked a doctor's appointment. A blood test showed very low iron. A month of supplements later, the colour came back to your face and you felt like yourself again. You promised to listen to your body more.",
     "effects": {
      "money": -100,
      "stats": {
@@ -1428,7 +1428,7 @@
    },
    {
     "label": "Push through",
-    "outcome": "You pushed through. It got worse before it got better.",
+    "outcome": "You told yourself it was just stress and pushed through. It got worse before it got better, and you missed a week of everything when your body finally forced you to stop.",
     "effects": {
      "stats": {
       "health": -8,
@@ -1446,11 +1446,11 @@
   "once": false,
   "cooldown": 5,
   "category": "family",
-  "text": "It's {father}'s birthday this weekend.",
+  "text": "It's {father}'s birthday this weekend. He always says he doesn't want a fuss, every single year. He also always checks his phone a little too often on the day.",
   "choices": [
    {
     "label": "Cook him dinner",
-    "outcome": "You cooked {father}'s favourite. He had seconds and thirds.",
+    "outcome": "You went round and cooked {father}'s favourite meal from scratch. He pretended not to be emotional, had seconds and then thirds, and told the same old stories all evening. He hugged you twice at the door.",
     "effects": {
      "bond": {
       "father": 6
@@ -1462,7 +1462,7 @@
    },
    {
     "label": "Send a message",
-    "outcome": "You sent a message with three emojis. He replied \"thank you\" with a full stop.",
+    "outcome": "You sent a message with three birthday emojis. An hour later he replied: \"Thank you.\" With a full stop. You couldn't quite tell if he was hurt or just bad at texting.",
     "effects": {
      "bond": {
       "father": -2
@@ -1482,11 +1482,11 @@
     "partner"
    ]
   },
-  "text": "Someone called Amara laughs at your joke in a queue. A real laugh.",
+  "text": "You're stuck in a slow-moving queue at the bakery and mutter a joke about the line. The woman in front of you, Amara, turns round and laughs. Not a polite laugh, a real one. She is still smiling at you.",
   "choices": [
    {
     "label": "Ask for her number",
-    "outcome": "You asked for Amara's number. She wrote it on your hand.",
+    "outcome": "You asked for her number before you could talk yourself out of it. She didn't have a pen, so she wrote it on your hand with an eyeliner pencil. You didn't wash that hand all day.",
     "effects": {
      "stats": {
       "happiness": 6
@@ -1508,7 +1508,7 @@
    },
    {
     "label": "Smile and leave",
-    "outcome": "You smiled and left. You thought about it all week.",
+    "outcome": "You smiled, said goodbye and walked out with your bread. You thought about that laugh all week, and every time you passed the bakery you looked through the window, just in case.",
     "effects": {
      "stats": {
       "happiness": -1
@@ -1532,11 +1532,11 @@
    ]
   },
   "remembers": "partner",
-  "text": "Amara asks if you want to move in together.",
+  "text": "You and Amara are curled up on her sofa when she goes quiet, then asks, \"What if we got a place together?\" She is trying to sound casual. She isn't.",
   "choices": [
    {
     "label": "Yes",
-    "outcome": "You moved in with Amara. You argue about dishes. You're very happy.",
+    "outcome": "You said yes. Moving in was chaos: two kettles, too many books and a long argument about how to stack the dishwasher. You argue about the dishes. You are very, very happy.",
     "effects": {
      "stats": {
       "happiness": 7
@@ -1551,7 +1551,7 @@
    },
    {
     "label": "Not yet",
-    "outcome": "You said not yet. She said she understood. She went quiet for a week.",
+    "outcome": "You said you weren't ready yet. She said she understood and kissed your cheek, but she went quiet for a week, and you could feel her pulling back a little.",
     "effects": {
      "stats": {
       "happiness": -2
@@ -1588,11 +1588,11 @@
    ]
   },
   "remembers": "living_together",
-  "text": "You've found a ring. Amara has no idea.",
+  "text": "You've found the ring. It has been hidden in your sock drawer for a week and you check on it every morning. Amara has no idea. Tonight, at your favourite little restaurant, the moment feels close.",
   "choices": [
    {
     "label": "Propose at dinner",
-    "outcome": "You proposed over dinner. She said yes before you finished the question.",
+    "outcome": "Halfway through dessert you got down on one knee. You hadn't even finished the question when Amara said yes, laughing and crying at once. The whole restaurant clapped, and the chef sent out champagne.",
     "effects": {
      "stats": {
       "happiness": 9
@@ -1608,7 +1608,7 @@
    },
    {
     "label": "Wait for the perfect moment",
-    "outcome": "You decided to wait for the perfect moment. The ring is in your sock drawer.",
+    "outcome": "You decided tonight wasn't quite perfect enough. The ring went back into the sock drawer, where it is waiting for the perfect moment. You hope you'll know it when it comes.",
     "effects": {}
    }
   ]
@@ -1619,11 +1619,11 @@
   "maxAge": 30,
   "weight": 6,
   "category": "life",
-  "text": "You find a wallet on the pavement with $300 in it.",
+  "text": "On the pavement outside the supermarket you spot a brown leather wallet. Inside: an ID card, a photo of a smiling family and $300 in cash. Nobody seems to be looking for it.",
   "choices": [
    {
     "label": "Hand it in",
-    "outcome": "You handed it in. The owner sent a thank-you card.",
+    "outcome": "You handed it in at the police station. A week later a card arrived from the owner: a nurse who'd been saving that cash for her daughter's birthday. She wrote that you'd restored her faith in people.",
     "effects": {
      "stats": {
       "karma": 6,
@@ -1633,13 +1633,139 @@
    },
    {
     "label": "Keep the cash",
-    "outcome": "You kept the cash and binned the wallet.",
+    "outcome": "You pocketed the cash and dropped the wallet in a bin. The money spent easily. The family photo was harder to forget, and for a while you couldn't look anyone in the eye at the supermarket.",
     "effects": {
      "money": 300,
      "stats": {
       "karma": -6
      }
     }
+   }
+  ]
+ },
+ {
+  "id": "echo_surname",
+  "minAge": 8,
+  "maxAge": 13,
+  "weight": 30,
+  "category": "school",
+  "once": true,
+  "requires": {
+   "flags": [
+    "echo_surname"
+   ]
+  },
+  "remembers": "echo_surname",
+  "text": "First day of a new term. Your teacher is reading the register when she stops at your name and looks up. \"{surname}... any relation to {echo_person}? From the papers back in {echo_year}: ‘{echo_deed}’?\" Thirty heads turn to stare at you.",
+  "choices": [
+   {
+    "label": "Say yes, proudly",
+    "outcome": "You said yes, chin up, though you weren't completely sure. Half the class thought it was the coolest thing ever; the other half asked if you were rich. That night you asked {mother} everything she knew.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "charisma": 2
+     }
+    }
+   },
+   {
+    "label": "Say no relation",
+    "outcome": "You shrugged and said you'd never heard of them. The teacher moved on. But that night you searched the name and read about {echo_person} until long after you should have been asleep.",
+    "effects": {
+     "stats": {
+      "smarts": 2
+     }
+    }
+   },
+   {
+    "label": "Ask her to tell the story",
+    "outcome": "You asked what happened. She sat on the edge of her desk and told the whole class the story of {echo_person}. It was the only lesson all year that nobody yawned through.",
+    "effects": {
+     "stats": {
+      "smarts": 1,
+      "happiness": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "echo_history_class",
+  "minAge": 12,
+  "maxAge": 17,
+  "weight": 18,
+  "category": "school",
+  "once": true,
+  "requires": {
+   "flags": [
+    "echo_country"
+   ]
+  },
+  "remembers": "echo_country",
+  "text": "In history class, your teacher projects an old front page from {echo_year} onto the board. The headline reads: ‘{echo_deed}’. \"This is your country's story,\" she says. \"Who can tell me why it still matters?\" The room goes very quiet.",
+  "choices": [
+   {
+    "label": "Put your hand up and guess",
+    "outcome": "You took a guess about how one person's choices can ripple out for years. The teacher smiled and said, \"Exactly that.\" You felt clever for the rest of the day.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "charisma": 1
+     }
+    }
+   },
+   {
+    "label": "Read the article properly",
+    "outcome": "You squinted at the old article and read every word. The name {echo_person} stuck with you. Somewhere out there, their story was still going.",
+    "effects": {
+     "stats": {
+      "smarts": 3
+     }
+    }
+   },
+   {
+    "label": "Doodle in the margin",
+    "outcome": "You drew a very detailed dragon in the margin of your notes. History happened without you, as it usually does.",
+    "effects": {
+     "stats": {
+      "creativity": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "echo_city_stranger",
+  "minAge": 16,
+  "maxAge": 30,
+  "weight": 14,
+  "category": "life",
+  "once": true,
+  "requires": {
+   "flags": [
+    "echo_city"
+   ]
+  },
+  "remembers": "echo_city",
+  "text": "Waiting for a late bus in {city}, you get talking to an old man feeding the pigeons. When you say which street you grew up on, his eyes light up. \"I remember {echo_person},\" he says. \"{echo_year}. ‘{echo_deed}’. The whole city talked about nothing else.\"",
+  "choices": [
+   {
+    "label": "Ask him to tell you everything",
+    "outcome": "You let two buses go past while he told you the whole story, with sound effects. It made the city feel older and stranger and more like home. You walked the long way back, looking at the buildings differently.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "smarts": 1
+     },
+     "flags": {
+      "heard_echo": "hearing the story of {echo_person}"
+     }
+    }
+   },
+   {
+    "label": "Say your bus is here",
+    "outcome": "You smiled politely and hopped on the bus. Through the window you saw him tell the same story to the next person in the queue.",
+    "effects": {}
    }
   ]
  }

@@ -88,6 +88,11 @@ int _debtPayment(Life life, String name, int balance) {
   return min(balance, max(600, (balance * 0.2).round()));
 }
 
+/// Rent follows the local market (world news can push it up).
+int yearlyCostOf(Life life, Asset a) => a.kind == 'rental'
+    ? (a.yearlyCost * (100 + (life.worldMods['rent'] ?? 0)) / 100).round()
+    : a.yearlyCost;
+
 /// Living at home with no income, your family covers your living costs.
 bool familyCovers(Life life) => livesWithFamily(life) && life.salary <= 0;
 
@@ -106,7 +111,7 @@ int forecastNextYear(Life life) {
   if (life.age + 1 >= 18) {
     if (!familyCovers(life)) total -= livingCost(life);
     for (final a in life.assets) {
-      total -= a.yearlyCost;
+      total -= yearlyCostOf(life, a);
     }
   }
   for (final e in life.debts.entries) {
@@ -172,8 +177,6 @@ List<String> yearlyMoney(Life life, Random rng) {
     lines.add((label, amount));
   }
 
-  life.economy = nextEconomy(life.economy, rng);
-
   if (life.job != null && life.salary > 0) {
     cash('Salary', life.salary);
     cash('Income tax', -incomeTax(life.salary));
@@ -191,7 +194,10 @@ List<String> yearlyMoney(Life life, Random rng) {
     }
     life.stats.add('happiness', tier.happiness);
     for (final a in life.assets) {
-      cash(a.kind == 'rental' ? 'Rent' : '${a.name} upkeep', -a.yearlyCost);
+      cash(
+        a.kind == 'rental' ? 'Rent' : '${a.name} upkeep',
+        -yearlyCostOf(life, a),
+      );
     }
   }
 
@@ -211,6 +217,11 @@ List<String> yearlyMoney(Life life, Random rng) {
     }
   }
 
+  // Children never go into debt: the family covers it.
+  if (life.money < 0 && life.age < 18) {
+    lines.add(('Family covered what you owed', -life.money));
+    life.money = 0;
+  }
   // Overspending becomes debt (a student loan while studying).
   if (life.money < 0) {
     final short = -life.money;

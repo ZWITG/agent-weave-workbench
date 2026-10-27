@@ -28,6 +28,8 @@ class GameAction {
     this.miniGame,
     this.scored,
     this.priceNote,
+    this.repeatable = false,
+    this.screen,
   });
 
   final String id;
@@ -52,11 +54,17 @@ class GameAction {
   /// (for example course fees that may go on a loan).
   final String? priceNote;
 
+  /// Can be used again in the same year (e.g. re-reading the newspaper).
+  final bool repeatable;
+
+  /// A screen to open after running instead of a result pop-up.
+  final String? screen;
+
   /// Null when the action can be used now, otherwise the reason it can't.
   String? lockReason(Life life) {
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.age > maxAge) return 'Only up to age $maxAge';
-    if (life.usedActions.contains(id)) return 'Done this year';
+    if (!repeatable && life.usedActions.contains(id)) return 'Done this year';
     if (cost > 0 && life.money < cost) return 'Needs \$$cost';
     return extraCheck?.call(life);
   }

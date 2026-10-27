@@ -308,6 +308,16 @@ class _PersonSheet extends StatelessWidget {
             ],
           ),
         ),
+        if (npc.news.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          SectionLabel('What ${npc.name} has been up to'),
+          const SizedBox(height: 8),
+          for (final line in npc.news.reversed)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text('• $line', style: NF.sora(14, color: NF.soft)),
+            ),
+        ],
         const SizedBox(height: 16),
         SectionLabel('Things ${npc.name} remembers', color: NF.blue),
         const SizedBox(height: 8),

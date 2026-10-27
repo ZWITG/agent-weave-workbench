@@ -10,12 +10,17 @@ import 'engine/engine.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
+import 'engine/world.dart';
 import 'sound.dart';
 
 /// Holds the current life, talks to the engine and saves on the device
 /// after every change (offline-first; cloud sync comes in Phase 3).
 class GameController extends ChangeNotifier {
   static const _saveKey = 'relivable.life.v1';
+
+  /// The player's one world, saved apart from the current life so it
+  /// survives every life that ends.
+  static const _worldKey = 'relivable.world.v1';
 
   GameEngine? engine;
   Life? life;
@@ -44,6 +49,14 @@ class GameController extends ChangeNotifier {
     engine = GameEngine(list);
     final prefs = await SharedPreferences.getInstance();
     Sound.instance.enabled = prefs.getBool('relivable.sound') ?? true;
+    final world = prefs.getString(_worldKey);
+    if (world != null) {
+      try {
+        engine!.world = World.fromJson(jsonDecode(world));
+      } catch (_) {
+        // A damaged world file starts a fresh history rather than blocking play.
+      }
+    }
     final saved = prefs.getString(_saveKey);
     if (saved != null) {
       try {
@@ -65,6 +78,9 @@ class GameController extends ChangeNotifier {
 
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
+    if (engine != null) {
+      await prefs.setString(_worldKey, jsonEncode(engine!.world.toJson()));
+    }
     if (life == null) {
       await prefs.remove(_saveKey);
       return;
@@ -88,6 +104,7 @@ class GameController extends ChangeNotifier {
   }
 
   void endLife() {
+    if (life != null) engine!.world.recordLife(life!);
     life = null;
     pendingEvent = null;
     lastOutcome = null;

@@ -13,6 +13,9 @@ import 'models.dart';
 
 bool _roll(Random rng, int percent) => rng.nextInt(100) < percent;
 
+/// Extra police patrols from world news make crime riskier.
+int _police(Life life) => life.worldMods['policing'] ?? 0;
+
 String? _needsFlag(Life life, String flag, String reason) =>
     life.flags.containsKey(flag) ? null : reason;
 
@@ -424,6 +427,7 @@ final moreActions = <GameAction>[
       final r = rng.nextInt(10000);
       if (r == 0) {
         life.money += 250000;
+        life.flags['jackpot'] = Memory(life.age, 'winning the lottery');
         return statChange(
           life,
           'You matched every number. You won \$250,000!',
@@ -473,6 +477,38 @@ final moreActions = <GameAction>[
         'You put \$1,000 into an index fund. It rises and falls with the economy.',
         ['Money −\$1,000', 'See it grow on the Wealth tab'],
       );
+    },
+  ),
+
+  // ---------- News ----------
+  GameAction(
+    id: 'newspaper',
+    label: 'Buy a newspaper',
+    category: 'News',
+    keywords: ['news', 'newspaper', 'paper', 'headlines', 'world', 'read'],
+    minAge: 8,
+    repeatable: true,
+    screen: 'newspaper',
+    priceNote: '\$2 (free for under-18s) · re-read free all year',
+    // Children read the family's copy; adults buy their own once a year.
+    extraCheck: (life) =>
+        life.age >= 18 &&
+            !life.usedActions.contains('paper_bought') &&
+            life.money < 2
+        ? 'Needs \$2'
+        : null,
+    run: (life, rng) {
+      if (life.usedActions.contains('paper_bought')) {
+        return ActionResult('You picked up today\'s paper again.');
+      }
+      life.usedActions.add('paper_bought');
+      if (life.age < 18) {
+        return ActionResult('You borrowed the family\'s copy of the paper.');
+      }
+      life.money -= 2;
+      return ActionResult('You bought the ${life.city} Chronicle.', [
+        'Money −\$2',
+      ]);
     },
   ),
 
@@ -727,7 +763,7 @@ final moreActions = <GameAction>[
     keywords: ['pickpocket', 'steal', 'wallet', 'crime'],
     minAge: 14,
     run: (life, rng) {
-      if (_roll(rng, 35)) {
+      if (_roll(rng, 35 + _police(life))) {
         life.flags['arrested'] = Memory(
           life.age,
           'being arrested for pickpocketing',
@@ -752,7 +788,7 @@ final moreActions = <GameAction>[
     category: 'Crime',
     keywords: ['graffiti', 'vandal', 'spray', 'paint', 'street art'],
     minAge: 12,
-    run: (life, rng) => _roll(rng, 25)
+    run: (life, rng) => _roll(rng, 25 + _police(life))
         ? statChange(
             life,
             'Caught red-handed. You scrubbed walls for a month.',

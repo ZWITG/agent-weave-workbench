@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../engine/actions.dart';
 import '../engine/engine.dart';
 import '../engine/models.dart';
 import '../engine/storylet.dart';
@@ -7,6 +8,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'outcome_card.dart';
+import 'result_popup.dart';
 import 'path_tab.dart';
 import 'update_prompt.dart';
 import 'wealth_tab.dart';
@@ -399,7 +401,12 @@ class _LifeTab extends StatelessWidget {
         for (var i = 0; i < feed.length; i++) ...[
           if (i == 0 || feed[i].age != feed[i - 1].age)
             _YearDivider(age: feed[i].age, year: life.birthYear + feed[i].age),
-          _FeedBubble(entry: feed[i]),
+          _FeedBubble(
+            entry: feed[i],
+            onTap: feed[i].kind == 'world' && feed[i].age == life.age
+                ? () => _readPaper(context, controller)
+                : null,
+          ),
         ],
       ],
     );
@@ -436,12 +443,31 @@ class _YearDivider extends StatelessWidget {
   }
 }
 
+/// Tapping this year's headline buys (or re-opens) the newspaper.
+void _readPaper(BuildContext context, GameController c) {
+  final paper = allActions.firstWhere((a) => a.id == 'newspaper');
+  final lock = paper.lockReason(c.life!);
+  if (lock != null) {
+    showResultPopup(
+      context,
+      ActionResult('The full story is in today\'s paper.', ['Why: $lock']),
+      title: 'Read all about it',
+      icon: Icons.newspaper_rounded,
+    );
+    return;
+  }
+  runActionFlow(context, c, paper, closeSheet: false);
+}
+
 class _FeedBubble extends StatelessWidget {
-  const _FeedBubble({required this.entry});
+  const _FeedBubble({required this.entry, this.onTap});
   final FeedEntry entry;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    if (entry.kind == 'world') return _newsBubble();
+    if (entry.kind == 'npc') return _npcBubble();
     final milestone = entry.kind == 'milestone';
     final action = entry.kind == 'action';
     return Align(
@@ -487,6 +513,100 @@ class _FeedBubble extends StatelessWidget {
       ),
     );
   }
+
+  /// "In the news": this year's headline; tap to read the paper.
+  Widget _newsBubble() => Semantics(
+    button: onTap != null,
+    label:
+        'In the news: ${entry.text}${onTap != null ? '. Tap to read the paper' : ''}',
+    excludeSemantics: true,
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: NF.surface,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 10, 12, 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: NF.blue.withValues(alpha: 0.35)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.newspaper_rounded, size: 20, color: NF.blue),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'IN THE NEWS',
+                        style: NF
+                            .sora(10, weight: FontWeight.w800, color: NF.blue)
+                            .copyWith(letterSpacing: 1.2),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        entry.text,
+                        style: NF.sora(
+                          14,
+                          weight: FontWeight.w600,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (onTap != null) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    'Read',
+                    style: NF.sora(12, weight: FontWeight.w700, color: NF.blue),
+                  ),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: NF.blue,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  /// A life update from someone you know, with their avatar.
+  Widget _npcBubble() => Align(
+    alignment: Alignment.centerLeft,
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      constraints: const BoxConstraints(maxWidth: 330),
+      padding: const EdgeInsets.fromLTRB(10, 10, 14, 10),
+      decoration: BoxDecoration(
+        color: NF.surface,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Avatar(initials: (entry.who ?? '?').substring(0, 1), size: 28),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              entry.text,
+              style: NF.sora(14, color: NF.soft, height: 1.45),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _EventCard extends StatelessWidget {
@@ -660,6 +780,8 @@ class _MeTab extends StatelessWidget {
         const SizedBox(height: 10),
         const VersionCard(),
         const SizedBox(height: 16),
+        _WorldCard(controller: controller),
+        const SizedBox(height: 16),
         const SectionLabel('Hidden stats'),
         const SizedBox(height: 10),
         for (final k in Stats.hidden) ...[
@@ -712,3 +834,82 @@ class _MeTab extends StatelessWidget {
 }
 
 String _cap(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+
+/// Me tab: your world's memory (plan Module 11): family name, earlier
+/// notable lives and the history they wrote.
+class _WorldCard extends StatelessWidget {
+  const _WorldCard({required this.controller});
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final life = controller.life!;
+    final world = controller.engine!.world;
+    final name = world.reputation(life.surname);
+    final history = world.ledger.reversed.take(6).toList();
+    return NFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.public_rounded, color: NF.blue, size: 20),
+              const SizedBox(width: 8),
+              Text('Your world', style: NF.sora(15, weight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'One world, one history. Every life you play happens here, and '
+            'the world remembers what they did.',
+            style: NF.sora(12, color: NF.muted),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            name ?? 'The ${life.surname} name: not known yet',
+            style: NF.sora(14, weight: FontWeight.w600),
+          ),
+          if (life.echo.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Linked to ${life.echo['person']} (${life.echo['year']}) by '
+              '${switch (life.echo['relation']) {
+                'surname' => 'name',
+                'city' => 'home town',
+                _ => 'country',
+              }}.',
+              style: NF.sora(13, color: NF.soft),
+            ),
+          ],
+          if (world.lives.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text('Earlier lives', style: NF.sora(12, color: NF.muted)),
+            for (final l in world.lives.reversed.take(4))
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text('• $l', style: NF.sora(13, color: NF.soft)),
+              ),
+          ],
+          const SizedBox(height: 12),
+          Text('In the history books', style: NF.sora(12, color: NF.muted)),
+          if (history.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Nothing yet. Do something the papers will notice.',
+                style: NF.sora(13, color: NF.soft),
+              ),
+            ),
+          for (final s in history)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                '${s.year} · ${s.headline}',
+                style: NF.sora(13, color: NF.soft),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

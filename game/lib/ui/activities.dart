@@ -6,6 +6,7 @@ import '../engine/relationships.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'minigames.dart';
+import 'newspaper.dart';
 import 'people.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
@@ -26,6 +27,7 @@ const activityCategories = <(String, IconData)>[
   ('Licences', Icons.badge_rounded),
   ('Identity', Icons.face_rounded),
   ('Crime', Icons.local_police_rounded),
+  ('News', Icons.newspaper_rounded),
 ];
 
 IconData categoryIconFor(String c) => activityCategories
@@ -527,6 +529,10 @@ Future<void> runActionFlow(
   final r = c.runAction(a, score: score);
   if (closeSheet) nav.pop();
   if (!nav.mounted) return;
+  if (a.screen == 'newspaper') {
+    openNewspaper(nav.context, c);
+    return;
+  }
   showResultPopup(
     nav.context,
     r,

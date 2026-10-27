@@ -47,7 +47,8 @@ ActionResult _caughtOrNot(
   required String flag,
   required String flagLabel,
 }) {
-  if (score >= 0.5) {
+  // Extra police patrols (world news) make a clean getaway harder.
+  if (score >= 0.5 + (life.worldMods['policing'] ?? 0) / 100) {
     final take = minTake + rng.nextInt(maxTake - minTake + 1);
     life.money += take;
     return statChange(
