@@ -6,6 +6,7 @@ import 'ui/hub_screen.dart';
 import 'ui/new_life_screen.dart';
 import 'ui/recap_screen.dart';
 import 'ui/update_prompt.dart';
+import 'ui/colour_modes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +38,13 @@ class RelivableApp extends StatelessWidget {
           textScaler: TextScaler.linear(p.textScale),
           disableAnimations: p.reduceMotion,
         ),
-        child: child!,
+        // Colour-vision mode applies to the whole app (plan UX §8.3).
+        child: colourMatrices[p.colourMode] == null
+            ? child!
+            : ColorFiltered(
+                colorFilter: ColorFilter.matrix(colourMatrices[p.colourMode]!),
+                child: child!,
+              ),
       ),
       home: UpdateGate(
         child: ListenableBuilder(

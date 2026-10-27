@@ -391,7 +391,41 @@ class _PersonSheet extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         onTap: lock != null
             ? null
-            : () {
+            : () async {
+                const big = {
+                  'divorce',
+                  'break_up',
+                  'pet_rehome',
+                  'cut_contact',
+                };
+                if (controller.profile.confirmBig && big.contains(i.id)) {
+                  final ok = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      backgroundColor: NF.surface,
+                      title: Text(
+                        '${i.label}: ${npc.name}?',
+                        style: NF.sora(18, weight: FontWeight.w700),
+                      ),
+                      content: Text(
+                        'This is a big decision, and ${npc.name.split(' ').first} will remember it.',
+                        style: NF.sora(14, color: NF.soft),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Not now'),
+                        ),
+                        FilledButton(
+                          style: primaryButton(),
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('Yes'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (ok != true || !context.mounted) return;
+                }
                 final r = controller.interact(npc, i);
                 showResultPopup(
                   context,

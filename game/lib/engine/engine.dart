@@ -233,6 +233,7 @@ class GameEngine {
     final workedHard = life.usedActions.contains('work_harder');
     final slacked = life.usedActions.contains('slack_off');
     life.age += 1;
+    life.idleYears = life.usedActions.isEmpty ? life.idleYears + 1 : 0;
     life.usedActions.clear();
     life.interactionCounts.clear();
     life.energy = 10;

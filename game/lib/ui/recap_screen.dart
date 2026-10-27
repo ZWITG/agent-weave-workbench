@@ -125,6 +125,22 @@ class RecapScreen extends StatelessWidget {
                           'Earned for: ${title.why}',
                           style: NF.sora(13, color: NF.soft),
                         ),
+                        for (final t in minorTitles(life))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              'Also: ${t.name} · ${t.why}',
+                              style: NF.sora(13, color: NF.soft),
+                            ),
+                          ),
+                        if (almostTitle(life) case (final t, final p))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              'Almost: ${t.name} (${(p * 100).round()}%) · ${t.why}',
+                              style: NF.sora(13, color: NF.muted),
+                            ),
+                          ),
                       ],
                     ),
                   ),

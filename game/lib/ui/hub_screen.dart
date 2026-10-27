@@ -12,6 +12,7 @@ import 'outcome_card.dart';
 import 'result_popup.dart';
 import 'path_tab.dart';
 import 'health_screen.dart';
+import 'meta_screens.dart';
 import 'social_screen.dart';
 import 'me_screens.dart';
 import 'update_prompt.dart';
@@ -45,6 +46,9 @@ class _HubScreenState extends State<HubScreen> {
       });
     }
     _lastEvent = event;
+    if (c.toasts.isNotEmpty && _toast == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _nextToast());
+    }
     final tabs = [
       _LifeTab(controller: c),
       PeopleTab(controller: c),
@@ -110,6 +114,62 @@ class _HubScreenState extends State<HubScreen> {
         ],
       ),
     );
+  }
+
+  OverlayEntry? _toast;
+
+  /// Achievements, goals and challenge ticks appear briefly at the top
+  /// (never a bottom bar), one at a time.
+  void _nextToast() {
+    if (!mounted || _toast != null || c.toasts.isEmpty) return;
+    final text = c.toasts.removeAt(0);
+    final entry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 12,
+        left: 16,
+        right: 16,
+        child: Semantics(
+          liveRegion: true,
+          child: Material(
+            color: NF.card,
+            elevation: 8,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: NF.orange.withValues(alpha: 0.6)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.emoji_events_rounded, color: NF.orange),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      text,
+                      style: NF.sora(14, weight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    _toast = entry;
+    Overlay.of(context).insert(entry);
+    Future.delayed(const Duration(milliseconds: 2600), () {
+      entry.remove();
+      _toast = null;
+      if (mounted) _nextToast();
+    });
+  }
+
+  @override
+  void dispose() {
+    _toast?.remove();
+    super.dispose();
   }
 
   /// Opens the Activities panel (swipe up on the bottom bar, or tap it).
@@ -332,6 +392,10 @@ class _BottomBar extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Row(
+              // Left-hand layout mirrors the Age +1 / search cluster.
+              textDirection: controller.profile.leftHanded
+                  ? TextDirection.rtl
+                  : TextDirection.ltr,
               children: [
                 Expanded(
                   child: Semantics(
@@ -964,6 +1028,51 @@ class _MeTab extends StatelessWidget {
               builder: (_) => HealthScreen(controller: controller),
             ),
           ),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          style: secondaryButton(),
+          icon: const Icon(Icons.bolt_rounded),
+          label: Text(
+            'Goals · ${controller.profile.sparks} Sparks · ${controller.profile.streak}-day streak',
+          ),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => GoalsScreen(controller: controller),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                style: secondaryButton(),
+                icon: const Icon(Icons.emoji_events_rounded),
+                label: Text(
+                  'Achievements ${controller.profile.achievements.length}',
+                ),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AchievementsScreen(controller: controller),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: OutlinedButton.icon(
+                style: secondaryButton(),
+                icon: const Icon(Icons.collections_bookmark_rounded),
+                label: const Text('Collections'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CollectionsScreen(controller: controller),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         const VersionCard(),

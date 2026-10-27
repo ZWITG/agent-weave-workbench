@@ -17,6 +17,8 @@ import 'package:relivable/engine/lifespan.dart';
 import 'package:relivable/engine/pets.dart';
 import 'package:relivable/engine/social.dart';
 import 'package:relivable/engine/love.dart';
+import 'package:relivable/engine/meta.dart';
+import 'package:relivable/engine/profile.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
@@ -1190,5 +1192,93 @@ void main() {
     expect(farmLock(life, speciesById('goat')), isNotNull);
     expect(farmLock(life, speciesById('horse')), isNull);
     expect(petCosts(life), 0);
+  });
+
+  // ---------------- Wave F3: titles, achievements, goals, challenges ----------------
+
+  test('Life Titles are scored: main, minor and almost', () {
+    final life = engine.newLife(seed: 140)..age = 100;
+    life.alive = false;
+    life.stats.values['karma'] = 60;
+    expect(titleFor(life).name, 'The Centenarian');
+    expect(minorTitles(life).map((t) => t.id), contains('survivor'));
+    final (almost, progress) = almostTitle(life)!;
+    expect(progress, inInclusiveRange(0.6, 0.99));
+    expect(almost.test(life), isFalse);
+    final young = engine.newLife(seed: 141)..age = 20;
+    expect(titleFor(young).id, 'quiet');
+  });
+
+  test('achievements and collections are earned once, across lives', () {
+    final p = Profile();
+    final life = engine.newLife(seed: 142)..age = 25;
+    startCareer(life, careerById('office')!);
+    final first = checkMeta(life, p);
+    expect(first, isNotEmpty);
+    expect(p.achievements, contains('first_job'));
+    expect(p.sparks, greaterThan(0));
+    expect(checkMeta(life, p), isEmpty);
+    expect(p.collections['careers'], contains(life.job));
+    expect(p.collections['countries'], contains(life.country));
+    life.alive = false;
+    life.causeOfDeath = 'Natural causes';
+    recordLifeEnd(life, p);
+    recordLifeEnd(life, p);
+    expect(p.collections['titles']!.length, greaterThanOrEqualTo(1));
+    expect(p.collections['causes'], ['Natural causes']);
+  });
+
+  test('daily goals pay Sparks and streaks forgive one missed day a week', () {
+    final p = Profile();
+    final day = DateTime(2026, 11, 2);
+    for (final g in goalsFor(day)) {
+      for (var i = 0; i < g.need; i++) {
+        trackGoal(p, g.events.first, day);
+      }
+    }
+    expect(p.sparks, 3 * 20 + 50);
+    expect(p.dailyBonusDays, 1);
+    expect(recordPlayDay(p, day), isNull);
+    expect(p.streak, 1);
+    recordPlayDay(p, DateTime(2026, 11, 3));
+    expect(p.streak, 2);
+    expect(recordPlayDay(p, DateTime(2026, 11, 5)), contains('freeze'));
+    expect(p.streak, 3);
+    recordPlayDay(p, DateTime(2026, 11, 7));
+    expect(p.streak, 1);
+  });
+
+  test('weekly challenges are fixed per week and pay out once', () {
+    final week = currentWeek(DateTime(2026, 11, 4));
+    expect(
+      challengeFor(week).map((t) => t.id),
+      challengeFor(week).map((t) => t.id),
+    );
+    expect(challengeFor(week).length, 4);
+    expect(archiveWeeks(DateTime(2026, 11, 4)).length, 8);
+    final life = engine.newLife(seed: 143);
+    life.flags.addAll({
+      'married': Memory(30, 'm'),
+      'emigrated': Memory(30, 'e'),
+      'grandparent': Memory(60, 'g'),
+      'marathon': Memory(30, 'r'),
+      'acquitted': Memory(30, 'a'),
+      'good_neighbour': Memory(30, 'n'),
+      'garden_volunteer': Memory(30, 'v'),
+    });
+    life.age = 95;
+    life.alive = false;
+    life.stats.values['karma'] = 90;
+    // A week whose four tasks this life has all done.
+    final fit = [
+      for (var i = 0; i < 400; i++)
+        currentWeek(DateTime(2026, 1, 5).add(Duration(days: 7 * i))),
+    ].firstWhere((w) => challengeFor(w).every((t) => t.test(life)));
+    final p = Profile()..activeWeek = fit;
+    final out = trackChallenge(p, life, DateTime(2026, 11, 4));
+    expect(out.join(), contains('Challenge complete'));
+    expect(p.sparks, 100);
+    expect(p.collections['challenges'], [challengeName(fit)]);
+    expect(trackChallenge(p, life, DateTime(2026, 11, 4)), isEmpty);
   });
 }

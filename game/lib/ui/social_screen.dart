@@ -254,6 +254,7 @@ class SocialScreen extends StatelessWidget {
                                       ),
                                     ),
                                   );
+                                  controller.trackEvent('post');
                                   showResultPopup(
                                     context,
                                     r,

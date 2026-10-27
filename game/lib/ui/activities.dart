@@ -569,8 +569,45 @@ Future<void> runActionFlow(
   bool closeSheet = true,
 }) async {
   final nav = Navigator.of(context);
+  // Confirm big decisions (plan UX §8.5): crime, quitting, moving abroad,
+  // or spending more than half your cash.
+  final big =
+      a.category == 'Crime' ||
+      const {'quit_job', 'retire', 'emigrate', 'name_change'}.contains(a.id) ||
+      (a.cost > 0 && a.cost > c.life!.money / 2);
+  if (c.profile.confirmBig && big) {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: NF.surface,
+        title: Text('${a.label}?', style: NF.sora(18, weight: FontWeight.w700)),
+        content: Text(
+          a.hint?.call(c.life!) ??
+              a.priceNote ??
+              (a.cost > 0
+                  ? 'Costs ${money(a.cost)}'
+                  : 'This is a big decision.'),
+          style: NF.sora(14, color: NF.soft),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Not now'),
+          ),
+          FilledButton(
+            style: primaryButton(),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Do it'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+  }
   double? score;
-  if (a.miniGame != null) {
+  if (a.miniGame != null && c.profile.autoMiniGames) {
+    score = 0.6; // the same fair middle result as "Skip"
+  } else if (a.miniGame != null) {
     score = await showMiniGame(
       context,
       a.miniGame!,

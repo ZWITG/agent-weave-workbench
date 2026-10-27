@@ -9,6 +9,7 @@ import 'engine/careers.dart';
 import 'engine/dynasty.dart';
 import 'engine/engine.dart';
 import 'engine/health.dart' show endThisLifeRules;
+import 'engine/meta.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
@@ -176,6 +177,7 @@ class GameController extends ChangeNotifier {
   /// Continue the family as one of the children.
   void continueAsHeir(Npc heir) {
     final old = life!;
+    recordLifeEnd(old, profile);
     engine!.world.recordLife(old);
     life = heirLife(old, heir);
     engine!.world.ensureYear(life!.year, life!.country, life!.city);
@@ -194,6 +196,7 @@ class GameController extends ChangeNotifier {
   void endThisLife() {
     if (life == null) return;
     endThisLifeRules(life!);
+    recordLifeEnd(life!, profile);
     pendingEvent = null;
     lastOutcome = null;
     _save();
@@ -286,6 +289,42 @@ class GameController extends ChangeNotifier {
     Sound.instance.ageUp();
     _snapshot();
     pendingEvent = engine!.ageUp(life!);
+    final freeze = recordPlayDay(profile, DateTime.now());
+    if (freeze != null) toasts.add(freeze);
+    _meta(['age']);
+    _save();
+    notifyListeners();
+  }
+
+  // ---------------- Meta (achievements, goals, challenges) ----------------
+
+  /// Short notices shown at the top of the screen, oldest first.
+  final List<String> toasts = [];
+
+  late final Set<String> _storyIds = {for (final s in engine!.storylets) s.id};
+
+  void _meta(List<String> events) {
+    final l = life;
+    if (l == null) return;
+    final now = DateTime.now();
+    for (final e in events) {
+      toasts.addAll(trackGoal(profile, e, now));
+    }
+    toasts.addAll(checkMeta(l, profile, storyIds: _storyIds));
+    toasts.addAll(trackChallenge(profile, l, now));
+    if (!l.alive) recordLifeEnd(l, profile);
+  }
+
+  /// Counts an event that happens outside actions (a social post...).
+  void trackEvent(String event) {
+    _meta([event]);
+    _save();
+    notifyListeners();
+  }
+
+  /// Plays an archived weekly challenge (null = this week).
+  void playChallenge(String? week) {
+    profile.activeWeek = week;
     _save();
     notifyListeners();
   }
@@ -295,6 +334,7 @@ class GameController extends ChangeNotifier {
     lastOutcome = engine!.choose(life!, pendingEvent!, choice);
     Sound.instance.outcome(lastOutcome!.tone);
     pendingEvent = null;
+    _meta(['choice']);
     _save();
     notifyListeners();
   }
@@ -307,6 +347,7 @@ class GameController extends ChangeNotifier {
   /// Runs a Wealth-tab money action (deposit, loan, sell...) and saves.
   T wealth<T>(T Function(Life life) action) {
     final r = action(life!);
+    _meta(const []);
     _save();
     notifyListeners();
     return r;
@@ -324,6 +365,11 @@ class GameController extends ChangeNotifier {
   ActionResult runAction(GameAction action, {double? score}) {
     final r = engine!.runAction(life!, action, score: score);
     _sceneAfterAction();
+    _meta([
+      'action:${action.id}',
+      'category:${action.category}',
+      if (action.category == 'Crime') 'crime',
+    ]);
     _save();
     notifyListeners();
     return r;
@@ -333,6 +379,7 @@ class GameController extends ChangeNotifier {
   ActionResult interact(Npc npc, Interaction interaction) {
     final r = engine!.interact(life!, npc, interaction);
     _sceneAfterAction();
+    _meta(['interaction:${npc.circle}']);
     _save();
     notifyListeners();
     return r;

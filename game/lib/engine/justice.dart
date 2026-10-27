@@ -764,6 +764,7 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
             .join(', ');
         if (rng.nextDouble() >= p) {
           _clearMods(l);
+          l.flags['acquitted'] = Memory(l.age, 'walking free from court');
           l.notoriety += 3;
           l.stats.add('happiness', 10);
           return 'The foreman stood up: "Not guilty." Your knees nearly gave way. Conviction chance was ${(p * 100).round()}%: $reasons.';

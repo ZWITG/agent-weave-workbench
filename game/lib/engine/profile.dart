@@ -23,6 +23,34 @@ class Profile {
   String difficulty = 'normal';
   bool ironman = false;
 
+  /// More accessibility (plan UX §8): colour-vision mode (default, protan,
+  /// deutan, tritan, mono), left-hand layout, confirm big decisions and
+  /// always auto-resolve mini-games.
+  String colourMode = 'default';
+  bool leftHanded = false;
+  bool confirmBig = true;
+  bool autoMiniGames = false;
+
+  // ---- Meta (meta.dart): kept across every life ----
+  /// Achievement id -> date earned.
+  final Map<String, String> achievements = {};
+  final Map<String, List<String>> collections = {};
+
+  /// Sparks: the only soft currency, earn-only, never sold.
+  int sparks = 0;
+  int streak = 0;
+  int bestStreak = 0;
+  String? lastPlayDay;
+  String? freezeWeek;
+  final Map<String, dynamic> daily = {};
+  int dailyBonusDays = 0;
+
+  /// Week (Monday date) -> finished task ids; finished weeks; the week
+  /// being played (null = this week).
+  final Map<String, List<String>> weeklyDone = {};
+  final List<String> challengesDone = [];
+  String? activeWeek;
+
   Map<String, dynamic> toJson() => {
     'classic': classic,
     'reduceMotion': reduceMotion,
@@ -31,6 +59,22 @@ class Profile {
     'plusTest': plusTest,
     'difficulty': difficulty,
     'ironman': ironman,
+    'colourMode': colourMode,
+    'leftHanded': leftHanded,
+    'confirmBig': confirmBig,
+    'autoMiniGames': autoMiniGames,
+    'achievements': achievements,
+    'collections': collections,
+    'sparks': sparks,
+    'streak': streak,
+    'bestStreak': bestStreak,
+    'lastPlayDay': lastPlayDay,
+    'freezeWeek': freezeWeek,
+    'daily': daily,
+    'dailyBonusDays': dailyBonusDays,
+    'weeklyDone': weeklyDone,
+    'challengesDone': challengesDone,
+    'activeWeek': activeWeek,
   };
 
   factory Profile.fromJson(Map<String, dynamic> j) => Profile()
@@ -40,7 +84,29 @@ class Profile {
     ..hidden.addAll(List<String>.from(j['hidden'] ?? []))
     ..plusTest = j['plusTest'] ?? false
     ..difficulty = j['difficulty'] ?? 'normal'
-    ..ironman = j['ironman'] ?? false;
+    ..ironman = j['ironman'] ?? false
+    ..colourMode = j['colourMode'] ?? 'default'
+    ..leftHanded = j['leftHanded'] ?? false
+    ..confirmBig = j['confirmBig'] ?? true
+    ..autoMiniGames = j['autoMiniGames'] ?? false
+    ..achievements.addAll(Map<String, String>.from(j['achievements'] ?? {}))
+    ..collections.addAll({
+      for (final e in Map<String, dynamic>.from(j['collections'] ?? {}).entries)
+        e.key: List<String>.from(e.value),
+    })
+    ..sparks = j['sparks'] ?? 0
+    ..streak = j['streak'] ?? 0
+    ..bestStreak = j['bestStreak'] ?? 0
+    ..lastPlayDay = j['lastPlayDay']
+    ..freezeWeek = j['freezeWeek']
+    ..daily.addAll(Map<String, dynamic>.from(j['daily'] ?? {}))
+    ..dailyBonusDays = j['dailyBonusDays'] ?? 0
+    ..weeklyDone.addAll({
+      for (final e in Map<String, dynamic>.from(j['weeklyDone'] ?? {}).entries)
+        e.key: List<String>.from(e.value),
+    })
+    ..challengesDone.addAll(List<String>.from(j['challengesDone'] ?? []))
+    ..activeWeek = j['activeWeek'];
 }
 
 /// Activities hidden by the content filters.

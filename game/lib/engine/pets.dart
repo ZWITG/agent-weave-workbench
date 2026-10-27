@@ -398,6 +398,8 @@ List<String> petsYear(Life l, Random rng) {
   for (final p in petsOf(l)) {
     final s = speciesOf(p);
     final age = p.ageIn(l.year);
+    // Until you are 18, your parents look after the family pet.
+    if (l.age < 18) p.info['lastCare'] = l.age;
     if ((p.info['lastCare'] as int? ?? l.age) < l.age - 2) {
       _setHealth(p, petHealth(p) - 10);
       p.addFacets(affection: -10);

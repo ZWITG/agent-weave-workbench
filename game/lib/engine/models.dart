@@ -736,6 +736,9 @@ class Life {
   /// Ended from the menu ("End this life"), not by the story.
   bool endedEarly = false;
 
+  /// Birthdays in a row with no activities at all (The Idler).
+  int idleYears = 0;
+
   // ---- Fame and social media (social.dart) ----
   int fame = 0;
 
@@ -987,6 +990,7 @@ class Life {
     'lowMoodYears': lowMoodYears,
     'highStressYears': highStressYears,
     'endedEarly': endedEarly,
+    'idleYears': idleYears,
     'genderIdentity': genderIdentity,
     'fame': fame,
     'followers': followers,
@@ -1143,6 +1147,7 @@ class Life {
       ..lowMoodYears = j['lowMoodYears'] ?? 0
       ..highStressYears = j['highStressYears'] ?? 0
       ..endedEarly = j['endedEarly'] ?? false
+      ..idleYears = j['idleYears'] ?? 0
       ..genderIdentity = j['genderIdentity'] ?? ''
       ..fame = j['fame'] ?? 0
       ..followers.addAll(Map<String, int>.from(j['followers'] ?? {}))

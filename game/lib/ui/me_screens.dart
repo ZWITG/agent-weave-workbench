@@ -296,6 +296,48 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const _Head('Accessibility'),
+              ListTile(
+                title: Text(
+                  'Colour vision',
+                  style: NF.sora(15, weight: FontWeight.w600),
+                ),
+                subtitle: Wrap(
+                  spacing: 8,
+                  children: [
+                    for (final (k, label) in const [
+                      ('default', 'Default'),
+                      ('protan', 'Protan'),
+                      ('deutan', 'Deutan'),
+                      ('tritan', 'Tritan'),
+                      ('mono', 'Monochrome'),
+                    ])
+                      ChoiceChip(
+                        label: Text(label),
+                        selected: p.colourMode == k,
+                        onSelected: (_) =>
+                            controller.updateProfile((p) => p.colourMode = k),
+                      ),
+                  ],
+                ),
+              ),
+              sw(
+                'Left-hand layout',
+                'Age +1 on the left, search on the right',
+                p.leftHanded,
+                (v) => controller.updateProfile((p) => p.leftHanded = v),
+              ),
+              sw(
+                'Confirm big decisions',
+                'Ask before crime, quitting, divorce or big spending',
+                p.confirmBig,
+                (v) => controller.updateProfile((p) => p.confirmBig = v),
+              ),
+              sw(
+                'Always decide mini-games for me',
+                'Skip every mini-game with the fair middle result',
+                p.autoMiniGames,
+                (v) => controller.updateProfile((p) => p.autoMiniGames = v),
+              ),
               sw(
                 'Reduce motion',
                 'Fewer animations and no bouncing',
