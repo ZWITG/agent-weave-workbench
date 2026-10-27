@@ -7,6 +7,7 @@ import 'health.dart' show healthCosts;
 import 'homes.dart' show homeOf, lettingOf, rentFor;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
+import 'shopping.dart' show subscriptionCost;
 import 'kin.dart' show fostersOf, fosterAllowance;
 import 'possessions.dart';
 import 'pets.dart' show petCosts;
@@ -80,6 +81,7 @@ const debtRates = <String, double>{
   'Payday loan': 0.90,
   'Family loan': 0.0,
   'Credit card': 0.20,
+  'Pay later': 0.0,
 };
 
 const mortgageYears = 25;
@@ -99,7 +101,7 @@ int _debtPayment(Life life, String name, int balance) {
     return min(balance, annuity(balance, rateOf(life, name), max(1, left)));
   }
   // Payday loans are due in full at the next birthday.
-  if (name == 'Payday loan') return balance;
+  if (name == 'Payday loan' || name == 'Pay later') return balance;
   return min(balance, max(600, (balance * 0.2).round()));
 }
 
@@ -143,6 +145,7 @@ int forecastNextYear(Life life) {
   if (life.business != null) total += life.business!.profit;
   if (life.age + 1 >= 18) total -= homeInsuranceCost(life);
   total += fostersOf(life).length * fosterAllowance;
+  total -= subscriptionCost(life);
   return total;
 }
 
@@ -258,6 +261,7 @@ List<String> yearlyMoney(Life life, Random rng) {
   }
   if (life.age >= 18) cash('Home insurance', -homeInsuranceCost(life));
   cash('Fostering allowance', fostersOf(life).length * fosterAllowance);
+  cash('Subscriptions', -subscriptionCost(life));
   if (life.age >= 18 && jailed) {
     lines.add(('Prison covers food and a bed', 0));
     for (final a in life.assets) {

@@ -19,6 +19,7 @@ import 'jobs.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
 import 'models.dart';
+import 'shopping.dart';
 import 'kin.dart';
 import 'possessions.dart';
 import 'relationships.dart';
@@ -259,6 +260,7 @@ class GameEngine {
       ...prisonYear(life, _rngFor(life, 67)),
       ...homeYear(life, _rngFor(life, 71)),
       ...possessionsYear(life, _rngFor(life, 73)),
+      ...shoppingYear(life, _rngFor(life, 83)),
     ]) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }

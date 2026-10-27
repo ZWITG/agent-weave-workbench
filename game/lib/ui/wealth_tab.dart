@@ -11,6 +11,8 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'hub_kit.dart';
+import 'shop_screen.dart';
+import '../engine/shopping.dart' show saleOn;
 import 'result_popup.dart';
 import 'wealth_more.dart';
 import '../engine/possessions.dart';
@@ -191,7 +193,15 @@ class _WealthTabState extends State<WealthTab> {
             : '${life.assets.length} owned',
       _ => '${openMoney.length} open',
     };
+    final sale = saleOn(DateTime.now());
     return [
+      BrowseItem(
+        icon: Icons.shopping_bag_rounded,
+        label: 'Shop',
+        status: sale != null ? '${sale.$2}% off' : 'Daily deals',
+        alert: sale != null,
+        onTap: () => openShop(context, c),
+      ),
       for (final e in _sections.entries)
         BrowseItem(
           icon: e.value.$2,
@@ -380,7 +390,7 @@ class _WealthTabState extends State<WealthTab> {
           icon: Icons.credit_card_rounded,
           title: d.key,
           subtitle:
-              '${(rateOf(life, d.key) * 100).toStringAsFixed(1)}% a year${d.key == 'Payday loan' ? ' · due in full next birthday' : ''}',
+              '${(rateOf(life, d.key) * 100).toStringAsFixed(1)}% a year${d.key == 'Payday loan' || d.key == 'Pay later' ? ' · due in full next birthday' : ''}',
           amount: money(-d.value),
           negative: true,
           actions: [

@@ -11,6 +11,7 @@ import 'newspaper.dart';
 import 'social_screen.dart';
 import 'people.dart';
 import 'result_popup.dart';
+import 'shop_screen.dart';
 import 'widgets.dart';
 
 /// Category order and icons for the Activities panel.
@@ -636,6 +637,10 @@ Future<void> runActionFlow(
   if (!nav.mounted) return;
   if (a.screen == 'newspaper') {
     openNewspaper(nav.context, c);
+    return;
+  }
+  if (a.screen == 'shop') {
+    openShop(nav.context, c);
     return;
   }
   if (a.screen == 'social') {

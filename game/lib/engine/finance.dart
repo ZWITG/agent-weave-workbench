@@ -335,6 +335,7 @@ String bankruptcy(Life l) {
     'Credit card',
     'Personal loan',
     'Payday loan',
+    'Pay later',
     'Auto loan',
     'Business loan',
     'Family loan',

@@ -23,6 +23,7 @@ import 'package:relivable/engine/meta.dart';
 import 'package:relivable/engine/kin.dart';
 import 'package:relivable/engine/possessions.dart';
 import 'package:relivable/engine/profile.dart';
+import 'package:relivable/engine/shopping.dart';
 import 'package:relivable/engine/recap.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
@@ -1053,7 +1054,7 @@ void main() {
 
   test('people you love grow old, and losing them brings grief', () {
     final life = engine.newLife(seed: 110)..age = 60;
-    final mum = life.npc('mother')!;
+    final mum = life.who('@parent')!;
     mum.addFacets(affection: 50, trust: 50);
     life.npcs[life.npcs.indexOf(mum)] = mum;
     var lines = <String>[];
@@ -1766,5 +1767,111 @@ void main() {
     } finally {
       seasonClock = () => DateTime(2026, 8, 1);
     }
+  });
+
+  // ---------------- Shopping ----------------
+
+  test('shop prices follow deals and real-date sales', () {
+    final quiet = DateTime(2026, 8, 1);
+    final friday = DateTime(2026, 11, 27);
+    expect(saleOn(quiet), isNull);
+    expect(saleOn(friday)!.$1, 'Black Friday');
+    expect(dealsOn(quiet), dealsOn(DateTime(2026, 8, 1)));
+    expect(dealsOn(quiet).length, 3);
+    final life = engine.newLife(seed: 190)..age = 30;
+    final laptop = itemById('laptop')!;
+    final full = priceOf(life, laptop, quiet);
+    if (!dealsOn(quiet).containsKey('laptop')) {
+      expect(full, laptop.price);
+    }
+    expect(priceOf(life, laptop, friday), lessThan(laptop.price));
+  });
+
+  test('buying: cash, card and pay in 3, with lasting effects', () {
+    final quiet = DateTime(2026, 8, 1);
+    final life = engine.newLife(seed: 191)..age = 30;
+    life.money = 5000;
+    final laptop = itemById('laptop')!;
+    final price = priceOf(life, laptop, quiet);
+    buyItem(life, laptop, now: quiet);
+    expect(life.money, 5000 - price);
+    expect(life.items.single['id'], 'laptop');
+    final smarts = life.stats['smarts'];
+    shoppingYear(life, Random(99));
+    expect(life.stats['smarts'], min(100, smarts + 1));
+    expect(life.items.single['left'], laptop.years - 1);
+    // Card
+    final sofa = itemById('sofa')!;
+    buyItem(life, sofa, pay: 'card', now: quiet);
+    expect(life.debts['Credit card'], priceOf(life, sofa, quiet));
+    // Pay in 3: a third now, the rest due in full next birthday at 0%.
+    final bike = itemById('bike')!;
+    final before = life.money;
+    final p = priceOf(life, bike, quiet);
+    expect(payLock(life, 'later', p), isNull);
+    buyItem(life, bike, pay: 'later', now: quiet);
+    expect(life.money, before - (p / 3).ceil());
+    expect(life.debts[payLaterDebt], p - (p / 3).ceil());
+    expect(rateOf(life, payLaterDebt), 0);
+    // Under 18: cash only.
+    final kid = engine.newLife(seed: 192)..age = 14;
+    expect(payLock(kid, 'card', 100), 'Cards open at 18');
+  });
+
+  test('gifts land better when they match the person', () {
+    final quiet = DateTime(2026, 8, 1);
+    final life = engine.newLife(seed: 193)..age = 40;
+    life.money = 1000;
+    final mum = life.who('@parent')!;
+    expect(tasteOf(life, mum), anyOf('adult', 'elder'));
+    final toy = itemById('toy')!;
+    final album = itemById('album')!;
+    expect(loves(life, mum, album), isTrue);
+    expect(loves(life, mum, toy), isFalse);
+    mum.affection = 40;
+    final a0 = mum.affection;
+    buyItem(life, toy, giftFor: mum, now: quiet);
+    final meh = mum.affection - a0;
+    final a1 = mum.affection;
+    final r = buyItem(life, album, giftFor: mum, now: quiet);
+    expect(mum.affection - a1, greaterThan(meh));
+    expect(r.notes.last, contains('they love this'));
+    expect(mum.memories.any((m) => m.text.contains('photo album')), isTrue);
+  });
+
+  test('returns, resale, luxury valuables and subscriptions', () {
+    final quiet = DateTime(2026, 8, 1);
+    final life = engine.newLife(seed: 194)..age = 30;
+    life.money = 20000;
+    buyItem(life, itemById('console')!, now: quiet, rng: Random(1));
+    final item = life.items.single;
+    expect(returnLock(life, item), isNull);
+    final m = life.money;
+    returnItem(life, item);
+    expect(life.money, m + ((item['paid'] as int) * 0.9).round());
+    buyItem(life, itemById('guitar')!, now: quiet);
+    life.age++;
+    expect(returnLock(life, life.items.single), isNotNull);
+    expect(resaleOf(life.items.single), greaterThan(0));
+    sellItem(life, life.items.single);
+    expect(life.items, isEmpty);
+    buyItem(life, itemById('watch')!, now: quiet);
+    expect(
+      life.assets.any((a) => a.kind == 'valuable' && a.name == 'Luxury watch'),
+      isTrue,
+    );
+    final gym = subById('gym')!;
+    subscribe(life, gym);
+    expect(subscriptionCost(life), gym.yearly);
+    life.lastYear = [];
+    yearlyMoney(life, Random(3));
+    expect(
+      life.lastYear.firstWhere((l) => l.$1 == 'Subscriptions').$2,
+      -gym.yearly,
+    );
+    unsubscribe(life, gym);
+    expect(life.subs, isEmpty);
+    final copy = Life.fromJson(jsonDecode(jsonEncode(life.toJson())));
+    expect(copy.toJson(), life.toJson());
   });
 }

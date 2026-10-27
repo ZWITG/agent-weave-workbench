@@ -749,6 +749,13 @@ class Life {
   /// Posts worth remembering (hot takes can resurface): platform, age, hot.
   final List<Map<String, dynamic>> posts = [];
 
+  /// Things bought in the shop that last (shopping.dart): id, paid, age,
+  /// years left and how they were paid for.
+  final List<Map<String, dynamic>> items = [];
+
+  /// Active subscription ids, renewed each birthday.
+  final List<String> subs = [];
+
   /// Active brand deal: brand, image, fee, until, posts.
   Map<String, dynamic>? deal;
   int? cancelledUntil;
@@ -1000,6 +1007,8 @@ class Life {
     'followers': followers,
     'verified': verified,
     'posts': posts,
+    'items': items,
+    'subs': subs,
     'deal': deal,
     'cancelledUntil': cancelledUntil,
     'pronouns': pronouns,
@@ -1160,6 +1169,11 @@ class Life {
         for (final p in (j['posts'] as List?) ?? const [])
           Map<String, dynamic>.from(p),
       ])
+      ..items.addAll([
+        for (final i in (j['items'] as List?) ?? const [])
+          Map<String, dynamic>.from(i),
+      ])
+      ..subs.addAll(List<String>.from(j['subs'] ?? const []))
       ..deal = j['deal'] == null ? null : Map<String, dynamic>.from(j['deal'])
       ..cancelledUntil = j['cancelledUntil']
       ..pronouns = j['pronouns'] ?? ''

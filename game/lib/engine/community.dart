@@ -415,26 +415,6 @@ final communityActions = <GameAction>[
     },
   ),
   GameAction(
-    id: 'shopping',
-    label: 'Go shopping',
-    category: 'Money',
-    keywords: [
-      'shop',
-      'shopping',
-      'buy',
-      'clothes',
-      'gift',
-      'phone',
-      'jewellery',
-    ],
-    minAge: 12,
-    priceNote: 'Clothes, gifts, phones, jewellery',
-    run: (l, rng) {
-      l.sceneQueue.add('shop');
-      return ActionResult('You head into town.');
-    },
-  ),
-  GameAction(
     id: 'road_trip',
     label: 'Take a road trip',
     category: 'Travel',
