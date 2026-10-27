@@ -14,6 +14,8 @@ import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/lifespan.dart';
+import 'package:relivable/engine/pets.dart';
+import 'package:relivable/engine/social.dart';
 import 'package:relivable/engine/love.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
@@ -131,15 +133,19 @@ void main() {
         expect(n.bond, inInclusiveRange(0, 100));
       }
     }
-    // Very late-life storylets (95+) are checked directly below: the
-    // random bot rarely lives that long.
+    // Very late-life (95+) and married-life storylets are checked directly
+    // below: the random bot rarely lives that long and never marries.
+    bool direct(Storylet s) =>
+        s.minAge >= 95 || s.requiresFlags.contains('married');
     final never = storylets
-        .where((s) => !fired.containsKey(s.id) && s.minAge < 95)
+        .where((s) => !fired.containsKey(s.id) && !direct(s))
         .map((s) => s.id)
         .toList();
-    final late = storylets.where((s) => s.minAge >= 95);
-    for (final s in late) {
+    for (final s in storylets.where(direct)) {
       final old = engine.newLife(seed: 7)..age = s.minAge;
+      final p = candidate(old, Random(1));
+      old.npcs.add(p);
+      setStage(old, p, 'married');
       expect(s.isEligible(old), isTrue, reason: s.id);
     }
     expect(
@@ -154,7 +160,7 @@ void main() {
     for (var seed = 1; seed < 3000; seed++) {
       final life = engine.newLife(seed: seed);
       if (life.npc('sibling') == null) continue;
-      while (life.age < sliceEndAge) {
+      while (life.alive && life.age < sliceEndAge) {
         final e = engine.ageUp(life);
         if (e == null) continue;
         final sue = e.choices.where(
@@ -1090,5 +1096,99 @@ void main() {
     startCareer(life, careerById('office')!);
     final open = storylets.where((s) => s.isEligible(life)).length;
     expect(open, greaterThanOrEqualTo(8));
+  });
+
+  // ---------------- Wave F2: fame, social media and pets ----------------
+
+  test('posts show reach and risk; fame and followers are separate', () {
+    final life = engine.newLife(seed: 130)..age = 20;
+    life.classic = true;
+    final (chance, parts) = viralChance(life, 'vybe', 'talent');
+    expect(chance, inInclusiveRange(0.5, 25));
+    expect(parts.first, startsWith('skill'));
+    for (var i = 0; i < 12; i++) {
+      post(life, 'lenso', 'selfie', Random(i));
+    }
+    expect(life.followers['lenso'], greaterThan(0));
+    expect(
+      viralChance(life, 'lenso', 'selfie').$2.join(),
+      contains('too often'),
+    );
+    expect(verifyRequirements(life).first.$1, contains('100k'));
+    life.followers['vybe'] = 150000;
+    life.fame = 25;
+    expect(applyVerification(life).notes, contains('Verified'));
+    expect(tierOf(life), 'Verified');
+  });
+
+  test('scandals only come from things you actually did', () {
+    final life = engine.newLife(seed: 131)..age = 30;
+    life.fame = 60;
+    for (var i = 0; i < 30; i++) {
+      fameYear(life, Random(i));
+      life.fame = 60;
+    }
+    expect(life.sceneQueue.where((s) => s.startsWith('scandal')), isEmpty);
+    life.flags['affair_found'] = Memory(29, 'an affair');
+    life.deal = {
+      'brand': 'X',
+      'image': 'Luxury',
+      'fee': 10000,
+      'until': 40,
+      'posts': 0,
+    };
+    expect(socialIncome(life).map((e) => e.$1), contains('Brand deal: X'));
+    for (
+      var i = 0;
+      i < 40 && !life.sceneQueue.any((s) => s.startsWith('scandal'));
+      i++
+    ) {
+      fameYear(life, Random(100 + i));
+      life.fame = 60;
+    }
+    final id = life.sceneQueue.firstWhere((s) => s.startsWith('scandal'));
+    expect(id, 'scandal:affair');
+    life.sceneQueue.clear();
+    life.sceneQueue.add(id);
+    final scene = engine.nextScene(life)!;
+    engine.choose(
+      life,
+      scene,
+      scene.choices.firstWhere((c) => c.label == 'Deny everything'),
+    );
+    expect(life.cancelledUntil, greaterThan(life.age));
+    expect(life.deal, isNull);
+  });
+
+  test('pets are characters that age, need care and are remembered', () {
+    final life = engine.newLife(seed: 132, countryName: 'United Kingdom')
+      ..age = 25;
+    life.money = 10000;
+    life.sceneQueue.add('pet_adopt:shelter:common');
+    var scene = engine.nextScene(life)!;
+    engine.choose(
+      life,
+      scene,
+      scene.choices.firstWhere((c) => c.label.startsWith('Hamster')),
+    );
+    scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first);
+    final pet = petsOf(life).single;
+    expect(pet.role, 'Hamster');
+    final hug = interactions.firstWhere((i) => i.id == 'hug');
+    final walk = interactions.firstWhere((i) => i.id == 'pet_walk');
+    expect(hug.appliesTo(pet), isFalse);
+    expect(walk.appliesTo(pet), isTrue);
+    expect(walk.appliesTo(life.npc('mother') ?? life.npcs.first), isFalse);
+    for (var y = 0; y < 6 && pet.alive; y++) {
+      life.age++;
+      petsYear(life, Random(y));
+    }
+    expect(pet.alive, isFalse);
+    expect(life.flags.keys.any((k) => k.startsWith('pet_memorial_')), isTrue);
+    expect(exoticWarning(life, speciesById('monkey')), contains('Illegal'));
+    expect(farmLock(life, speciesById('goat')), isNotNull);
+    expect(farmLock(life, speciesById('horse')), isNull);
+    expect(petCosts(life), 0);
   });
 }

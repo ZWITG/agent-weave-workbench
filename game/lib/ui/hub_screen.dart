@@ -12,6 +12,7 @@ import 'outcome_card.dart';
 import 'result_popup.dart';
 import 'path_tab.dart';
 import 'health_screen.dart';
+import 'social_screen.dart';
 import 'me_screens.dart';
 import 'update_prompt.dart';
 import 'wealth_tab.dart';
@@ -934,6 +935,21 @@ class _MeTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
+        if (life.age >= 13) ...[
+          OutlinedButton.icon(
+            style: secondaryButton(),
+            icon: const Icon(Icons.campaign_rounded),
+            label: Text(
+              life.followers.isEmpty ? 'Social' : 'Social · Fame ${life.fame}',
+            ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => SocialScreen(controller: controller),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
         OutlinedButton.icon(
           style: secondaryButton(),
           icon: const Icon(Icons.monitor_heart_rounded),

@@ -7,6 +7,8 @@ import 'economy.dart';
 import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
+import 'pets.dart';
+import 'social.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -291,6 +293,8 @@ class GameEngine {
       ...healthYear(life, _rngFor(life, 79)),
       ...npcAging(life, _rngFor(life, 83)),
       ...identityYear(life),
+      ...fameYear(life, _rngFor(life, 101)),
+      ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),
     ]) {
@@ -350,6 +354,9 @@ class GameEngine {
     }
     if (inSchool(life) && (life.age == 16 || life.age == 17)) {
       life.sceneQueue.add('exams');
+    }
+    if (life.age >= 10 && life.prison == null && rng.nextInt(100) < 3) {
+      life.sceneQueue.add('stray');
     }
     if (life.education == 'university' && life.school.major == null) {
       life.sceneQueue.add('choose_major');
@@ -413,6 +420,7 @@ class GameEngine {
     final moneyBefore = life.money;
     life.reason = event.scene ? choice.label : 'Choice: ${choice.label}';
     final notes = choice.effects.apply(life);
+    storyPets(life);
     final custom = choice.run?.call(life, _rngFor(life, event.id.hashCode));
     checkDeeds(life);
     final statDeltas = <String, int>{

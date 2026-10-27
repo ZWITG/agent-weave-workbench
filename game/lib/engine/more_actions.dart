@@ -19,9 +19,6 @@ bool _roll(Random rng, int percent) => rng.nextInt(100) < percent;
 /// Extra police patrols from world news make crime riskier.
 int _police(Life life) => life.worldMods['policing'] ?? 0;
 
-String? _needsFlag(Life life, String flag, String reason) =>
-    life.flags.containsKey(flag) ? null : reason;
-
 String? _notFlag(Life life, String flag, String reason) =>
     life.flags.containsKey(flag) ? reason : null;
 
@@ -270,31 +267,6 @@ final moreActions = <GameAction>[
             'happiness': -1,
           }),
   ),
-  GameAction(
-    id: 'post_online',
-    label: 'Post on social media',
-    category: 'Social',
-    keywords: ['post', 'social media', 'online', 'photo', 'viral', 'followers'],
-    minAge: 13,
-    run: (life, rng) {
-      if (_roll(
-        rng,
-        8 + life.stats['looks'] ~/ 10 + life.stats['creativity'] ~/ 10,
-      )) {
-        life.flags['went_viral'] = Memory(life.age, 'going viral');
-        return statChange(
-          life,
-          'Your post went viral. Strangers know your face now.',
-          {'happiness': 6, 'charisma': 2},
-        );
-      }
-      return statChange(life, 'Eleven likes. Three were from your family.', {
-        'happiness': 1,
-      });
-    },
-  ),
-
-  // ---------- School ----------
   GameAction(
     id: 'skip_class',
     label: 'Skip class',
@@ -652,43 +624,6 @@ final moreActions = <GameAction>[
   ),
 
   // ---------- Pets ----------
-  GameAction(
-    id: 'adopt_pet',
-    label: 'Adopt a pet',
-    category: 'Pets',
-    keywords: ['pet', 'dog', 'cat', 'adopt', 'shelter', 'animal'],
-    minAge: 18,
-    cost: 150,
-    extraCheck: (life) => _notFlag(life, 'own_pet', 'You already have a pet'),
-    run: (life, rng) {
-      const pets = [
-        'a scruffy terrier called Pip',
-        'a one-eyed cat called Captain',
-        'a lazy greyhound called Rocket',
-      ];
-      final pet = pets[rng.nextInt(pets.length)];
-      life.flags['own_pet'] = Memory(life.age, 'adopting $pet');
-      return _pay(life, 150, 'You adopted $pet from the shelter.', {
-        'happiness': 6,
-        'karma': 2,
-      });
-    },
-  ),
-  GameAction(
-    id: 'walk_pet',
-    label: 'Walk your pet',
-    category: 'Pets',
-    keywords: ['pet', 'walk', 'dog', 'play'],
-    extraCheck: (life) =>
-        _needsFlag(life, 'own_pet', 'You don\'t have a pet yet'),
-    run: (life, rng) => statChange(
-      life,
-      'A long walk with your pet. Best part of the day.',
-      {'happiness': 3, 'health': 1},
-    ),
-  ),
-
-  // ---------- Licences ----------
   GameAction(
     id: 'driving_lessons',
     miniGame: 'reaction',

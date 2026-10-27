@@ -467,7 +467,8 @@ String _decide(Life l, Career c, Random rng) {
               ((l.worldMods['hiring'] ?? 0) + (l.worldMods['name'] ?? 0)) /
                   100 -
               c.baseSalary / 200000 -
-              min(0.18, convictions(l) * 0.06) -
+              min(0.18, convictions(l) * 0.06) +
+              (c.special ? l.fame / 400 : 0) -
               (c.special ? 0.1 : 0) +
               (l.difficulty == 'easy'
                   ? 0.1

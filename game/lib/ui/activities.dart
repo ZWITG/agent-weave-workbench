@@ -8,6 +8,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'minigames.dart';
 import 'newspaper.dart';
+import 'social_screen.dart';
 import 'people.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
@@ -583,6 +584,10 @@ Future<void> runActionFlow(
   if (!nav.mounted) return;
   if (a.screen == 'newspaper') {
     openNewspaper(nav.context, c);
+    return;
+  }
+  if (a.screen == 'social') {
+    nav.push(MaterialPageRoute(builder: (_) => SocialScreen(controller: c)));
     return;
   }
   showResultPopup(

@@ -8,6 +8,8 @@ import 'health.dart';
 import 'homes.dart';
 import 'community.dart';
 import 'identity.dart';
+import 'pets.dart';
+import 'social.dart';
 import 'jobs.dart';
 import 'justice.dart';
 import 'love.dart';
@@ -376,4 +378,6 @@ final allActions = <GameAction>[
   ...healthActions,
   ...identityActions,
   ...communityActions,
+  ...socialActions,
+  ...petActions,
 ];

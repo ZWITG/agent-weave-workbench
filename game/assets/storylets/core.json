@@ -411,6 +411,9 @@
     "effects": {
      "stats": {
       "happiness": 4
+     },
+     "flags": {
+      "family_cat": "your first cat"
      }
     }
    },
@@ -2738,9 +2741,9 @@
  },
  {
   "id": "renew_vows",
-  "minAge": 45,
+  "minAge": 38,
   "maxAge": 85,
-  "weight": 12,
+  "weight": 24,
   "category": "love",
   "requires": {
    "npcs": [

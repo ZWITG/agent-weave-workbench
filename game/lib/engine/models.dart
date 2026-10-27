@@ -736,6 +736,20 @@ class Life {
   /// Ended from the menu ("End this life"), not by the story.
   bool endedEarly = false;
 
+  // ---- Fame and social media (social.dart) ----
+  int fame = 0;
+
+  /// Followers per platform id (vybe, lenso, murmur, hearthcast, inkwell).
+  final Map<String, int> followers = {};
+  bool verified = false;
+
+  /// Posts worth remembering (hot takes can resurface): platform, age, hot.
+  final List<Map<String, dynamic>> posts = [];
+
+  /// Active brand deal: brand, image, fee, until, posts.
+  Map<String, dynamic>? deal;
+  int? cancelledUntil;
+
   // ---- Identity (identity.dart) ----
   /// Empty means "matches sex at birth" (Woman/Man, she/he).
   String genderIdentity = '';
@@ -974,6 +988,12 @@ class Life {
     'highStressYears': highStressYears,
     'endedEarly': endedEarly,
     'genderIdentity': genderIdentity,
+    'fame': fame,
+    'followers': followers,
+    'verified': verified,
+    'posts': posts,
+    'deal': deal,
+    'cancelledUntil': cancelledUntil,
     'pronouns': pronouns,
     'orientation': orientation,
     'feed': feed.map((f) => f.toJson()).toList(),
@@ -1124,6 +1144,15 @@ class Life {
       ..highStressYears = j['highStressYears'] ?? 0
       ..endedEarly = j['endedEarly'] ?? false
       ..genderIdentity = j['genderIdentity'] ?? ''
+      ..fame = j['fame'] ?? 0
+      ..followers.addAll(Map<String, int>.from(j['followers'] ?? {}))
+      ..verified = j['verified'] ?? false
+      ..posts.addAll([
+        for (final p in (j['posts'] as List?) ?? const [])
+          Map<String, dynamic>.from(p),
+      ])
+      ..deal = j['deal'] == null ? null : Map<String, dynamic>.from(j['deal'])
+      ..cancelledUntil = j['cancelledUntil']
       ..pronouns = j['pronouns'] ?? ''
       ..orientation = j['orientation'] ?? '';
     return life;

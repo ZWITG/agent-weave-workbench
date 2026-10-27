@@ -231,7 +231,7 @@ final lifeTitles = <LifeTitle>[
     'The Star',
     'Rare',
     'Fame 80 or more',
-    (l) => (l.stats.values['fame'] ?? 0) >= 80,
+    (l) => l.fame >= 80,
     'The world knew their name.',
   ),
   LifeTitle(

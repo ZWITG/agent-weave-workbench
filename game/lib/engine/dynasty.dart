@@ -84,6 +84,10 @@ Life heirLife(Life old, Npc heir) {
         bond: 70,
       )..lastContactAge = old.age,
   ];
+  // Pets stay with the family.
+  for (final p in old.npcs.where((n) => n.circle == 'Pets' && n.alive)) {
+    npcs.add(p);
+  }
   var sib = 0;
   for (final c in heirsOf(old).where((c) => c != heir)) {
     sib++;

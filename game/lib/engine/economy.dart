@@ -7,6 +7,8 @@ import 'health.dart' show healthCosts;
 import 'homes.dart' show homeOf, lettingOf, rentFor;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
+import 'pets.dart' show petCosts;
+import 'social.dart' show socialIncome;
 
 /// Money as a system (plan Module 6/7, prototype scope): every birthday runs
 /// income → taxes → living costs → debt payments → interest → fund returns →
@@ -238,6 +240,10 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash('Business: ${life.business!.name}', businessYear(life, rng));
   }
   cash('Dividends and interest', dividends(life));
+  for (final (label, amount) in socialIncome(life)) {
+    cash(label, amount);
+  }
+  if (life.age >= 18) cash('Pet care', -petCosts(life));
   final let = lettingOf(life);
   if (let != null) {
     final late = life.marks.contains('late_rent:${life.age}');

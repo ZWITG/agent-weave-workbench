@@ -5,6 +5,7 @@ import 'models.dart';
 import 'family.dart' show familyInteractions;
 import 'love.dart' show loveInteractions;
 import 'school.dart' show schoolInteractions;
+import 'pets.dart' show petInteractions;
 
 /// Person interactions from 04 Social, Module 1: seven groups of action
 /// cards. Availability depends on age, relationship type and Bond %.
@@ -34,6 +35,7 @@ class Interaction {
 
   bool appliesTo(Npc n) {
     if (only != null) return only!(n);
+    if (n.circle == 'Pets') return false;
     if (n.circle == 'School') return _politeOnly.contains(id);
     return true;
   }
@@ -188,6 +190,7 @@ List<Interaction> get interactions => [
   ...schoolInteractions,
   ...loveInteractions,
   ...familyInteractions,
+  ...petInteractions,
 ];
 
 final _baseInteractions = <Interaction>[
@@ -886,6 +889,7 @@ const interactionGroups = [
   'Repair',
   'Special',
   'Teen/child',
+  'Pets',
 ];
 
 /// Runs an interaction and counts it toward this year's uses.

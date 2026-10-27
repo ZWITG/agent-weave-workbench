@@ -5,6 +5,8 @@ import 'dynasty.dart';
 import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
+import 'pets.dart';
+import 'social.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -81,6 +83,12 @@ Storylet? buildScene(String id, Life life) {
     'treat' ||
     'mind' ||
     'rehab' => healthScene(parts.first, parts.sublist(1), life),
+    'brand_deal' ||
+    'scandal' ||
+    'comeback' => socialScene(parts.first, parts.sublist(1), life),
+    'pet_adopt' ||
+    'pet_name' ||
+    'stray' => petScene(parts.first, parts.sublist(1), life),
     'coming_out' ||
     'name_change' => identityScene(parts.first, parts.sublist(1), life),
     'emigrate' ||
