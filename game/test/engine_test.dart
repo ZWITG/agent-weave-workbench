@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:relivable/engine/actions.dart';
 import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/family.dart';
@@ -20,6 +21,7 @@ import 'package:relivable/engine/social.dart';
 import 'package:relivable/engine/love.dart';
 import 'package:relivable/engine/meta.dart';
 import 'package:relivable/engine/profile.dart';
+import 'package:relivable/engine/recap.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
@@ -1353,5 +1355,130 @@ void main() {
     expect(scene.choices.length, 4);
     final out = engine.choose(life, scene, scene.choices.last);
     expect(out.text, contains('invisible'));
+  });
+
+  // ---------------- Wave G2: funerals and the Life Recap ----------------
+
+  test('a funeral follows your wishes, your people and your grudges', () {
+    final life = engine.newLife(seed: 160)..age = 70;
+    final friend = Npc(
+      id: 'pal',
+      role: 'Friend',
+      name: 'Sam Lee',
+      birthYear: life.year - 70,
+      circle: 'Friends',
+      bond: 90,
+    );
+    friend.remember(
+      NpcMemory(
+        age: 30,
+        text: 'you trusting them with a secret',
+        valence: 3,
+        intensity: 4,
+      ),
+    );
+    final rival = Npc(
+      id: 'riv',
+      role: 'Neighbour',
+      name: 'Kim Park',
+      birthYear: life.year - 70,
+      circle: 'Friends',
+      bond: 10,
+    )..resentment = 60;
+    life.npcs.addAll([friend, rival]);
+    life.sceneQueue.add('funeral_wish');
+    final scene = engine.nextScene(life)!;
+    expect(scene.choices.length, funeralTypes.length);
+    engine.choose(life, scene, scene.choices[3]);
+    final f = funeralFor(life);
+    expect(f.type, 'sea');
+    expect(f.speaker, isNotNull);
+    expect(f.attendance, greaterThanOrEqualTo(1));
+    expect(
+      f.eulogy.any((e) => e.contains('Sam') && e.contains('trusting me')),
+      isTrue,
+    );
+    expect(f.absent, contains('Kim'));
+    expect(allActions.any((a) => a.id == 'plan_funeral'), isTrue);
+  });
+
+  test('archetype and Chaos Index read the shape of a life', () {
+    final calm = engine.newLife(seed: 161)..age = 60;
+    expect(chaosIndex(calm), lessThan(30));
+    final wild = engine.newLife(seed: 162)..age = 60;
+    for (final f in [
+      'arrested',
+      'prison',
+      'divorced',
+      'bankrupt',
+      'heist',
+      'escaped',
+      'emigrated',
+    ]) {
+      wild.flags[f] = Memory(30, 'doing something dramatic');
+    }
+    wild.stats.values['impulsivity'] = 90;
+    expect(chaosIndex(wild), greaterThan(chaosIndex(calm)));
+    expect(riskScore(wild), greaterThan(riskScore(calm)));
+    expect(archetypeOf(wild), isNotEmpty);
+    final p = Profile();
+    calm.alive = false;
+    recordLifeEnd(calm, p);
+    wild.alive = false;
+    recordLifeEnd(wild, p);
+    expect(p.chaosHistory.length, 2);
+    expect(pastChaosOf(wild), [chaosIndex(calm)]);
+    final chaos = recapCards(
+      wild,
+      pastChaos: pastChaosOf(wild),
+    ).firstWhere((c) => c.kind == 'chaos');
+    expect(chaos.body, contains('100%'));
+    final back = Profile.fromJson(jsonDecode(jsonEncode(p.toJson())));
+    expect(back.chaosHistory, p.chaosHistory);
+  });
+
+  test('recap cards respect the privacy toggles', () {
+    final life = engine.newLife(seed: 163)..age = 50;
+    life.money = 123456;
+    life.flags['heist'] = Memory(40, 'the jewellers job');
+    life.alive = false;
+    life.causeOfDeath = 'a heart attack';
+    final open = recapCards(life);
+    final all = open.map((c) => '${c.big} ${c.body}').join(' ');
+    expect(all, contains('123,456'));
+    expect(all, contains('heist'));
+    expect(all, contains('a heart attack'));
+    final parent = life.npcs.firstWhere((n) => n.role == 'Mother');
+    expect(all, contains(parent.name.split(' ').first));
+    final safe = recapCards(
+      life,
+      hide: (names: true, crimes: true, money: true, cause: true),
+    );
+    final hidden = safe.map((c) => '${c.title} ${c.big} ${c.body}').join(' ');
+    expect(hidden, isNot(contains('123,456')));
+    expect(hidden, isNot(contains('heist')));
+    expect(hidden, isNot(contains('a heart attack')));
+    expect(hidden, isNot(contains(parent.name.split(' ').first)));
+    expect(safe.map((c) => c.kind), containsAll(['archetype', 'chaos']));
+    expect(
+      recapText(life, safe, names: false),
+      isNot(contains(life.firstName)),
+    );
+  });
+
+  test('the Dynasty Recap lists every generation', () {
+    final life = engine.newLife(seed: 164)..age = 40;
+    life.lineage.add({
+      'name': 'Ada Stone',
+      'born': 1950,
+      'died': 2030,
+      'title': 'The Quiet Saint',
+      'job': 'Nurse',
+    });
+    life.generation = 2;
+    final lines = dynastyLines(life);
+    expect(lines.length, 2);
+    expect(lines.first, contains('Ada Stone'));
+    expect(lines.last, contains('Generation 2'));
   });
 }

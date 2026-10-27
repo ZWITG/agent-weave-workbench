@@ -3,12 +3,14 @@ package com.relivable.relivable
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -17,7 +19,8 @@ import java.io.File
 
 /** Hosts the "relivable/updater" channel used by lib/updater.dart: downloads
   a newer APK with the system DownloadManager, then opens Android's
-  installer (the player confirms the install, as Android requires). */
+  installer (the player confirms the install, as Android requires). The
+  same channel saves Life Recap cards to the gallery and shares them. */
 class MainActivity : FlutterActivity() {
     private val apkMime = "application/vnd.android.package-archive"
     private var receiver: BroadcastReceiver? = null
@@ -41,6 +44,16 @@ class MainActivity : FlutterActivity() {
                             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                         }
                         result.success("opened")
+                    }
+                    "shareImage" -> {
+                        val bytes = call.argument<ByteArray>("bytes")
+                        if (bytes == null) {
+                            result.success("error")
+                        } else {
+                            result.success(
+                                shareImage(bytes, call.argument<String>("name") ?: "relivable.png", call.argument<String>("text") ?: "")
+                            )
+                        }
                     }
                     else -> result.notImplemented()
                 }
@@ -88,5 +101,28 @@ class MainActivity : FlutterActivity() {
             registerReceiver(done, filter)
         }
         return "started"
+    }
+
+    /** Saves the PNG to Pictures/Relivable, then offers the share sheet.
+      Older Android versions (before 10) get a text-only share. */
+    private fun shareImage(bytes: ByteArray, name: String, text: String): String {
+        val send = Intent(Intent.ACTION_SEND).apply { putExtra(Intent.EXTRA_TEXT, text) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, name)
+                put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Relivable")
+            }
+            val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                ?: return "error"
+            contentResolver.openOutputStream(uri)?.use { it.write(bytes) } ?: return "error"
+            send.type = "image/png"
+            send.putExtra(Intent.EXTRA_STREAM, uri)
+            send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        } else {
+            send.type = "text/plain"
+        }
+        startActivity(Intent.createChooser(send, "Share your life"))
+        return "shared"
     }
 }

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import '../engine/dynasty.dart';
 import '../engine/lifespan.dart';
 import '../engine/models.dart';
+import '../engine/recap.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'life_recap.dart';
 import 'me_screens.dart';
 import 'widgets.dart';
 
@@ -88,7 +90,26 @@ class RecapScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
+                  FilledButton.icon(
+                    style: primaryButton().copyWith(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size.fromHeight(52),
+                      ),
+                    ),
+                    icon: const Icon(Icons.auto_stories_rounded),
+                    label: const Text('Your Life Recap'),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => LifeRecapScreen(controller: controller),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (!life.alive) ...[
+                    _funeral(funeralFor(life)),
+                    const SizedBox(height: 12),
+                  ],
                   // Life Title with transparent scoring
                   NFCard(
                     child: Column(
@@ -224,6 +245,10 @@ class RecapScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (life.lineage.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _dynastyRecap(life),
+                  ],
                   const SizedBox(height: 20),
                   if (controller.rewindLock == null)
                     Padding(
@@ -264,6 +289,75 @@ class RecapScreen extends StatelessWidget {
       ),
     );
   }
+
+  /// Who came, who spoke and who stayed away.
+  Widget _funeral(Funeral f) => NFCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.local_florist_rounded, color: NF.orange, size: 20),
+            const SizedBox(width: 8),
+            Text('The funeral', style: NF.sora(15, weight: FontWeight.w700)),
+            const Spacer(),
+            Text(
+              f.attendance == 1 ? '1 came' : '${f.attendance} came',
+              style: NF.sora(12, color: NF.muted),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '${funeralTypes[f.type] ?? 'A cremation'}.${f.speaker == null ? ' Only the officiant spoke.' : ' ${f.speaker} gave the eulogy.'}',
+          style: NF.sora(14, color: NF.soft),
+        ),
+        for (final line in f.eulogy)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              line,
+              style: NF
+                  .sora(14, color: NF.text, height: 1.45)
+                  .copyWith(fontStyle: FontStyle.italic),
+            ),
+          ),
+        if (f.absent.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              '${f.absent.join(' and ')} did not come.',
+              style: NF.sora(13, color: NF.muted),
+            ),
+          ),
+      ],
+    ),
+  );
+
+  /// Every generation of the family on one card.
+  Widget _dynastyRecap(Life life) => NFCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.account_tree_rounded, color: NF.blue, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'The ${life.surname} dynasty',
+              style: NF.sora(15, weight: FontWeight.w700),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        for (final line in dynastyLines(life))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(line, style: NF.sora(13, color: NF.soft)),
+          ),
+      ],
+    ),
+  );
 
   /// Continue as an heir, or the dynasty's end (plan GE-001/003).
   Widget _dynasty(BuildContext context, Life life) {

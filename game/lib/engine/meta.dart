@@ -3,6 +3,7 @@ import 'dart:math';
 import 'family.dart' show childrenOf;
 import 'lifespan.dart';
 import 'models.dart';
+import 'recap.dart';
 import 'pets.dart' show petsOf;
 import 'profile.dart';
 
@@ -650,6 +651,10 @@ void recordLifeEnd(Life l, Profile p) {
   if (l.causeOfDeath != null && !l.endedEarly) {
     _collect(p, 'causes', l.causeOfDeath!);
   }
+  final chaos = chaosIndex(l);
+  l.marks.add('chaos_past:${p.chaosHistory.join(',')}');
+  p.chaosHistory.add(chaos);
+  if (p.chaosHistory.length > 200) p.chaosHistory.removeAt(0);
 }
 
 // ---------------- Daily goals, Sparks and streaks ----------------

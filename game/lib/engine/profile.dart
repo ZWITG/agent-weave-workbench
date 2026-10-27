@@ -51,6 +51,9 @@ class Profile {
   final List<String> challengesDone = [];
   String? activeWeek;
 
+  /// Chaos Index of every finished life, for "more chaotic than X%".
+  final List<int> chaosHistory = [];
+
   Map<String, dynamic> toJson() => {
     'classic': classic,
     'reduceMotion': reduceMotion,
@@ -75,6 +78,7 @@ class Profile {
     'weeklyDone': weeklyDone,
     'challengesDone': challengesDone,
     'activeWeek': activeWeek,
+    'chaosHistory': chaosHistory,
   };
 
   factory Profile.fromJson(Map<String, dynamic> j) => Profile()
@@ -106,7 +110,8 @@ class Profile {
         e.key: List<String>.from(e.value),
     })
     ..challengesDone.addAll(List<String>.from(j['challengesDone'] ?? []))
-    ..activeWeek = j['activeWeek'];
+    ..activeWeek = j['activeWeek']
+    ..chaosHistory.addAll(List<int>.from(j['chaosHistory'] ?? []));
 }
 
 /// Activities hidden by the content filters.
