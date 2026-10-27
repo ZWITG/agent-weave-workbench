@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../engine/actions.dart';
 import '../engine/engine.dart';
 import '../engine/lifespan.dart';
+import '../engine/meta.dart' show achievements, goalsFor, goalDone;
 import '../engine/models.dart';
 import '../engine/storylet.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
+import 'hub_kit.dart';
 import 'outcome_card.dart';
 import 'result_popup.dart';
 import 'path_tab.dart';
@@ -452,14 +454,35 @@ class _BottomBar extends StatelessWidget {
 
 // ---------------- Life tab ----------------
 
-class _LifeTab extends StatelessWidget {
+class _LifeTab extends StatefulWidget {
   const _LifeTab({required this.controller});
   final GameController controller;
 
   @override
+  State<_LifeTab> createState() => _LifeTabState();
+}
+
+/// Story filters: which feed kinds each chip shows.
+const _feedFilters = <String, Set<String>?>{
+  'All': null,
+  'Big moments': {'milestone', 'summary', 'report'},
+  'People': {'npc', 'bond'},
+  'News': {'world'},
+};
+
+class _LifeTabState extends State<_LifeTab> {
+  String _filter = 'All';
+
+  GameController get controller => widget.controller;
+
+  @override
   Widget build(BuildContext context) {
     final life = controller.life!;
-    final feed = life.feed.reversed.take(60).toList();
+    final kinds = _feedFilters[_filter];
+    final feed = life.feed.reversed
+        .where((e) => kinds == null || kinds.contains(e.kind))
+        .take(60)
+        .toList();
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       children: [
@@ -525,6 +548,33 @@ class _LifeTab extends StatelessWidget {
               : const SizedBox.shrink(key: ValueKey('none')),
         ),
         const SizedBox(height: 12),
+        SizedBox(
+          height: 40,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              for (final f in _feedFilters.keys)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(f),
+                    selected: _filter == f,
+                    onSelected: (_) => setState(() => _filter = f),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 4),
+        if (feed.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(switch (_filter) {
+              'People' => 'News about the people in your life shows up here.',
+              'News' => 'World news shows up here once a year.',
+              _ => 'Your big moments will be collected here.',
+            }, style: NF.sora(14, color: NF.muted)),
+          ),
         for (var i = 0; i < feed.length; i++) ...[
           if (i == 0 || feed[i].age != feed[i - 1].age)
             _YearDivider(age: feed[i].age, year: life.birthYear + feed[i].age),
@@ -946,162 +996,302 @@ class _EventCard extends StatelessWidget {
 
 // ---------------- Me tab ----------------
 
-class _MeTab extends StatelessWidget {
+/// Me tab, shaped like the Activities panel: a search box, "Suggested for
+/// you", and Browse tiles for everything about you and your profile.
+/// Screens open on top; cards (family, identity, country, world, memories,
+/// hidden stats) open as sections with a way back.
+class _MeTab extends StatefulWidget {
   const _MeTab({required this.controller});
   final GameController controller;
 
   @override
+  State<_MeTab> createState() => _MeTabState();
+}
+
+typedef _MeItem = ({
+  String id,
+  IconData icon,
+  String label,
+  String status,
+  String about,
+  bool alert,
+  bool dim,
+});
+
+class _MeTabState extends State<_MeTab> {
+  String? _section;
+  String _q = '';
+  final _search = TextEditingController();
+
+  GameController get controller => widget.controller;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _go(BuildContext context, String id) {
+    Widget? screen = switch (id) {
+      'health' => HealthScreen(controller: controller),
+      'social' => SocialScreen(controller: controller),
+      'goals' => GoalsScreen(controller: controller),
+      'achievements' => AchievementsScreen(controller: controller),
+      'collections' => CollectionsScreen(controller: controller),
+      'settings' => SettingsScreen(controller: controller),
+      _ => null,
+    };
+    if (screen != null) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+    } else if (id == 'rewind') {
+      showRewind(context, controller);
+    } else {
+      setState(() {
+        _section = id;
+        _search.clear();
+        _q = '';
+      });
+    }
+  }
+
+  List<_MeItem> _items(Life life) {
+    final p = controller.profile;
+    final sick =
+        life.conditions.any((c) => !c.treated && c.known) ||
+        life.addictions.isNotEmpty;
+    final now = DateTime.now();
+    final goals = goalsFor(now).where((g) => goalDone(p, g.id, now)).length;
+    return [
+      (
+        id: 'health',
+        icon: Icons.monitor_heart_rounded,
+        label: 'Health',
+        status: sick ? 'Needs attention' : 'Body and mind',
+        about: 'Conditions, insurance, fitness, addictions and your mind',
+        alert: sick,
+        dim: false,
+      ),
+      (
+        id: 'social',
+        icon: Icons.campaign_rounded,
+        label: 'Social',
+        status: life.age < 13
+            ? 'From age 13'
+            : life.followers.isEmpty
+            ? 'Start posting'
+            : 'Fame ${life.fame}',
+        about: 'Posts, followers, fame, deals and scandals',
+        alert: false,
+        dim: life.age < 13,
+      ),
+      (
+        id: 'goals',
+        icon: Icons.bolt_rounded,
+        label: 'Goals',
+        status: '$goals/3 today',
+        about: 'Daily goals, Sparks, streaks and weekly challenges',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'achievements',
+        icon: Icons.emoji_events_rounded,
+        label: 'Achievements',
+        status: '${p.achievements.length} of ${achievements.length}',
+        about: 'Every achievement and how to earn it',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'collections',
+        icon: Icons.collections_bookmark_rounded,
+        label: 'Collections',
+        status: '${p.collections.values.fold(0, (a, v) => a + v.length)} found',
+        about: 'Careers, countries, titles, pets and stories across lives',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'family',
+        icon: Icons.account_tree_rounded,
+        label: 'Family tree',
+        status: 'Generation ${life.generation}',
+        about: 'Your parents, partner, children and the family line',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'identity',
+        icon: Icons.face_rounded,
+        label: 'Identity',
+        status: life.pronouns.isEmpty ? 'Who you are' : life.pronouns,
+        about: 'Name, gender, pronouns and orientation',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'country',
+        icon: Icons.public_rounded,
+        label: 'Country',
+        status: life.country,
+        about: 'Laws, healthcare, ages and moving abroad',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'world',
+        icon: Icons.history_edu_rounded,
+        label: 'Your world',
+        status: 'History',
+        about: 'Your family name and the history earlier lives wrote',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'memories',
+        icon: Icons.photo_album_rounded,
+        label: 'Memories',
+        status: '${life.flags.length} kept',
+        about: 'The big moments of this life',
+        alert: false,
+        dim: life.flags.isEmpty,
+      ),
+      (
+        id: 'traits',
+        icon: Icons.psychology_rounded,
+        label: 'Hidden stats',
+        status: 'Your traits',
+        about: 'Karma, willpower, discipline and the rest',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'rewind',
+        icon: Icons.history_toggle_off_rounded,
+        label: 'Rewind',
+        status: 'Undo a year',
+        about: 'Go back to an earlier birthday',
+        alert: false,
+        dim: false,
+      ),
+      (
+        id: 'settings',
+        icon: Icons.settings_rounded,
+        label: 'Settings',
+        status: 'Sound, display',
+        about: 'Sound, difficulty, accessibility and content',
+        alert: false,
+        dim: false,
+      ),
+    ];
+  }
+
+  @override
   Widget build(BuildContext context) {
     final life = controller.life!;
+    final items = _items(life);
+    final s = _section;
+    if (s != null) {
+      final it = items.firstWhere((i) => i.id == s);
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+        children: [
+          SectionBar(
+            back: 'Me',
+            title: it.label,
+            sub: it.about,
+            onBack: () => setState(() => _section = null),
+          ),
+          switch (s) {
+            'family' => FamilyTree(life: life),
+            'identity' => IdentityCard(controller: controller),
+            'country' => CountryCard(controller: controller),
+            'world' => _WorldCard(controller: controller),
+            'traits' => HiddenStats(life: life),
+            _ => _memories(life),
+          },
+        ],
+      );
+    }
+    final searching = _q.trim().isNotEmpty;
+    final p = controller.profile;
+    final now = DateTime.now();
+    final goalsLeft = goalsFor(now)
+        .where((g) => !goalDone(p, g.id, now))
+        .toList();
+    final health = items.first;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       children: [
-        Material(
-          color: NF.surface,
-          borderRadius: BorderRadius.circular(16),
-          child: SwitchListTile(
-            title: Text(
-              'Sound effects',
-              style: NF.sora(15, weight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              'Age-up chime, choices and results',
-              style: NF.sora(12, color: NF.muted),
-            ),
-            value: controller.soundOn,
-            onChanged: controller.setSound,
-          ),
+        HubSearch(
+          controller: _search,
+          hint: 'Search Me: health, family, settings…',
+          onChanged: (v) => setState(() => _q = v),
         ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                style: secondaryButton(),
-                icon: const Icon(Icons.settings_rounded),
-                label: const Text('Settings'),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => SettingsScreen(controller: controller),
-                  ),
-                ),
-              ),
+        if (searching) ...[
+          const SizedBox(height: 14),
+          for (final i in items.where(
+            (i) => matchesQuery(_q, [i.label, i.about, i.status]),
+          )) ...[
+            OptionRow(
+              icon: i.icon,
+              title: i.label,
+              detail: i.about,
+              onTap: () => _go(context, i.id),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: OutlinedButton.icon(
-                style: secondaryButton(),
-                icon: const Icon(Icons.history_toggle_off_rounded),
-                label: const Text('Rewind'),
-                onPressed: () => showRewind(context, controller),
-              ),
-            ),
+            const SizedBox(height: 8),
           ],
-        ),
-        const SizedBox(height: 10),
-        if (life.age >= 13) ...[
-          OutlinedButton.icon(
-            style: secondaryButton(),
-            icon: const Icon(Icons.campaign_rounded),
-            label: Text(
-              life.followers.isEmpty ? 'Social' : 'Social · Fame ${life.fame}',
+          if (!items.any((i) => matchesQuery(_q, [i.label, i.about, i.status])))
+            Text(
+              'Nothing matches "$_q". Try "health", "family" or "sound".',
+              style: NF.sora(14, color: NF.muted),
             ),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => SocialScreen(controller: controller),
-              ),
+        ] else ...[
+          const HubHeading('Suggested for you'),
+          if (health.alert) ...[
+            OptionRow(
+              icon: Icons.monitor_heart_rounded,
+              title: 'Your health needs attention',
+              detail: 'See a doctor, start treatment or get help',
+              onTap: () => _go(context, 'health'),
             ),
+            const SizedBox(height: 8),
+          ],
+          OptionRow(
+            icon: Icons.bolt_rounded,
+            title: goalsLeft.isEmpty
+                ? 'All of today\'s goals done'
+                : goalsLeft.first.text,
+            detail: goalsLeft.isEmpty
+                ? '${p.sparks} Sparks · ${p.streak}-day streak'
+                : 'Daily goal · +20 Sparks · ${p.streak}-day streak',
+            onTap: () => _go(context, 'goals'),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
+          OptionRow(
+            icon: Icons.account_tree_rounded,
+            title: 'Your family tree',
+            detail: 'Generation ${life.generation} of the ${life.surname}s',
+            onTap: () => _go(context, 'family'),
+          ),
+          const HubHeading('Browse'),
+          BrowseGrid(
+            items: [
+              for (final i in items)
+                BrowseItem(
+                  icon: i.icon,
+                  label: i.label,
+                  status: i.status,
+                  alert: i.alert,
+                  dim: i.dim,
+                  onTap: () => _go(context, i.id),
+                ),
+            ],
+          ),
         ],
-        OutlinedButton.icon(
-          style: secondaryButton(),
-          icon: const Icon(Icons.monitor_heart_rounded),
-          label: Text(
-            life.conditions.any((c) => !c.treated && c.known) ||
-                    life.addictions.isNotEmpty
-                ? 'Health · needs attention'
-                : 'Health',
-          ),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => HealthScreen(controller: controller),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton.icon(
-          style: secondaryButton(),
-          icon: const Icon(Icons.bolt_rounded),
-          label: Text(
-            'Goals · ${controller.profile.sparks} Sparks · ${controller.profile.streak}-day streak',
-          ),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => GoalsScreen(controller: controller),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                style: secondaryButton(),
-                icon: const Icon(Icons.emoji_events_rounded),
-                label: Text(
-                  'Achievements ${controller.profile.achievements.length}',
-                ),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => AchievementsScreen(controller: controller),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: OutlinedButton.icon(
-                style: secondaryButton(),
-                icon: const Icon(Icons.collections_bookmark_rounded),
-                label: const Text('Collections'),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => CollectionsScreen(controller: controller),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 16),
         const VersionCard(),
         const SizedBox(height: 16),
-        _WorldCard(controller: controller),
-        const SizedBox(height: 16),
-        FamilyTree(life: life),
-        const SizedBox(height: 16),
-        IdentityCard(controller: controller),
-        const SizedBox(height: 16),
-        CountryCard(controller: controller),
-        const SizedBox(height: 16),
-        const SectionLabel('Hidden stats'),
-        const SizedBox(height: 10),
-        HiddenStats(life: life),
-        const SizedBox(height: 16),
-        const SectionLabel('Memories', color: NF.blue),
-        const SizedBox(height: 10),
-        if (life.flags.isEmpty)
-          Text('No big memories yet.', style: NF.sora(14, color: NF.muted)),
-        for (final m in life.flags.values)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              'Age ${m.age} · ${controller.engine!.fill(m.label, life)}',
-              style: NF.sora(14, color: NF.soft),
-            ),
-          ),
-        const SizedBox(height: 24),
         // Plan HE: a neutral, out-of-character way to end a life. It goes
         // straight to the recap; the support panel shows once a session.
         OutlinedButton(
@@ -1145,6 +1335,23 @@ class _MeTab extends StatelessWidget {
       ],
     );
   }
+
+  Widget _memories(Life life) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (life.flags.isEmpty)
+        Text('No big memories yet.', style: NF.sora(14, color: NF.muted)),
+      for (final m
+          in life.flags.values.toList()..sort((a, b) => a.age.compareTo(b.age)))
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(
+            'Age ${m.age} · ${controller.engine!.fill(m.label, life)}',
+            style: NF.sora(14, color: NF.soft),
+          ),
+        ),
+    ],
+  );
 }
 
 /// Me tab: your world's memory (plan Module 11): family name, earlier

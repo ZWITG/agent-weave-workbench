@@ -8,6 +8,7 @@ import '../engine/school.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
+import 'hub_kit.dart';
 import 'health_screen.dart' show JusticeCard;
 import 'school_card.dart';
 import 'widgets.dart';
@@ -58,72 +59,252 @@ class _PathTabState extends State<PathTab> {
     'quit_job',
   };
 
+  String? _page;
+  String _q = '';
+  final _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  List<GameAction> get _education => [
+    ...educationActions,
+    ...allActions.where((a) => _schoolIds.contains(a.id)),
+  ];
+
+  List<GameAction> get _work =>
+      allActions.where((a) => _workIds.contains(a.id)).toList();
+
+  bool get _hasRecord =>
+      life.prison != null || life.record.any((r) => r['sealed'] != true);
+
+  void _open(String? p) => setState(() {
+    _page = p;
+    _search.clear();
+    _q = '';
+  });
+
+  static const _pages = <String, (String, IconData, String)>{
+    'school': (
+      'School',
+      Icons.school_rounded,
+      'Classes, exams, courses and degrees',
+    ),
+    'career': (
+      'Career',
+      Icons.trending_up_rounded,
+      'Your job, the next step up, raises',
+    ),
+    'jobs': ('Job board', Icons.work_rounded, 'Every job, open ones first'),
+    'justice': (
+      'Record',
+      Icons.gavel_rounded,
+      'Prison, parole and your criminal record',
+    ),
+    'pathways': (
+      'Pathways',
+      Icons.route_rounded,
+      'Which studies lead to which careers',
+    ),
+  };
+
   @override
   Widget build(BuildContext context) {
-    final education = [
-      ...educationActions,
-      ...allActions.where((a) => _schoolIds.contains(a.id)),
-    ];
-    final work = allActions.where((a) => _workIds.contains(a.id)).toList();
+    final page = _page;
+    if (page != null) {
+      final (title, _, sub) = _pages[page]!;
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        children: [
+          SectionBar(
+            back: 'Path',
+            title: title,
+            sub: sub,
+            onBack: () => _open(null),
+          ),
+          ..._pageBody(context, page),
+        ],
+      );
+    }
+    final searching = _q.trim().isNotEmpty;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
       children: [
-        const SectionLabel('Your path'),
-        const SizedBox(height: 10),
-        if (life.prison != null ||
-            life.record.any((r) => r['sealed'] != true)) ...[
-          JusticeCard(life: life),
-          const SizedBox(height: 10),
-        ],
         _status(),
-        if (careerById(life.careerId) != null) ...[
-          const SizedBox(height: 10),
-          _ladder(careerById(life.careerId)!),
+        const SizedBox(height: 12),
+        HubSearch(
+          controller: _search,
+          hint: 'Search courses and jobs',
+          onChanged: (v) => setState(() => _q = v),
+        ),
+        if (searching)
+          ..._results(context)
+        else ...[
+          if (_suggested(context) case final rows when rows.isNotEmpty) ...[
+            const HubHeading('Suggested for you', sub: 'Your next step'),
+            for (final r in rows) ...[r, const SizedBox(height: 8)],
+          ],
+          const HubHeading('Browse'),
+          BrowseGrid(items: _browse()),
         ],
-        if (inSchool(life) ||
-            studying(life) ||
-            life.school.degrees.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          SchoolCard(controller: c),
-        ],
-        _section(
-          'Education',
-          'education',
-          education,
-          (a) => actionRow(context, c, a, closeSheet: false),
-          (a) => a.lockReason(life) == null,
-        ),
-        _section(
-          'Work',
-          'work',
-          work,
-          (a) => actionRow(context, c, a, closeSheet: false),
-          (a) => a.lockReason(life) == null,
-        ),
-        const SizedBox(height: 18),
-        _jobFilters(),
-        _section(
-          'Job board',
-          'jobs',
-          careers
-              .where(
-                (j) => switch (_jobFilter) {
-                  'open' => j.lockReason(life) == null,
-                  'special' => j.special,
-                  _ => true,
-                },
-              )
-              .toList(),
-          _jobRow,
-          (j) => j.lockReason(life) == null,
-          empty: life.age < 16
-              ? 'Jobs open at 16. Full-time careers open at 18.'
-              : null,
-        ),
-        const SizedBox(height: 18),
-        const PathwaysCard(),
       ],
     );
+  }
+
+  List<Widget> _pageBody(BuildContext context, String page) => switch (page) {
+    'school' => [
+      if (inSchool(life) || studying(life) || life.school.degrees.isNotEmpty)
+        SchoolCard(controller: c),
+      _section(
+        'Education',
+        'education',
+        _education,
+        (a) => actionRow(context, c, a, closeSheet: false),
+        (a) => a.lockReason(life) == null,
+      ),
+    ],
+    'career' => [
+      if (careerById(life.careerId) != null)
+        _ladder(careerById(life.careerId)!)
+      else
+        Text(
+          life.age < 16
+              ? 'Jobs open at 16. Full-time careers open at 18.'
+              : 'No job yet. The Job board lists every job and what it needs.',
+          style: NF.sora(14, color: NF.muted),
+        ),
+      _section(
+        'Work',
+        'work',
+        _work,
+        (a) => actionRow(context, c, a, closeSheet: false),
+        (a) => a.lockReason(life) == null,
+      ),
+    ],
+    'jobs' => [
+      _jobFilters(),
+      _section(
+        'Jobs',
+        'jobs',
+        careers
+            .where(
+              (j) => switch (_jobFilter) {
+                'open' => j.lockReason(life) == null,
+                'special' => j.special,
+                _ => true,
+              },
+            )
+            .toList(),
+        _jobRow,
+        (j) => j.lockReason(life) == null,
+        empty: life.age < 16
+            ? 'Jobs open at 16. Full-time careers open at 18.'
+            : null,
+      ),
+    ],
+    'justice' => [JusticeCard(life: life)],
+    _ => [const PathwaysCard()],
+  };
+
+  List<BrowseItem> _browse() {
+    final openEdu = _education.where((a) => a.lockReason(life) == null).length;
+    final openJobs = careers.where((j) => j.lockReason(life) == null).length;
+    return [
+      BrowseItem(
+        icon: Icons.school_rounded,
+        label: 'School',
+        status: openEdu == 0 ? educationLabel(life) : '$openEdu open',
+        dim: openEdu == 0 && !inSchool(life) && !studying(life),
+        onTap: () => _open('school'),
+      ),
+      BrowseItem(
+        icon: Icons.trending_up_rounded,
+        label: 'Career',
+        status: life.job ?? (life.retired ? 'Retired' : 'No job'),
+        dim: life.age < 14,
+        onTap: () => _open('career'),
+      ),
+      BrowseItem(
+        icon: Icons.work_rounded,
+        label: 'Job board',
+        status: life.age < 16 ? 'From age 16' : '$openJobs open',
+        dim: openJobs == 0,
+        onTap: () => _open('jobs'),
+      ),
+      if (_hasRecord)
+        BrowseItem(
+          icon: Icons.gavel_rounded,
+          label: 'Record',
+          status: life.prison != null ? 'In prison' : 'On file',
+          alert: life.prison != null,
+          onTap: () => _open('justice'),
+        ),
+      BrowseItem(
+        icon: Icons.route_rounded,
+        label: 'Pathways',
+        status: 'Study to career',
+        onTap: () => _open('pathways'),
+      ),
+    ];
+  }
+
+  /// The next step: an open course or school action, a raise or
+  /// promotion, or the best-paid jobs open right now.
+  List<Widget> _suggested(BuildContext context) {
+    final byId = {
+      for (final a in [..._education, ..._work]) a.id: a,
+    };
+    final ids = [
+      if (inSchool(life) || studying(life)) 'study',
+      if (life.age >= 17 && life.education == 'high school graduate')
+        'apply_uni',
+      if (life.job != null) ...['ask_promotion', 'ask_raise'],
+      if (life.age >= 14 && life.age < 18 && life.job == null) 'part_time',
+    ];
+    final rows = <Widget>[
+      for (final id in ids)
+        if (byId[id] case final a? when a.lockReason(life) == null)
+          actionRow(context, c, a, closeSheet: false),
+    ];
+    if (life.age >= 18 && life.job == null && life.prison == null) {
+      final open = careers.where((j) => j.lockReason(life) == null).toList()
+        ..sort((a, b) => b.salaryAt(0).compareTo(a.salaryAt(0)));
+      rows.addAll(open.take(2).map(_jobRow));
+    }
+    return rows.take(3).toList();
+  }
+
+  List<Widget> _results(BuildContext context) {
+    final actions = [
+      ..._education,
+      ..._work,
+    ].where((a) => a.matches(_q)).toList();
+    final jobs =
+        careers.where((j) => matchesQuery(_q, [j.title, j.field])).toList()
+          ..sort(
+            (a, b) => (a.lockReason(life) == null ? 0 : 1).compareTo(
+              b.lockReason(life) == null ? 0 : 1,
+            ),
+          );
+    if (actions.isEmpty && jobs.isEmpty) {
+      return [
+        const SizedBox(height: 14),
+        Text(
+          'Nothing matches "$_q". Try "university", "nurse" or "law".',
+          style: NF.sora(14, color: NF.muted),
+        ),
+      ];
+    }
+    return [
+      const SizedBox(height: 14),
+      for (final a in actions) ...[
+        actionRow(context, c, a, closeSheet: false),
+        const SizedBox(height: 8),
+      ],
+      for (final j in jobs.take(12)) ...[_jobRow(j), const SizedBox(height: 8)],
+    ];
   }
 
   Widget _status() {

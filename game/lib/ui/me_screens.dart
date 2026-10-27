@@ -236,6 +236,12 @@ class SettingsScreen extends StatelessWidget {
             children: [
               const _Head('Play'),
               sw(
+                'Sound effects',
+                'Age-up chime, choices and results',
+                controller.soundOn,
+                controller.setSound,
+              ),
+              sw(
                 'Classic mode',
                 'No energy limit on activities (otherwise 10 a year)',
                 p.classic,

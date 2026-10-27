@@ -4,11 +4,14 @@ import '../engine/models.dart';
 import '../engine/relationships.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'activities.dart' show OptionRow;
+import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
 
-/// People tab (04 Social, Module 1): circles as chips, one card per person
-/// with Bond % and its label, and a Person sheet with interactions.
+/// People tab (04 Social, Module 1), shaped like the Activities panel: a
+/// search box, "Suggested for you" (people who need you), and each circle
+/// as a Browse tile that opens the cards with Bond % and its label.
 class PeopleTab extends StatefulWidget {
   const PeopleTab({super.key, required this.controller});
   final GameController controller;
@@ -18,50 +21,154 @@ class PeopleTab extends StatefulWidget {
 }
 
 class _PeopleTabState extends State<PeopleTab> {
-  String _circle = 'All';
+  String? _circle;
+  String _q = '';
+  final _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  static const _icons = <String, IconData>{
+    'Everyone': Icons.groups_rounded,
+    'Family': Icons.family_restroom_rounded,
+    'Friends': Icons.diversity_3_rounded,
+    'Partner': Icons.favorite_rounded,
+    'Children': Icons.child_care_rounded,
+    'Exes': Icons.heart_broken_rounded,
+    'Pets': Icons.pets_rounded,
+    'Work': Icons.work_rounded,
+    'School': Icons.school_rounded,
+    'Prison': Icons.door_sliding_rounded,
+  };
+
+  /// Why someone needs you, or null.
+  String? _need(Life life, Npc n) {
+    if (!n.alive || n.circle == 'Prison') return null;
+    if (n.grudge != null) return 'Holds a grudge: ${n.grudge!.text}';
+    final gap = life.age - n.lastContactAge;
+    if (gap >= 3 && !n.contactCut && n.bond >= 30) {
+      return 'No contact for $gap years';
+    }
+    if (n.bond < 30 && !n.contactCut) {
+      return 'Your bond is ${n.bondLabel.toLowerCase()}';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final life = widget.controller.life!;
+    final circle = _circle;
+    if (circle != null) {
+      final people =
+          life.npcs
+              .where((n) => circle == 'Everyone' || n.circle == circle)
+              .toList()
+            ..sort((a, b) => (b.alive ? 1 : 0).compareTo(a.alive ? 1 : 0));
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+        children: [
+          SectionBar(
+            back: 'People',
+            title: circle,
+            sub: people.length == 1 ? '1 person' : '${people.length} people',
+            onBack: () => setState(() => _circle = null),
+          ),
+          for (final n in people) ...[
+            _PersonCard(controller: widget.controller, npc: n),
+            const SizedBox(height: 10),
+          ],
+          if (people.isEmpty)
+            Text(
+              'Nobody here yet. New people arrive through school, work, love and events.',
+              style: NF.sora(14, color: NF.muted),
+            ),
+        ],
+      );
+    }
     final circles = [
-      'All',
+      'Everyone',
       ...{for (final n in life.npcs) n.circle},
     ];
-    final people =
-        life.npcs.where((n) => _circle == 'All' || n.circle == _circle).toList()
-          ..sort((a, b) => (b.alive ? 1 : 0).compareTo(a.alive ? 1 : 0));
+    final searching = _q.trim().isNotEmpty;
+    final needs = [
+      for (final n in life.npcs)
+        if (_need(life, n) case final why?) (n, why),
+    ]..sort((a, b) => b.$1.bond.compareTo(a.$1.bond));
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       children: [
-        SizedBox(
-          height: 40,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
+        HubSearch(
+          controller: _search,
+          hint: 'Find someone by name or role',
+          onChanged: (v) => setState(() => _q = v),
+        ),
+        if (searching) ...[
+          const SizedBox(height: 14),
+          for (final n in life.npcs.where(
+            (n) => matchesQuery(_q, [n.name, n.role, n.circle]),
+          )) ...[
+            _PersonCard(controller: widget.controller, npc: n),
+            const SizedBox(height: 10),
+          ],
+          if (!life.npcs.any(
+            (n) => matchesQuery(_q, [n.name, n.role, n.circle]),
+          ))
+            Text(
+              'Nobody matches "$_q". Try a first name, "mother" or "friend".',
+              style: NF.sora(14, color: NF.muted),
+            ),
+        ] else ...[
+          if (needs.isNotEmpty) ...[
+            const HubHeading('Suggested for you', sub: 'People who need you'),
+            for (final (n, why) in needs.take(3)) ...[
+              OptionRow(
+                icon: _icons[n.circle] ?? Icons.person_rounded,
+                title: '${n.name.split(' ').first} · ${n.role}',
+                detail: '$why · Bond ${n.bond}%',
+                onTap: () => openPersonSheet(context, widget.controller, n),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ],
+          const HubHeading('Browse'),
+          BrowseGrid(
+            items: [
               for (final c in circles)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(c),
-                    selected: _circle == c,
-                    onSelected: (_) => setState(() => _circle = c),
-                  ),
+                BrowseItem(
+                  icon: _icons[c] ?? Icons.person_rounded,
+                  label: c,
+                  status: _status(life, c),
+                  alert: needs.any((e) => c == 'Everyone' || e.$1.circle == c),
+                  onTap: () => setState(() => _circle = c),
                 ),
             ],
           ),
-        ),
-        const SizedBox(height: 12),
-        for (final n in people) ...[
-          _PersonCard(controller: widget.controller, npc: n),
-          const SizedBox(height: 10),
+          if (life.npcs.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                'Nobody here yet. New people arrive through school, work, love and events.',
+                style: NF.sora(14, color: NF.muted),
+              ),
+            ),
         ],
-        if (people.isEmpty)
-          Text(
-            'Nobody here yet. New people arrive through school, work, love and events.',
-            style: NF.sora(14, color: NF.muted),
-          ),
       ],
     );
+  }
+
+  String _status(Life life, String c) {
+    final people = life.npcs
+        .where((n) => n.alive && (c == 'Everyone' || n.circle == c))
+        .toList();
+    if (people.isEmpty) return 'In memory';
+    if (people.length == 1) {
+      return '${people.first.name.split(' ').first} · ${people.first.bond}%';
+    }
+    return '${people.length} people';
   }
 }
 

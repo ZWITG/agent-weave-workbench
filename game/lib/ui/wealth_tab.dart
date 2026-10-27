@@ -10,63 +10,285 @@ import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
+import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'wealth_more.dart';
 import 'widgets.dart';
 
 const _good = Color(0xFF5EE6A8);
 
-/// The Wealth tab (plan S40–S44): net worth and its trend, last birthday's
-/// cash flow, lifestyle budget, bank and loans, and home and vehicles.
-class WealthTab extends StatelessWidget {
+/// The Wealth tab (plan S40–S44), shaped like the Activities panel: net
+/// worth on top, a search box, "Suggested for you", then Browse tiles that
+/// each open one section (cash flow, lifestyle, bank and loans, investing,
+/// business, home and vehicles, money activities).
+class WealthTab extends StatefulWidget {
   const WealthTab({super.key, required this.controller});
   final GameController controller;
 
-  GameController get c => controller;
+  @override
+  State<WealthTab> createState() => _WealthTabState();
+}
+
+class _WealthTabState extends State<WealthTab> {
+  String? _section;
+  String _q = '';
+  final _search = TextEditingController();
+
+  GameController get c => widget.controller;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  static const _sections = <String, (String, IconData, String)>{
+    'flow': (
+      'Cash flow',
+      Icons.swap_vert_rounded,
+      'Last birthday and the next one',
+    ),
+    'lifestyle': (
+      'Lifestyle',
+      Icons.weekend_rounded,
+      'Your budget, paid each birthday',
+    ),
+    'bank': (
+      'Bank and loans',
+      Icons.account_balance_rounded,
+      'Move money, borrow and repay',
+    ),
+    'invest': (
+      'Investing',
+      Icons.candlestick_chart_rounded,
+      'Stocks, bonds, gold and coins',
+    ),
+    'business': (
+      'Business',
+      Icons.storefront_rounded,
+      'Start one, run it, sell it',
+    ),
+    'assets': (
+      'Home and vehicles',
+      Icons.home_work_rounded,
+      'What you own and what it costs',
+    ),
+    'more': (
+      'Money activities',
+      Icons.savings_rounded,
+      'Shopping, lottery, wills and more',
+    ),
+  };
+
+  void _open(String? s) => setState(() {
+    _section = s;
+    _search.clear();
+    _q = '';
+  });
+
+  List<GameAction> get _moneyActions => c.engine!.actions
+      .where((a) => a.category == 'Money' || a.category == 'Assets')
+      .toList();
 
   @override
   Widget build(BuildContext context) {
     final life = c.life!;
+    final s = _section;
+    if (s != null) {
+      final (title, _, sub) = _sections[s]!;
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        children: [
+          SectionBar(
+            back: 'Wealth',
+            title: title,
+            sub: s == 'lifestyle'
+                ? (livesWithFamily(life)
+                      ? 'Living with family · paid each birthday'
+                      : 'Living on your own · paid each birthday')
+                : sub,
+            onBack: () => _open(null),
+          ),
+          ..._sectionBody(context, life, s),
+        ],
+      );
+    }
+    final searching = _q.trim().isNotEmpty;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
       children: [
-        const SectionLabel('Wealth'),
-        const SizedBox(height: 10),
         _Overview(life: life),
         const SizedBox(height: 12),
-        _CashFlow(life: life),
-        if (life.age >= 18) ...[
-          _title(
-            'Lifestyle',
-            livesWithFamily(life)
-                ? 'Living with family · paid each birthday'
-                : 'Living on your own · paid each birthday',
-          ),
-          _lifestyle(life),
+        HubSearch(
+          controller: _search,
+          hint: 'Search money: savings, loan, house…',
+          onChanged: (v) => setState(() => _q = v),
+        ),
+        if (searching)
+          ..._results(context, life)
+        else ...[
+          if (_suggested(context, life) case final rows
+              when rows.isNotEmpty) ...[
+            const HubHeading('Suggested for you'),
+            for (final r in rows) ...[r, const SizedBox(height: 8)],
+          ],
+          const HubHeading('Browse'),
+          BrowseGrid(items: _browse(life)),
         ],
-        _title('Bank and loans', 'Move money, borrow and repay'),
-        ..._bank(context, life),
-        _title('Investing', 'Stocks, bonds, gold and coins'),
-        MarketList(controller: c),
-        _title('Business', 'Start one, run it, sell it'),
-        BusinessCard(controller: c),
-        _title('Home and vehicles', 'What you own and what it costs'),
-        ..._assets(context, life),
       ],
     );
   }
 
-  Widget _title(String t, String sub) => Padding(
-    padding: const EdgeInsets.only(top: 22, bottom: 10),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(t, style: NF.sora(17, weight: FontWeight.w700)),
-        const SizedBox(height: 2),
-        Text(sub, style: NF.sora(12, color: NF.muted)),
+  List<Widget> _sectionBody(BuildContext context, Life life, String s) =>
+      switch (s) {
+        'flow' => [_CashFlow(life: life)],
+        'lifestyle' => [
+          if (life.age < 18)
+            Text(
+              'Your family covers your living costs until you are 18.',
+              style: NF.sora(14, color: NF.muted),
+            )
+          else
+            _lifestyle(life),
+        ],
+        'bank' => _bank(context, life),
+        'invest' => [MarketList(controller: c)],
+        'business' => [BusinessCard(controller: c)],
+        'assets' => _assets(context, life),
+        _ => [
+          for (final a in _moneyActions) ...[
+            actionRow(context, c, a, closeSheet: false),
+            const SizedBox(height: 8),
+          ],
+        ],
+      };
+
+  List<BrowseItem> _browse(Life life) {
+    final f = forecastNextYear(life);
+    final short = f < 0 && life.money + f < 0;
+    final debt = life.totalDebt;
+    final openMoney = _moneyActions.where((a) => a.lockReason(life) == null);
+    String status(String k) => switch (k) {
+      'flow' =>
+        f == 0 ? 'Nothing due' : '${f > 0 ? '+' : ''}${money(f)} next year',
+      'lifestyle' =>
+        life.age < 18 ? 'Family pays' : lifestyles[life.lifestyle]!.label,
+      'bank' =>
+        debt > 0
+            ? '${money(debt)} owed'
+            : life.savings > 0
+            ? '${money(life.savings)} saved'
+            : 'Save or borrow',
+      'invest' =>
+        life.portfolioValue + life.invested > 0
+            ? money(life.portfolioValue + life.invested)
+            : (life.age < 18 ? 'From age 18' : 'Start investing'),
+      'business' => life.business?.name ?? 'None yet',
+      'assets' =>
+        life.assets.isEmpty
+            ? (life.age < 18 ? 'From age 18' : 'Nothing owned')
+            : '${life.assets.length} owned',
+      _ => '${openMoney.length} open',
+    };
+    return [
+      for (final e in _sections.entries)
+        BrowseItem(
+          icon: e.value.$2,
+          label: e.value.$1,
+          status: status(e.key),
+          alert: (e.key == 'flow' && short) || (e.key == 'bank' && debt > 0),
+          dim: switch (e.key) {
+            'invest' || 'assets' || 'business' => life.age < 18,
+            'more' => openMoney.isEmpty,
+            _ => false,
+          },
+          onTap: () => _open(e.key),
+        ),
+    ];
+  }
+
+  /// Up to three things worth doing with money right now.
+  List<Widget> _suggested(BuildContext context, Life life) {
+    final f = forecastNextYear(life);
+    final rows = <Widget>[];
+    if (f < 0 && life.money + f < 0) {
+      rows.add(
+        OptionRow(
+          icon: Icons.warning_amber_rounded,
+          title: 'You will run short next birthday',
+          detail:
+              'About ${money(-(life.money + f))} goes on a credit card. See why',
+          onTap: () => _open('flow'),
+        ),
+      );
+    }
+    final debt = life.debts.entries.where((d) => d.value > 0).toList()
+      ..sort((a, b) => rateOf(life, b.key).compareTo(rateOf(life, a.key)));
+    if (debt.isNotEmpty && life.money > 0) {
+      final d = debt.first;
+      rows.add(
+        OptionRow(
+          icon: Icons.credit_card_rounded,
+          title: 'Pay off your ${d.key.toLowerCase()}',
+          detail:
+              '${money(d.value)} at ${(rateOf(life, d.key) * 100).toStringAsFixed(1)}% a year',
+          onTap: () => _open('bank'),
+        ),
+      );
+    }
+    if (life.age >= 18 && life.money >= 2000 && debt.isEmpty) {
+      rows.add(
+        OptionRow(
+          icon: Icons.savings_rounded,
+          title: life.portfolioValue + life.invested == 0
+              ? 'Put your cash to work'
+              : 'Grow your savings',
+          detail: '${money(life.money)} in cash earns nothing',
+          onTap: () => _open(life.money >= 5000 ? 'invest' : 'bank'),
+        ),
+      );
+    }
+    if (life.age >= 18 &&
+        life.assets.every((a) => a.kind != 'house' && a.kind != 'rental')) {
+      final home = allActions.where((a) => a.id == 'rent_flat').firstOrNull;
+      if (home != null && home.lockReason(life) == null) {
+        rows.add(actionRow(context, c, home, closeSheet: false));
+      }
+    }
+    return rows.take(3).toList();
+  }
+
+  List<Widget> _results(BuildContext context, Life life) {
+    final sections = _sections.entries
+        .where((e) => matchesQuery(_q, [e.value.$1, e.value.$3]))
+        .toList();
+    final actions = _moneyActions.where((a) => a.matches(_q)).toList();
+    if (sections.isEmpty && actions.isEmpty) {
+      return [
+        const SizedBox(height: 14),
+        Text(
+          'Nothing matches "$_q". Try "loan", "stocks" or "car".',
+          style: NF.sora(14, color: NF.muted),
+        ),
+      ];
+    }
+    return [
+      const SizedBox(height: 14),
+      for (final e in sections) ...[
+        OptionRow(
+          icon: e.value.$2,
+          title: e.value.$1,
+          detail: e.value.$3,
+          onTap: () => _open(e.key),
+        ),
+        const SizedBox(height: 8),
       ],
-    ),
-  );
+      for (final a in actions) ...[
+        actionRow(context, c, a, closeSheet: false),
+        const SizedBox(height: 8),
+      ],
+    ];
+  }
 
   // ---------------- Lifestyle ----------------
 
