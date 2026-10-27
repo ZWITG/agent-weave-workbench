@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'models.dart';
 import 'storylet.dart';
+import 'world_data.dart' show countryProfile;
 
 /// Health, body and mind (plan Module 9): chronic and serious conditions
 /// that always show symptoms first, diagnosis and treatment with costs and
@@ -147,17 +148,8 @@ Condition? conditionOf(Life l, String id) =>
 
 // ---------------- Healthcare and insurance ----------------
 
-/// Healthcare system by country (plan: country data).
-const healthSystems = {
-  'Portugal': 'universal',
-  'Ireland': 'universal',
-  'Netherlands': 'universal',
-  'United States': 'insurance',
-  'Nigeria': 'out of pocket',
-  'Philippines': 'out of pocket',
-};
-
-String healthSystem(Life l) => healthSystems[l.country] ?? 'universal';
+/// Healthcare system by country (plan: country data in world_data.dart).
+String healthSystem(Life l) => countryProfile(l.country).healthcare;
 
 const insurancePlans = {
   'none': (label: 'No insurance', premium: 0, covers: 0.0),

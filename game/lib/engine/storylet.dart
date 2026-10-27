@@ -20,6 +20,7 @@ class Storylet {
     this.forbidsFlags = const [],
     this.requiresNpcs = const [],
     this.statRules = const {},
+    this.conditions = const {},
     this.remembers,
     this.scene = false,
   });
@@ -42,12 +43,28 @@ class Storylet {
   /// e.g. {"smarts": ">=60"}.
   final Map<String, String> statRules;
 
+  /// Life conditions: job (bool), retired (bool), money (">=5000"),
+  /// owns (["house"]), childAge (">=16" or "13-17", oldest child),
+  /// prison (bool).
+  final Map<String, dynamic> conditions;
+
   /// Flag whose memory is shown on the card ("Remembers: …").
   final String? remembers;
   final List<Choice> choices;
 
   factory Storylet.fromJson(Map<String, dynamic> j) {
     final req = Map<String, dynamic>.from(j['requires'] ?? {});
+    // Text that names a parent only fits families that have that parent
+    // (single parents, two mums, two dads).
+    final words = [
+      j['text'],
+      for (final c in j['choices'] as List) ...[c['label'], c['outcome']],
+    ].join(' ');
+    final npcs = List<String>.from(req['npcs'] ?? []);
+    for (final p in const ['mother', 'father']) {
+      if (words.contains('{$p}') && !npcs.contains(p)) npcs.add(p);
+    }
+    req['npcs'] = npcs;
     return Storylet(
       id: j['id'],
       text: j['text'],
@@ -61,6 +78,17 @@ class Storylet {
       forbidsFlags: List<String>.from(req['notFlags'] ?? []),
       requiresNpcs: List<String>.from(req['npcs'] ?? []),
       statRules: Map<String, String>.from(req['stats'] ?? {}),
+      conditions: {
+        for (final k in const [
+          'job',
+          'retired',
+          'money',
+          'owns',
+          'childAge',
+          'prison',
+        ])
+          if (req.containsKey(k)) k: req[k],
+      },
       remembers: j['remembers'],
       choices: (j['choices'] as List)
           .map((c) => Choice.fromJson(Map<String, dynamic>.from(c)))
@@ -82,12 +110,37 @@ class Storylet {
       if (life.flags.containsKey(f)) return false;
     }
     for (final n in requiresNpcs) {
-      final npc = life.npc(n);
+      final npc = life.who(n);
       if (npc == null || !npc.alive) return false;
     }
     for (final e in statRules.entries) {
       if (!_compare(life.stats[e.key], e.value)) return false;
     }
+    final job = conditions['job'];
+    if (job is bool && (life.job != null) != job) return false;
+    final retired = conditions['retired'];
+    if (retired is bool && life.retired != retired) return false;
+    final money = conditions['money'];
+    if (money is String && !_compare(life.money, money)) return false;
+    for (final kind in List<String>.from(conditions['owns'] ?? const [])) {
+      if (!life.has(kind)) return false;
+    }
+    final childAge = conditions['childAge'];
+    if (childAge is String) {
+      final c = life.who('@child');
+      if (c == null) return false;
+      final age = c.ageIn(life.year);
+      final range = RegExp(r'^(\d+)-(\d+)$').firstMatch(childAge);
+      if (range != null) {
+        if (age < int.parse(range.group(1)!) ||
+            age > int.parse(range.group(2)!)) {
+          return false;
+        }
+      } else if (!_compare(age, childAge)) {
+        return false;
+      }
+    }
+    if (conditions['prison'] != true && life.prison != null) return false;
     return true;
   }
 
@@ -225,7 +278,7 @@ class Effects {
       }
     });
     bond.forEach((id, v) {
-      final npc = life.npc(id);
+      final npc = life.who(id);
       if (npc != null && v != 0) {
         final before = npc.bond;
         npc.addBond(v);
@@ -264,7 +317,7 @@ class Effects {
       npc.addFacets(resentment: -40);
     }
     npcMemory.forEach((id, m) {
-      final npc = life.npc(id);
+      final npc = life.who(id);
       if (npc == null) return;
       final mem = m is String
           ? NpcMemory(

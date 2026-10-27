@@ -7,7 +7,9 @@ import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
+import 'package:relivable/engine/community.dart';
 import 'package:relivable/engine/health.dart';
+import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
@@ -22,6 +24,7 @@ import 'package:relivable/engine/scenes.dart';
 import 'package:relivable/engine/school.dart';
 import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/world.dart';
+import 'package:relivable/engine/world_data.dart';
 
 /// Price from a listing label like "Flat · Old Town · $180,000".
 int listingPrice(String label) =>
@@ -89,6 +92,8 @@ void main() {
       final settable = <String>{
         'caught_shoplifting',
         'owns_car',
+        // set by the love scenes (love.dart)
+        'married',
         // set by the world when a new life is linked to an earlier one
         'echo_surname',
         'echo_city',
@@ -126,10 +131,17 @@ void main() {
         expect(n.bond, inInclusiveRange(0, 100));
       }
     }
+    // Very late-life storylets (95+) are checked directly below: the
+    // random bot rarely lives that long.
     final never = storylets
-        .where((s) => !fired.containsKey(s.id))
+        .where((s) => !fired.containsKey(s.id) && s.minAge < 95)
         .map((s) => s.id)
         .toList();
+    final late = storylets.where((s) => s.minAge >= 95);
+    for (final s in late) {
+      final old = engine.newLife(seed: 7)..age = s.minAge;
+      expect(s.isEligible(old), isTrue, reason: s.id);
+    }
     expect(
       never,
       isEmpty,
@@ -1003,5 +1015,80 @@ void main() {
     }
     expect(mum.alive, isFalse);
     expect(lines.join(), contains('died'));
+  });
+
+  // ---------------- Wave F1: identity, families, countries, content ----------------
+
+  test('families of every shape at birth, with fitting storylets', () {
+    final mums = engine.newLife(seed: 120, family: 'two_mums');
+    expect(mums.npc('mother'), isNotNull);
+    expect(mums.npc('mother2'), isNotNull);
+    expect(mums.npc('father'), isNull);
+    final dadText = storylets.where(
+      (s) => s.requiresNpcs.contains('father') && s.minAge <= 3,
+    );
+    expect(dadText, isNotEmpty);
+    for (final s in dadText) {
+      expect(s.isEligible(mums..age = s.minAge), isFalse, reason: s.id);
+    }
+    final single = engine.newLife(seed: 121, family: 'single_dad');
+    expect(single.npc('mother'), isNull);
+    expect(single.feed.first.text, contains('on their own'));
+  });
+
+  test('identity: pronouns render, coming out changes bonds not stats', () {
+    final life = engine.newLife(seed: 122, family: 'two')..age = 15;
+    setIdentity(life, identity: 'Non-binary', pronouns: 'they/them');
+    expect(engine.fill('{they} {them} {their}', life), 'they them their');
+    life.pronouns = 'ze/zir/zir';
+    expect(engine.fill('{they}/{them}', life), 'ze/zir');
+    expect(life.sceneQueue, contains('coming_out'));
+    final before = Map.of(life.stats.values)..remove('happiness');
+    final scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first);
+    final after = Map.of(life.stats.values)..remove('happiness');
+    expect(after, before);
+    expect(life.flags.containsKey('came_out'), isTrue);
+    setIdentity(life, orientation: 'Gay');
+    expect(life.attractedTo, life.gender == 'male' ? 'men' : 'women');
+  });
+
+  test('moving abroad shows visa odds and changes country rules', () {
+    final life = engine.newLife(seed: 123, countryName: 'United States')
+      ..age = 30;
+    life.money = 50000;
+    final (odds, why) = visaOdds(life, 'Ireland');
+    expect(why.join(), contains('Shared language'));
+    expect(odds, greaterThan(45));
+    for (var i = 0; i < 10 && life.country == 'United States'; i++) {
+      life.sceneQueue.add('emigrate');
+      final scene = engine.nextScene(life)!;
+      final pick = scene.choices.firstWhere(
+        (c) => c.label.startsWith('Ireland'),
+      );
+      engine.choose(life, scene, pick);
+      life.lastSeen.clear();
+      life.age++;
+    }
+    expect(life.country, 'Ireland');
+    expect(life.marks, containsAll(['lived:United States', 'lived:Ireland']));
+    expect(healthSystem(life), 'universal');
+    expect(countryProfile('Japan').lifeExpectancy, greaterThan(80));
+    expect(countries.length, greaterThanOrEqualTo(14));
+  });
+
+  test('legal name change and plenty to do in adult life', () {
+    final life = engine.newLife(seed: 124)..age = 40;
+    life.sceneQueue.add('name_change');
+    final scene = engine.nextScene(life)!;
+    final old = life.firstName;
+    engine.choose(life, scene, scene.choices.first);
+    expect(life.firstName, isNot(old));
+    final p = candidate(life, Random(5));
+    life.npcs.add(p);
+    life.npcs.add(newChild(life, Random(6), ageNow: 14));
+    startCareer(life, careerById('office')!);
+    final open = storylets.where((s) => s.isEligible(life)).length;
+    expect(open, greaterThanOrEqualTo(8));
   });
 }

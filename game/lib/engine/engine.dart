@@ -7,6 +7,8 @@ import 'economy.dart';
 import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
+import 'community.dart';
+import 'identity.dart';
 import 'justice.dart';
 import 'family.dart';
 import 'love.dart';
@@ -79,6 +81,7 @@ class GameEngine {
     String? gender,
     String? countryName,
     int? startYear,
+    String? family,
   }) {
     final start = startYear ?? world.year;
     final s = seed ?? DateTime.now().microsecondsSinceEpoch & 0x7fffffff;
@@ -91,30 +94,76 @@ class GameEngine {
     final surname = country.surnames[rng.nextInt(country.surnames.length)];
     String pick(List<String> l) => l[rng.nextInt(l.length)];
 
-    final npcs = <Npc>[
-      Npc(
-        id: 'mother',
-        role: 'Mother',
-        name: pick(country.female),
-        birthYear: start - 24 - rng.nextInt(14),
-        bond: 70 + rng.nextInt(25),
-      ),
-      Npc(
-        id: 'father',
-        role: 'Father',
-        name: pick(country.male),
-        birthYear: start - 25 - rng.nextInt(16),
-        bond: 60 + rng.nextInt(30),
-      ),
-      if (rng.nextDouble() < 0.75)
-        Npc(
-          id: 'sibling',
-          role: 'Brother',
-          name: pick(country.male),
-          birthYear: start - 1 - rng.nextInt(4),
-          bond: 55 + rng.nextInt(30),
-        ),
-    ];
+    final mother = Npc(
+      id: 'mother',
+      role: 'Mother',
+      name: pick(country.female),
+      birthYear: start - 24 - rng.nextInt(14),
+      bond: 70 + rng.nextInt(25),
+    );
+    final father = Npc(
+      id: 'father',
+      role: 'Father',
+      name: pick(country.male),
+      birthYear: start - 25 - rng.nextInt(16),
+      bond: 60 + rng.nextInt(30),
+    );
+    Npc? brother;
+    if (rng.nextDouble() < 0.75) {
+      var name = pick(country.male);
+      // A brother is never named after his father.
+      if (name == father.name) {
+        name = country
+            .male[(country.male.indexOf(name) + 1) % country.male.length];
+      }
+      brother = Npc(
+        id: 'sibling',
+        role: 'Brother',
+        name: name,
+        birthYear: start - 1 - rng.nextInt(4),
+        bond: 55 + rng.nextInt(30),
+      );
+    }
+    final npcs = <Npc>[mother, father, ?brother];
+
+    // Families of every shape (plan Social §8). A separate generator keeps
+    // the rest of a seed's start unchanged.
+    final shape =
+        family ??
+        () {
+          final r = Random(s ^ 0x5a5a5a).nextInt(1000);
+          if (r < 120) return 'single_mum';
+          if (r < 150) return 'single_dad';
+          if (r < 170) return 'two_mums';
+          if (r < 185) return 'two_dads';
+          return 'two';
+        }();
+    final fam = Random(s ^ 0x3c3c3c);
+    switch (shape) {
+      case 'single_mum':
+        npcs.removeWhere((n) => n.id == 'father');
+      case 'single_dad':
+        npcs.removeWhere((n) => n.id == 'mother');
+      case 'two_mums':
+        final dad = npcs.indexWhere((n) => n.id == 'father');
+        npcs[dad] = Npc(
+          id: 'mother2',
+          role: 'Mother',
+          name: country.female[fam.nextInt(country.female.length)],
+          birthYear: start - 26 - fam.nextInt(12),
+          bond: 65 + fam.nextInt(30),
+        );
+      case 'two_dads':
+        final mum = npcs.indexWhere((n) => n.id == 'mother');
+        npcs[mum] = Npc(
+          id: 'father2',
+          role: 'Father',
+          name: country.male[fam.nextInt(country.male.length)],
+          birthYear: start - 26 - fam.nextInt(12),
+          bond: 65 + fam.nextInt(30),
+        );
+    }
+    final parents = npcs.where((n) => n.role == 'Mother' || n.role == 'Father');
 
     final life = Life(
       seed: s,
@@ -132,7 +181,9 @@ class GameEngine {
     life.feed.add(
       FeedEntry(
         0,
-        'You were born in ${life.city}, ${life.country}, to ${npcs[0].name} and ${npcs[1].name}.',
+        parents.length == 1
+            ? 'You were born in ${life.city}, ${life.country}, to ${parents.first.name}, who is raising you on their own.'
+            : 'You were born in ${life.city}, ${life.country}, to ${parents.first.name} and ${parents.last.name}.',
         kind: 'milestone',
       ),
     );
@@ -160,6 +211,8 @@ class GameEngine {
     world.ensureYear(life.year, life.country, life.city);
     life.economy = world.economyFor(life.year);
     life.quotes = Map.of(world.pricesFor(life.year));
+    life.marks.add('lived:${life.country}');
+    if (shape != 'two') life.flags['family_$shape'] = Memory(0, 'your family');
     return life;
   }
 
@@ -237,6 +290,9 @@ class GameEngine {
       ...justiceYear(life, _rngFor(life, 73)),
       ...healthYear(life, _rngFor(life, 79)),
       ...npcAging(life, _rngFor(life, 83)),
+      ...identityYear(life),
+      ?nameReaction(life, world, _rngFor(life, 89)),
+      ?historyClass(life, world, _rngFor(life, 97)),
     ]) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
@@ -409,7 +465,7 @@ class GameEngine {
       for (final n in life.npcs)
         if (!npcsBefore.contains(n.id)) '${n.name} is now part of your life',
       for (final id in choice.effects.npcMemory.keys)
-        if (life.npc(id) != null) '${life.npc(id)!.name} will remember this',
+        if (life.who(id) != null) '${life.who(id)!.name} will remember this',
       if (choice.effects.setFlags.isNotEmpty)
         'This moment may come back years from now',
     ];
@@ -436,6 +492,9 @@ class GameEngine {
   }
 
   /// Fills {mother}, {father}, {sibling}, {name}, {city}, {surname}.
+  static String _first(Npc? n, String fallback) =>
+      n == null ? fallback : n.name.split(' ').first;
+
   String fill(String text, Life life) => text
       .replaceAll('{name}', life.firstName)
       .replaceAll('{surname}', life.surname)
@@ -444,6 +503,14 @@ class GameEngine {
       .replaceAll('{mother}', life.npc('mother')?.name ?? 'your mother')
       .replaceAll('{father}', life.npc('father')?.name ?? 'your father')
       .replaceAll('{sibling}', life.npc('sibling')?.name ?? 'your cousin')
+      .replaceAll('{partner}', _first(life.who('@partner'), 'your partner'))
+      .replaceAll('{child}', _first(life.who('@child'), 'your child'))
+      .replaceAll('{friend}', _first(life.who('@friend'), 'your friend'))
+      .replaceAll('{boss}', _first(life.who('@boss'), 'your boss'))
+      .replaceAll('{parent}', _first(life.who('@parent'), 'your parent'))
+      .replaceAll('{they}', pronounsOf(life).$1)
+      .replaceAll('{them}', pronounsOf(life).$2)
+      .replaceAll('{their}', pronounsOf(life).$3)
       .replaceAll('{echo_person}', life.echo['person'] ?? 'someone')
       .replaceAll('{echo_deed}', life.echo['deed'] ?? 'something')
       .replaceAll('{echo_year}', life.echo['year'] ?? 'years ago');

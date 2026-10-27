@@ -429,7 +429,7 @@ ActionResult sellAsset(Life life, Asset a) {
       if (!life.assets.any((x) => x.kind == 'car')) {
         life.flags.remove('owns_car');
       }
-      final loan = life.assets.any((x) => x.kind == 'car')
+      final loan = a.kind != 'car' || life.assets.any((x) => x.kind == 'car')
           ? 0
           : (life.debts.remove('Auto loan') ?? 0);
       life.money += a.value - loan;

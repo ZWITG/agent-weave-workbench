@@ -294,6 +294,7 @@ class WealthTab extends StatelessWidget {
 IconData _assetIcon(Asset a) => switch (a.kind) {
   'house' => Icons.home_rounded,
   'rental' => Icons.key_rounded,
+  'valuable' => Icons.diamond_rounded,
   _ => Icons.directions_car_rounded,
 };
 

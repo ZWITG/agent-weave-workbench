@@ -415,6 +415,16 @@ IconData categoryIcon(String category) => switch (category) {
   'love' => Icons.favorite_rounded,
   'work' => Icons.work_rounded,
   'health' => Icons.medical_services_rounded,
+  'money' => Icons.savings_rounded,
+  'crime' => Icons.gavel_rounded,
+  'mind' => Icons.psychology_rounded,
+  'identity' => Icons.face_rounded,
+  'travel' => Icons.flight_rounded,
+  'social' => Icons.celebration_rounded,
+  'home' => Icons.cottage_rounded,
+  'pets' => Icons.pets_rounded,
+  'fame' => Icons.star_rounded,
+  'community' => Icons.diversity_3_rounded,
   _ => Icons.auto_awesome_rounded,
 };
 

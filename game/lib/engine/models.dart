@@ -736,6 +736,12 @@ class Life {
   /// Ended from the menu ("End this life"), not by the story.
   bool endedEarly = false;
 
+  // ---- Identity (identity.dart) ----
+  /// Empty means "matches sex at birth" (Woman/Man, she/he).
+  String genderIdentity = '';
+  String pronouns = '';
+  String orientation = '';
+
   /// One stress meter for school and work (plan Module 2).
   int get stress => school.stress;
   set stress(int v) => school.stress = v.clamp(0, 100);
@@ -747,11 +753,14 @@ class Life {
   }
 
   final int seed;
-  final String firstName;
-  final String surname;
+  String firstName;
+  String surname;
+
+  /// Sex recorded at birth: name pools, fertility and some health rules.
+  /// Identity and pronouns live in genderIdentity and pronouns.
   final String gender;
-  final String country;
-  final String city;
+  String country;
+  String city;
   final int birthYear;
   final Stats stats;
   final List<Npc> npcs;
@@ -842,6 +851,34 @@ class Life {
       if (n.id == id) return n;
     }
     return null;
+  }
+
+  /// An NPC by id, or by role alias for storylets: @partner, @child
+  /// (oldest living), @friend (closest), @boss, @parent (closest living).
+  Npc? who(String ref) {
+    if (!ref.startsWith('@')) return npc(ref);
+    Npc? best(Iterable<Npc> list, int Function(Npc a, Npc b) cmp) {
+      final l = list.where((n) => n.alive).toList()..sort(cmp);
+      return l.firstOrNull;
+    }
+
+    return switch (ref) {
+      '@partner' => best(npcs.where((n) => n.circle == 'Partner'), (a, b) => 0),
+      '@child' => best(
+        npcs.where((n) => n.circle == 'Children'),
+        (a, b) => a.birthYear.compareTo(b.birthYear),
+      ),
+      '@friend' => best(
+        npcs.where((n) => n.circle == 'Friends'),
+        (a, b) => b.bond.compareTo(a.bond),
+      ),
+      '@boss' => npc('boss'),
+      '@parent' => best(
+        npcs.where((n) => n.id == 'mother' || n.id == 'father'),
+        (a, b) => b.bond.compareTo(a.bond),
+      ),
+      _ => null,
+    };
   }
 
   String get stage {
@@ -936,6 +973,9 @@ class Life {
     'lowMoodYears': lowMoodYears,
     'highStressYears': highStressYears,
     'endedEarly': endedEarly,
+    'genderIdentity': genderIdentity,
+    'pronouns': pronouns,
+    'orientation': orientation,
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -1082,7 +1122,10 @@ class Life {
       ..insurance = j['insurance'] ?? 'none'
       ..lowMoodYears = j['lowMoodYears'] ?? 0
       ..highStressYears = j['highStressYears'] ?? 0
-      ..endedEarly = j['endedEarly'] ?? false;
+      ..endedEarly = j['endedEarly'] ?? false
+      ..genderIdentity = j['genderIdentity'] ?? ''
+      ..pronouns = j['pronouns'] ?? ''
+      ..orientation = j['orientation'] ?? '';
     return life;
   }
 }

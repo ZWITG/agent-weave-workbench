@@ -27,6 +27,7 @@ const activityCategories = <(String, IconData)>[
   ('Pets', Icons.pets_rounded),
   ('Licences', Icons.badge_rounded),
   ('Identity', Icons.face_rounded),
+  ('Faith', Icons.self_improvement_rounded),
   ('Crime', Icons.local_police_rounded),
   ('Prison', Icons.door_sliding_rounded),
   ('News', Icons.newspaper_rounded),

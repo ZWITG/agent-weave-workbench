@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../engine/identity.dart';
 import '../engine/lifespan.dart';
 import '../engine/world_data.dart';
 import '../game_controller.dart';
@@ -20,6 +21,10 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
   String? _seedError;
   String? _gender;
   String? _country;
+  String? _identity;
+  String? _pronouns;
+  String? _interest;
+  String? _family;
 
   @override
   void dispose() {
@@ -27,6 +32,42 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
     _seed.dispose();
     super.dispose();
   }
+
+  Widget _chips(
+    String title,
+    List<String> options,
+    String? value,
+    void Function(String?) set, {
+    String Function(String)? label,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: NF.sora(13, color: NF.muted)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final o in options)
+              ChoiceChip(
+                label: Text(
+                  label?.call(o) ?? '${o[0].toUpperCase()}${o.substring(1)}',
+                ),
+                selected: value == o,
+                onSelected: (v) => setState(() => set(v ? o : null)),
+              ),
+            ChoiceChip(
+              label: const Text('Random'),
+              selected: value == null,
+              onSelected: (_) => setState(() => set(null)),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +219,48 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                               ),
                           ],
                         ),
+                        const SizedBox(height: 16),
+                        _chips(
+                          'Gender identity',
+                          genderIdentities,
+                          _identity,
+                          (v) => _identity = v,
+                        ),
+                        _chips(
+                          'Pronouns',
+                          pronounSets.keys.toList(),
+                          _pronouns,
+                          (v) => _pronouns = v,
+                        ),
+                        _chips(
+                          'Interested in (later in life)',
+                          const ['women', 'men', 'everyone'],
+                          _interest,
+                          (v) => _interest = v,
+                        ),
+                        _chips(
+                          'Family',
+                          const [
+                            'two',
+                            'single_mum',
+                            'single_dad',
+                            'two_mums',
+                            'two_dads',
+                          ],
+                          _family,
+                          (v) => _family = v,
+                          label: (f) => switch (f) {
+                            'two' => 'Mum and dad',
+                            'single_mum' => 'Single mum',
+                            'single_dad' => 'Single dad',
+                            'two_mums' => 'Two mums',
+                            _ => 'Two dads',
+                          },
+                        ),
+                        Text(
+                          'Identity never changes your stats or what you can do. Leave anything on Random.',
+                          style: NF.sora(12, color: NF.muted),
+                        ),
                         const SizedBox(height: 20),
                         FilledButton(
                           style: primaryButton().copyWith(
@@ -189,6 +272,10 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                             firstName: _name.text,
                             gender: _gender,
                             country: _country,
+                            family: _family,
+                            identity: _identity,
+                            pronouns: _pronouns,
+                            interest: _interest,
                           ),
                           child: const Text('Be born'),
                         ),

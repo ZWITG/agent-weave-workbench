@@ -105,14 +105,15 @@ class Interaction {
   }
 
   static bool _alias(String w, Npc npc) => switch (npc.id) {
-    'mother' => ['mum', 'mom', 'mother', 'mam'].contains(w),
-    'father' => ['dad', 'father', 'papa'].contains(w),
+    'mother' || 'mother2' => ['mum', 'mom', 'mother', 'mam'].contains(w),
+    'father' || 'father2' => ['dad', 'father', 'papa'].contains(w),
     'sibling' => ['brother', 'bro', 'sibling'].contains(w),
     _ => false,
   };
 }
 
-bool _parent(Npc n) => n.id == 'mother' || n.id == 'father';
+bool _parent(Npc n) =>
+    const {'mother', 'father', 'mother2', 'father2'}.contains(n.id);
 
 /// Public form of the Bond helper for interactions defined in other
 /// modules (school.dart, love.dart...).

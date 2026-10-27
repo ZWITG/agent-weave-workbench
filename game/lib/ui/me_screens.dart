@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../engine/actions.dart' show ActionResult;
 import '../engine/family.dart' show childrenOf;
+import '../engine/identity.dart';
+import '../engine/world_data.dart' show countryProfile;
 import '../engine/lifespan.dart';
 import '../engine/love.dart' show partnerOf;
 import '../engine/models.dart';
@@ -509,4 +511,289 @@ class FamilyTree extends StatelessWidget {
       ),
     ),
   );
+}
+
+// ---------------- Identity (plan Social §8) ----------------
+
+class IdentityCard extends StatelessWidget {
+  const IdentityCard({super.key, required this.controller});
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = controller.life!;
+    Widget row(String k, String v) => Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        children: [
+          Text(k, style: NF.sora(13, color: NF.muted)),
+          const Spacer(),
+          Text(v, style: NF.sora(13, weight: FontWeight.w600)),
+        ],
+      ),
+    );
+    return NFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.face_rounded, color: NF.blue, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Identity',
+                  style: NF.sora(15, weight: FontWeight.w700),
+                ),
+              ),
+              TextButton(
+                onPressed: () => _edit(context),
+                child: const Text('Edit'),
+              ),
+            ],
+          ),
+          row('Gender identity', identityOf(l)),
+          row('Pronouns', pronounLabel(l)),
+          if (l.age >= 13) row('Orientation', orientationOf(l)),
+          if (l.age >= 13)
+            row(
+              'Interested in',
+              l.attractedTo.isEmpty
+                  ? (l.gender == 'female' ? 'Men' : 'Women')
+                  : _cap(l.attractedTo),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _edit(BuildContext context) {
+    final custom = TextEditingController();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: NF.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => ListenableBuilder(
+        listenable: controller,
+        builder: (ctx, _) {
+          final l = controller.life!;
+          void set({
+            String? identity,
+            String? pronouns,
+            String? orientation,
+            String? interest,
+          }) {
+            controller.wealth(
+              (l) => setIdentity(
+                l,
+                identity: identity,
+                pronouns: pronouns,
+                orientation: orientation,
+                interest: interest,
+              ),
+            );
+          }
+
+          Widget chips(
+            String title,
+            List<String> options,
+            String value,
+            void Function(String) pick,
+          ) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: NF.sora(13, color: NF.muted)),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final o in options)
+                      ChoiceChip(
+                        label: Text(_cap(o)),
+                        selected: value == o,
+                        onSelected: (_) => pick(o),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          );
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              20,
+              18,
+              20,
+              20 + MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Your identity',
+                    style: NF.sora(20, weight: FontWeight.w700),
+                  ),
+                  Text(
+                    'Change anything, any time. It never changes your stats or what you can do; telling your family is your choice.',
+                    style: NF.sora(13, color: NF.muted),
+                  ),
+                  const SizedBox(height: 14),
+                  chips(
+                    'Gender identity',
+                    genderIdentities,
+                    identityOf(l),
+                    (v) => set(identity: v),
+                  ),
+                  chips(
+                    'Pronouns',
+                    pronounSets.keys.toList(),
+                    pronounLabel(l),
+                    (v) => set(pronouns: v),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: custom,
+                          style: NF.sora(14),
+                          decoration: InputDecoration(
+                            hintText: 'Custom pronouns, e.g. ze/zir/zir',
+                            filled: true,
+                            fillColor: NF.surface2,
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () {
+                          final v = custom.text.trim().toLowerCase();
+                          if (RegExp(r'^[a-z]{1,8}(/[a-z]{1,8}){1,2}$')
+                              .hasMatch(v)) {
+                            set(pronouns: v);
+                          }
+                        },
+                        child: const Text('Use'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  if (l.age >= 13) ...[
+                    chips(
+                      'Orientation',
+                      orientations,
+                      orientationOf(l),
+                      (v) => set(orientation: v),
+                    ),
+                    chips(
+                      'Interested in',
+                      const ['women', 'men', 'everyone'],
+                      l.attractedTo.isEmpty
+                          ? (l.gender == 'female' ? 'men' : 'women')
+                          : l.attractedTo,
+                      (v) => set(interest: v),
+                    ),
+                  ] else
+                    Text(
+                      'Orientation can be set from 13.',
+                      style: NF.sora(12, color: NF.muted),
+                    ),
+                  const SizedBox(height: 8),
+                  FilledButton(
+                    style: primaryButton(),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      controller.showQueued();
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ---------------- Country profile (plan Module 10) ----------------
+
+class CountryCard extends StatelessWidget {
+  const CountryCard({super.key, required this.controller});
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = controller.life!;
+    final p = countryProfile(l.country);
+    final lived = l.marks
+        .where((m) => m.startsWith('lived:'))
+        .map((m) => m.substring(6))
+        .toList();
+    Widget fact(String k, String v) => Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: Row(
+        children: [
+          Text(k, style: NF.sora(13, color: NF.muted)),
+          const Spacer(),
+          Text(v, style: NF.sora(13, weight: FontWeight.w600)),
+        ],
+      ),
+    );
+    final move = controller.engine!.actions.firstWhere(
+      (a) => a.id == 'emigrate',
+    );
+    final lock = move.lockReason(l);
+    return NFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.flag_rounded, color: NF.orange, size: 20),
+              const SizedBox(width: 8),
+              Text(l.country, style: NF.sora(15, weight: FontWeight.w700)),
+              const Spacer(),
+              Text(l.city, style: NF.sora(13, color: NF.muted)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(p.blurb, style: NF.sora(13, color: NF.soft)),
+          const SizedBox(height: 6),
+          fact('Life expectancy', '${p.lifeExpectancy} years'),
+          fact('Healthcare', _cap(p.healthcare)),
+          fact('Driving age', '${p.drivingAge}'),
+          fact(
+            'Drinking and gambling age',
+            '${p.drinkingAge} / ${p.gamblingAge}',
+          ),
+          fact('Same-sex marriage', p.marriageEquality ? 'Legal' : 'Not legal'),
+          fact('Languages', p.languages.join(', ')),
+          if (lived.length > 1) fact('Countries lived in', lived.join(', ')),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            style: secondaryButton(),
+            icon: const Icon(Icons.flight_takeoff_rounded),
+            label: Text(lock ?? 'Move abroad'),
+            onPressed: lock != null
+                ? null
+                : () {
+                    controller.runAction(move);
+                  },
+          ),
+        ],
+      ),
+    );
+  }
 }

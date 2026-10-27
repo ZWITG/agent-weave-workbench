@@ -6,6 +6,8 @@ import 'family.dart';
 import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
+import 'community.dart';
+import 'identity.dart';
 import 'jobs.dart';
 import 'justice.dart';
 import 'love.dart';
@@ -145,11 +147,16 @@ final _baseActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['read', 'book', 'library'],
     minAge: 4,
-    run: (life, rng) => statChange(
-      life,
-      'You read a book you could not put down.',
-      {'smarts': 1 + rng.nextInt(3), 'happiness': 1},
-    ),
+    run: (life, rng) {
+      final card = life.flags.containsKey('library_card');
+      return statChange(
+        life,
+        card
+            ? 'You borrowed three books from the library and finished them all.'
+            : 'You read a book you could not put down.',
+        {'smarts': 1 + rng.nextInt(3) + (card ? 1 : 0), 'happiness': 1},
+      );
+    },
   ),
   GameAction(
     id: 'gym',
@@ -273,22 +280,12 @@ final _baseActions = <GameAction>[
     id: 'party',
     label: 'Throw a party',
     category: 'Social',
-    keywords: ['party', 'friends', 'celebrate', 'guests'],
-    minAge: 18,
-    cost: 200,
+    keywords: ['party', 'friends', 'celebrate', 'guests', 'invite'],
+    minAge: 16,
+    priceNote: 'From \$150 · you pick the guest list',
     run: (life, rng) {
-      life.money -= 200;
-      final great = rng.nextInt(100) < 40 + life.stats['charisma'] ~/ 2;
-      final r = statChange(
-        life,
-        great
-            ? 'Your party was the talk of {city} for a week.'
-            : 'Three people came. One left early.',
-        {'happiness': great ? 6 : -2, 'charisma': great ? 2 : 0},
-      );
-      final hooked =
-          exposeTo(life, 'alcohol', rng) ?? exposeTo(life, 'nicotine', rng);
-      return ActionResult(r.text, [...r.notes, ?hooked]);
+      life.sceneQueue.add('party');
+      return ActionResult('You start writing a guest list.');
     },
   ),
   GameAction(
@@ -377,4 +374,6 @@ final allActions = <GameAction>[
   ...homeActions,
   ...justiceActions,
   ...healthActions,
+  ...identityActions,
+  ...communityActions,
 ];

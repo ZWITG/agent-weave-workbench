@@ -203,7 +203,7 @@ const _jobs = [
 ];
 
 List<_Update> _poolFor(Npc n) => switch (n.id) {
-  'mother' || 'father' => _parent,
+  'mother' || 'father' || 'mother2' || 'father2' => _parent,
   'sibling' => _sibling,
   _ => n.circle == 'Partner' ? _partner : _friend,
 };
@@ -243,8 +243,7 @@ List<FeedEntry> npcUpdates(Life life, Random rng) {
         .toList();
     if (options.isEmpty) continue;
     final u = options[rng.nextInt(options.length)];
-    final female =
-        n.id == 'mother' || n.role.contains('Sister') || n.id == 'amara';
+    final female = n.gender == 'female' || n.id == 'amara';
     final text = u.text
         .replaceAll('{name}', n.name)
         .replaceAll('{his}', female ? 'her' : 'his')

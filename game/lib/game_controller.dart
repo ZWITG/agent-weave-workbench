@@ -125,6 +125,10 @@ class GameController extends ChangeNotifier {
     String? gender,
     String? country,
     int? seed,
+    String? family,
+    String? identity,
+    String? pronouns,
+    String? interest,
   }) {
     life =
         engine!.newLife(
@@ -132,7 +136,11 @@ class GameController extends ChangeNotifier {
             firstName: firstName,
             gender: gender,
             countryName: country,
+            family: family,
           )
+          ..genderIdentity = identity ?? ''
+          ..pronouns = pronouns ?? ''
+          ..attractedTo = interest ?? ''
           ..difficulty = profile.difficulty
           ..ironman = profile.ironman
           ..classic = profile.classic;
@@ -188,6 +196,13 @@ class GameController extends ChangeNotifier {
     endThisLifeRules(life!);
     pendingEvent = null;
     lastOutcome = null;
+    _save();
+    notifyListeners();
+  }
+
+  /// Shows any scene queued from a screen (identity changes...).
+  void showQueued() {
+    _sceneAfterAction();
     _save();
     notifyListeners();
   }
