@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'school.dart' show schoolInteractions;
 
 /// Person interactions from 04 Social, Module 1: seven groups of action
 /// cards. Availability depends on age, relationship type and Bond %.
@@ -19,7 +20,21 @@ class Interaction {
     this.positive = false,
     this.cost = 0,
     this.check,
+    this.only,
   });
+
+  /// Who this interaction is for (teachers, partners, children...). Null
+  /// means everyone except people with their own restricted set.
+  final bool Function(Npc n)? only;
+
+  /// Teachers (and later pets) only get their own interactions plus these.
+  static const _politeOnly = {'talk', 'compliment', 'argue', 'apologize'};
+
+  bool appliesTo(Npc n) {
+    if (only != null) return only!(n);
+    if (n.circle == 'School') return _politeOnly.contains(id);
+    return true;
+  }
 
   final String id;
   final String label;
@@ -96,6 +111,32 @@ class Interaction {
 }
 
 bool _parent(Npc n) => n.id == 'mother' || n.id == 'father';
+
+/// Public form of the Bond helper for interactions defined in other
+/// modules (school.dart, love.dart...).
+ActionResult bondResult(
+  Life life,
+  Npc npc,
+  String text, {
+  int affection = 0,
+  int trust = 0,
+  int respect = 0,
+  int familiarity = 0,
+  int resentment = 0,
+  NpcMemory? memory,
+  List<String> extra = const [],
+}) => _bond(
+  life,
+  npc,
+  text,
+  affection: affection,
+  trust: trust,
+  respect: respect,
+  familiarity: familiarity,
+  resentment: resentment,
+  memory: memory,
+  extra: extra,
+);
 bool _roll(Random rng, int pct) => rng.nextInt(100) < pct;
 int _k(int v, double k) => (v * k).round();
 
@@ -138,7 +179,13 @@ String? _grudgeBlock(Life life, Npc npc) {
   return g == null ? null : '${npc.name} still resents: ${g.text}';
 }
 
-final interactions = <Interaction>[
+/// Every interaction: the base set below plus each module's own set.
+List<Interaction> get interactions => [
+  ..._baseInteractions,
+  ...schoolInteractions,
+];
+
+final _baseInteractions = <Interaction>[
   // ---------------- Warm ----------------
   Interaction(
     id: 'spend_time',
@@ -826,6 +873,7 @@ final interactions = <Interaction>[
 ];
 
 const interactionGroups = [
+  'School',
   'Warm',
   'Help',
   'Ask',

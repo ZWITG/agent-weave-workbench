@@ -8,6 +8,7 @@ import 'npc_life.dart';
 import 'models.dart';
 import 'relationships.dart';
 import 'scenes.dart';
+import 'school.dart';
 import 'storylet.dart';
 import 'world.dart';
 import 'world_data.dart';
@@ -168,6 +169,12 @@ class GameEngine {
     final rng = _rngFor(life);
 
     _schoolMilestones(life);
+    schoolStage(life, rng);
+    final card = reportCard(life, _rngFor(life, 31));
+    if (card != null) life.feed.add(FeedEntry(life.age, card, kind: 'report'));
+    for (final line in schoolYear(life, _rngFor(life, 37))) {
+      life.feed.add(FeedEntry(life.age, line));
+    }
     _worldYear(life);
     for (final line in yearlyMoney(life, rng)) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
@@ -224,6 +231,12 @@ class GameEngine {
     if (rng.nextDouble() < sick) {
       final ill = pickIllness(life, rng);
       if (ill != null) life.sceneQueue.add('illness:$ill');
+    }
+    if (inSchool(life) && (life.age == 16 || life.age == 17)) {
+      life.sceneQueue.add('exams');
+    }
+    if (life.education == 'university' && life.school.major == null) {
+      life.sceneQueue.add('choose_major');
     }
     final scene = nextScene(life);
     if (scene != null) return scene;

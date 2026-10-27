@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'lifespan.dart';
 import 'models.dart';
+import 'school.dart';
 import 'storylet.dart';
 
 /// Code-driven events ("scenes"): the same event card as storylets, but
@@ -15,6 +16,13 @@ Storylet? buildScene(String id, Life life) {
   return switch (parts.first) {
     'illness' => _illness(id, arg, life),
     'retire_offer' => _retireOffer(id, life),
+    'apply_uni' => applyUniScene(life),
+    'choose_major' => life.school.major == null ? chooseMajorScene() : null,
+    'apply_grad' => applyGradScene(),
+    'exams' => examScene(life),
+    'lessons' => lessonsScene(),
+    'tryouts' => tryoutsScene(life),
+    'cheat' => cheatScene(),
     _ => null,
   };
 }

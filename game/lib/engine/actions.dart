@@ -3,6 +3,7 @@ import 'dart:math';
 import 'careers.dart';
 import 'economy.dart';
 import 'lifespan.dart';
+import 'school.dart';
 import 'minigame_rules.dart';
 import 'models.dart';
 import 'more_actions.dart';
@@ -112,11 +113,14 @@ final _baseActions = <GameAction>[
     keywords: ['study', 'homework', 'school', 'grades', 'learn'],
     minAge: 6,
     extraCheck: _inSchool,
-    run: (life, rng) => statChange(
-      life,
-      'You buried yourself in books for a while.',
-      {'smarts': 2 + rng.nextInt(4), 'happiness': -1, 'discipline': 2},
-    ),
+    run: (life, rng) {
+      life.school.effort = 100;
+      return statChange(life, 'You buried yourself in books for a while.', {
+        'smarts': 2 + rng.nextInt(4),
+        'happiness': -1,
+        'discipline': 2,
+      });
+    },
   ),
   GameAction(
     id: 'read',
@@ -337,6 +341,7 @@ final _lifeActions = <GameAction>[
 
 final allActions = <GameAction>[
   ..._lifeActions,
+  ...schoolActions,
   ..._baseActions,
   ...moreActions,
   ...educationActions,

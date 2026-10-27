@@ -24,6 +24,7 @@ ActionResult gymScored(Life life, Random rng, double score) {
 }
 
 ActionResult studyScored(Life life, Random rng, double score) {
+  life.school.effort = score >= 0.5 ? 100 : 75;
   final s = 1 + (score * 5).round();
   final text = score >= 0.99
       ? 'Full marks on your practice quiz. It is starting to click.'

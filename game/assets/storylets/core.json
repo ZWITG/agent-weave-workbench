@@ -1768,5 +1768,424 @@
     "effects": {}
    }
   ]
+ },
+ {
+  "id": "daycare",
+  "minAge": 2,
+  "maxAge": 3,
+  "weight": 22,
+  "category": "family",
+  "text": "Your first morning at daycare. The room smells of glue sticks and banana, a dozen toddlers are shrieking happily, and {mother} is hovering by the door with her coat still on, clearly hoping you will not make this hard.",
+  "choices": [
+   {
+    "label": "Cling to her leg",
+    "outcome": "You wrapped yourself around {mother}'s leg like a koala and wailed. It took two carers and a sticker to peel you off. By lunchtime you had forgotten all about it, but she cried in the car.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     },
+     "bond": {
+      "mother": 3
+     }
+    }
+   },
+   {
+    "label": "March in like you own it",
+    "outcome": "You walked straight past the other children, picked the best fire engine and sat down as if you had been coming for years. The carers called you \"the little manager\" for the rest of the year.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Hide behind the coats",
+    "outcome": "You spent the morning hidden behind the coat rack, watching everything. By the afternoon you had quietly made friends with the shy girl hiding behind the other end.",
+    "effects": {
+     "stats": {
+      "creativity": 1,
+      "karma": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "bedtime_story",
+  "minAge": 3,
+  "maxAge": 5,
+  "weight": 22,
+  "category": "family",
+  "text": "Bedtime. {father} has read the same dinosaur book four nights running and is doing all the voices, badly. He closes it with a yawn and looks at you hopefully, as if you might just go to sleep.",
+  "choices": [
+   {
+    "label": "\"One more story!\"",
+    "outcome": "\"One more\" became three more. {father} fell asleep before you did, mid-sentence, with a T-rex on his chest. You learned a lot of new words that night.",
+    "effects": {
+     "stats": {
+      "smarts": 3
+     },
+     "bond": {
+      "father": 3
+     }
+    }
+   },
+   {
+    "label": "Read it to him instead",
+    "outcome": "You took the book and \"read\" it back to him, mostly from memory, turning the pages at exactly the right moments. {father} told everyone at work you were a genius.",
+    "effects": {
+     "stats": {
+      "smarts": 4,
+      "discipline": 1
+     },
+     "flags": {
+      "early_reader": "reading before school"
+     }
+    }
+   },
+   {
+    "label": "Pretend to be asleep",
+    "outcome": "You squeezed your eyes shut and breathed loudly. {father} tiptoed out, pleased. You lay awake for an hour making up your own story about a dinosaur who ran a bakery.",
+    "effects": {
+     "stats": {
+      "creativity": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "first_playdate",
+  "minAge": 3,
+  "maxAge": 6,
+  "weight": 20,
+  "category": "family",
+  "text": "A new family has moved in next door, and their child has been brought round for a playdate. They are standing in your bedroom doorway, staring at your toys, while both mums drink tea downstairs and pretend not to listen.",
+  "choices": [
+   {
+    "label": "Share your best toys",
+    "outcome": "You handed over your favourite car without being asked. Within ten minutes you were building a racetrack across the landing. The mums were thrilled; the hoover was not.",
+    "effects": {
+     "stats": {
+      "karma": 2,
+      "charisma": 1,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Show them your rules",
+    "outcome": "You explained, at length, which toys were allowed and which were absolutely not. They listened politely and then played with the box instead. It was the best game of the day.",
+    "effects": {
+     "stats": {
+      "discipline": 1,
+      "creativity": 1
+     }
+    }
+   },
+   {
+    "label": "Hide your favourites first",
+    "outcome": "You stuffed your best toys under the bed before they came in. They found them anyway. You argued, then laughed, then were inseparable until bedtime.",
+    "effects": {
+     "stats": {
+      "impulsivity": 1,
+      "happiness": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "class_hamster",
+  "minAge": 6,
+  "maxAge": 9,
+  "weight": 18,
+  "category": "school",
+  "text": "Peanut, the class hamster, has escaped. The cage door is open, the classroom is in uproar, and you were the last one seen near it at break time. Your teacher is looking around the room for answers.",
+  "choices": [
+   {
+    "label": "Own up",
+    "outcome": "You put your hand up and admitted you had been feeding him and forgot to close the latch. The teacher thanked you for being honest, and together you found Peanut asleep in a welly.",
+    "effects": {
+     "stats": {
+      "karma": 3,
+      "willpower": 1
+     },
+     "npcMemory": {
+      "teacher_class_teacher": {
+       "text": "owning up about the hamster",
+       "valence": 2,
+       "intensity": 2,
+       "tags": [
+        "trust"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "label": "Blame the new kid",
+    "outcome": "You said you saw the new kid near the cage. They got a telling-off and cried. Peanut turned up the next day, and you felt sick about it for a week.",
+    "effects": {
+     "stats": {
+      "karma": -4,
+      "happiness": -2
+     }
+    }
+   },
+   {
+    "label": "Lead the search",
+    "outcome": "You organised a hamster search party with military precision. Peanut was found in the reading corner. Nobody asked how he got out, and you did not volunteer it.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "discipline": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "school_play",
+  "minAge": 7,
+  "maxAge": 11,
+  "weight": 18,
+  "category": "school",
+  "text": "The school play is cast, and your name is at the top of the list: the lead. The first rehearsal is tomorrow. Your stomach is doing somersaults every time you imagine the hall full of parents.",
+  "choices": [
+   {
+    "label": "Rehearse every night",
+    "outcome": "You learned every line, and some of everyone else's. On the night, you forgot one, made something up and got the biggest laugh of the show. {mother} filmed all of it.",
+    "effects": {
+     "stats": {
+      "charisma": 3,
+      "discipline": 2,
+      "happiness": 3
+     },
+     "bond": {
+      "mother": 2
+     }
+    }
+   },
+   {
+    "label": "Swap for a smaller part",
+    "outcome": "You asked to be a tree instead. You were an excellent tree: still, leafy and calm. The lead fell off the stage. You were secretly relieved it was not you.",
+    "effects": {
+     "stats": {
+      "happiness": 1,
+      "willpower": -1
+     }
+    }
+   },
+   {
+    "label": "Wing it",
+    "outcome": "You decided rehearsals were for other people. On the night, you made up half the plot. The audience loved it; the teacher did not.",
+    "effects": {
+     "stats": {
+      "creativity": 3,
+      "impulsivity": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "bullied_support",
+  "minAge": 9,
+  "maxAge": 15,
+  "weight": 16,
+  "category": "school",
+  "text": "For weeks a group from the year above has been sending you nasty messages and laughing when you walk past. Today someone posted a photo of you with a cruel caption. You feel sick, and you do not want to go to school tomorrow.",
+  "choices": [
+   {
+    "label": "Tell a trusted adult",
+    "outcome": "You showed {mother} the messages. She held you for a long time, then went into school the next morning. The posts came down within a day and the group were dealt with. You slept properly for the first time in weeks.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "willpower": 1
+     },
+     "bond": {
+      "mother": 4
+     }
+    }
+   },
+   {
+    "label": "See the school counsellor",
+    "outcome": "The counsellor listened without interrupting and helped you report it properly. You also learned some ways to handle the anxiety. It did not fix everything, but it helped more than you expected.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "willpower": 2
+     }
+    }
+   },
+   {
+    "label": "Lean on your friends",
+    "outcome": "You told your friends, who closed ranks around you. They walked with you between classes and reported every post. The group soon got bored and moved on.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "charisma": 1
+     }
+    }
+   },
+   {
+    "label": "Stand up to them",
+    "outcome": "You walked up to the ringleader in front of everyone and told them exactly what you thought of them. Your voice shook, but you said it all. They never messaged you again.",
+    "effects": {
+     "stats": {
+      "willpower": 3,
+      "happiness": 1
+     },
+     "flags": {
+      "stood_up_bullies": "standing up to the bullies"
+     }
+    }
+   },
+   {
+    "label": "Ask to change schools",
+    "outcome": "Your parents moved you to a school across town. It was hard to start again, but nobody there knew about the photo, and you made a fresh start.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     },
+     "flags": {
+      "changed_school": "changing schools to get away from bullies"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "science_fair",
+  "minAge": 11,
+  "maxAge": 16,
+  "weight": 16,
+  "category": "school",
+  "text": "The science fair is in three weeks, and the winner goes to the regional finals. Your lab partner wants to do the classic baking-soda volcano. You have a much stranger idea involving potatoes, wires and a very small light bulb.",
+  "choices": [
+   {
+    "label": "Go with your weird idea",
+    "outcome": "Your potato battery lit the bulb, then shorted, then lit it again in front of the judges. They loved it. You came second and the local paper printed a photo of you holding a potato.",
+    "effects": {
+     "stats": {
+      "smarts": 3,
+      "creativity": 3
+     },
+     "flags": {
+      "science_fair_star": "your potato battery at the science fair"
+     }
+    }
+   },
+   {
+    "label": "Build the volcano",
+    "outcome": "The volcano erupted perfectly, all over the judge's shoes. You did not win, but it was the most-watched project in the hall.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "charisma": 1
+     }
+    }
+   },
+   {
+    "label": "Let your partner do it",
+    "outcome": "You let your partner do most of the work and put your name on it. You got a decent mark and an uncomfortable feeling.",
+    "effects": {
+     "stats": {
+      "karma": -2,
+      "smarts": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "homework_copy_friend",
+  "minAge": 14,
+  "maxAge": 17,
+  "weight": 14,
+  "category": "school",
+  "text": "Your best mate corners you before registration: they did not do the history essay and want to copy yours, \"just this once, I'll change the words\". You know the teacher has already noticed some suspiciously similar answers this term.",
+  "choices": [
+   {
+    "label": "Let them copy",
+    "outcome": "You handed it over. They changed the words, mostly. The teacher kept you both behind and asked some very pointed questions. You stuck together, and the friendship got stronger for it, even if your reputation did not.",
+    "effects": {
+     "stats": {
+      "karma": -1,
+      "charisma": 1
+     }
+    }
+   },
+   {
+    "label": "Help them write their own",
+    "outcome": "You spent lunch helping them plan their own essay. They grumbled, then wrote a decent one. A month later they did the same for you in maths.",
+    "effects": {
+     "stats": {
+      "karma": 3,
+      "smarts": 1
+     }
+    }
+   },
+   {
+    "label": "Say no",
+    "outcome": "You said no. They were cold with you for a week, then admitted you were right. The teacher never knew how close it came.",
+    "effects": {
+     "stats": {
+      "discipline": 2,
+      "willpower": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "teacher_believes",
+  "minAge": 14,
+  "maxAge": 17,
+  "weight": 14,
+  "category": "school",
+  "requires": {
+   "stats": {
+    "smarts": ">=55"
+   }
+  },
+  "text": "Your favourite teacher stops you after class. \"You have real ability,\" she says, \"and I don't think you know it yet. If you enter the regional science competition, I will write your university recommendation myself.\"",
+  "choices": [
+   {
+    "label": "Enter the competition",
+    "outcome": "You spent every lunch in the lab for two months. You did not win, but you made the final, and she kept her promise: the recommendation letter made you sound like a future Nobel laureate.",
+    "effects": {
+     "stats": {
+      "smarts": 3,
+      "discipline": 2
+     },
+     "flags": {
+      "recommendation": "a recommendation letter from a teacher who believed in you"
+     }
+    }
+   },
+   {
+    "label": "Say you're too busy",
+    "outcome": "You said you had too much on. She nodded and said the offer stood. You think about that conversation more than you expected to.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   },
+   {
+    "label": "Ask why she thinks so",
+    "outcome": "She told you, in detail, what she had noticed. Nobody had ever said anything like that to you before. You walked home feeling taller.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "willpower": 2
+     }
+    }
+   }
+  ]
  }
 ]

@@ -354,7 +354,9 @@ class _PersonSheet extends StatelessWidget {
 
   List<Widget> _group(BuildContext context, String group) {
     final life = controller.life!;
-    final items = interactions.where((i) => i.group == group).toList();
+    final items = interactions
+        .where((i) => i.group == group && i.appliesTo(npc))
+        .toList();
     final visible = items.where((i) => life.age <= i.maxAge).toList();
     if (visible.isEmpty) return [];
     return [
@@ -448,5 +450,5 @@ class _PersonSheet extends StatelessWidget {
 List<(Npc, Interaction)> searchInteractions(Life life, String q) => [
   for (final n in life.npcs.where((n) => n.alive))
     for (final i in interactions)
-      if (life.age <= i.maxAge && i.matches(q, n)) (n, i),
+      if (life.age <= i.maxAge && i.appliesTo(n) && i.matches(q, n)) (n, i),
 ];

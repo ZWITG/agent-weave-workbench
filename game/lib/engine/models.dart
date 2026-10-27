@@ -466,6 +466,9 @@ class Life {
   /// Code-driven events waiting to be shown (scenes.dart ids).
   final List<String> sceneQueue = [];
 
+  /// School and university record (school.dart).
+  SchoolRecord school = SchoolRecord();
+
   void _logStat(String key, int delta) {
     statLog.add(StatChange(age, key, delta, reason));
     if (statLog.length > 120) statLog.removeAt(0);
@@ -610,6 +613,7 @@ class Life {
     'jobLostAge': jobLostAge,
     'chapter': chapter,
     'sceneQueue': sceneQueue,
+    'school': school.toJson(),
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -694,7 +698,10 @@ class Life {
           StatChange.fromJson(Map<String, dynamic>.from(c)),
       ])
       ..discovered.addAll(List<String>.from(j['discovered'] ?? []))
-      ..sceneQueue.addAll(List<String>.from(j['sceneQueue'] ?? []));
+      ..sceneQueue.addAll(List<String>.from(j['sceneQueue'] ?? []))
+      ..school = j['school'] == null
+          ? SchoolRecord()
+          : SchoolRecord.fromJson(Map<String, dynamic>.from(j['school']));
     return life;
   }
 }
@@ -749,4 +756,84 @@ class StatChange {
   Map<String, dynamic> toJson() => {'a': age, 's': stat, 'd': delta, 'w': why};
   factory StatChange.fromJson(Map<String, dynamic> j) =>
       StatChange(j['a'], j['s'], j['d'], j['w']);
+}
+
+/// Grades, popularity, cliques, clubs and admissions (plan Module 4).
+class SchoolRecord {
+  SchoolRecord();
+
+  /// This year's grades per subject, 0–100.
+  Map<String, int> grades = {};
+  double gpa = 0;
+  int gpaYears = 0;
+
+  /// 0, 50 or 100 this year (study raises it, skipping lowers it).
+  int effort = 50;
+  int stress = 20;
+  int popularity = 40;
+  String? clique;
+  List<String> clubs = [];
+  List<String> electives = [];
+  String? lessons;
+  int detentions = 0;
+  int suspensions = 0;
+  int? testScore;
+  int extracurricular = 0;
+  int seasons = 0;
+  String? major;
+  String? tier;
+  int tuition = 0;
+  String? scholarship;
+  String? gradProgramme;
+  int gradYears = 0;
+  List<String> degrees = [];
+
+  Map<String, dynamic> toJson() => {
+    'grades': grades,
+    'gpa': gpa,
+    'gpaYears': gpaYears,
+    'effort': effort,
+    'stress': stress,
+    'popularity': popularity,
+    'clique': clique,
+    'clubs': clubs,
+    'electives': electives,
+    'lessons': lessons,
+    'detentions': detentions,
+    'suspensions': suspensions,
+    'testScore': testScore,
+    'extracurricular': extracurricular,
+    'seasons': seasons,
+    'major': major,
+    'tier': tier,
+    'tuition': tuition,
+    'scholarship': scholarship,
+    'gradProgramme': gradProgramme,
+    'gradYears': gradYears,
+    'degrees': degrees,
+  };
+
+  factory SchoolRecord.fromJson(Map<String, dynamic> j) => SchoolRecord()
+    ..grades = Map<String, int>.from(j['grades'] ?? {})
+    ..gpa = (j['gpa'] as num?)?.toDouble() ?? 0
+    ..gpaYears = j['gpaYears'] ?? 0
+    ..effort = j['effort'] ?? 50
+    ..stress = j['stress'] ?? 20
+    ..popularity = j['popularity'] ?? 40
+    ..clique = j['clique']
+    ..clubs = List<String>.from(j['clubs'] ?? [])
+    ..electives = List<String>.from(j['electives'] ?? [])
+    ..lessons = j['lessons']
+    ..detentions = j['detentions'] ?? 0
+    ..suspensions = j['suspensions'] ?? 0
+    ..testScore = j['testScore']
+    ..extracurricular = j['extracurricular'] ?? 0
+    ..seasons = j['seasons'] ?? 0
+    ..major = j['major']
+    ..tier = j['tier']
+    ..tuition = j['tuition'] ?? 0
+    ..scholarship = j['scholarship']
+    ..gradProgramme = j['gradProgramme']
+    ..gradYears = j['gradYears'] ?? 0
+    ..degrees = List<String>.from(j['degrees'] ?? []);
 }

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'school.dart' show punish;
 import 'economy.dart';
 import 'minigame_rules.dart';
 import 'models.dart';
@@ -287,17 +288,26 @@ final moreActions = <GameAction>[
         life.education == 'primary' || life.education == 'secondary'
         ? null
         : 'Only while in school',
-    run: (life, rng) => _roll(rng, 30)
-        ? statChange(
-            life,
-            'The head teacher spotted you at the shopping centre. Detention.',
-            {'happiness': -3, 'smarts': -1},
-          )
-        : statChange(life, 'You spent the afternoon at the park. Bliss.', {
-            'happiness': 3,
-            'smarts': -1,
-            'discipline': -2,
-          }),
+    run: (life, rng) {
+      life.school.effort = 0;
+      if (_roll(rng, 30)) {
+        final p = punish(life, 'skipping class');
+        final r = statChange(
+          life,
+          'The head teacher spotted you at the shopping centre. $p',
+          {'happiness': -3, 'smarts': -1},
+        );
+        return ActionResult(r.text, [
+          ...r.notes,
+          'Why: caught skipping (30% chance)',
+        ]);
+      }
+      return statChange(life, 'You spent the afternoon at the park. Bliss.', {
+        'happiness': 3,
+        'smarts': -1,
+        'discipline': -2,
+      });
+    },
   ),
   GameAction(
     id: 'ask_teacher',
@@ -336,6 +346,8 @@ final moreActions = <GameAction>[
         'football team',
       ];
       final club = clubs[rng.nextInt(clubs.length)];
+      final name = club[0].toUpperCase() + club.substring(1);
+      if (!life.school.clubs.contains(name)) life.school.clubs.add(name);
       return statChange(
         life,
         'You joined the $club. You belong somewhere now.',

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../engine/actions.dart';
 import '../engine/careers.dart';
 import '../engine/models.dart';
+import '../engine/school.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
+import 'school_card.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
 
@@ -26,7 +28,18 @@ class _PathTabState extends State<PathTab> {
   GameController get c => widget.controller;
   Life get life => c.life!;
 
-  static const _schoolIds = {'study', 'ask_teacher', 'join_club', 'skip_class'};
+  static const _schoolIds = {
+    'apply_uni',
+    'apply_grad',
+    'apprenticeship',
+    'study',
+    'ask_teacher',
+    'tryouts',
+    'lessons',
+    'join_club',
+    'cheat',
+    'skip_class',
+  };
   static const _workIds = {
     'ask_promotion',
     'work_harder',
@@ -53,6 +66,12 @@ class _PathTabState extends State<PathTab> {
           const SizedBox(height: 10),
           _ladder(careerById(life.careerId)!),
         ],
+        if (inSchool(life) ||
+            studying(life) ||
+            life.school.degrees.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          SchoolCard(controller: c),
+        ],
         _section(
           'Education',
           'education',
@@ -77,6 +96,8 @@ class _PathTabState extends State<PathTab> {
               ? 'Jobs open at 16. Full-time careers open at 18.'
               : null,
         ),
+        const SizedBox(height: 18),
+        const PathwaysCard(),
       ],
     );
   }

@@ -11,6 +11,7 @@ import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/npc_life.dart';
 import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/engine/scenes.dart';
+import 'package:relivable/engine/school.dart';
 import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/world.dart';
 
@@ -47,7 +48,7 @@ Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
     for (var k = 0; k < 2; k++) {
       final n = life.npcs[rng.nextInt(life.npcs.length)];
       final avail = interactions
-          .where((i) => i.lockReason(life, n) == null)
+          .where((i) => i.appliesTo(n) && i.lockReason(life, n) == null)
           .toList();
       if (avail.isNotEmpty) {
         engine.interact(life, n, avail[rng.nextInt(avail.length)]);
@@ -228,14 +229,18 @@ void main() {
     life.education = 'high school graduate';
     final nurse = careerById('nurse')!;
     expect(nurse.lockReason(life), contains('University degree'));
-    final enrol = engine.actions.firstWhere((a) => a.id == 'enrol_university');
-    expect(enrol.lockReason(life), isNull);
-    engine.runAction(life, enrol);
+    final apply = engine.actions.firstWhere((a) => a.id == 'apply_uni');
+    expect(apply.lockReason(life), isNull);
+    life.education = 'university';
+    life.eduSince = life.age;
+    life.school.major = 'Nursing';
     expect(courseProgress(life), 'Year 1 of 4');
     for (var i = 0; i < 4; i++) {
       engine.ageUp(life);
+      life.sceneQueue.clear();
     }
     expect(life.education, 'graduate');
+    expect(life.school.degrees, contains('Degree in Nursing'));
     life.stats.values['smarts'] = 80;
     expect(nurse.lockReason(life), isNull);
   });
@@ -455,5 +460,90 @@ void main() {
     expect(read.lockReason(life), contains('energy'));
     life.classic = true;
     expect(read.lockReason(life), isNull);
+  });
+
+  test(
+    'grades follow the plan formula and report cards reveal hidden stats',
+    () {
+      final life = engine.newLife(seed: 70)..age = 13;
+      life.education = 'secondary';
+      life.stats.values['smarts'] = 90;
+      life.stats.values['discipline'] = 20;
+      life.school.effort = 100;
+      final card = reportCard(life, Random(1))!;
+      expect(card, startsWith('Report card'));
+      expect(life.school.grades['Maths'], greaterThanOrEqualTo(70));
+      expect(life.discovered, contains('discipline'));
+      expect(life.school.gpa, greaterThan(2.5));
+      life.stats.values['smarts'] = 20;
+      life.school.effort = 0;
+      reportCard(life, Random(2));
+      expect(letter(life.school.grades['Maths']!), anyOf('D', 'F', 'C'));
+    },
+  );
+
+  test('discipline escalates: detentions, suspension, then expulsion', () {
+    final life = engine.newLife(seed: 71)..age = 16;
+    life.education = 'secondary';
+    newTeachers(life, Random(1));
+    for (var i = 0; i < 2; i++) {
+      expect(punish(life, 'test'), contains('detention'));
+    }
+    expect(punish(life, 'test'), contains('suspended'));
+    for (var i = 0; i < 5; i++) {
+      punish(life, 'test');
+    }
+    expect(life.flags.containsKey('expelled'), isTrue);
+    expect(life.education, 'dropout');
+  });
+
+  test('admissions explain the score and scholarships cut fees', () {
+    final life = engine.newLife(seed: 72)..age = 18;
+    life.education = 'high school graduate';
+    life.school.gpa = 3.9;
+    life.school.testScore = 95;
+    life.school.extracurricular = 80;
+    life.stats.values['smarts'] = 95;
+    final a = admissionScore(life);
+    expect(a.score, greaterThanOrEqualTo(80));
+    expect(a.weakest.length, 2);
+    expect(scholarshipFor(life, a.score)!.$1, 'Merit scholarship');
+    final scene = applyUniScene(life)!;
+    final open = scene.choices.firstWhere((c) => c.label.startsWith('Open'));
+    expect(open.risk, 'Likely');
+    engine.choose(life, scene, open);
+    expect(life.education, 'university');
+    expect(life.school.tuition, lessThan(tiers['Open']!.fees));
+  });
+
+  test('graduate schools lock with exact reasons', () {
+    final life = engine.newLife(seed: 73)..age = 23;
+    life.education = 'graduate';
+    life.school.major = 'Economics';
+    life.school.gpa = 3.2;
+    life.stats.values['smarts'] = 70;
+    final med = gradSchools.firstWhere((g) => g.name == 'Medical school');
+    expect(gradLock(life, med), contains('major'));
+    final mba = gradSchools.firstWhere((g) => g.degree == 'MBA');
+    expect(gradLock(life, mba), isNull);
+  });
+
+  test('cliques have entry rules and teachers get school interactions', () {
+    final life = engine.newLife(seed: 74)..age = 13;
+    life.education = 'secondary';
+    life.stats.values['smarts'] = 40;
+    final books = cliques.firstWhere((c) => c.id == 'bookworms');
+    expect(cliqueLock(life, books), contains('Smarts'));
+    final out = cliques.firstWhere((c) => c.id == 'outsiders');
+    expect(cliqueLock(life, out), isNull);
+    joinClique(life, out);
+    expect(life.school.clique, 'outsiders');
+    newTeachers(life, Random(3));
+    final t = life.npcs.firstWhere((n) => n.circle == 'School');
+    final hug = interactions.firstWhere((i) => i.id == 'hug');
+    final help = interactions.firstWhere((i) => i.id == 'ask_help');
+    expect(hug.appliesTo(t), isFalse);
+    expect(help.appliesTo(t), isTrue);
+    expect(help.appliesTo(life.npc('mother')!), isFalse);
   });
 }

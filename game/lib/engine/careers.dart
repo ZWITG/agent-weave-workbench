@@ -10,18 +10,31 @@ import 'models.dart';
 // ---------------- Education ----------------
 
 /// How long each course lasts and what finishing it gives you.
+/// Graduate school length varies by programme (school.gradYears).
 const courses = <String, (int years, String done, String label)>{
   'university': (4, 'graduate', 'university'),
   'community college': (2, 'associate degree', 'community college'),
   'trade school': (2, 'trade certificate', 'trade school'),
+  'apprenticeship': (3, 'trade certificate', 'apprenticeship'),
+  'grad school': (2, 'graduate', 'graduate school'),
 };
+
+int courseYears(Life life) => life.education == 'grad school'
+    ? max(1, life.school.gradYears)
+    : courses[life.education]?.$1 ?? 0;
 
 const _finishedSchool = {
   'high school graduate',
   'graduate',
   'associate degree',
   'trade certificate',
-  ...['university', 'community college', 'trade school'],
+  ...[
+    'university',
+    'community college',
+    'trade school',
+    'apprenticeship',
+    'grad school',
+  ],
 };
 
 /// Player-facing name for an education level.
@@ -40,16 +53,35 @@ bool studying(Life life) => courses.containsKey(life.education);
 String? courseProgress(Life life) {
   final c = courses[life.education];
   if (c == null) return null;
-  final year = (life.age - life.eduSince + 1).clamp(1, c.$1);
-  return 'Year $year of ${c.$1}';
+  final years = courseYears(life);
+  final year = (life.age - life.eduSince + 1).clamp(1, years);
+  return 'Year $year of $years';
 }
 
 /// Called each birthday: finishes a course once its years are done.
 String? graduateIfDone(Life life) {
   final c = courses[life.education];
-  if (c == null || life.age - life.eduSince < c.$1) return null;
+  if (c == null || life.age - life.eduSince < courseYears(life)) return null;
+  final was = life.education;
   life.education = c.$2;
   life.eduSince = life.age;
+  life.school.tuition = 0;
+  if (was == 'university') {
+    life.school.degrees.add(
+      'Degree in ${life.school.major ?? 'General Studies'}',
+    );
+  }
+  if (was == 'grad school' && life.school.gradProgramme != null) {
+    life.school.degrees.add(life.school.gradProgramme!);
+    final p = life.school.gradProgramme!;
+    life.school.gradProgramme = null;
+    return 'You finished graduate school: $p. Years of study, one very long handshake on stage.';
+  }
+  if (was == 'apprenticeship') {
+    life.job = null;
+    life.salary = 0;
+    return 'Your apprenticeship is complete: you are a qualified tradesperson. Time to find a proper job.';
+  }
   life.flags['finished_${c.$3.replaceAll(' ', '_')}'] = Memory(
     life.age,
     'finishing ${c.$3}',
@@ -85,23 +117,6 @@ ActionResult _enrol(Life life, String course, int fee, String text) {
 }
 
 final educationActions = <GameAction>[
-  GameAction(
-    id: 'enrol_university',
-    label: 'Enrol at university',
-    category: 'School',
-    keywords: ['university', 'college', 'degree', 'enrol', 'study'],
-    minAge: 18,
-    priceNote: 'Fee \$3,000 · loan if short',
-    extraCheck: (life) => life.education == 'graduate'
-        ? 'You already have a degree'
-        : _needsSchoolDone(life),
-    run: (life, rng) => _enrol(
-      life,
-      'university',
-      3000,
-      'You enrolled at university. Four years to a degree.',
-    ),
-  ),
   GameAction(
     id: 'community_college',
     label: 'Go to community college',
