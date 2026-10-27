@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'careers.dart';
+import 'economy.dart';
 import 'minigame_rules.dart';
 import 'models.dart';
 import 'more_actions.dart';
@@ -282,13 +283,14 @@ final _baseActions = <GameAction>[
     keywords: ['car', 'buy', 'drive', 'vehicle'],
     minAge: 18,
     cost: 4000,
-    extraCheck: (life) =>
-        life.flags.containsKey('owns_car') ? 'You already own a car' : null,
+    extraCheck: (life) => life.has('car') ? 'You already own a car' : null,
     run: (life, rng) {
       life.money -= 4000;
       life.flags['owns_car'] = Memory(life.age, 'your first car');
+      addCar(life);
       return ActionResult('You bought a dented but lovable used car.', [
-        'Money −\$4000',
+        'Money −\$4,000',
+        'Tip: insurance and fuel cost \$1,200 a year',
       ]);
     },
   ),

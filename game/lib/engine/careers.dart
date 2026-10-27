@@ -71,9 +71,15 @@ String? _needsSchoolDone(Life life) {
 ActionResult _enrol(Life life, String course, int fee, String text) {
   life.education = course;
   life.eduSince = life.age;
-  life.money -= fee;
+  final paid = fee.clamp(0, life.money < 0 ? 0 : life.money);
+  final loan = fee - paid;
+  life.money -= paid;
+  if (loan > 0) {
+    life.debts['Student loan'] = (life.debts['Student loan'] ?? 0) + loan;
+  }
   return ActionResult(text, [
-    'Money −\$$fee${life.money < 0 ? ' (student loan)' : ''}',
+    if (paid > 0) 'Money −\$$paid',
+    if (loan > 0) 'Student loan \$$loan at 5%',
     courseProgress(life)!,
   ]);
 }

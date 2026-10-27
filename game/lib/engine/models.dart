@@ -307,6 +307,49 @@ class Memory {
       Memory(j['age'], j['label']);
 }
 
+/// Something you own or rent, shown as a card on the Wealth tab.
+class Asset {
+  Asset({
+    required this.id,
+    required this.kind,
+    required this.name,
+    required this.value,
+    required this.yearlyCost,
+    required this.since,
+    this.condition = 100,
+  });
+
+  final String id;
+
+  /// 'car', 'house' or 'rental'.
+  final String kind;
+  final String name;
+  int value;
+  int yearlyCost;
+  final int since;
+  int condition;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'kind': kind,
+    'name': name,
+    'value': value,
+    'yearlyCost': yearlyCost,
+    'since': since,
+    'condition': condition,
+  };
+
+  factory Asset.fromJson(Map<String, dynamic> j) => Asset(
+    id: j['id'],
+    kind: j['kind'],
+    name: j['name'],
+    value: j['value'],
+    yearlyCost: j['yearlyCost'],
+    since: j['since'],
+    condition: j['condition'] ?? 100,
+  );
+}
+
 class Life {
   Life({
     required this.seed,
@@ -327,6 +370,15 @@ class Life {
     this.careerRank = 0,
     this.jobSince = 0,
     this.eduSince = 0,
+    this.savings = 0,
+    this.invested = 0,
+    this.lifestyle = 'comfortable',
+    this.economy = 'Normal',
+    Map<String, int>? debts,
+    List<Asset>? assets,
+    Map<int, int>? netWorthByAge,
+    List<(String, int)>? lastYear,
+    List<(String, int)>? lastGrowth,
     List<FeedEntry>? feed,
     Map<String, Memory>? flags,
     Map<String, int>? lastSeen,
@@ -334,7 +386,12 @@ class Life {
     Map<String, int>? interactionCounts,
     this.alive = true,
     this.causeOfDeath,
-  }) : feed = feed ?? [],
+  }) : debts = debts ?? {},
+       assets = assets ?? [],
+       netWorthByAge = netWorthByAge ?? {},
+       lastYear = lastYear ?? [],
+       lastGrowth = lastGrowth ?? [],
+       feed = feed ?? [],
        flags = flags ?? {},
        lastSeen = lastSeen ?? {},
        usedActions = usedActions ?? {},
@@ -362,6 +419,31 @@ class Life {
   /// Age the current role / course started (promotions and graduation).
   int jobSince;
   int eduSince;
+
+  // ---- Wealth (economy.dart) ----
+  int savings;
+  int invested;
+
+  /// 'frugal', 'comfortable' or 'lavish'.
+  String lifestyle;
+
+  /// Boom, Normal, Slowdown, Recession or Crash.
+  String economy;
+
+  /// Debt name ('Student loan', 'Mortgage'...) -> balance.
+  final Map<String, int> debts;
+  final List<Asset> assets;
+  final Map<int, int> netWorthByAge;
+
+  /// Last birthday's cash flow (adds up to the change in cash) and the
+  /// growth that happened outside cash (savings interest, fund, home value).
+  List<(String, int)> lastYear;
+  List<(String, int)> lastGrowth;
+
+  int get totalDebt => debts.values.fold(0, (a, b) => a + b);
+  int get assetValue => assets.fold(0, (a, b) => a + b.value);
+  int get netWorth => money + savings + invested + assetValue - totalDebt;
+  bool has(String kind) => assets.any((a) => a.kind == kind);
   final List<FeedEntry> feed;
   final Map<String, Memory> flags;
 
@@ -415,6 +497,19 @@ class Life {
     'careerRank': careerRank,
     'jobSince': jobSince,
     'eduSince': eduSince,
+    'savings': savings,
+    'invested': invested,
+    'lifestyle': lifestyle,
+    'economy': economy,
+    'debts': debts,
+    'assets': assets.map((a) => a.toJson()).toList(),
+    'netWorthByAge': netWorthByAge.map((k, v) => MapEntry('$k', v)),
+    'lastYear': [
+      for (final l in lastYear) [l.$1, l.$2],
+    ],
+    'lastGrowth': [
+      for (final l in lastGrowth) [l.$1, l.$2],
+    ],
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -445,6 +540,25 @@ class Life {
     careerRank: j['careerRank'] ?? 0,
     jobSince: j['jobSince'] ?? 0,
     eduSince: j['eduSince'] ?? 0,
+    savings: j['savings'] ?? 0,
+    invested: j['invested'] ?? 0,
+    lifestyle: j['lifestyle'] ?? 'comfortable',
+    economy: j['economy'] ?? 'Normal',
+    debts: Map<String, int>.from(j['debts'] ?? {}),
+    assets: j['assets'] == null
+        ? _assetsFromFlags(j)
+        : [
+            for (final a in j['assets'] as List)
+              Asset.fromJson(Map<String, dynamic>.from(a)),
+          ],
+    netWorthByAge: {
+      for (final e in Map<String, dynamic>.from(
+        j['netWorthByAge'] ?? {},
+      ).entries)
+        int.parse(e.key): e.value as int,
+    },
+    lastYear: _lines(j['lastYear']),
+    lastGrowth: _lines(j['lastGrowth']),
     feed: (j['feed'] as List)
         .map((f) => FeedEntry.fromJson(Map<String, dynamic>.from(f)))
         .toList(),
@@ -458,4 +572,43 @@ class Life {
     alive: j['alive'] ?? true,
     causeOfDeath: j['causeOfDeath'],
   );
+}
+
+List<(String, int)> _lines(dynamic raw) => [
+  for (final l in (raw as List?) ?? const []) (l[0] as String, l[1] as int),
+];
+
+/// Saves from before the Wealth update kept assets as flags.
+List<Asset> _assetsFromFlags(Map<String, dynamic> j) {
+  final flags = Map<String, dynamic>.from(j['flags'] ?? {});
+  final age = j['age'] as int;
+  return [
+    if (flags.containsKey('owns_car'))
+      Asset(
+        id: 'car',
+        kind: 'car',
+        name: 'Used car',
+        value: 3000,
+        yearlyCost: 1200,
+        since: age,
+      ),
+    if (flags.containsKey('own_flat') && !flags.containsKey('owns_house'))
+      Asset(
+        id: 'flat',
+        kind: 'rental',
+        name: 'Rented flat',
+        value: 0,
+        yearlyCost: 9600,
+        since: age,
+      ),
+    if (flags.containsKey('owns_house'))
+      Asset(
+        id: 'house',
+        kind: 'house',
+        name: 'House',
+        value: 200000,
+        yearlyCost: 2500,
+        since: age,
+      ),
+  ];
 }

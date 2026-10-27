@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/careers.dart';
+import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/relationships.dart';
@@ -261,5 +262,47 @@ void main() {
       };
       expect(c.lockReason(life), isNull, reason: c.id);
     }
+  });
+
+  test('each birthday\'s cash flow adds up exactly to the change in cash', () {
+    for (var seed = 0; seed < 200; seed++) {
+      final life = engine.newLife(seed: seed)..age = 22;
+      startCareer(life, careers[seed % careers.length]);
+      life.money = 3000 * (seed % 5);
+      if (seed.isEven) addRental(life);
+      if (seed % 3 == 0) life.debts['Student loan'] = 8000;
+      life.lifestyle = lifestyles.keys.elementAt(seed % 3);
+      for (var y = 0; y < 5; y++) {
+        final before = life.money;
+        yearlyMoney(life, Random(seed * 10 + y));
+        final sum = life.lastYear.fold(0, (a, l) => a + l.$2);
+        expect(life.money - before, sum, reason: 'seed $seed year $y');
+        expect(life.money, greaterThanOrEqualTo(0));
+        expect(life.netWorthByAge[life.age], life.netWorth);
+        life.age++;
+      }
+    }
+  });
+
+  test('overspending becomes credit card debt, with a warning', () {
+    final life = engine.newLife(seed: 41)..age = 25;
+    addRental(life);
+    life.money = 0;
+    final feed = yearlyMoney(life, Random(1));
+    expect(life.debts['Credit card'], greaterThan(0));
+    expect(feed.join(), contains('credit card'));
+  });
+
+  test('a house comes with a mortgage that shrinks every year', () {
+    final life = engine.newLife(seed: 42)..age = 30;
+    startCareer(life, careerById('developer')!);
+    life.money = 30000;
+    final buy = engine.actions.firstWhere((a) => a.id == 'buy_house');
+    engine.runAction(life, buy);
+    expect(life.has('house'), isTrue);
+    final owed = life.debts['Mortgage']!;
+    yearlyMoney(life, Random(2));
+    expect(life.debts['Mortgage'], lessThan(owed));
+    expect(annuity(100000, 0.05, 25), inInclusiveRange(7090, 7100));
   });
 }

@@ -3,7 +3,11 @@ name: Relivable game
 # Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
 # - tests the engine (including the 500-life simulator run)
 # - saves the web build, the Android APK and the Windows installer as
-#   downloadable build artifacts on the workflow run.
+#   downloadable build artifacts on the workflow run
+# - publishes Relivable.apk, version.json and the Windows installer to the
+#   rolling "relivable-latest" pre-release, which the phone app reads to
+#   update itself (game/lib/updater.dart). It is never marked "latest", so
+#   the desktop app's own updater is unaffected.
 
 on:
   push:
@@ -12,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: relivable-${{ github.ref }}
@@ -44,12 +48,75 @@ jobs:
         with:
           name: relivable-web
           path: game/build/web
+      # Every APK must be signed with the same key or Android refuses to
+      # install updates. Uses the RELIVABLE_KEYSTORE_BASE64 secret when set;
+      # otherwise one key is made once and kept in this repo's Actions cache.
+      - name: Restore signing key
+        uses: actions/cache/restore@v4
+        with:
+          path: game/android/relivable-signing.jks
+          key: relivable-signing-v1
+      - name: Prepare signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.RELIVABLE_KEYSTORE_BASE64 }}
+          RELIVABLE_KEYSTORE_PASSWORD: ${{ secrets.RELIVABLE_KEYSTORE_PASSWORD || 'relivable' }}
+          RELIVABLE_KEY_ALIAS: ${{ secrets.RELIVABLE_KEY_ALIAS || 'relivable' }}
+        run: |
+          ks="$PWD/android/relivable-signing.jks"
+          if [ -n "$KEYSTORE_B64" ]; then
+            printf '%s' "$KEYSTORE_B64" | base64 --decode > "$ks"
+          elif [ ! -f "$ks" ]; then
+            keytool -genkeypair -keystore "$ks" -storepass "$RELIVABLE_KEYSTORE_PASSWORD" \
+              -keypass "$RELIVABLE_KEYSTORE_PASSWORD" -alias "$RELIVABLE_KEY_ALIAS" \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Relivable"
+            echo "NEW_SIGNING_KEY=1" >> "$GITHUB_ENV"
+          fi
+          cert=$(keytool -list -v -keystore "$ks" -storepass "$RELIVABLE_KEYSTORE_PASSWORD" -alias "$RELIVABLE_KEY_ALIAS" \
+            | grep -m1 'SHA256:' | sed 's/.*SHA256: //; s/://g' | tr 'A-F' 'a-f')
+          test -n "$cert"
+          {
+            echo "RELIVABLE_KEYSTORE=$ks"
+            echo "RELIVABLE_KEYSTORE_PASSWORD=$RELIVABLE_KEYSTORE_PASSWORD"
+            echo "RELIVABLE_KEY_ALIAS=$RELIVABLE_KEY_ALIAS"
+            echo "RELIVABLE_CERT=$cert"
+          } >> "$GITHUB_ENV"
+      - name: Keep the new signing key
+        if: env.NEW_SIGNING_KEY == '1'
+        uses: actions/cache/save@v4
+        with:
+          path: game/android/relivable-signing.jks
+          key: relivable-signing-v1
       - name: Build Android APK
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release \
+            --build-name=0.1.${{ github.run_number }} --build-number=${{ github.run_number }} \
+            --dart-define=RELIVABLE_BUILD=${{ github.run_number }} --dart-define=RELIVABLE_CERT=$RELIVABLE_CERT
+          cp build/app/outputs/flutter-apk/app-release.apk Relivable.apk
       - uses: actions/upload-artifact@v4
         with:
           name: relivable-android-apk
-          path: game/build/app/outputs/flutter-apk/app-release.apk
+          path: game/Relivable.apk
+      # version.json goes up last, so phones never see a version whose APK
+      # is not uploaded yet.
+      - name: Publish the phone update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$REPO/releases/download/relivable-latest"
+          jq -n --argjson build ${{ github.run_number }} --arg version "0.1.${{ github.run_number }}" \
+            --arg apk "$base/Relivable.apk" --arg cert "$RELIVABLE_CERT" \
+            --arg notes "$(git log -1 --pretty=%s)" \
+            '{build: $build, version: $version, apk: $apk, cert: $cert, notes: $notes}' > version.json
+          gh release view relivable-latest --repo "$REPO" >/dev/null 2>&1 || \
+            gh release create relivable-latest --repo "$REPO" --prerelease --latest=false \
+              --target "${{ github.sha }}" --title "Relivable (latest build)" --notes "Latest Relivable build."
+          gh release edit relivable-latest --repo "$REPO" --prerelease --latest=false \
+            --title "Relivable 0.1.${{ github.run_number }} (latest build)" \
+            --notes "Android: download Relivable.apk and open it to install. Installed copies update themselves.
+          Windows: download RelivableSetup.exe and run it, or unzip Relivable-portable.zip."
+          gh release upload relivable-latest Relivable.apk --repo "$REPO" --clobber
+          gh release upload relivable-latest version.json --repo "$REPO" --clobber
 
   windows:
     needs: build
@@ -81,3 +148,7 @@ jobs:
         with:
           name: relivable-windows-portable
           path: game/windows/installer/Output/Relivable-portable.zip
+      - name: Add the Windows files to the latest-build release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload relivable-latest windows/installer/Output/RelivableSetup.exe windows/installer/Output/Relivable-portable.zip --repo "${{ github.repository }}" --clobber

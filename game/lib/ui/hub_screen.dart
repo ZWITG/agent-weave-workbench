@@ -8,6 +8,8 @@ import '../theme.dart';
 import 'activities.dart';
 import 'outcome_card.dart';
 import 'path_tab.dart';
+import 'update_prompt.dart';
+import 'wealth_tab.dart';
 import 'people.dart';
 import 'widgets.dart';
 
@@ -31,7 +33,7 @@ class _HubScreenState extends State<HubScreen> {
       _LifeTab(controller: c),
       PeopleTab(controller: c),
       PathTab(controller: c),
-      _WealthTab(life: life),
+      WealthTab(controller: c),
       _MeTab(controller: c),
     ];
     return Scaffold(
@@ -627,64 +629,6 @@ class _EventCard extends StatelessWidget {
   }
 }
 
-// ---------------- Wealth tab ----------------
-
-class _WealthTab extends StatelessWidget {
-  const _WealthTab({required this.life});
-  final Life life;
-
-  @override
-  Widget build(BuildContext context) {
-    final assets = [
-      if (life.flags.containsKey('owns_car')) 'Used car',
-      if (life.flags.containsKey('own_flat')) 'Rented flat',
-    ];
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-      children: [
-        const SectionLabel('Wealth'),
-        const SizedBox(height: 10),
-        NFCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Bank balance', style: NF.sora(13, color: NF.muted)),
-              const SizedBox(height: 4),
-              Text(
-                money(life.money),
-                style: NF.sora(
-                  32,
-                  weight: FontWeight.w700,
-                  color: life.money < 0 ? NF.danger : NF.text,
-                ),
-              ),
-              if (life.salary > 0)
-                Text(
-                  '+\$${life.salary} a year',
-                  style: NF.sora(13, color: NF.blue),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        NFCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Assets', style: NF.sora(15, weight: FontWeight.w700)),
-              const SizedBox(height: 8),
-              if (assets.isEmpty)
-                Text('Nothing yet.', style: NF.sora(14, color: NF.muted)),
-              for (final a in assets)
-                Text('• $a', style: NF.sora(14, color: NF.soft)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 // ---------------- Me tab ----------------
 
 class _MeTab extends StatelessWidget {
@@ -713,6 +657,8 @@ class _MeTab extends StatelessWidget {
             onChanged: controller.setSound,
           ),
         ),
+        const SizedBox(height: 10),
+        const VersionCard(),
         const SizedBox(height: 16),
         const SectionLabel('Hidden stats'),
         const SizedBox(height: 10),

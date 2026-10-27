@@ -6,6 +6,7 @@ import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
+import 'result_popup.dart';
 import 'widgets.dart';
 
 /// The Path tab: where you are (school or job), the career ladder with the
@@ -194,13 +195,11 @@ class _PathTabState extends State<PathTab> {
       trailing: Icons.send_rounded,
       onTap: () {
         final r = c.applyForJob(j);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              r.notes.isEmpty ? r.text : '${r.text}\n${r.notes.join(' · ')}',
-            ),
-            duration: const Duration(seconds: 4),
-          ),
+        showResultPopup(
+          context,
+          r,
+          title: life.careerId == j.id ? 'Hired!' : 'Application: ${j.title}',
+          icon: Icons.work_outline_rounded,
         );
       },
     );

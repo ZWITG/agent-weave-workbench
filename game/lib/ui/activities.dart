@@ -7,6 +7,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'minigames.dart';
 import 'people.dart';
+import 'result_popup.dart';
 import 'widgets.dart';
 
 /// Category order and icons for the Activities panel.
@@ -349,8 +350,13 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
             ? null
             : () {
                 final r = c.interact(n, i);
-                Navigator.of(context).pop();
-                showActionResult(context, r);
+                final nav = Navigator.of(context)..pop();
+                showResultPopup(
+                  nav.context,
+                  r,
+                  title: '${i.label} · ${n.name}',
+                  icon: Icons.favorite_rounded,
+                );
               },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -393,15 +399,6 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       ),
     );
   }
-}
-
-SnackBar _resultBar(ActionResult r) => SnackBar(
-  content: Text(r.notes.isEmpty ? r.text : '${r.text}\n${r.notes.join(' · ')}'),
-  duration: const Duration(seconds: 4),
-);
-
-void showActionResult(BuildContext context, ActionResult r) {
-  ScaffoldMessenger.of(context).showSnackBar(_resultBar(r));
 }
 
 /// One clean row: icon, name, one line of detail, and a clear state.
@@ -517,7 +514,6 @@ Future<void> runActionFlow(
   bool closeSheet = true,
 }) async {
   final nav = Navigator.of(context);
-  final messenger = ScaffoldMessenger.of(context);
   double? score;
   if (a.miniGame != null) {
     score = await showMiniGame(
@@ -530,5 +526,11 @@ Future<void> runActionFlow(
   }
   final r = c.runAction(a, score: score);
   if (closeSheet) nav.pop();
-  messenger.showSnackBar(_resultBar(r));
+  if (!nav.mounted) return;
+  showResultPopup(
+    nav.context,
+    r,
+    title: a.label,
+    icon: categoryIconFor(a.category),
+  );
 }

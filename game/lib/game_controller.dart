@@ -125,8 +125,16 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Runs a Wealth-tab money action (deposit, loan, sell...) and saves.
+  T wealth<T>(T Function(Life life) action) {
+    final r = action(life!);
+    _save();
+    notifyListeners();
+    return r;
+  }
+
+  // Results play their own good/bad sound when the pop-up opens.
   ActionResult applyForJob(Career career) {
-    Sound.instance.tap();
     final r = engine!.applyForJob(life!, career);
     _save();
     notifyListeners();
@@ -134,7 +142,6 @@ class GameController extends ChangeNotifier {
   }
 
   ActionResult runAction(GameAction action, {double? score}) {
-    Sound.instance.tap();
     final r = engine!.runAction(life!, action, score: score);
     _save();
     notifyListeners();
@@ -143,7 +150,6 @@ class GameController extends ChangeNotifier {
 
   /// Runs a person interaction from the People tab or the action search.
   ActionResult interact(Npc npc, Interaction interaction) {
-    Sound.instance.tap();
     final r = engine!.interact(life!, npc, interaction);
     _save();
     notifyListeners();

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'economy.dart';
 import 'minigame_rules.dart';
 import 'models.dart';
 
@@ -467,16 +468,10 @@ final moreActions = <GameAction>[
     minAge: 18,
     cost: 1000,
     run: (life, rng) {
-      final change = rng.nextInt(400) - 120;
-      life.money += change;
+      invest(life, 1000);
       return ActionResult(
-        change >= 0
-            ? 'Your \$1,000 grew by \$$change this year.'
-            : 'The market dipped. Your \$1,000 lost \$${change.abs()}.',
-        [
-          'Money ${change >= 0 ? '+' : '−'}\$${change.abs()}',
-          'Why: markets go up and down',
-        ],
+        'You put \$1,000 into an index fund. It rises and falls with the economy.',
+        ['Money −\$1,000', 'See it grow on the Wealth tab'],
       );
     },
   ),
@@ -489,15 +484,25 @@ final moreActions = <GameAction>[
     keywords: ['flat', 'apartment', 'rent', 'move out', 'home'],
     minAge: 18,
     cost: 1200,
-    extraCheck: (life) => _notFlag(life, 'own_flat', 'You already have a flat'),
+    extraCheck: (life) => life.has('rental')
+        ? 'You already rent a flat'
+        : life.has('house')
+        ? 'You own a house'
+        : null,
     run: (life, rng) {
       life.money -= 1200;
       life.flags['own_flat'] = Memory(life.age, 'your first flat');
-      return statChange(
+      addRental(life);
+      final r = statChange(
         life,
         'You moved into a small flat with a big window.',
         {'happiness': 5},
       );
+      return ActionResult(r.text, [
+        'Money −\$1,200',
+        ...r.notes,
+        'Tip: rent is \$9,600 a year',
+      ]);
     },
   ),
   GameAction(
@@ -508,20 +513,24 @@ final moreActions = <GameAction>[
     minAge: 21,
     cost: 25000,
     extraCheck: (life) {
-      if (life.flags.containsKey('owns_house')) {
-        return 'You already own a house';
-      }
+      if (life.has('house')) return 'You already own a house';
       if (life.job == null) return 'Needs a job for the mortgage';
       return null;
     },
     run: (life, rng) {
       life.money -= 25000;
       life.flags['owns_house'] = Memory(life.age, 'buying your first house');
-      return statChange(
+      final price = addHouse(life, 25000, rng);
+      final r = statChange(
         life,
         'You put down a deposit and got the keys to a house in {city}.',
         {'happiness': 8},
       );
+      return ActionResult(r.text, [
+        'Money −\$25,000',
+        ...r.notes,
+        'Mortgage \$${price - 25000} over 25 years',
+      ]);
     },
   ),
 

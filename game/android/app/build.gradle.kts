@@ -4,6 +4,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// CI signs every release with the same key (see .github/workflows/relivable.yml)
+// so a new APK installs over the old one. Local builds fall back to debug keys.
+val releaseKeystore = System.getenv("RELIVABLE_KEYSTORE")?.let { file(it) }?.takeIf { it.exists() }
+
 android {
     namespace = "com.relivable.relivable"
     compileSdk = flutter.compileSdkVersion
@@ -29,11 +33,21 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = releaseKeystore
+                storePassword = System.getenv("RELIVABLE_KEYSTORE_PASSWORD") ?: "relivable"
+                keyAlias = System.getenv("RELIVABLE_KEY_ALIAS") ?: "relivable"
+                keyPassword = System.getenv("RELIVABLE_KEY_PASSWORD") ?: storePassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
+                ?: signingConfigs.getByName("debug")
         }
     }
 }

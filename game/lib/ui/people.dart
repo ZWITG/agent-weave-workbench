@@ -4,6 +4,7 @@ import '../engine/models.dart';
 import '../engine/relationships.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'result_popup.dart';
 import 'widgets.dart';
 
 /// People tab (04 Social, Module 1): circles as chips, one card per person
@@ -380,14 +381,11 @@ class _PersonSheet extends StatelessWidget {
             ? null
             : () {
                 final r = controller.interact(npc, i);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      r.notes.isEmpty
-                          ? r.text
-                          : '${r.text}\n${r.notes.join(' · ')}',
-                    ),
-                  ),
+                showResultPopup(
+                  context,
+                  r,
+                  title: '${i.label} · ${npc.name}',
+                  icon: Icons.favorite_rounded,
                 );
               },
         child: Container(

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'economy.dart';
 import 'models.dart';
 import 'relationships.dart';
 import 'storylet.dart';
@@ -144,8 +145,8 @@ class GameEngine {
     final rng = _rngFor(life);
 
     _schoolMilestones(life);
-    if (life.job != null && life.salary > 0) {
-      life.money += life.salary;
+    for (final line in yearlyMoney(life, rng)) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
     // Gentle drift so idle years still matter.
     life.stats.add('happiness', rng.nextInt(5) - 2);
