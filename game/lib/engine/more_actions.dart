@@ -5,6 +5,8 @@ import 'careers.dart';
 import 'school.dart' show punish;
 import 'economy.dart';
 import 'minigame_rules.dart';
+import 'health.dart' show careCost, conditionInfo;
+import 'justice.dart' show caughtInTheAct, riskHint;
 import 'models.dart';
 
 /// The expanded Activities set: the genre's Activities menu (gym, doctor,
@@ -37,11 +39,14 @@ final moreActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['walk', 'outside', 'park', 'fresh air'],
     minAge: 5,
-    run: (life, rng) => statChange(
-      life,
-      'You walked through {city} until your head felt clear.',
-      {'happiness': 2, 'health': 1},
-    ),
+    run: (life, rng) {
+      life.fitness = min(100, life.fitness + 3);
+      return statChange(
+        life,
+        'You walked through {city} until your head felt clear.',
+        {'happiness': 2, 'health': 1},
+      );
+    },
   ),
   GameAction(
     id: 'yoga',
@@ -50,12 +55,15 @@ final moreActions = <GameAction>[
     keywords: ['yoga', 'stretch', 'class', 'calm'],
     minAge: 14,
     cost: 15,
-    run: (life, rng) => _pay(
-      life,
-      15,
-      'You held a pose you did not know your body could do.',
-      {'health': 2, 'happiness': 2, 'discipline': 1},
-    ),
+    run: (life, rng) {
+      life.fitness = min(100, life.fitness + 4);
+      return _pay(
+        life,
+        15,
+        'You held a pose you did not know your body could do.',
+        {'health': 2, 'happiness': 2, 'discipline': 1},
+      );
+    },
   ),
   GameAction(
     id: 'therapy',
@@ -64,11 +72,20 @@ final moreActions = <GameAction>[
     keywords: ['therapy', 'therapist', 'talk', 'mental', 'stress', 'sad'],
     minAge: 12,
     run: (life, rng) {
-      final cost = life.age >= 18 ? 60 : 0;
+      final cost = careCost(life, 120);
       life.money -= cost;
+      final mind = life.conditions
+          .where((c) => conditionInfo[c.id]?.kind == 'mind' && !c.treated)
+          .firstOrNull;
+      if (mind != null) {
+        mind.treated = true;
+        life.marks.add('therapy:${mind.id}');
+      }
       final r = statChange(
         life,
-        'You talked it through with a therapist. Some things got lighter.',
+        mind == null
+            ? 'You talked it through with a therapist. Some things got lighter.'
+            : 'You started regular sessions for your ${conditionInfo[mind.id]!.name.toLowerCase()}. Your therapist said, "This is very treatable." You believed her a little.',
         {'happiness': 4 + rng.nextInt(4), 'willpower': 2},
       );
       return ActionResult(r.text, [if (cost > 0) 'Money −\$$cost', ...r.notes]);
@@ -532,64 +549,6 @@ final moreActions = <GameAction>[
     },
   ),
 
-  // ---------- Assets ----------
-  GameAction(
-    id: 'rent_flat',
-    label: 'Rent your own flat',
-    category: 'Assets',
-    keywords: ['flat', 'apartment', 'rent', 'move out', 'home'],
-    minAge: 18,
-    cost: 1200,
-    extraCheck: (life) => life.has('rental')
-        ? 'You already rent a flat'
-        : life.has('house')
-        ? 'You own a house'
-        : null,
-    run: (life, rng) {
-      life.money -= 1200;
-      life.flags['own_flat'] = Memory(life.age, 'your first flat');
-      addRental(life);
-      final r = statChange(
-        life,
-        'You moved into a small flat with a big window.',
-        {'happiness': 5},
-      );
-      return ActionResult(r.text, [
-        'Money −\$1,200',
-        ...r.notes,
-        'Tip: rent is \$9,600 a year',
-      ]);
-    },
-  ),
-  GameAction(
-    id: 'buy_house',
-    label: 'Buy a house',
-    category: 'Assets',
-    keywords: ['house', 'home', 'mortgage', 'buy', 'property'],
-    minAge: 21,
-    cost: 25000,
-    extraCheck: (life) {
-      if (life.has('house')) return 'You already own a house';
-      if (life.job == null) return 'Needs a job for the mortgage';
-      return null;
-    },
-    run: (life, rng) {
-      life.money -= 25000;
-      life.flags['owns_house'] = Memory(life.age, 'buying your first house');
-      final price = addHouse(life, 25000, rng);
-      final r = statChange(
-        life,
-        'You put down a deposit and got the keys to a house in {city}.',
-        {'happiness': 8},
-      );
-      return ActionResult(r.text, [
-        'Money −\$25,000',
-        ...r.notes,
-        'Mortgage \$${price - 25000} over 25 years',
-      ]);
-    },
-  ),
-
   // ---------- Travel ----------
   GameAction(
     id: 'weekend_trip',
@@ -780,6 +739,7 @@ final moreActions = <GameAction>[
     scored: pickpocketScored,
     label: 'Pickpocket a stranger',
     category: 'Crime',
+    hint: (l) => riskHint((35 + _police(l)).clamp(3, 95), 'minor'),
     keywords: ['pickpocket', 'steal', 'wallet', 'crime'],
     minAge: 14,
     run: (life, rng) {
@@ -788,6 +748,7 @@ final moreActions = <GameAction>[
           life.age,
           'being arrested for pickpocketing',
         );
+        caughtInTheAct(life, 'pickpocketing');
         return statChange(
           life,
           'A police officer grabbed your wrist. You spent a night in a cell.',
@@ -806,14 +767,17 @@ final moreActions = <GameAction>[
     id: 'graffiti',
     label: 'Spray graffiti',
     category: 'Crime',
+    hint: (l) => riskHint((25 + _police(l)).clamp(3, 95), 'minor'),
     keywords: ['graffiti', 'vandal', 'spray', 'paint', 'street art'],
     minAge: 12,
     run: (life, rng) => _roll(rng, 25 + _police(life))
-        ? statChange(
-            life,
-            'Caught red-handed. You scrubbed walls for a month.',
-            {'happiness': -4, 'karma': -2},
-          )
+        ? () {
+            caughtInTheAct(life, 'vandalism');
+            return statChange(life, 'Caught red-handed, spray can in hand.', {
+              'happiness': -4,
+              'karma': -2,
+            });
+          }()
         : statChange(
             life,
             'Your piece on the underpass is the talk of {city}.',

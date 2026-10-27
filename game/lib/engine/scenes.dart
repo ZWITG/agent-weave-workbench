@@ -2,6 +2,10 @@ import 'dart:math';
 
 import 'lifespan.dart';
 import 'dynasty.dart';
+import 'finance.dart';
+import 'health.dart';
+import 'homes.dart';
+import 'justice.dart';
 import 'family.dart';
 import 'jobs.dart';
 import 'love.dart';
@@ -51,6 +55,30 @@ Storylet? buildScene(String id, Life life) {
     'hospital_case' ||
     'big_case' ||
     'police_case' => jobScene(parts.first, life),
+    'debt_crisis' => debtCrisisScene(life),
+    'biz_found' ||
+    'biz_tier' ||
+    'biz_fund' ||
+    'insolvency' => businessScene(parts.first, parts.sublist(1), life),
+    'house_hunt' ||
+    'house_view' ||
+    'bidding' ||
+    'flat_hunt' ||
+    'car_dealer' ||
+    'car_pay' => homeScene(parts.first, parts.sublist(1), life),
+    'arrest' ||
+    'charge' ||
+    'lawyer' ||
+    'trial' ||
+    'parole' ||
+    'escape' ||
+    'escape_tool' ||
+    'appeal' ||
+    'prison_job' => justiceScene(parts.first, parts.sublist(1), life),
+    'symptom' ||
+    'treat' ||
+    'mind' ||
+    'rehab' => healthScene(parts.first, parts.sublist(1), life),
     _ => null,
   };
 }
@@ -152,16 +180,15 @@ String? pickIllness(Life life, Random rng) {
 Storylet? _illness(String id, String key, Life life) {
   final ill = illnesses[key];
   if (ill == null) return null;
-  final adult = life.age >= 18;
-  final gpCost = adult ? 80 : 0;
-  final erCost = adult ? 400 : 0;
+  final gpCost = careCost(life, 80);
+  final erCost = careCost(life, 400);
   final sev = ill.severity;
   return _scene(id, ill.text, category: 'health', [
     Choice(
-      label: adult ? 'See a GP (${_m(gpCost)})' : 'Go to the doctor',
+      label: gpCost > 0 ? 'See a GP (${_m(gpCost)})' : 'Go to the doctor',
       outcome: '',
       risk: 'Likely to help',
-      lock: (l) => adult && l.money < gpCost ? 'Needs ${_m(gpCost)}' : null,
+      lock: (l) => l.money < gpCost ? 'Needs ${_m(gpCost)}' : null,
       run: (l, rng) {
         l.reason = 'Treated ${ill.name}';
         l.money -= gpCost;
@@ -170,12 +197,12 @@ Storylet? _illness(String id, String key, Life life) {
       },
     ),
     Choice(
-      label: adult
+      label: erCost > 0
           ? 'Go to the emergency room (${_m(erCost)})'
           : 'Go to the emergency room',
       outcome: '',
       risk: 'Fast, costly',
-      lock: (l) => adult && l.money < erCost ? 'Needs ${_m(erCost)}' : null,
+      lock: (l) => l.money < erCost ? 'Needs ${_m(erCost)}' : null,
       run: (l, rng) {
         l.reason = 'Emergency care';
         l.money -= erCost;

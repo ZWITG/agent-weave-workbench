@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
 import '../engine/economy.dart';
+import '../engine/finance.dart' show rateOf;
+import '../engine/homes.dart';
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'result_popup.dart';
+import 'wealth_more.dart';
 import 'widgets.dart';
 
 const _good = Color(0xFF5EE6A8);
@@ -43,6 +46,10 @@ class WealthTab extends StatelessWidget {
         ],
         _title('Bank and loans', 'Move money, borrow and repay'),
         ..._bank(context, life),
+        _title('Investing', 'Stocks, bonds, gold and coins'),
+        MarketList(controller: c),
+        _title('Business', 'Start one, run it, sell it'),
+        BusinessCard(controller: c),
         _title('Home and vehicles', 'What you own and what it costs'),
         ..._assets(context, life),
       ],
@@ -87,6 +94,7 @@ class WealthTab extends StatelessWidget {
     final adult = life.age >= 18;
     final limit = borrowLimit(life);
     return [
+      if (adult) ...[CreditRow(life: life), const SizedBox(height: 8)],
       _MoneyRow(
         icon: Icons.savings_rounded,
         title: 'Savings account',
@@ -148,7 +156,8 @@ class WealthTab extends StatelessWidget {
         _MoneyRow(
           icon: Icons.credit_card_rounded,
           title: d.key,
-          subtitle: '${((debtRates[d.key] ?? 0.1) * 100).round()}% a year',
+          subtitle:
+              '${(rateOf(life, d.key) * 100).toStringAsFixed(1)}% a year${d.key == 'Payday loan' ? ' · due in full next birthday' : ''}',
           amount: money(-d.value),
           negative: true,
           actions: [
@@ -174,31 +183,14 @@ class WealthTab extends StatelessWidget {
       const SizedBox(height: 8),
       OptionRow(
         icon: Icons.account_balance_rounded,
-        title: 'Take a personal loan',
-        detail: limit > 0
-            ? 'Up to ${money(limit)} at 12% a year'
-            : !adult
+        title: 'Borrow money',
+        detail: !adult
             ? 'Unlocks at 18'
-            : life.job == null
-            ? 'Needs a job'
-            : 'You have borrowed the most you can',
-        locked: limit <= 0,
-        onTap: () async {
-          final a = await showAmountSheet(
-            context,
-            title: 'Borrow from the bank',
-            max: limit,
-            verb: 'Borrow',
-          );
-          if (a == null || !context.mounted) return;
-          final r = c.wealth((l) => borrow(l, a));
-          showResultPopup(
-            context,
-            r,
-            title: 'Personal loan',
-            icon: Icons.account_balance_rounded,
-          );
-        },
+            : limit > 0
+            ? 'Personal loan up to ${money(limit)}, and other loan types'
+            : 'Personal, business, payday and family loans',
+        locked: !adult,
+        onTap: () => showLoansSheet(context, c),
       ),
     ];
   }
@@ -226,7 +218,21 @@ class WealthTab extends StatelessWidget {
           ),
         ),
       for (final a in life.assets) ...[
-        _AssetCard(asset: a, onSell: () => _sell(context, a)),
+        _AssetCard(
+          asset: a,
+          onSell: () => _sell(context, a),
+          onRepair: a.kind == 'house' && a.condition < 80
+              ? (life.money >= repairCost(a)
+                    ? () => _homeWork(context, 'Repairs', repairHome, a)
+                    : null)
+              : null,
+          repairLabel: 'Repair (${money(repairCost(a))})',
+          onRenovate: a.kind == 'house' && renovateLock(life, a) == null
+              ? () => _homeWork(context, 'Renovation', renovateHome, a)
+              : null,
+          renovateLabel: 'Renovate (${money(renovationCost(a))})',
+          rent: a.info['let'] == true ? rentFor(a) : null,
+        ),
         const SizedBox(height: 8),
       ],
       const SizedBox(height: 4),
@@ -237,6 +243,16 @@ class WealthTab extends StatelessWidget {
     ];
   }
 
+  void _homeWork(
+    BuildContext context,
+    String title,
+    ActionResult Function(Life, Asset) work,
+    Asset a,
+  ) {
+    final r = c.wealth((l) => work(l, a));
+    showResultPopup(context, r, title: title, icon: Icons.handyman_rounded);
+  }
+
   Future<void> _sell(BuildContext context, Asset a) async {
     final life = c.life!;
     final verb = a.kind == 'rental' ? 'Move out' : 'Sell';
@@ -244,7 +260,7 @@ class WealthTab extends StatelessWidget {
       'rental' => 'You will move back in with family and stop paying rent.',
       'house' =>
         'It is worth about ${money(a.value)}. A 3% agent fee and any mortgage '
-            '(${money(life.debts['Mortgage'] ?? 0)}) come out of the sale.',
+            '(${money(life.debts[a.info['let'] == true ? 'Buy-to-let mortgage' : 'Mortgage'] ?? 0)}) come out of the sale.',
       _ => 'A buyer will pay ${money(a.value)}.',
     };
     final ok = await showDialog<bool>(
@@ -855,9 +871,24 @@ class _MoneyRow extends StatelessWidget {
 }
 
 class _AssetCard extends StatelessWidget {
-  const _AssetCard({required this.asset, required this.onSell});
+  const _AssetCard({
+    required this.asset,
+    required this.onSell,
+    this.onRepair,
+    this.onRenovate,
+    this.repairLabel = 'Repair',
+    this.renovateLabel = 'Renovate',
+    this.rent,
+  });
   final Asset asset;
   final VoidCallback onSell;
+  final VoidCallback? onRepair;
+  final VoidCallback? onRenovate;
+  final String repairLabel;
+  final String renovateLabel;
+
+  /// Yearly rent from tenants for a buy-to-let.
+  final int? rent;
 
   @override
   Widget build(BuildContext context) {
@@ -893,6 +924,8 @@ class _AssetCard extends StatelessWidget {
                     Text(
                       rental
                           ? 'Renting since age ${a.since}'
+                          : rent != null
+                          ? 'Let to tenants · ${money(rent!)} a year'
                           : 'Owned since age ${a.since}',
                       style: NF.sora(12, color: NF.muted),
                     ),
@@ -939,23 +972,53 @@ class _AssetCard extends StatelessWidget {
               ],
             ),
           ],
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerRight,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: NF.text,
-                side: const BorderSide(color: NF.borderStrong),
-                visualDensity: VisualDensity.compact,
-              ),
-              onPressed: onSell,
-              child: Text(rental ? 'Move out' : 'Sell'),
+          if (_details(a).isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(_details(a), style: NF.sora(12, color: NF.soft)),
             ),
+          const SizedBox(height: 8),
+          Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              if (a.kind == 'house' && a.condition < 80)
+                _small(repairLabel, onRepair),
+              if (a.kind == 'house') _small(renovateLabel, onRenovate),
+              _small(rental ? 'Move out' : 'Sell', onSell),
+            ],
           ),
         ],
       ),
     );
   }
+}
+
+Widget _small(String label, VoidCallback? onTap) => OutlinedButton(
+  style: OutlinedButton.styleFrom(
+    foregroundColor: NF.text,
+    side: const BorderSide(color: NF.borderStrong),
+    visualDensity: VisualDensity.compact,
+  ),
+  onPressed: onTap,
+  child: Text(label),
+);
+
+/// Listing details players asked for: bedrooms, garden, pool, area and
+/// what the viewing or survey found.
+String _details(Asset a) {
+  final i = a.info;
+  final traits = List<String>.from(i['traits'] ?? const []);
+  return [
+    if (i['beds'] != null) '${i['beds']} bed',
+    if (i['garden'] == true) 'garden',
+    if (i['pool'] == true) 'pool',
+    if (i['area'] != null) '${i['area']}',
+    for (final t in traits) homeTraits[t]?.$1 ?? t,
+    if (i['deposit'] != null) 'deposit ${money(i['deposit'] as int)}',
+    if (a.kind == 'car' && (i['dep'] as int? ?? 15) < 0) 'classic: gains value',
+  ].join(' · ');
 }
 
 /// Bottom sheet with a slider and quick picks; returns the chosen amount.

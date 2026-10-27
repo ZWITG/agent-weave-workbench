@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'justice.dart' show caughtInTheAct;
 import 'models.dart';
 
 /// Outcomes for activities played as mini-games. [score] runs 0..1; the
@@ -47,6 +48,7 @@ ActionResult _caughtOrNot(
   required int maxTake,
   required String flag,
   required String flagLabel,
+  required String crime,
 }) {
   // Extra police patrols (world news) make a clean getaway harder.
   if (score >= 0.5 + (life.worldMods['policing'] ?? 0) / 100) {
@@ -59,6 +61,7 @@ ActionResult _caughtOrNot(
     );
   }
   life.flags[flag] = Memory(life.age, flagLabel);
+  caughtInTheAct(life, crime);
   return statChange(life, 'Your timing was off and you were caught.', {
     'happiness': -6,
     'karma': -4,
@@ -75,6 +78,7 @@ ActionResult shopliftScored(Life life, Random rng, double score) =>
       maxTake: 80,
       flag: 'caught_shoplifting',
       flagLabel: 'caught shoplifting',
+      crime: 'shoplifting',
     );
 
 ActionResult pickpocketScored(Life life, Random rng, double score) =>
@@ -87,6 +91,7 @@ ActionResult pickpocketScored(Life life, Random rng, double score) =>
       maxTake: 140,
       flag: 'arrested',
       flagLabel: 'being arrested for pickpocketing',
+      crime: 'pickpocketing',
     );
 
 ActionResult casinoScored(Life life, Random rng, double score) {

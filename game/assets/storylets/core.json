@@ -770,9 +770,9 @@
   ]
  },
  {
-  "id": "uni_major",
+  "id": "uni_freshers",
   "minAge": 18,
-  "maxAge": 19,
+  "maxAge": 22,
   "weight": 30,
   "category": "school",
   "requires": {
@@ -780,41 +780,42 @@
     "went_uni"
    ]
   },
-  "text": "Week one at university, and the registration deadline is Friday. You have to choose a major, and the advisers keep saying it doesn't decide your whole life, which is exactly what people say when it does.",
+  "text": "Freshers' week. The campus is one long queue of stalls: the climbing club, the debating society, a man in a dinosaur costume handing out free pizza. Everyone you meet asks the same three questions, and you are already tired of your own answers.",
   "choices": [
    {
-    "label": "Culinary arts",
-    "outcome": "You chose culinary arts. You spent your days in a hot teaching kitchen with knives you weren't allowed to touch yet. Your flatmates ate very, very well all year.",
+    "label": "Sign up for everything",
+    "outcome": "You joined nine societies and went to two of them. One of them, the hiking club, became your people.",
     "effects": {
-     "flags": {
-      "major_culinary": "studying culinary arts"
-     },
      "stats": {
-      "creativity": 3
+      "happiness": 4,
+      "charisma": 2
+     },
+     "flags": {
+      "uni_societies": "joining societies in freshers' week"
      }
     }
    },
    {
-    "label": "Law",
-    "outcome": "You chose law. The reading list was longer than some novels and your desk disappeared under paper. But the first time you won a mock trial argument, you felt ten feet tall.",
+    "label": "Go out every single night",
+    "outcome": "You saw four sunrises in seven days and learned the words to every song the student bar plays. Your first lecture was a blur.",
     "effects": {
-     "flags": {
-      "major_law": "studying law"
-     },
      "stats": {
-      "smarts": 3
+      "happiness": 3,
+      "health": -2,
+      "smarts": -1
+     },
+     "flags": {
+      "uni_party": "a legendary freshers' week"
      }
     }
    },
    {
-    "label": "Computer science",
-    "outcome": "You chose computer science. You discovered coffee, late-night debugging and the deep joy of code finally working at three in the morning. Sleep became a distant memory.",
+    "label": "Find the library early",
+    "outcome": "While everyone else recovered, you found the quiet corner on the fourth floor with the good chairs. It became yours for four years.",
     "effects": {
-     "flags": {
-      "major_cs": "studying computer science"
-     },
      "stats": {
-      "smarts": 3
+      "smarts": 3,
+      "discipline": 2
      }
     }
    }

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'economy.dart' show nextEconomy, fundReturns;
+import 'finance.dart' show stepPrices;
 import 'models.dart';
 import 'world_data.dart';
 
@@ -114,7 +115,11 @@ class World {
     Map<String, Map<String, int>>? names,
     List<String>? lives,
     Set<String>? deeds,
-  }) : seed = seed ?? Random().nextInt(1 << 30),
+    Map<int, Map<String, double>>? prices,
+    Map<int, List<String>>? market,
+  }) : prices = prices ?? {},
+       market = market ?? {},
+       seed = seed ?? Random().nextInt(1 << 30),
        economy = economy ?? {},
        stories = stories ?? {},
        generated = generated ?? {},
@@ -139,6 +144,40 @@ class World {
   /// One line per notable finished life.
   final List<String> lives;
   final Set<String> deeds;
+
+  /// Market prices by year (stocks, bonds, gold, coins) and the news
+  /// behind big moves: the same for every life in that year.
+  final Map<int, Map<String, double>> prices;
+  final Map<int, List<String>> market;
+
+  Map<String, double> pricesFor(int y) {
+    final known = prices[y];
+    if (known != null) return known;
+    // Walk back to the last known year (if any), then step forward.
+    var from = y - 1;
+    final first = prices.isEmpty ? y : prices.keys.reduce(min);
+    while (from >= first && !prices.containsKey(from)) {
+      from--;
+    }
+    var prev = prices[from] ?? <String, double>{};
+    for (
+      var year = prices.containsKey(from) ? from + 1 : y;
+      year <= y;
+      year++
+    ) {
+      final news = <String>[];
+      prev = stepPrices(
+        prev,
+        economyFor(year),
+        year,
+        Random(seed * 17 + year * 977),
+        news,
+      );
+      market[year] = news;
+      prices[year] = prev;
+    }
+    return prices[y]!;
+  }
 
   // ---------------- Economy and news ----------------
 
@@ -338,6 +377,16 @@ class World {
     'names': names,
     'lives': lives,
     'deeds': deeds.toList(),
+    // Only recent years are needed (lives move forward; Rewind goes back
+    // at most a few years).
+    'prices': {
+      for (final e in prices.entries)
+        if (e.key >= year - 130) '${e.key}': e.value,
+    },
+    'market': {
+      for (final e in market.entries)
+        if (e.key >= year - 130) '${e.key}': e.value,
+    },
   };
 
   factory World.fromJson(Map<String, dynamic> j) => World(
@@ -365,6 +414,17 @@ class World {
     },
     lives: List<String>.from(j['lives'] ?? []),
     deeds: Set<String>.from(j['deeds'] ?? []),
+    prices: {
+      for (final e in Map<String, dynamic>.from(j['prices'] ?? {}).entries)
+        int.parse(e.key): {
+          for (final p in Map<String, dynamic>.from(e.value).entries)
+            p.key: (p.value as num).toDouble(),
+        },
+    },
+    market: {
+      for (final e in Map<String, dynamic>.from(j['market'] ?? {}).entries)
+        int.parse(e.key): List<String>.from(e.value),
+    },
   );
 
   // ---------------- Writing the news ----------------

@@ -4,6 +4,10 @@ import 'actions.dart';
 import 'careers.dart';
 import 'dynasty.dart';
 import 'economy.dart';
+import 'finance.dart';
+import 'health.dart';
+import 'homes.dart';
+import 'justice.dart';
 import 'family.dart';
 import 'love.dart';
 import 'jobs.dart';
@@ -155,6 +159,7 @@ class GameEngine {
     }
     world.ensureYear(life.year, life.country, life.city);
     life.economy = world.economyFor(life.year);
+    life.quotes = Map.of(world.pricesFor(life.year));
     return life;
   }
 
@@ -162,6 +167,9 @@ class GameEngine {
 
   Random _rngFor(Life life, [int salt = 0]) =>
       Random(life.seed * 31 + life.age * 7919 + salt);
+
+  /// For player moves outside activities (business moves on the Wealth tab).
+  Random rngFor(Life life, [int salt = 0]) => _rngFor(life, 97 + salt);
 
   /// Ages the character one year and returns the event to show, if any.
   Storylet? ageUp(Life life) {
@@ -187,8 +195,26 @@ class GameEngine {
       life.feed.add(FeedEntry(life.age, line));
     }
     _worldYear(life);
+    for (final line in [
+      ...prisonYear(life, _rngFor(life, 67)),
+      ...homeYear(life, _rngFor(life, 71)),
+    ]) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+    }
     for (final line in yearlyMoney(life, rng)) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+    }
+    for (final line in portfolioYear(
+      life,
+      world.pricesFor(life.year),
+      world.market[life.year] ?? const [],
+    )) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+    }
+    if (life.business != null && life.business!.revenue > 0) {
+      life.feed.add(
+        FeedEntry(life.age, businessSummary(life.business!), kind: 'nudge'),
+      );
     }
     for (final line in workYear(
       life,
@@ -206,6 +232,13 @@ class GameEngine {
     final trust = releaseTrust(life);
     if (trust != null) {
       life.feed.add(FeedEntry(life.age, trust, kind: 'milestone'));
+    }
+    for (final line in [
+      ...justiceYear(life, _rngFor(life, 73)),
+      ...healthYear(life, _rngFor(life, 79)),
+      ...npcAging(life, _rngFor(life, 83)),
+    ]) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
     checkDeeds(life);
     // Gentle drift so idle years still matter.
@@ -465,9 +498,24 @@ class GameEngine {
     if (!(action.repeatable && again)) {
       life.feed.add(FeedEntry(life.age, text, kind: 'action'));
     }
+    // Some activities can start an addiction (plan Module 9).
+    final kind = _exposures[action.id];
+    final hooked = kind == null || life.age < 14
+        ? null
+        : exposeTo(life, kind, _rngFor(life, 61));
+    if (hooked != null) {
+      life.feed.add(FeedEntry(life.age, hooked, kind: 'milestone'));
+    }
     checkDeeds(life);
-    return ActionResult(text, result.notes);
+    return ActionResult(text, [...result.notes, ?hooked]);
   }
+
+  static const _exposures = {
+    'nightlife': 'alcohol',
+    'casino': 'gambling',
+    'lottery': 'gambling',
+    'video_games': 'gaming',
+  };
 
   /// Applies for a job on the Path tab's job board.
   ActionResult applyForJob(Life life, Career career) {

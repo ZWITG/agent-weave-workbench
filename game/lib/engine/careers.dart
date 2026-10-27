@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'jobs.dart';
+import 'justice.dart' show convictions, hasSeriousRecord;
 import 'models.dart';
 
 /// The Path tab: education routes, the job board and career ladders.
@@ -290,6 +291,22 @@ class Career {
     if (studying(life) && needs != 'any') return 'Finish your course first';
     if (!_meetsEducation(life)) return 'Needs: $needsLabel';
     if (life.stats['smarts'] < minSmarts) return 'Needs Smarts $minSmarts+';
+    if (life.prison != null) return 'Not possible in prison';
+    // A criminal record closes regulated jobs (plan Module 8).
+    if (const {'police', 'lawyer'}.contains(id) && convictions(life) > 0) {
+      return 'Blocked by a criminal record';
+    }
+    if (const {
+          'teacher',
+          'doctor',
+          'nurse',
+          'politician',
+          'military',
+          'pilot',
+        }.contains(id) &&
+        hasSeriousRecord(life)) {
+      return 'Blocked by a serious criminal record';
+    }
     return extra?.call(life);
   }
 

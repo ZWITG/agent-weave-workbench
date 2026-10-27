@@ -8,6 +8,7 @@ import 'engine/actions.dart';
 import 'engine/careers.dart';
 import 'engine/dynasty.dart';
 import 'engine/engine.dart';
+import 'engine/health.dart' show endThisLifeRules;
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
@@ -170,9 +171,33 @@ class GameController extends ChangeNotifier {
     engine!.world.recordLife(old);
     life = heirLife(old, heir);
     engine!.world.ensureYear(life!.year, life!.country, life!.city);
+    life!.quotes = Map.of(engine!.world.pricesFor(life!.year));
     pendingEvent = null;
     lastOutcome = null;
     _snapshots.clear();
+    _save();
+    notifyListeners();
+  }
+
+  /// "End this life" (plan HE: neutral, out of character): straight to the
+  /// recap. The helpline panel shows once per session before it.
+  bool helplineShown = false;
+
+  void endThisLife() {
+    if (life == null) return;
+    endThisLifeRules(life!);
+    pendingEvent = null;
+    lastOutcome = null;
+    _save();
+    notifyListeners();
+  }
+
+  /// Queues a scene from a screen (Health screen "Get support"...) and
+  /// shows it on the Life tab.
+  void openScene(String id) {
+    if (life == null) return;
+    life!.sceneQueue.add(id);
+    _sceneAfterAction();
     _save();
     notifyListeners();
   }

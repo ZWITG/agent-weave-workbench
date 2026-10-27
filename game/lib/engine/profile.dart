@@ -46,6 +46,10 @@ class Profile {
 /// Activities hidden by the content filters.
 bool filteredOut(Profile p, String category, String actionId) {
   if (p.hidden.contains('crime') && category == 'Crime') return true;
+  if (p.hidden.contains('violence') &&
+      const {'assault', 'armed_robbery'}.contains(actionId)) {
+    return true;
+  }
   if (p.hidden.contains('gambling') &&
       const {'casino', 'lottery'}.contains(actionId)) {
     return true;

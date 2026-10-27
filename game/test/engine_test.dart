@@ -6,6 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/family.dart';
+import 'package:relivable/engine/finance.dart';
+import 'package:relivable/engine/health.dart';
+import 'package:relivable/engine/homes.dart';
+import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/lifespan.dart';
 import 'package:relivable/engine/love.dart';
@@ -18,6 +22,10 @@ import 'package:relivable/engine/scenes.dart';
 import 'package:relivable/engine/school.dart';
 import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/world.dart';
+
+/// Price from a listing label like "Flat · Old Town · $180,000".
+int listingPrice(String label) =>
+    int.parse(label.split('\$').last.replaceAll(',', ''));
 
 List<Storylet> loadStorylets() {
   final raw = File('assets/storylets/core.json').readAsStringSync();
@@ -315,9 +323,27 @@ void main() {
   test('a house comes with a mortgage that shrinks every year', () {
     final life = engine.newLife(seed: 42)..age = 30;
     startCareer(life, careerById('developer')!);
-    life.money = 30000;
+    life.money = 60000;
     final buy = engine.actions.firstWhere((a) => a.id == 'buy_house');
     engine.runAction(life, buy);
+    // Listings → a home → offers until one is accepted.
+    for (var tries = 0; tries < 12 && !life.has('house'); tries++) {
+      if (life.sceneQueue.isEmpty) life.sceneQueue.add('house_hunt');
+      var scene = engine.nextScene(life);
+      while (scene != null) {
+        final pick = scene.id == 'scene:house_hunt'
+            ? scene.choices.firstWhere(
+                (c) => buyLock(life, listingPrice(c.label)) == null,
+              )
+            : scene.id == 'scene:house_view'
+            ? scene.choices.firstWhere((c) => c.label.startsWith('Offer 5%'))
+            : scene.choices.first;
+        engine.choose(life, scene, pick);
+        scene = engine.nextScene(life);
+      }
+      life.marks.clear();
+      life.age++;
+    }
     expect(life.has('house'), isTrue);
     final owed = life.debts['Mortgage']!;
     yearlyMoney(life, Random(2));
@@ -446,7 +472,8 @@ void main() {
   });
 
   test('scenes: illness choices run, lock and log why stats changed', () {
-    final life = engine.newLife(seed: 63)..age = 30;
+    final life = engine.newLife(seed: 63, countryName: 'United States')
+      ..age = 30;
     life.money = 0;
     final scene = buildScene('illness:flu', life)!;
     expect(scene.choices.first.lockReason(life), contains('Needs'));
@@ -720,5 +747,261 @@ void main() {
     expect(dynastyCap(plus: true), 8);
     old.money = -50000;
     expect(estateOf(old), 0);
+  });
+
+  // ---------------- Wave E: money, homes, crime and health ----------------
+
+  test('credit score follows payments and prices loans', () {
+    final life = engine.newLife(seed: 100)..age = 25;
+    startCareer(life, careerById('office')!);
+    expect(life.credit, isNull);
+    takeLoan(life, loanTypes.first, 3000);
+    expect(life.credit, 640);
+    final rate = rateOf(life, 'Personal loan');
+    expect(rate, inInclusiveRange(0.08, 0.18));
+    life.money = 100000;
+    yearlyMoney(life, Random(1));
+    expect(life.credit, greaterThan(640));
+    life.credit = 820;
+    expect(loanTypes.first.rate(life), lessThan(rate));
+    // Far over the card limit: a default, and a crisis scene.
+    life.debts['Credit card'] = 50000;
+    life.money = 0;
+    life.age++;
+    yearlyMoney(life, Random(2));
+    expect(life.credit, lessThan(820));
+    expect(life.sceneQueue, contains('debt_crisis'));
+  });
+
+  test('bankruptcy clears most debts, keeps the home, blocks loans', () {
+    final life = engine.newLife(seed: 101)..age = 40;
+    startCareer(life, careerById('office')!);
+    life.debts.addAll({
+      'Credit card': 20000,
+      'Personal loan': 10000,
+      'Student loan': 5000,
+      'Mortgage': 100000,
+    });
+    life.invested = 3000;
+    life.savings = 10000;
+    bankruptcy(life);
+    expect(life.debts.keys.toSet(), {'Student loan', 'Mortgage'});
+    expect(life.invested, 0);
+    expect(life.savings, 2000);
+    expect(life.credit, 320);
+    expect(loanLock(life, loanTypes.first), contains('bankruptcy'));
+  });
+
+  test('market prices are shared, stay in a band and pay dividends', () {
+    final a = World(seed: 9), b = World(seed: 9);
+    expect(a.pricesFor(2030), b.pricesFor(2030));
+    for (var y = 2030; y < 2600; y++) {
+      for (final t in tickers.where((t) => y >= t.since)) {
+        final p = a.pricesFor(y)[t.id]!;
+        expect(p.isFinite, isTrue);
+        expect(
+          p,
+          lessThan(t.base * (t.kind == 'coin' ? 500 : 60)),
+          reason: '${t.id} in $y',
+        );
+      }
+    }
+    final life = engine.newLife(seed: 102)..age = 30;
+    life.quotes = Map.of(a.pricesFor(2030));
+    life.money = 10000;
+    buyShares(life, 'BRKL', 5000);
+    expect(life.money, 5000);
+    expect(holdingValue(life, 'BRKL'), inInclusiveRange(4999, 5001));
+    expect(dividends(life), greaterThan(0));
+    sellShares(life, 'BRKL', holdingValue(life, 'BRKL'));
+    expect(life.shares, isEmpty);
+    expect(life.money, inInclusiveRange(9999, 10001));
+  });
+
+  test('a business explains its year; losses lead to insolvency', () {
+    final life = engine.newLife(seed: 103)..age = 30;
+    life.money = 100000;
+    life.sceneQueue.add('biz_found');
+    var scene = engine.nextScene(life);
+    while (scene != null) {
+      engine.choose(life, scene, scene.choices.first);
+      scene = engine.nextScene(life);
+    }
+    final b = life.business!;
+    expect(b.industry, industries.first.id);
+    final profit = businessYear(life, Random(3));
+    expect(b.revenue, greaterThan(0));
+    expect(b.lines.first.$1, 'Revenue');
+    expect(b.reasons, isNotEmpty);
+    expect(profit, b.profit);
+    b
+      ..quality = 5
+      ..brand = 0
+      ..satisfaction = 0
+      ..staff = 30;
+    for (var y = 0; y < 2; y++) {
+      life.age++;
+      businessYear(life, Random(y));
+    }
+    expect(life.sceneQueue, contains('insolvency'));
+  });
+
+  test('house hunting: viewings reveal traits, surveys reveal all', () {
+    final life = engine.newLife(seed: 104)..age = 30;
+    life.money = 500;
+    final homes = listings(life);
+    expect(homes.length, 6);
+    expect(listings(life).map((h) => h.price), homes.map((h) => h.price));
+    final h = homes.firstWhere(
+      (h) => h.traits.isNotEmpty,
+      orElse: () => homes.first,
+    );
+    life.sceneQueue.add('house_view:${h.i}');
+    final view = engine.nextScene(life)!;
+    final survey = view.choices.firstWhere((c) => c.label.contains('survey'));
+    engine.choose(life, view, survey);
+    final again = engine.nextScene(life)!;
+    expect(again.text, contains('surveyed'));
+    expect(buyLock(life, h.price), contains('deposit'));
+  });
+
+  test('crime: risk with reasons, arrest, plea, prison and release', () {
+    final life = engine.newLife(seed: 105)..age = 25;
+    startCareer(life, careerById('office')!);
+    final (odds, why) = caughtOdds(life, crimeById('burglary'));
+    expect(odds, inInclusiveRange(3, 90));
+    expect(why, isA<List<String>>());
+    life.sceneQueue.add('arrest:burglary:60');
+    var scene = engine.nextScene(life)!;
+    engine.choose(
+      life,
+      scene,
+      scene.choices.firstWhere((c) => c.label == 'Go quietly'),
+    );
+    scene = engine.nextScene(life)!;
+    expect(scene.text, contains('plead guilty'));
+    engine.choose(life, scene, scene.choices.first);
+    expect(life.prison, isNotNull);
+    expect(life.job, isNull);
+    expect(life.record, hasLength(1));
+    expect(life.npc('cellmate'), isNotNull);
+    final gym = engine.actions.firstWhere((a) => a.id == 'gym');
+    final job = engine.actions.firstWhere((a) => a.id == 'prison_job');
+    expect(gym.lockReason(life), 'Not possible in prison');
+    expect(job.lockReason(life), isNull);
+    expect(careerById('police')!.lockReason(life), isNotNull);
+    for (var y = 0; y < 8 && life.prison != null; y++) {
+      life.age++;
+      prisonYear(life, Random(y));
+      var s = engine.nextScene(life);
+      while (s != null) {
+        engine.choose(life, s, s.choices.first);
+        s = engine.nextScene(life);
+      }
+    }
+    expect(life.prison, isNull);
+  });
+
+  test('trials explain the verdict; records seal after clean years', () {
+    final life = engine.newLife(seed: 106)..age = 20;
+    life.sceneQueue.add('trial:burglary:50:88');
+    final trial = engine.nextScene(life)!;
+    final out = engine.choose(life, trial, trial.choices.first);
+    expect(out.text, contains('Conviction chance'));
+    life.prison = null;
+    life.record
+      ..clear()
+      ..add({
+        'crime': 'burglary',
+        'age': 20,
+        'band': 'moderate',
+        'sentence': 'fine',
+        'youth': false,
+        'sealed': false,
+      });
+    life.education = 'high school graduate';
+    life.age = 25;
+    expect(
+      careerById('police')!.lockReason(life),
+      'Blocked by a criminal record',
+    );
+    life.age = 31;
+    justiceYear(life, Random(1));
+    expect(convictions(life), 0);
+  });
+
+  test('illness shows symptoms first; care costs follow the country', () {
+    final us = engine.newLife(seed: 107, countryName: 'United States')
+      ..age = 50;
+    final pt = engine.newLife(seed: 107, countryName: 'Portugal')..age = 50;
+    expect(careCost(us, 40000), 40000);
+    expect(careCost(pt, 40000), lessThan(4000));
+    us.insurance = 'full';
+    expect(careCost(us, 40000), 4000);
+    us.money = 100000;
+    us.conditions.add(Condition(id: 'cancer', since: 50, stage: 1));
+    us.sceneQueue.add('symptom:cancer');
+    final symptom = engine.nextScene(us)!;
+    expect(symptom.text, contains('lump'));
+    us.conditions.first.known = true;
+    us.sceneQueue.add('treat:cancer');
+    final treat = engine.nextScene(us)!;
+    expect(treat.choices.first.risk, contains('85% success at stage 1'));
+    final before = healthRiskFactor(us);
+    us.conditions.first.stage = 4;
+    expect(healthRiskFactor(us), greaterThan(before * 5));
+    expect(conditionCause(us), 'Cancer');
+  });
+
+  test('addiction: exposure, yearly costs, rehab and relapse', () {
+    final life = engine.newLife(seed: 108)..age = 25;
+    life.stats.values['willpower'] = 0;
+    life.stats.values['impulsivity'] = 100;
+    life.stress = 100;
+    for (var i = 0; i < 200 && life.addictions.isEmpty; i++) {
+      exposeTo(life, 'alcohol', Random(i));
+    }
+    expect(life.addictions, contains('alcohol'));
+    expect(healthCosts(life).map((c) => c.$1), contains('Drinking'));
+    life.sceneQueue.add('rehab:alcohol');
+    final rehab = engine.nextScene(life)!;
+    expect(rehab.choices.first.risk, contains('% chance'));
+    life.addictions.clear();
+    life.recovery['alcohol'] = 0;
+    var relapsed = false;
+    for (var i = 0; i < 50 && !relapsed; i++) {
+      life.recovery['alcohol'] = 0;
+      healthYear(life, Random(i));
+      relapsed = life.addictions.containsKey('alcohol');
+    }
+    expect(relapsed, isTrue);
+  });
+
+  test('long low mood brings depression with support options', () {
+    final life = engine.newLife(seed: 109)..age = 30;
+    for (var y = 0; y < 2; y++) {
+      life.stats.values['happiness'] = 10;
+      healthYear(life, Random(y));
+    }
+    expect(conditionOf(life, 'depression'), isNotNull);
+    life.sceneQueue.remove('mind:depression');
+    life.sceneQueue.add('mind:depression');
+    final scene = engine.nextScene(life)!;
+    expect(scene.category, 'mind');
+    expect(scene.choices.map((c) => c.label).join(), contains('therapist'));
+  });
+
+  test('people you love grow old, and losing them brings grief', () {
+    final life = engine.newLife(seed: 110)..age = 60;
+    final mum = life.npc('mother')!;
+    mum.addFacets(affection: 50, trust: 50);
+    life.npcs[life.npcs.indexOf(mum)] = mum;
+    var lines = <String>[];
+    for (var i = 0; i < 200 && mum.alive; i++) {
+      lines = npcAging(life, Random(i));
+      life.age++;
+    }
+    expect(mum.alive, isFalse);
+    expect(lines.join(), contains('died'));
   });
 }

@@ -2,6 +2,9 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'finance.dart';
+import 'health.dart' show healthCosts;
+import 'homes.dart' show homeOf, lettingOf, rentFor;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
 
@@ -61,10 +64,17 @@ int incomeTax(int income) {
   return tax.round();
 }
 
+/// Default yearly rates; most loans lock in a rate from your credit score
+/// when you take them (finance.dart rateOf).
 const debtRates = <String, double>{
   'Student loan': 0.05,
   'Mortgage': 0.05,
+  'Buy-to-let mortgage': 0.06,
   'Personal loan': 0.12,
+  'Auto loan': 0.08,
+  'Business loan': 0.10,
+  'Payday loan': 0.90,
+  'Family loan': 0.0,
   'Credit card': 0.20,
 };
 
@@ -79,13 +89,13 @@ int annuity(int principal, double rate, int years) {
 }
 
 int _debtPayment(Life life, String name, int balance) {
-  if (name == 'Mortgage') {
-    final house = life.assets.where((a) => a.kind == 'house');
-    final left = house.isEmpty
-        ? 5
-        : mortgageYears - (life.age - house.first.since);
-    return min(balance, annuity(balance, debtRates[name]!, max(1, left)));
+  if (name == 'Mortgage' || name == 'Buy-to-let mortgage') {
+    final house = name == 'Mortgage' ? homeOf(life) : lettingOf(life);
+    final left = house == null ? 5 : mortgageYears - (life.age - house.since);
+    return min(balance, annuity(balance, rateOf(life, name), max(1, left)));
   }
+  // Payday loans are due in full at the next birthday.
+  if (name == 'Payday loan') return balance;
   return min(balance, max(600, (balance * 0.2).round()));
 }
 
@@ -118,16 +128,23 @@ int forecastNextYear(Life life) {
   }
   for (final e in life.debts.entries) {
     if (!_owesPayment(life, e.key)) continue;
-    final b = e.value + (e.value * (debtRates[e.key] ?? 0.1)).round();
+    final b = e.value + (e.value * rateOf(life, e.key)).round();
     total -= _debtPayment(life, e.key, b);
   }
+  final let = lettingOf(life);
+  if (let != null) total += rentFor(let);
+  for (final c in healthCosts(life)) {
+    total += c.$2;
+  }
+  if (life.business != null) total += life.business!.profit;
   return total;
 }
 
 /// Personal loans: up to one year's salary, only with a job.
-int borrowLimit(Life life) => life.job == null || life.age < 18
+int borrowLimit(Life life) =>
+    life.age < 18 || loanLock(life, loanTypes.first) != null
     ? 0
-    : max(0, life.salary - (life.debts['Personal loan'] ?? 0));
+    : loanTypes.first.limit(life);
 
 // ---------------- The economy ----------------
 
@@ -180,6 +197,8 @@ List<String> yearlyMoney(Life life, Random rng) {
   }
 
   life.reason = 'Money';
+  final jailed = life.prison != null;
+  if (jailed && life.prison!.job != null) cash('Prison job', 600);
   if (life.job != null && life.salary > 0) {
     cash('Salary', life.salary);
     cash('Income tax', -incomeTax(life.salary));
@@ -196,7 +215,7 @@ List<String> yearlyMoney(Life life, Random rng) {
       cash('Child support', -max(1200, (life.salary * 0.15).round()) * minors);
     }
   }
-  if (life.age >= 8 && life.age <= 17) {
+  if (life.age >= 8 && life.age <= 17 && !jailed) {
     cash('Pocket money', 50 + life.age * 10);
   }
   if (studying(life) && life.school.tuition > 0) {
@@ -208,13 +227,31 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash('State pension', statePension);
   } else if (life.job == null &&
       life.age >= 18 &&
+      !jailed &&
       !studying(life) &&
       life.jobLostAge != null &&
       life.age - life.jobLostAge! <= 2) {
     cash('Unemployment benefit', 6000);
   }
 
-  if (life.age >= 18) {
+  if (life.business != null) {
+    cash('Business: ${life.business!.name}', businessYear(life, rng));
+  }
+  cash('Dividends and interest', dividends(life));
+  final let = lettingOf(life);
+  if (let != null) {
+    final late = life.marks.contains('late_rent:${life.age}');
+    cash('Rent from tenants', late ? rentFor(let) ~/ 2 : rentFor(let));
+  }
+  for (final (label, amount) in healthCosts(life)) {
+    cash(label, amount);
+  }
+  if (life.age >= 18 && jailed) {
+    lines.add(('Prison covers food and a bed', 0));
+    for (final a in life.assets) {
+      cash('${a.name} upkeep', -yearlyCostOf(life, a));
+    }
+  } else if (life.age >= 18) {
     final tier = lifestyles[life.lifestyle]!;
     if (familyCovers(life)) {
       lines.add(('Family covered your living costs', 0));
@@ -235,7 +272,7 @@ List<String> yearlyMoney(Life life, Random rng) {
 
   for (final name in life.debts.keys.toList()) {
     var balance = life.debts[name]!;
-    balance += (balance * (debtRates[name] ?? 0.1)).round();
+    balance += (balance * rateOf(life, name)).round();
     final pay = _owesPayment(life, name)
         ? _debtPayment(life, name, balance)
         : 0;
@@ -243,6 +280,8 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash('$name payment', -pay);
     if (balance <= 0) {
       life.debts.remove(name);
+      life.rates.remove(name);
+      if (name == 'Family loan') familyLoanPaid(life);
       feed.add('You paid off your ${name.toLowerCase()}!');
     } else {
       life.debts[name] = balance;
@@ -255,6 +294,7 @@ List<String> yearlyMoney(Life life, Random rng) {
     life.money = 0;
   }
   // Overspending becomes debt (a student loan while studying).
+  final overspent = life.money < 0 && !studying(life);
   if (life.money < 0) {
     final short = -life.money;
     final name = studying(life) ? 'Student loan' : 'Credit card';
@@ -266,6 +306,8 @@ List<String> yearlyMoney(Life life, Random rng) {
       );
     }
   }
+
+  if (life.age >= 18) feed.addAll(creditYear(life, overspent: overspent));
 
   if (life.savings > 0) {
     final i = (life.savings * savingsRate).round();
@@ -287,7 +329,8 @@ List<String> yearlyMoney(Life life, Random rng) {
       a.value = (a.value * (1 + pct / 100)).round();
       a.condition = max(0, a.condition - 2 - rng.nextInt(3));
     } else {
-      a.value = (a.value * 0.85).round();
+      final dep = (a.info['dep'] as int?) ?? 15;
+      a.value = max(0, (a.value * (1 - dep / 100)).round());
       a.condition = max(0, a.condition - 4 - rng.nextInt(4));
     }
     growth.add(('${a.name} value', a.value - before));
@@ -333,15 +376,8 @@ void sellFund(Life life, int amount) {
   life.money += a;
 }
 
-ActionResult borrow(Life life, int amount) {
-  final a = min(amount, borrowLimit(life));
-  life.money += a;
-  life.debts['Personal loan'] = (life.debts['Personal loan'] ?? 0) + a;
-  return ActionResult(
-    'The bank approved a personal loan of ${_m(a)} at 12% a year.',
-    ['Money +${_m(a)}', 'Tip: about 20% is repaid each birthday'],
-  );
-}
+ActionResult borrow(Life life, int amount) =>
+    takeLoan(life, loanTypes.first, amount);
 
 ActionResult repay(Life life, String name, int amount) {
   final a = min(amount, min(max(0, life.money), life.debts[name] ?? 0));
@@ -349,6 +385,8 @@ ActionResult repay(Life life, String name, int amount) {
   final left = (life.debts[name] ?? 0) - a;
   if (left <= 0) {
     life.debts.remove(name);
+    life.rates.remove(name);
+    if (name == 'Family loan') familyLoanPaid(life);
   } else {
     life.debts[name] = left;
   }
@@ -365,24 +403,40 @@ ActionResult sellAsset(Life life, Asset a) {
   switch (a.kind) {
     case 'rental':
       life.flags.remove('own_flat');
+      final deposit = (a.info['deposit'] as int?) ?? 0;
+      life.money += deposit;
       return ActionResult('You handed back the keys and moved home.', [
         'Rent −${_m(a.yearlyCost)}/year',
+        if (deposit > 0) 'Deposit returned: +${_m(deposit)}',
       ]);
     case 'house':
-      life.flags.remove('owns_house');
+      final let = a.info['let'] == true;
+      final debt = let ? 'Buy-to-let mortgage' : 'Mortgage';
+      if (!let) life.flags.remove('owns_house');
       final fee = (a.value * 0.03).round();
-      final mortgage = life.debts.remove('Mortgage') ?? 0;
+      final mortgage = life.debts.remove(debt) ?? 0;
+      life.rates.remove(debt);
       final net = a.value - fee - mortgage;
       life.money += net;
-      return ActionResult('You sold the house for ${_m(a.value)}.', [
-        'Money ${net >= 0 ? '+' : '−'}${_m(net)}',
-        'Why: agent fee ${_m(fee)}${mortgage > 0 ? ', mortgage ${_m(mortgage)} repaid' : ''}',
-      ]);
+      return ActionResult(
+        'You sold the ${a.name.toLowerCase()} for ${_m(a.value)}.',
+        [
+          'Money ${net >= 0 ? '+' : '−'}${_m(net)}',
+          'Why: agent fee ${_m(fee)}${mortgage > 0 ? ', ${debt.toLowerCase()} ${_m(mortgage)} repaid' : ''}',
+        ],
+      );
     default:
-      life.flags.remove('owns_car');
-      life.money += a.value;
+      if (!life.assets.any((x) => x.kind == 'car')) {
+        life.flags.remove('owns_car');
+      }
+      final loan = life.assets.any((x) => x.kind == 'car')
+          ? 0
+          : (life.debts.remove('Auto loan') ?? 0);
+      life.money += a.value - loan;
       return ActionResult('You sold your ${a.name.toLowerCase()}.', [
-        'Money +${_m(a.value)}',
+        'Money +${_m(a.value - loan)}',
+        if (loan > 0)
+          'Why: the auto loan (${_m(loan)}) was repaid from the sale',
       ]);
   }
 }
@@ -413,6 +467,7 @@ void addRental(Life life) => life.assets.add(
 );
 
 /// Buys a house with a deposit and a 25-year mortgage. Returns the price.
+/// (Tests and old saves; players buy through the listings in homes.dart.)
 int addHouse(Life life, int deposit, Random rng) {
   final price = 160000 + rng.nextInt(16) * 5000;
   life.assets.removeWhere((a) => a.kind == 'rental');

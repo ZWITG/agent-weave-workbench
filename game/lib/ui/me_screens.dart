@@ -283,6 +283,16 @@ class SettingsScreen extends StatelessWidget {
                       : p.hidden.add('gambling'),
                 ),
               ),
+              sw(
+                'Show violent crime',
+                'Assault and armed robbery',
+                !p.hidden.contains('violence'),
+                (v) => controller.updateProfile(
+                  (p) => v
+                      ? p.hidden.remove('violence')
+                      : p.hidden.add('violence'),
+                ),
+              ),
               const _Head('Accessibility'),
               sw(
                 'Reduce motion',

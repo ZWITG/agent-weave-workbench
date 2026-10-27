@@ -8,6 +8,7 @@ import '../engine/school.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
+import 'health_screen.dart' show JusticeCard;
 import 'school_card.dart';
 import 'widgets.dart';
 
@@ -69,6 +70,11 @@ class _PathTabState extends State<PathTab> {
       children: [
         const SectionLabel('Your path'),
         const SizedBox(height: 10),
+        if (life.prison != null ||
+            life.record.any((r) => r['sealed'] != true)) ...[
+          JusticeCard(life: life),
+          const SizedBox(height: 10),
+        ],
         _status(),
         if (careerById(life.careerId) != null) ...[
           const SizedBox(height: 10),

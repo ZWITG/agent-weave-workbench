@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'careers.dart';
-import 'economy.dart';
 import 'dynasty.dart';
 import 'family.dart';
+import 'finance.dart';
+import 'health.dart';
+import 'homes.dart';
 import 'jobs.dart';
+import 'justice.dart';
 import 'love.dart';
 import 'lifespan.dart';
 import 'school.dart';
@@ -36,6 +39,7 @@ class GameAction {
     this.priceNote,
     this.repeatable = false,
     this.screen,
+    this.hint,
   });
 
   final String id;
@@ -66,8 +70,17 @@ class GameAction {
   /// A screen to open after running instead of a result pop-up.
   final String? screen;
 
+  /// Live detail shown under the label instead of the price (for example
+  /// the risk of a crime right now).
+  final String? Function(Life life)? hint;
+
   /// Null when the action can be used now, otherwise the reason it can't.
   String? lockReason(Life life) {
+    if (life.prison != null &&
+        category != 'Prison' &&
+        !prisonAllowed.contains(id)) {
+      return 'Not possible in prison';
+    }
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.age > maxAge) return 'Only up to age $maxAge';
     if (!repeatable && life.usedActions.contains(id)) return 'Done this year';
@@ -146,11 +159,14 @@ final _baseActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['gym', 'exercise', 'run', 'sport', 'fitness', 'workout'],
     minAge: 12,
-    run: (life, rng) => statChange(
-      life,
-      'You worked out until everything ached.',
-      {'health': 2 + rng.nextInt(3), 'looks': rng.nextInt(2), 'athleticism': 2},
-    ),
+    run: (life, rng) {
+      life.fitness = min(100, life.fitness + 8);
+      return statChange(life, 'You worked out until everything ached.', {
+        'health': 2 + rng.nextInt(3),
+        'looks': rng.nextInt(2),
+        'athleticism': 2,
+      });
+    },
   ),
   GameAction(
     id: 'meditate',
@@ -166,18 +182,38 @@ final _baseActions = <GameAction>[
   ),
   GameAction(
     id: 'doctor',
-    label: 'See a doctor',
+    label: 'Get a check-up',
     category: 'Health',
-    keywords: ['doctor', 'sick', 'health', 'hospital', 'checkup'],
+    keywords: ['doctor', 'sick', 'health', 'hospital', 'checkup', 'check-up'],
+    hint: (life) => careCost(life, 120) > 0
+        ? 'Costs \$${careCost(life, 120)} · finds hidden conditions 60% of the time'
+        : 'Free · finds hidden conditions 60% of the time',
     run: (life, rng) {
-      if (life.age >= 18) life.money -= 80;
-      return statChange(
+      final cost = careCost(life, 120);
+      life.money -= cost;
+      life.discovered.add('fertility');
+      final found = <String>[];
+      for (final c in life.conditions.where((c) => !c.known)) {
+        if (rng.nextInt(100) < 60) {
+          c.known = true;
+          found.add(conditionInfo[c.id]?.name.toLowerCase() ?? c.id);
+          life.sceneQueue.add('treat:${c.id}');
+        }
+      }
+      final r = statChange(
         life,
-        life.age >= 18
-            ? 'A check-up cost you \$80. The doctor says to sleep more.'
-            : 'Your parents took you for a check-up.',
-        {'health': 3 + rng.nextInt(4)},
+        found.isEmpty
+            ? (life.age >= 18
+                  ? 'The doctor checked everything twice and said to sleep more.'
+                  : 'Your parents took you for a check-up. All good.')
+            : 'The check-up caught something early: ${found.join(' and ')}. Early is the best time to find it.',
+        {'health': 2 + rng.nextInt(3)},
       );
+      return ActionResult(r.text, [
+        if (cost > 0) 'Money −\$$cost',
+        ...r.notes,
+        'Fertility revealed on the Me tab',
+      ]);
     },
   ),
   GameAction(
@@ -243,13 +279,16 @@ final _baseActions = <GameAction>[
     run: (life, rng) {
       life.money -= 200;
       final great = rng.nextInt(100) < 40 + life.stats['charisma'] ~/ 2;
-      return statChange(
+      final r = statChange(
         life,
         great
             ? 'Your party was the talk of {city} for a week.'
             : 'Three people came. One left early.',
         {'happiness': great ? 6 : -2, 'charisma': great ? 2 : 0},
       );
+      final hooked =
+          exposeTo(life, 'alcohol', rng) ?? exposeTo(life, 'nicotine', rng);
+      return ActionResult(r.text, [...r.notes, ?hooked]);
     },
   ),
   GameAction(
@@ -258,6 +297,7 @@ final _baseActions = <GameAction>[
     scored: shopliftScored,
     label: 'Shoplift',
     category: 'Crime',
+    hint: (l) => riskHint(30, 'minor'),
     keywords: ['steal', 'shoplift', 'crime', 'theft'],
     minAge: 12,
     run: (life, rng) {
@@ -267,6 +307,7 @@ final _baseActions = <GameAction>[
           life.age,
           'caught shoplifting',
         );
+        caughtInTheAct(life, 'shoplifting');
         return statChange(
           life,
           'Security caught you at the door. Your parents had to come and get you.',
@@ -292,24 +333,6 @@ final _baseActions = <GameAction>[
       'You volunteered at a food bank in {city}.',
       {'happiness': 3, 'karma': 4},
     ),
-  ),
-  GameAction(
-    id: 'buy_car',
-    label: 'Buy a used car',
-    category: 'Assets',
-    keywords: ['car', 'buy', 'drive', 'vehicle'],
-    minAge: 18,
-    cost: 4000,
-    extraCheck: (life) => life.has('car') ? 'You already own a car' : null,
-    run: (life, rng) {
-      life.money -= 4000;
-      life.flags['owns_car'] = Memory(life.age, 'your first car');
-      addCar(life);
-      return ActionResult('You bought a dented but lovable used car.', [
-        'Money −\$4,000',
-        'Tip: insurance and fuel cost \$1,200 a year',
-      ]);
-    },
   ),
 ];
 
@@ -350,4 +373,8 @@ final allActions = <GameAction>[
   ...moreActions,
   ...educationActions,
   ...careerActions,
+  ...financeActions,
+  ...homeActions,
+  ...justiceActions,
+  ...healthActions,
 ];

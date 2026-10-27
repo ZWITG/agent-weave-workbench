@@ -4,6 +4,7 @@ import 'actions.dart';
 import 'careers.dart';
 import 'models.dart';
 import 'storylet.dart';
+import 'justice.dart' show convictions;
 import 'world_data.dart';
 
 /// Life at work (plan Module 5): boss and colleagues, a visible
@@ -466,6 +467,7 @@ String _decide(Life l, Career c, Random rng) {
               ((l.worldMods['hiring'] ?? 0) + (l.worldMods['name'] ?? 0)) /
                   100 -
               c.baseSalary / 200000 -
+              min(0.18, convictions(l) * 0.06) -
               (c.special ? 0.1 : 0) +
               (l.difficulty == 'easy'
                   ? 0.1
@@ -475,7 +477,7 @@ String _decide(Life l, Career c, Random rng) {
           .clamp(0.02, 0.95);
   final pct = (p * 100).round();
   final summary =
-      'Interview score ${(score * 100).round()}%. Best answer: "${iv.best}". Weakest: "${iv.worst}".';
+      'Interview score ${(score * 100).round()}%. Best answer: "${iv.best}". Weakest: "${iv.worst}".${convictions(l) > 0 ? ' Your criminal record counted against you.' : ''}';
   l.interview = null;
   if (rng.nextDouble() < p) {
     final had = l.job;

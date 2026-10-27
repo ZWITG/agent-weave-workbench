@@ -11,6 +11,7 @@ import 'activities.dart';
 import 'outcome_card.dart';
 import 'result_popup.dart';
 import 'path_tab.dart';
+import 'health_screen.dart';
 import 'me_screens.dart';
 import 'update_prompt.dart';
 import 'wealth_tab.dart';
@@ -169,6 +170,18 @@ class _Header extends StatelessWidget {
                   style: NF.sora(12, color: NF.muted),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (life.prison != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'In prison · ${life.prison!.left} ${life.prison!.left == 1 ? 'year' : 'years'} left',
+                      style: NF.sora(
+                        12,
+                        weight: FontWeight.w600,
+                        color: NF.orange,
+                      ),
+                    ),
+                  ),
                 if (isFrail(life))
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -818,6 +831,8 @@ class _EventCard extends StatelessWidget {
                   ],
                 ],
               ),
+            // Mental-health moments always show real-life support.
+            if (event.category == 'mind') const HelplinePanel(),
           ],
         ),
       ),
@@ -919,6 +934,22 @@ class _MeTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
+        OutlinedButton.icon(
+          style: secondaryButton(),
+          icon: const Icon(Icons.monitor_heart_rounded),
+          label: Text(
+            life.conditions.any((c) => !c.treated && c.known) ||
+                    life.addictions.isNotEmpty
+                ? 'Health · needs attention'
+                : 'Health',
+          ),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => HealthScreen(controller: controller),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
         const VersionCard(),
         const SizedBox(height: 16),
         _WorldCard(controller: controller),
@@ -942,15 +973,28 @@ class _MeTab extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 24),
+        // Plan HE: a neutral, out-of-character way to end a life. It goes
+        // straight to the recap; the support panel shows once a session.
         OutlinedButton(
           style: secondaryButton(),
           onPressed: () async {
+            final showHelp = !controller.helplineShown;
             final ok = await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('Start a new life?'),
-                content: const Text(
-                  'This life will end and cannot be continued.',
+                backgroundColor: NF.surface,
+                title: const Text('End this life and see your recap?'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'This life ends here and goes to the Life Recap. It cannot be continued.',
+                      ),
+                      if (showHelp) const HelplinePanel(),
+                    ],
+                  ),
                 ),
                 actions: [
                   TextButton(
@@ -959,14 +1003,15 @@ class _MeTab extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('New life'),
+                    child: const Text('End this life'),
                   ),
                 ],
               ),
             );
-            if (ok == true) controller.endLife();
+            controller.helplineShown = true;
+            if (ok == true) controller.endThisLife();
           },
-          child: const Text('Start a new life'),
+          child: const Text('End this life'),
         ),
       ],
     );

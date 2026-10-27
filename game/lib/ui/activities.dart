@@ -28,9 +28,14 @@ const activityCategories = <(String, IconData)>[
   ('Licences', Icons.badge_rounded),
   ('Identity', Icons.face_rounded),
   ('Crime', Icons.local_police_rounded),
+  ('Prison', Icons.door_sliding_rounded),
   ('News', Icons.newspaper_rounded),
   ('Family', Icons.family_restroom_rounded),
 ];
+
+extension on List<(String, IconData)> {
+  (String, IconData) named(String name) => firstWhere((e) => e.$1 == name);
+}
 
 IconData categoryIconFor(String c) => activityCategories
     .firstWhere((e) => e.$1 == c, orElse: () => (c, Icons.auto_awesome_rounded))
@@ -86,6 +91,14 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   List<GameAction> _suggested() {
     final byId = {for (final a in _actions) a.id: a};
     final ids = <String>[
+      if (life.prison != null) ...[
+        'prison_job',
+        'prison_study',
+        'prison_gym',
+        'write_letters',
+        'talk_cellmate',
+      ],
+      if (life.addictions.isNotEmpty) 'rehab',
       if (life.education == 'primary' ||
           life.education == 'secondary' ||
           life.education == 'university')
@@ -239,7 +252,11 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
             spacing: 10,
             runSpacing: 10,
             children: [
-              for (final (cat, icon) in activityCategories)
+              // In prison the Prison tile comes first; outside, it hides.
+              for (final (cat, icon) in [
+                if (life.prison != null) activityCategories.named('Prison'),
+                ...activityCategories.where((e) => e.$1 != 'Prison'),
+              ])
                 if (_in(cat).isNotEmpty)
                   SizedBox(width: w, child: _categoryTile(cat, icon)),
             ],
@@ -529,7 +546,10 @@ Widget actionRow(
 }) {
   final life = c.life!;
   final lock = a.lockReason(life);
-  final price = a.priceNote ?? (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Free');
+  final price =
+      a.hint?.call(life) ??
+      a.priceNote ??
+      (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Free');
   return OptionRow(
     icon: categoryIconFor(a.category),
     title: a.label,

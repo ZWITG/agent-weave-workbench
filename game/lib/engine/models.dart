@@ -367,12 +367,16 @@ class Asset {
     required this.yearlyCost,
     required this.since,
     this.condition = 100,
-  });
+    Map<String, dynamic>? info,
+  }) : info = info ?? {};
 
   final String id;
 
   /// 'car', 'house' or 'rental'.
   final String kind;
+
+  /// Listing details: type, bedrooms, garden, pool, area, traits, let...
+  final Map<String, dynamic> info;
   final String name;
   int value;
   int yearlyCost;
@@ -387,6 +391,7 @@ class Asset {
     'yearlyCost': yearlyCost,
     'since': since,
     'condition': condition,
+    if (info.isNotEmpty) 'info': info,
   };
 
   factory Asset.fromJson(Map<String, dynamic> j) => Asset(
@@ -397,6 +402,177 @@ class Asset {
     yearlyCost: j['yearlyCost'],
     since: j['since'],
     condition: j['condition'] ?? 100,
+    info: Map<String, dynamic>.from(j['info'] ?? {}),
+  );
+}
+
+/// A business you founded (finance.dart, plan Module 6).
+class Business {
+  Business({
+    required this.name,
+    required this.industry,
+    required this.tier,
+    required this.since,
+  });
+
+  final String name;
+  final String industry;
+
+  /// budget, mid or premium.
+  String tier;
+  final int since;
+  int quality = 45;
+  int brand = 10;
+  int staff = 2;
+  int morale = 60;
+  int satisfaction = 55;
+  int revenue = 0;
+  int profit = 0;
+  int lossYears = 0;
+
+  /// Last year's breakdown and the main reasons behind it.
+  List<(String, int)> lines = [];
+  List<String> reasons = [];
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'industry': industry,
+    'tier': tier,
+    'since': since,
+    'quality': quality,
+    'brand': brand,
+    'staff': staff,
+    'morale': morale,
+    'satisfaction': satisfaction,
+    'revenue': revenue,
+    'profit': profit,
+    'lossYears': lossYears,
+    'lines': [
+      for (final l in lines) [l.$1, l.$2],
+    ],
+    'reasons': reasons,
+  };
+
+  factory Business.fromJson(Map<String, dynamic> j) =>
+      Business(
+          name: j['name'],
+          industry: j['industry'],
+          tier: j['tier'] ?? 'mid',
+          since: j['since'] ?? 0,
+        )
+        ..quality = j['quality'] ?? 45
+        ..brand = j['brand'] ?? 10
+        ..staff = j['staff'] ?? 2
+        ..morale = j['morale'] ?? 60
+        ..satisfaction = j['satisfaction'] ?? 55
+        ..revenue = j['revenue'] ?? 0
+        ..profit = j['profit'] ?? 0
+        ..lossYears = j['lossYears'] ?? 0
+        ..lines = _lines(j['lines'])
+        ..reasons = List<String>.from(j['reasons'] ?? []);
+}
+
+/// A prison sentence in progress (justice.dart, plan Module 8).
+class Prison {
+  Prison({
+    required this.crime,
+    required this.years,
+    required this.since,
+    this.security = 'medium',
+    this.youth = false,
+  });
+
+  final String crime;
+  int years;
+  final int since;
+
+  /// minimum, medium or maximum.
+  String security;
+  final bool youth;
+  int served = 0;
+  int behaviour = 50;
+  int respect = 30;
+  int programmes = 0;
+  String? job;
+  bool gang = false;
+  bool appealed = false;
+
+  /// Age of the last parole hearing.
+  int? lastHearing;
+
+  int get left => max(0, years - served);
+  int get paroleAt => max(1, (years / 3).ceil());
+
+  Map<String, dynamic> toJson() => {
+    'crime': crime,
+    'years': years,
+    'since': since,
+    'security': security,
+    'youth': youth,
+    'served': served,
+    'behaviour': behaviour,
+    'respect': respect,
+    'programmes': programmes,
+    'job': job,
+    'gang': gang,
+    'appealed': appealed,
+    'lastHearing': lastHearing,
+  };
+
+  factory Prison.fromJson(Map<String, dynamic> j) =>
+      Prison(
+          crime: j['crime'],
+          years: j['years'],
+          since: j['since'],
+          security: j['security'] ?? 'medium',
+          youth: j['youth'] ?? false,
+        )
+        ..served = j['served'] ?? 0
+        ..behaviour = j['behaviour'] ?? 50
+        ..respect = j['respect'] ?? 30
+        ..programmes = j['programmes'] ?? 0
+        ..job = j['job']
+        ..gang = j['gang'] ?? false
+        ..appealed = j['appealed'] ?? false
+        ..lastHearing = j['lastHearing'];
+}
+
+/// A health condition (health.dart, plan Module 9).
+class Condition {
+  Condition({
+    required this.id,
+    required this.since,
+    this.stage = 1,
+    this.known = false,
+    this.treated = false,
+  });
+
+  final String id;
+  final int since;
+
+  /// 1–4 for serious illnesses; chronic and mental conditions stay at 1.
+  int stage;
+
+  /// Diagnosed by a doctor.
+  bool known;
+
+  /// On treatment (managed, or in recovery).
+  bool treated;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'since': since,
+    'stage': stage,
+    'known': known,
+    'treated': treated,
+  };
+
+  factory Condition.fromJson(Map<String, dynamic> j) => Condition(
+    id: j['id'],
+    since: j['since'] ?? 0,
+    stage: j['stage'] ?? 1,
+    known: j['known'] ?? false,
+    treated: j['treated'] ?? false,
   );
 }
 
@@ -517,6 +693,49 @@ class Life {
   int parentsLowYears = 0;
   bool tryingForBaby = false;
 
+  // ---- Money depth (finance.dart, homes.dart) ----
+  /// Credit score 300–850; null until you first borrow (plan Module 6).
+  int? credit;
+  int? bankruptAge;
+
+  /// Interest rate locked in when each debt was taken (beats debtRates).
+  final Map<String, double> rates = {};
+
+  /// Units held per ticker (stocks, bonds, coins), what you paid in total,
+  /// and this year's prices (from the world, so every life sees the same).
+  final Map<String, double> shares = {};
+  final Map<String, int> paid = {};
+  Map<String, double> quotes = {};
+  Business? business;
+
+  /// Small per-life markers ("view:34:2" for a house viewing...).
+  final Set<String> marks = {};
+
+  // ---- Crime and justice (justice.dart) ----
+  /// Unsolved crimes the police may still solve: crime, age, evidence.
+  final List<Map<String, dynamic>> cases = [];
+
+  /// Convictions: crime, age, sentence, band, sealed.
+  final List<Map<String, dynamic>> record = [];
+  Prison? prison;
+  int notoriety = 0;
+
+  // ---- Health depth (health.dart) ----
+  final List<Condition> conditions = [];
+
+  /// Active addiction -> years; recovering addiction -> years sober.
+  final Map<String, int> addictions = {};
+  final Map<String, int> recovery = {};
+  int fitness = 40;
+
+  /// none, basic or full (where healthcare is not universal).
+  String insurance = 'none';
+  int lowMoodYears = 0;
+  int highStressYears = 0;
+
+  /// Ended from the menu ("End this life"), not by the story.
+  bool endedEarly = false;
+
   /// One stress meter for school and work (plan Module 2).
   int get stress => school.stress;
   set stress(int v) => school.stress = v.clamp(0, 100);
@@ -579,7 +798,26 @@ class Life {
 
   int get totalDebt => debts.values.fold(0, (a, b) => a + b);
   int get assetValue => assets.fold(0, (a, b) => a + b.value);
-  int get netWorth => money + savings + invested + assetValue - totalDebt;
+  int get portfolioValue => shares.entries.fold(
+    0,
+    (a, e) => a + (e.value * (quotes[e.key] ?? 0)).round(),
+  );
+
+  /// A rough sale value: three years of profit plus the brand and staff.
+  int get businessValue => business == null
+      ? 0
+      : max(
+          0,
+          business!.profit * 3 + business!.staff * 4000 + business!.brand * 600,
+        );
+  int get netWorth =>
+      money +
+      savings +
+      invested +
+      portfolioValue +
+      businessValue +
+      assetValue -
+      totalDebt;
   bool has(String kind) => assets.any((a) => a.kind == kind);
   final List<FeedEntry> feed;
   final Map<String, Memory> flags;
@@ -678,6 +916,26 @@ class Life {
     'lowPerfYears': lowPerfYears,
     'freelanceRep': freelanceRep,
     if (interview != null) 'interview': interview!.toJson(),
+    'credit': credit,
+    'bankruptAge': bankruptAge,
+    'rates': rates,
+    'shares': shares,
+    'paid': paid,
+    'quotes': quotes,
+    if (business != null) 'business': business!.toJson(),
+    'marks': marks.toList(),
+    'cases': cases,
+    'record': record,
+    if (prison != null) 'prison': prison!.toJson(),
+    'notoriety': notoriety,
+    'conditions': [for (final c in conditions) c.toJson()],
+    'addictions': addictions,
+    'recovery': recovery,
+    'fitness': fitness,
+    'insurance': insurance,
+    'lowMoodYears': lowMoodYears,
+    'highStressYears': highStressYears,
+    'endedEarly': endedEarly,
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -782,7 +1040,49 @@ class Life {
           : InterviewState.fromJson(Map<String, dynamic>.from(j['interview']))
       ..school = j['school'] == null
           ? SchoolRecord()
-          : SchoolRecord.fromJson(Map<String, dynamic>.from(j['school']));
+          : SchoolRecord.fromJson(Map<String, dynamic>.from(j['school']))
+      ..credit = j['credit']
+      ..bankruptAge = j['bankruptAge']
+      ..rates.addAll({
+        for (final e in Map<String, dynamic>.from(j['rates'] ?? {}).entries)
+          e.key: (e.value as num).toDouble(),
+      })
+      ..shares.addAll({
+        for (final e in Map<String, dynamic>.from(j['shares'] ?? {}).entries)
+          e.key: (e.value as num).toDouble(),
+      })
+      ..paid.addAll(Map<String, int>.from(j['paid'] ?? {}))
+      ..quotes = {
+        for (final e in Map<String, dynamic>.from(j['quotes'] ?? {}).entries)
+          e.key: (e.value as num).toDouble(),
+      }
+      ..business = j['business'] == null
+          ? null
+          : Business.fromJson(Map<String, dynamic>.from(j['business']))
+      ..marks.addAll(List<String>.from(j['marks'] ?? []))
+      ..cases.addAll([
+        for (final c in (j['cases'] as List?) ?? const [])
+          Map<String, dynamic>.from(c),
+      ])
+      ..record.addAll([
+        for (final c in (j['record'] as List?) ?? const [])
+          Map<String, dynamic>.from(c),
+      ])
+      ..prison = j['prison'] == null
+          ? null
+          : Prison.fromJson(Map<String, dynamic>.from(j['prison']))
+      ..notoriety = j['notoriety'] ?? 0
+      ..conditions.addAll([
+        for (final c in (j['conditions'] as List?) ?? const [])
+          Condition.fromJson(Map<String, dynamic>.from(c)),
+      ])
+      ..addictions.addAll(Map<String, int>.from(j['addictions'] ?? {}))
+      ..recovery.addAll(Map<String, int>.from(j['recovery'] ?? {}))
+      ..fitness = j['fitness'] ?? 40
+      ..insurance = j['insurance'] ?? 'none'
+      ..lowMoodYears = j['lowMoodYears'] ?? 0
+      ..highStressYears = j['highStressYears'] ?? 0
+      ..endedEarly = j['endedEarly'] ?? false;
     return life;
   }
 }

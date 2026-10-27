@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'careers.dart';
 import 'jobs.dart' show leaveJob;
+import 'health.dart' show conditionCause, healthRiskFactor;
 import 'models.dart';
 
 /// A whole life, birth to death (plan Modules 3 and 9): aging, a
@@ -25,7 +26,7 @@ double deathChance(Life life) {
   final health = life.stats['health'];
   final healthMult = (1 + (50 - health) / 25).clamp(0.3, 4.0);
   final diff = difficulties[life.difficulty]?.death ?? 1.0;
-  return (base * healthMult * diff).clamp(0.0, 0.95);
+  return (base * healthMult * diff * healthRiskFactor(life)).clamp(0.0, 0.95);
 }
 
 /// Shown on the header and Me tab when the yearly risk gets serious.
@@ -39,19 +40,22 @@ String frailtyLabel(Life life) {
 }
 
 String causeOfDeath(Life life, Random rng) {
+  // Serious illnesses always showed symptoms first (plan HE acceptance).
+  final illness = conditionCause(life);
+  if (illness != null) return illness;
   if (life.age < 40) {
     return const [
       'A road accident',
       'A sudden illness',
-      'A heart condition',
+      'A swimming accident',
     ][rng.nextInt(3)];
   }
   const causes = [
     'Natural causes',
     'Heart failure',
     'A stroke',
-    'Cancer',
     'Pneumonia',
+    'A fall at home',
   ];
   return life.age >= 85
       ? causes[rng.nextInt(2)]
