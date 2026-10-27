@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'dynasty.dart';
 import 'economy.dart';
+import 'family.dart';
+import 'love.dart';
 import 'jobs.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
@@ -196,6 +199,14 @@ class GameEngine {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
     life.feed.addAll(npcUpdates(life, _rngFor(life, 23)));
+    life.feed.addAll(childUpdates(life, _rngFor(life, 29)));
+    parentsYear(life, _rngFor(life, 43));
+    familyYear(life, _rngFor(life, 47));
+    loveYear(life, _rngFor(life, 53));
+    final trust = releaseTrust(life);
+    if (trust != null) {
+      life.feed.add(FeedEntry(life.age, trust, kind: 'milestone'));
+    }
     checkDeeds(life);
     // Gentle drift so idle years still matter.
     life.reason = 'Ups and downs';

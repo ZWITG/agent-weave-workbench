@@ -1,7 +1,10 @@
 import 'dart:math';
 
 import 'lifespan.dart';
+import 'dynasty.dart';
+import 'family.dart';
 import 'jobs.dart';
+import 'love.dart';
 import 'models.dart';
 import 'school.dart';
 import 'storylet.dart';
@@ -28,6 +31,19 @@ Storylet? buildScene(String id, Life life) {
       parts.length == 3
           ? interviewScene(life, parts[1], int.tryParse(parts[2]) ?? 0)
           : null,
+    'kindling' ||
+    'proposal' ||
+    'prenup' ||
+    'wedding' ||
+    'divorce' ||
+    'affair_found' ||
+    'ultimatum' ||
+    'partner_affair' => loveScene(parts.first, life),
+    'parents_split' ||
+    'family_planning' ||
+    'birth' ||
+    'adopt' => familyScene(parts.first, life),
+    'will' => willScene(),
     'burnout' ||
     'audition' ||
     'election' ||

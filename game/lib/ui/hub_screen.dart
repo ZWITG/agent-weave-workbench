@@ -923,6 +923,8 @@ class _MeTab extends StatelessWidget {
         const SizedBox(height: 16),
         _WorldCard(controller: controller),
         const SizedBox(height: 16),
+        FamilyTree(life: life),
+        const SizedBox(height: 16),
         const SectionLabel('Hidden stats'),
         const SizedBox(height: 10),
         HiddenStats(life: life),

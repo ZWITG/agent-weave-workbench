@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'family.dart' show familyInteractions;
+import 'love.dart' show loveInteractions;
 import 'school.dart' show schoolInteractions;
 
 /// Person interactions from 04 Social, Module 1: seven groups of action
@@ -183,6 +185,8 @@ String? _grudgeBlock(Life life, Npc npc) {
 List<Interaction> get interactions => [
   ..._baseInteractions,
   ...schoolInteractions,
+  ...loveInteractions,
+  ...familyInteractions,
 ];
 
 final _baseInteractions = <Interaction>[

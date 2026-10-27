@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../engine/actions.dart' show ActionResult;
+import '../engine/family.dart' show childrenOf;
 import '../engine/lifespan.dart';
+import '../engine/love.dart' show partnerOf;
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -374,5 +376,127 @@ class _Head extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
     child: SectionLabel(text),
+  );
+}
+
+// ---------------- Family tree (plan Social §4) ----------------
+
+/// Me tab: earlier generations of this family, then your parents and
+/// siblings, you and your partner, and your children.
+class FamilyTree extends StatelessWidget {
+  const FamilyTree({super.key, required this.life});
+  final Life life;
+
+  @override
+  Widget build(BuildContext context) {
+    final elders = life.npcs.where((n) => n.circle == 'Family').toList();
+    final partner = partnerOf(life);
+    final kids = childrenOf(life);
+    return NFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.account_tree_rounded, color: NF.blue, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'The ${life.surname} family',
+                  style: NF.sora(15, weight: FontWeight.w700),
+                ),
+              ),
+              Text(
+                'Generation ${life.generation}',
+                style: NF.sora(12, color: NF.muted),
+              ),
+            ],
+          ),
+          for (final g in life.lineage) ...[
+            _row(
+              '${g['name']}',
+              '${g['born']}–${g['died']} · ${g['title']}'
+                  '${(g['job'] ?? '') != '' ? ' · ${g['job']}' : ''}',
+              dim: true,
+            ),
+            _link(),
+          ],
+          if (elders.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [for (final n in elders) _chip(n)],
+            ),
+            _link(),
+          ],
+          _row(
+            '${life.fullName} (you)',
+            [
+              'Age ${life.age}',
+              if (partner != null) '${partner.role}: ${partner.name}',
+            ].join(' · '),
+          ),
+          if (kids.isNotEmpty) ...[
+            _link(),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [for (final n in kids) _chip(n)],
+            ),
+          ] else
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'No children yet. Children can carry the family on.',
+                style: NF.sora(12, color: NF.muted),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _row(String name, String sub, {bool dim = false}) => Padding(
+    padding: const EdgeInsets.only(top: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          style: NF.sora(
+            14,
+            weight: FontWeight.w600,
+            color: dim ? NF.soft : NF.text,
+          ),
+        ),
+        Text(sub, style: NF.sora(12, color: NF.muted)),
+      ],
+    ),
+  );
+
+  Widget _link() => const Padding(
+    padding: EdgeInsets.only(left: 12, top: 2),
+    child: SizedBox(
+      height: 10,
+      child: VerticalDivider(width: 2, thickness: 2, color: NF.surface2),
+    ),
+  );
+
+  Widget _chip(Npc n) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    decoration: BoxDecoration(
+      color: NF.surface2,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Text(
+      '${n.role} · ${n.name.split(' ').first}'
+      '${n.alive ? ', ${n.ageIn(life.year)}' : ' †'}',
+      style: NF.sora(
+        12,
+        weight: FontWeight.w600,
+        color: n.alive ? NF.text : NF.muted,
+      ),
+    ),
   );
 }

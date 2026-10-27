@@ -140,6 +140,26 @@ class Npc {
   final List<String> news = [];
   final Set<String> done = {};
 
+  /// Extra details for people from later modules: gender, relationship
+  /// stage, wants kids, a child's stats, a partner's net worth...
+  final Map<String, dynamic> info = {};
+
+  String get gender =>
+      info['gender'] ??
+      (const {
+                'Mother',
+                'Sister',
+                'Daughter',
+                'Stepmother',
+                'Grandmother',
+                'Partner (she)',
+                'Wife',
+              }.contains(role) ||
+              id == 'mother' ||
+              id == 'amara'
+          ? 'female'
+          : 'male');
+
   int ageIn(int year) => year - birthYear;
 
   int get bond =>
@@ -270,6 +290,7 @@ class Npc {
     'debt': debt,
     'news': news,
     'done': done.toList(),
+    'info': info,
   };
 
   factory Npc.fromJson(Map<String, dynamic> j) {
@@ -299,7 +320,8 @@ class Npc {
       ..refusals = j['refusals'] ?? 0
       ..debt = j['debt'] ?? 0
       ..news.addAll(List<String>.from(j['news'] ?? []))
-      ..done.addAll(List<String>.from(j['done'] ?? []));
+      ..done.addAll(List<String>.from(j['done'] ?? []))
+      ..info.addAll(Map<String, dynamic>.from(j['info'] ?? {}));
   }
 }
 
@@ -476,6 +498,25 @@ class Life {
   int freelanceRep = 0;
   InterviewState? interview;
 
+  // ---- Love, family and dynasty (love.dart, family.dart, dynasty.dart) ----
+  /// Who you are attracted to: 'men', 'women' or 'everyone'.
+  String attractedTo = '';
+  int generation = 1;
+
+  /// Earlier generations of this family: name, years, title, cause.
+  final List<Map<String, dynamic>> lineage = [];
+
+  /// equal (children), partner, or charity (plan AS-009).
+  String will = 'default';
+
+  /// Money held in trust until 18 (plan AS-010).
+  int trust = 0;
+
+  /// Parents' marriage health, 0–100, and years below 25.
+  int parentsMarriage = 75;
+  int parentsLowYears = 0;
+  bool tryingForBaby = false;
+
   /// One stress meter for school and work (plan Module 2).
   int get stress => school.stress;
   set stress(int v) => school.stress = v.clamp(0, 100);
@@ -626,6 +667,14 @@ class Life {
     'sceneQueue': sceneQueue,
     'school': school.toJson(),
     'performance': performance,
+    'attractedTo': attractedTo,
+    'generation': generation,
+    'lineage': lineage,
+    'will': will,
+    'trust': trust,
+    'parentsMarriage': parentsMarriage,
+    'parentsLowYears': parentsLowYears,
+    'tryingForBaby': tryingForBaby,
     'lowPerfYears': lowPerfYears,
     'freelanceRep': freelanceRep,
     if (interview != null) 'interview': interview!.toJson(),
@@ -715,6 +764,17 @@ class Life {
       ..discovered.addAll(List<String>.from(j['discovered'] ?? []))
       ..sceneQueue.addAll(List<String>.from(j['sceneQueue'] ?? []))
       ..performance = j['performance'] ?? 55
+      ..attractedTo = j['attractedTo'] ?? ''
+      ..generation = j['generation'] ?? 1
+      ..lineage.addAll([
+        for (final g in (j['lineage'] as List?) ?? const [])
+          Map<String, dynamic>.from(g),
+      ])
+      ..will = j['will'] ?? 'default'
+      ..trust = j['trust'] ?? 0
+      ..parentsMarriage = j['parentsMarriage'] ?? 75
+      ..parentsLowYears = j['parentsLowYears'] ?? 0
+      ..tryingForBaby = j['tryingForBaby'] ?? false
       ..lowPerfYears = j['lowPerfYears'] ?? 0
       ..freelanceRep = j['freelanceRep'] ?? 0
       ..interview = j['interview'] == null

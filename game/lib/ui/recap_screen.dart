@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../engine/dynasty.dart';
 import '../engine/lifespan.dart';
+import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'me_screens.dart';
@@ -221,6 +223,8 @@ class RecapScreen extends StatelessWidget {
                         onPressed: () => showRewind(context, controller),
                       ),
                     ),
+                  _dynasty(context, life),
+                  const SizedBox(height: 10),
                   FilledButton(
                     style: orangeButton().copyWith(
                       minimumSize: const WidgetStatePropertyAll(
@@ -241,6 +245,148 @@ class RecapScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  /// Continue as an heir, or the dynasty's end (plan GE-001/003).
+  Widget _dynasty(BuildContext context, Life life) {
+    final heirs = heirsOf(life);
+    final cap = controller.generationCap;
+    if (heirs.isEmpty) {
+      return Text(
+        life.generation > 1
+            ? 'The ${life.surname} line ends here, after ${life.generation} generations.'
+            : 'No children to carry on the family.',
+        textAlign: TextAlign.center,
+        style: NF.sora(13, color: NF.muted),
+      );
+    }
+    if (life.generation >= cap) {
+      return NFCard(
+        child: Text(
+          cap < 8
+              ? 'Generation ${life.generation} of $cap: your dynasty is saved here. Relivable Plus continues a dynasty to Generation 8.'
+              : 'Dynasty complete: eight generations of ${life.surname}s. Their story is in the history books.',
+          style: NF.sora(14, color: NF.soft),
+        ),
+      );
+    }
+    return FilledButton.icon(
+      style: primaryButton().copyWith(
+        minimumSize: const WidgetStatePropertyAll(Size.fromHeight(56)),
+      ),
+      icon: const Icon(Icons.family_restroom_rounded),
+      label: Text(
+        'Continue as an heir · Generation ${life.generation + 1} of $cap',
+      ),
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => HeirPicker(controller: controller)),
+      ),
+    );
+  }
+}
+
+/// Heir cards: age, stats, what they inherit and their memory of you
+/// (plan GE-004).
+class HeirPicker extends StatelessWidget {
+  const HeirPicker({super.key, required this.controller});
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final life = controller.life!;
+    final heirs = heirsOf(life);
+    return Scaffold(
+      backgroundColor: NF.bg,
+      appBar: AppBar(
+        backgroundColor: NF.bg,
+        title: Text(
+          'Choose your heir',
+          style: NF.sora(18, weight: FontWeight.w700),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+        children: [
+          Text(
+            'Estate after debts and tax: ${money(estateOf(life))}. The heir keeps their own memories and relationships.',
+            style: NF.sora(13, color: NF.muted),
+          ),
+          const SizedBox(height: 12),
+          for (final h in heirs)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: NFCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Avatar(initials: h.name.substring(0, 1), size: 44),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${h.name} ${life.surname}',
+                                style: NF.sora(17, weight: FontWeight.w700),
+                              ),
+                              Text(
+                                '${h.role} · age ${h.ageIn(life.year)}${h.info['adopted'] == true ? ' · adopted' : ''}',
+                                style: NF.sora(13, color: NF.muted),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(memoryOf(h), style: NF.sora(14, color: NF.soft)),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Inherits ${money(shareFor(life, h))}${h.ageIn(life.year) < 18 ? ' (held in trust until 18)' : ''}',
+                      style: NF.sora(13, weight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (final e in Map<String, dynamic>.from(
+                          h.info['stats'] ?? {},
+                        ).entries)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: NF.surface2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${e.key[0].toUpperCase()}${e.key.substring(1)} ${e.value}',
+                              style: NF.sora(12),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      style: orangeButton(),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        controller.continueAsHeir(h);
+                      },
+                      child: Text('Live as ${h.name}'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

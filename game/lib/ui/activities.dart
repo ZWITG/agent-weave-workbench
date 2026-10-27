@@ -29,6 +29,7 @@ const activityCategories = <(String, IconData)>[
   ('Identity', Icons.face_rounded),
   ('Crime', Icons.local_police_rounded),
   ('News', Icons.newspaper_rounded),
+  ('Family', Icons.family_restroom_rounded),
 ];
 
 IconData categoryIconFor(String c) => activityCategories

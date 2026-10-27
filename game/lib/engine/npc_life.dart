@@ -219,6 +219,12 @@ List<FeedEntry> npcUpdates(Life life, Random rng) {
             (n) =>
                 n.alive &&
                 !n.contactCut &&
+                !const {
+                  'Children',
+                  'Lover',
+                  'School',
+                  'Exes',
+                }.contains(n.circle) &&
                 (n.circle == 'Family' || n.circle == 'Partner' || n.bond >= 40),
           )
           .toList()

@@ -184,6 +184,18 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash('Salary', life.salary);
     cash('Income tax', -incomeTax(life.salary));
   }
+  if (life.flags.containsKey('child_support')) {
+    final minors = life.npcs
+        .where(
+          (n) => n.circle == 'Children' && n.alive && n.ageIn(life.year) < 18,
+        )
+        .length;
+    if (minors == 0) {
+      life.flags.remove('child_support');
+    } else {
+      cash('Child support', -max(1200, (life.salary * 0.15).round()) * minors);
+    }
+  }
   if (life.age >= 8 && life.age <= 17) {
     cash('Pocket money', 50 + life.age * 10);
   }

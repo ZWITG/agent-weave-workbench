@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'careers.dart';
 import 'economy.dart';
+import 'dynasty.dart';
+import 'family.dart';
 import 'jobs.dart';
+import 'love.dart';
 import 'lifespan.dart';
 import 'school.dart';
 import 'minigame_rules.dart';
@@ -340,6 +343,9 @@ final allActions = <GameAction>[
   ..._lifeActions,
   ...schoolActions,
   ...jobActions,
+  ...loveActions,
+  ...familyActions,
+  ...dynastyActions,
   ..._baseActions,
   ...moreActions,
   ...educationActions,

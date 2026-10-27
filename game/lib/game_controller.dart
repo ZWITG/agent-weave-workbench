@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'engine/actions.dart';
 import 'engine/careers.dart';
+import 'engine/dynasty.dart';
 import 'engine/engine.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
@@ -158,6 +159,23 @@ class GameController extends ChangeNotifier {
           (life!.age >= sliceEndAge &&
               pendingEvent == null &&
               lastOutcome == null));
+
+  // ---------------- Dynasty (plan Social §4) ----------------
+
+  int get generationCap => dynastyCap(plus: profile.plusTest);
+
+  /// Continue the family as one of the children.
+  void continueAsHeir(Npc heir) {
+    final old = life!;
+    engine!.world.recordLife(old);
+    life = heirLife(old, heir);
+    engine!.world.ensureYear(life!.year, life!.country, life!.city);
+    pendingEvent = null;
+    lastOutcome = null;
+    _snapshots.clear();
+    _save();
+    notifyListeners();
+  }
 
   // ---------------- Rewind (plan CL-021/023) ----------------
 

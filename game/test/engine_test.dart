@@ -4,8 +4,11 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/careers.dart';
+import 'package:relivable/engine/dynasty.dart';
+import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/lifespan.dart';
+import 'package:relivable/engine/love.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
@@ -595,5 +598,127 @@ void main() {
     life.performance = 90;
     life.jobSince = life.age - 4;
     expect(promotionOdds(life), greaterThan(30));
+  });
+
+  test('Kindling shows three profiles with compatibility and odds', () {
+    final life = engine.newLife(seed: 90)..age = 25;
+    life.money = 1000;
+    life.sceneQueue.add('kindling');
+    final scene = engine.nextScene(life)!;
+    expect(scene.choices.length, 4);
+    for (final c in scene.choices.take(3)) {
+      expect(c.risk, matches(RegExp('^(Spark|Steady|Mixed|Rocky)')));
+      expect(c.needsMoney, 60);
+    }
+    final out = engine.choose(life, scene, scene.choices.first);
+    expect(life.money, 940);
+    expect(
+      partnerOf(life) != null || out.text.contains('Odds were about'),
+      isTrue,
+    );
+  });
+
+  test('proposal, prenup and wedding lead to marriage', () {
+    final life = engine.newLife(seed: 91)..age = 30;
+    life.money = 60000;
+    final p = candidate(life, Random(1))..addFacets(affection: 40, trust: 40);
+    life.npcs.add(p);
+    setStage(life, p, 'living');
+    for (
+      var i = 0;
+      i < 6 && stageOf(life, partnerOf(life)!) != 'engaged';
+      i++
+    ) {
+      life.sceneQueue.add('proposal');
+      final s = engine.nextScene(life)!;
+      engine.choose(life, s, s.choices[1]);
+    }
+    expect(stageOf(life, partnerOf(life)!), 'engaged');
+    life.sceneQueue.add('prenup');
+    var s = engine.nextScene(life)!;
+    engine.choose(life, s, s.choices.first);
+    expect(partnerOf(life)!.info['prenup'], 'none');
+    s = engine.nextScene(life)!;
+    expect(s.id, 'scene:wedding');
+    engine.choose(life, s, s.choices.first);
+    final spouse = partnerOf(life)!;
+    expect(stageOf(life, spouse), 'married');
+    expect(spouse.role, anyOf('Wife', 'Husband'));
+  });
+
+  test('divorce splits savings by the prenup', () {
+    for (final (prenup, keep) in const [
+      ('none', 48000),
+      ('standard', 73000),
+      ('ironclad', 88000),
+    ]) {
+      final life = engine.newLife(seed: 92)..age = 40;
+      life.money = 100000;
+      life.savings = 0;
+      life.invested = 0;
+      final p = candidate(life, Random(2));
+      life.npcs.add(p);
+      setStage(life, p, 'married');
+      p.info['prenup'] = prenup;
+      life.sceneQueue.add('divorce');
+      final s = engine.nextScene(life)!;
+      engine.choose(life, s, s.choices.first);
+      expect(life.money, keep, reason: prenup);
+      expect(partnerOf(life), isNull);
+      expect(life.flags.containsKey('divorced'), isTrue);
+    }
+  });
+
+  test('a pregnancy becomes a birth scene and a named child', () {
+    final life = engine.newLife(seed: 93)..age = 31;
+    final p = candidate(life, Random(3));
+    life.npcs.add(p);
+    life.flags['expecting'] = Memory(life.age, 'expecting');
+    familyYear(life, Random(4));
+    expect(life.sceneQueue, contains('birth'));
+    final s = engine.nextScene(life)!;
+    engine.choose(life, s, s.choices.first);
+    final kids = childrenOf(life);
+    expect(kids, isNotEmpty);
+    expect(kids.first.name, s.choices.first.label);
+    expect(kids.first.info['stats'], isA<Map>());
+    expect(kids.first.info['otherParent'], p.name);
+  });
+
+  test('heirs inherit, trusts open at 18, and dynasties have a cap', () {
+    final old = engine.newLife(seed: 94)..age = 70;
+    old.assets.clear();
+    old.money = 1000000;
+    old.savings = 0;
+    old.invested = 0;
+    final adult = newChild(old, Random(5), ageNow: 30);
+    old.npcs.add(adult);
+    final minor = newChild(old, Random(6), ageNow: 10);
+    old.npcs.add(minor);
+    expect(estateOf(old), 900000);
+    expect(shareFor(old, adult), 450000);
+
+    final heir = heirLife(old, adult);
+    expect(heir.generation, 2);
+    expect(heir.surname, old.surname);
+    expect(heir.money, 450000);
+    expect(heir.lineage.single['name'], old.fullName);
+    expect(
+      heir.npcs.where((n) => n.circle == 'Family' && !n.alive),
+      hasLength(1),
+    );
+
+    final young = heirLife(old, minor);
+    expect(young.trust, 450000);
+    young.age = 18;
+    final before = young.money;
+    expect(releaseTrust(young), isNotNull);
+    expect(young.money, before + 450000);
+    expect(young.trust, 0);
+
+    expect(dynastyCap(plus: false), 4);
+    expect(dynastyCap(plus: true), 8);
+    old.money = -50000;
+    expect(estateOf(old), 0);
   });
 }
