@@ -219,6 +219,21 @@ const crimes = <Crime>[
     caught: 'The getaway driver panicked and drove into a bollard. Sirens everywhere.',
   ),
   (
+    id: 'heist',
+    label: 'Heist',
+    minAge: 18,
+    risk: 0,
+    evidence: 55,
+    band: 'serious',
+    gainMin: 0,
+    gainMax: 0,
+    karma: -8,
+    violent: false,
+    since: 0,
+    done: '',
+    caught: '',
+  ),
+  (
     id: 'black_market',
     label: 'Buying stolen goods',
     minAge: 18,
@@ -1319,6 +1334,9 @@ List<String> prisonYear(Life l, Random rng) {
     );
   }
   p.behaviour = min(100, p.behaviour + (p.job != null ? 3 : 0));
+  if (rng.nextInt(100) < (p.security == 'maximum' ? 12 : 6)) {
+    l.sceneQueue.add('riot');
+  }
   final mate = l.npc('cellmate');
   if (mate != null && rng.nextInt(100) < 20) {
     feed.add(

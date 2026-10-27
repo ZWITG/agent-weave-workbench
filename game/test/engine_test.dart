@@ -9,6 +9,7 @@ import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
 import 'package:relivable/engine/health.dart';
+import 'package:relivable/engine/heists.dart';
 import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
@@ -1280,5 +1281,77 @@ void main() {
     expect(p.sparks, 100);
     expect(p.collections['challenges'], [challengeName(fit)]);
     expect(trackChallenge(p, life, DateTime(2026, 11, 4)), isEmpty);
+  });
+
+  // ---------------- Wave G1: heists, lawsuits and riots ----------------
+
+  test('heists show their windows and end with an after-action report', () {
+    final life = engine.newLife(seed: 150)..age = 30;
+    life.money = 10000;
+    final train = heistById('train');
+    life.age = 30;
+    final locked = heistWindowLock(life, train);
+    expect(locked == null, life.year % 2 == 0);
+    if (locked != null) expect(locked, contains('next window'));
+    for (var i = 0; i < 6; i++) {
+      life.sceneQueue.add('heist_go:jewellers:pros:10');
+      final scene = engine.nextScene(life)!;
+      final before = life.money;
+      final out = engine.choose(life, scene, scene.choices.first);
+      expect(out.text, contains('After-action report'));
+      expect(out.text, contains('Entry'));
+      expect(
+        life.money > before ||
+            life.sceneQueue.any((s) => s.startsWith('arrest')) ||
+            life.cases.isNotEmpty,
+        isTrue,
+      );
+      life.sceneQueue.clear();
+      life.lastSeen.clear();
+      life.age++;
+    }
+  });
+
+  test('lawsuits need a grievance, settle in rounds and leave grudges', () {
+    final life = engine.newLife(seed: 151)..age = 35;
+    life.money = 50000;
+    expect(grievances(life), isEmpty);
+    final friend = Npc(
+      id: 'pal',
+      role: 'Friend',
+      name: 'Sam Lee',
+      birthYear: life.year - 35,
+      circle: 'Friends',
+      bond: 70,
+    );
+    friend.debt = 3000;
+    life.npcs.add(friend);
+    expect(grievances(life).single.id, 'debt:pal');
+    life.sceneQueue.add('sue_lawyer:debt:pal');
+    var scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices[1]);
+    scene = engine.nextScene(life)!;
+    expect(scene.text, contains('settle'));
+    final before = life.money;
+    engine.choose(life, scene, scene.choices.first);
+    expect(life.money, greaterThan(before));
+    expect(friend.debt, 0);
+    expect(life.marks.any((m) => m.startsWith('grudge:pal')), isTrue);
+    var struck = false;
+    for (var i = 0; i < 40 && !struck; i++) {
+      final feed = lawYear(life, Random(i));
+      struck = feed.isNotEmpty;
+    }
+    expect(struck, isTrue);
+  });
+
+  test('a prison riot is a decision with explained odds', () {
+    final life = engine.newLife(seed: 152)..age = 30;
+    life.prison = Prison(crime: 'burglary', years: 4, since: 29);
+    life.sceneQueue.add('riot');
+    final scene = engine.nextScene(life)!;
+    expect(scene.choices.length, 4);
+    final out = engine.choose(life, scene, scene.choices.last);
+    expect(out.text, contains('invisible'));
   });
 }

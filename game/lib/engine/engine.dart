@@ -7,6 +7,7 @@ import 'economy.dart';
 import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
+import 'heists.dart';
 import 'pets.dart';
 import 'social.dart';
 import 'community.dart';
@@ -294,6 +295,7 @@ class GameEngine {
       ...healthYear(life, _rngFor(life, 79)),
       ...npcAging(life, _rngFor(life, 83)),
       ...identityYear(life),
+      ...lawYear(life, _rngFor(life, 107)),
       ...fameYear(life, _rngFor(life, 101)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),

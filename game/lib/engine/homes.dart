@@ -363,6 +363,7 @@ List<String> homeYear(Life l, Random rng) {
         feed.add('Your tenant paid half the rent late, with a long apology.');
       case 1:
         let.condition = max(0, let.condition - 15);
+        l.marks.add('tenant_damage:${l.age}');
         feed.add(
           'Your tenant\'s party left a hole in the wall of your ${let.name.toLowerCase()}. Condition ${let.condition}%.',
         );
