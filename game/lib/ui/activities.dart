@@ -34,6 +34,7 @@ const activityCategories = <(String, IconData)>[
   ('Prison', Icons.door_sliding_rounded),
   ('News', Icons.newspaper_rounded),
   ('Family', Icons.family_restroom_rounded),
+  ('Seasonal', Icons.event_available_rounded),
 ];
 
 extension on List<(String, IconData)> {
@@ -89,6 +90,13 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       _actions.where((a) => a.category == cat).toList();
 
   bool _open(GameAction a) => a.lockReason(life) == null;
+
+  /// A seasonal activity that fits today's season and this age, even if
+  /// something else (like money) still locks it.
+  bool _inSeason(GameAction a) =>
+      a.extraCheck?.call(life) == null &&
+      life.age >= a.minAge &&
+      life.age <= a.maxAge;
 
   /// Up to four relevant, available actions for this moment in life.
   List<GameAction> _suggested() {
@@ -256,9 +264,15 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
             runSpacing: 10,
             children: [
               // In prison the Prison tile comes first; outside, it hides.
+              // Seasonal activities show first, and only while their
+              // season is on.
               for (final (cat, icon) in [
                 if (life.prison != null) activityCategories.named('Prison'),
-                ...activityCategories.where((e) => e.$1 != 'Prison'),
+                if (_in('Seasonal').any(_inSeason))
+                  activityCategories.named('Seasonal'),
+                ...activityCategories.where(
+                  (e) => e.$1 != 'Prison' && e.$1 != 'Seasonal',
+                ),
               ])
                 if (_in(cat).isNotEmpty)
                   SizedBox(width: w, child: _categoryTile(cat, icon)),

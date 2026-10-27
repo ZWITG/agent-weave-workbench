@@ -3,6 +3,9 @@ import 'dart:math';
 import 'careers.dart' show careers, startCareer;
 import 'models.dart';
 
+/// Every storylet file in assets/storylets, in load order.
+const storyletFiles = ['core.json', 'more.json'];
+
 /// A data-driven event. Storylets live in assets/storylets/*.json so new
 /// content ships without code changes (see 08 Technical Architecture).
 class Storylet {

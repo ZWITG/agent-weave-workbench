@@ -1,0 +1,2215 @@
+[
+ {
+  "id": "lost_tooth",
+  "minAge": 5,
+  "maxAge": 8,
+  "weight": 5,
+  "category": "family",
+  "text": "Your wobbly tooth finally comes out in an apple. {mother} says to put it under your pillow tonight.",
+  "choices": [
+   {
+    "label": "Put it under the pillow",
+    "outcome": "In the morning there was a shiny coin and a tiny note in very familiar handwriting.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "money": 2
+    }
+   },
+   {
+    "label": "Stay awake to catch the tooth fairy",
+    "outcome": "You lasted until 9:14pm. The coin appeared anyway. The mystery deepens.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "smarts": 1
+     }
+    }
+   },
+   {
+    "label": "Keep the tooth in a box",
+    "outcome": "You now own a small, slightly gross treasure. You check on it regularly.",
+    "effects": {
+     "stats": {
+      "creativity": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "swimming_lessons",
+  "minAge": 5,
+  "maxAge": 9,
+  "weight": 5,
+  "category": "school",
+  "text": "Swimming lessons start this week. The pool smells of chlorine and everyone else seems to already know how to float.",
+  "choices": [
+   {
+    "label": "Jump straight in",
+    "outcome": "You swallowed half the pool and came up grinning. By the end of term you could swim a length.",
+    "effects": {
+     "stats": {
+      "athleticism": 3,
+      "happiness": 2
+     },
+     "flags": {
+      "can_swim": "learning to swim"
+     }
+    }
+   },
+   {
+    "label": "Cling to the side",
+    "outcome": "You held the edge for three weeks, then let go one day without noticing. Now you can swim.",
+    "effects": {
+     "stats": {
+      "athleticism": 2
+     },
+     "flags": {
+      "can_swim": "learning to swim"
+     }
+    }
+   },
+   {
+    "label": "Fake a tummy ache",
+    "outcome": "You sat on the bench in a towel every week. You still cannot swim.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "imaginary_friend",
+  "minAge": 3,
+  "maxAge": 7,
+  "weight": 5,
+  "category": "family",
+  "text": "You have a new best friend called Captain Biscuit. Nobody else can see him, which is very convenient for him.",
+  "choices": [
+   {
+    "label": "Set a place for him at dinner",
+    "outcome": "{parent} played along and passed Captain Biscuit the peas. He did not eat them either.",
+    "effects": {
+     "stats": {
+      "creativity": 3,
+      "happiness": 2
+     },
+     "bond": {
+      "@parent": 3
+     }
+    }
+   },
+   {
+    "label": "Blame him for the broken vase",
+    "outcome": "Captain Biscuit got a stern talking-to. So did you.",
+    "effects": {
+     "stats": {
+      "creativity": 1,
+      "karma": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "school_trip_museum",
+  "minAge": 7,
+  "maxAge": 11,
+  "weight": 5,
+  "category": "school",
+  "text": "The class trip is to the natural history museum. There is a dinosaur skeleton the size of a bus and a gift shop the size of a dream.",
+  "choices": [
+   {
+    "label": "Fill in the whole worksheet",
+    "outcome": "You learned that some dinosaurs had feathers and told everyone for a month.",
+    "effects": {
+     "stats": {
+      "smarts": 3
+     }
+    }
+   },
+   {
+    "label": "Spend your money in the gift shop",
+    "outcome": "You came home with a rubber T. rex and a pencil shaped like a bone. Worth it.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "money": -10
+    }
+   },
+   {
+    "label": "Get lost on purpose",
+    "outcome": "You found a quiet room full of beetles. A guard found you. The teacher was not amused.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "discipline": -2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "first_bike",
+  "minAge": 6,
+  "maxAge": 10,
+  "weight": 5,
+  "category": "family",
+  "text": "{parent} wheels out a bike with a bow on the handlebars. The stabilisers are coming off today.",
+  "choices": [
+   {
+    "label": "Let them run behind you",
+    "outcome": "They let go without telling you. You were halfway down the street before you noticed. You were flying.",
+    "effects": {
+     "stats": {
+      "athleticism": 2,
+      "happiness": 4
+     },
+     "bond": {
+      "@parent": 5
+     }
+    }
+   },
+   {
+    "label": "Insist on doing it alone",
+    "outcome": "You fell off eleven times and got back on twelve.",
+    "effects": {
+     "stats": {
+      "athleticism": 2,
+      "discipline": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "class_pet_weekend",
+  "minAge": 6,
+  "maxAge": 10,
+  "weight": 5,
+  "category": "school",
+  "text": "It is your turn to take the class guinea pig, Professor Nibbles, home for the weekend.",
+  "choices": [
+   {
+    "label": "Look after him perfectly",
+    "outcome": "You wrote a diary of his weekend with drawings. The teacher put it on the wall.",
+    "effects": {
+     "stats": {
+      "karma": 2,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Teach him tricks",
+    "outcome": "Professor Nibbles learned nothing. You learned patience.",
+    "effects": {
+     "stats": {
+      "discipline": 2
+     }
+    }
+   },
+   {
+    "label": "Let him explore the house",
+    "outcome": "He was found on Sunday night inside a slipper. Everyone aged ten years.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "chess_club",
+  "minAge": 8,
+  "maxAge": 12,
+  "weight": 5,
+  "category": "school",
+  "text": "A poster in the corridor: CHESS CLUB, Tuesdays, biscuits provided.",
+  "choices": [
+   {
+    "label": "Join for the chess",
+    "outcome": "You lost every game for a month, then won one. You have been hooked ever since.",
+    "effects": {
+     "stats": {
+      "smarts": 3
+     },
+     "flags": {
+      "chess_player": "joining chess club"
+     }
+    }
+   },
+   {
+    "label": "Join for the biscuits",
+    "outcome": "You never learned how the horse moves, but the biscuits were excellent.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Walk past",
+    "outcome": "You never found out if you would have been good at it.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ]
+ },
+ {
+  "id": "grandparent_story",
+  "minAge": 6,
+  "maxAge": 12,
+  "weight": 5,
+  "category": "family",
+  "text": "Your grandmother pulls out an old photo album and starts telling you about the year she ran away to join a dance troupe.",
+  "choices": [
+   {
+    "label": "Ask a hundred questions",
+    "outcome": "You heard about the train, the tour and the boy with the trumpet. You will tell your own grandchildren one day.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "smarts": 1
+     },
+     "flags": {
+      "family_stories": "listening to your grandmother's stories"
+     }
+    }
+   },
+   {
+    "label": "Say it sounds made up",
+    "outcome": "She laughed and closed the album. You wish now you had let her finish.",
+    "effects": {
+     "stats": {
+      "karma": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "teen_first_job_babysit",
+  "minAge": 13,
+  "maxAge": 16,
+  "weight": 5,
+  "category": "work",
+  "text": "The neighbours ask if you would babysit their twins on Saturday. Ten dollars an hour and all the pizza you can eat.",
+  "choices": [
+   {
+    "label": "Say yes and take it seriously",
+    "outcome": "The twins were angels for you, which nobody believed. They asked for you every weekend after that.",
+    "effects": {
+     "stats": {
+      "discipline": 2,
+      "karma": 1
+     },
+     "money": 120
+    }
+   },
+   {
+    "label": "Say yes and invite friends round",
+    "outcome": "The twins told on you within the hour. You were not asked back.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "karma": -2
+     },
+     "money": 40
+    }
+   },
+   {
+    "label": "Say no",
+    "outcome": "You kept your Saturday. The pizza went to someone else.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ]
+ },
+ {
+  "id": "teen_band",
+  "minAge": 13,
+  "maxAge": 17,
+  "weight": 10,
+  "category": "friends",
+  "text": "{friend} wants to start a band. They have a name (The Wet Socks), a logo and absolutely no songs.",
+  "choices": [
+   {
+    "label": "Learn the drums",
+    "outcome": "Your family bought earplugs. After a year you were actually good.",
+    "effects": {
+     "stats": {
+      "creativity": 3,
+      "happiness": 3
+     },
+     "bond": {
+      "@friend": 5
+     },
+     "flags": {
+      "in_a_band": "starting a band"
+     }
+    }
+   },
+   {
+    "label": "Write the lyrics",
+    "outcome": "Your first song was about a bus. It was surprisingly moving.",
+    "effects": {
+     "stats": {
+      "creativity": 4
+     },
+     "bond": {
+      "@friend": 4
+     },
+     "flags": {
+      "in_a_band": "starting a band"
+     }
+    }
+   },
+   {
+    "label": "Be their manager",
+    "outcome": "You booked one gig at a cafe. Six people came. It was glorious.",
+    "effects": {
+     "stats": {
+      "charisma": 3
+     },
+     "bond": {
+      "@friend": 3
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@friend"
+   ]
+  }
+ },
+ {
+  "id": "band_first_gig",
+  "minAge": 14,
+  "maxAge": 20,
+  "weight": 24,
+  "category": "friends",
+  "text": "The Wet Socks have their first real gig, at a pub with a sticky floor and a sound engineer who hates you.",
+  "choices": [
+   {
+    "label": "Play your hearts out",
+    "outcome": "The crowd of eleven people cheered for an encore. You did not have another song, so you played the first one again.",
+    "effects": {
+     "stats": {
+      "happiness": 5,
+      "charisma": 2
+     }
+    }
+   },
+   {
+    "label": "Freeze on stage",
+    "outcome": "You stood still for the whole set. Someone said it was \"very avant-garde\".",
+    "effects": {
+     "stats": {
+      "happiness": -2,
+      "charisma": 1
+     }
+    }
+   }
+  ],
+  "requires": {
+   "flags": [
+    "in_a_band"
+   ]
+  },
+  "remembers": "in_a_band"
+ },
+ {
+  "id": "exam_stress",
+  "minAge": 15,
+  "maxAge": 17,
+  "weight": 5,
+  "category": "school",
+  "text": "Final exams are in three weeks. Your desk is buried in notes and you have started dreaming in equations.",
+  "choices": [
+   {
+    "label": "Make a timetable and stick to it",
+    "outcome": "It was boring and it worked. You walked into the hall calm.",
+    "effects": {
+     "stats": {
+      "smarts": 3,
+      "discipline": 3
+     }
+    }
+   },
+   {
+    "label": "Cram the night before",
+    "outcome": "You knew everything at 3am and nothing at 9am.",
+    "effects": {
+     "stats": {
+      "smarts": 1,
+      "health": -2
+     }
+    }
+   },
+   {
+    "label": "Revise with friends",
+    "outcome": "You learned half as much and laughed twice as much. Your grades were fine.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "happiness": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "teen_volunteer",
+  "minAge": 14,
+  "maxAge": 17,
+  "weight": 5,
+  "category": "community",
+  "text": "The animal shelter needs volunteers on Saturdays to walk dogs and clean cages.",
+  "choices": [
+   {
+    "label": "Sign up",
+    "outcome": "You walked a three-legged greyhound called Rocket every week. He was the fastest dog there.",
+    "effects": {
+     "stats": {
+      "karma": 4,
+      "happiness": 3
+     },
+     "flags": {
+      "volunteer": "volunteering at the animal shelter"
+     }
+    }
+   },
+   {
+    "label": "Sign up for the certificate",
+    "outcome": "You went four times and put it on your CV in large letters.",
+    "effects": {
+     "stats": {
+      "karma": 1
+     }
+    }
+   },
+   {
+    "label": "Sleep in instead",
+    "outcome": "Your Saturdays stayed yours.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ]
+ },
+ {
+  "id": "learners_permit_fail",
+  "minAge": 16,
+  "maxAge": 19,
+  "weight": 5,
+  "category": "life",
+  "text": "Your driving instructor grips the dashboard as you approach a roundabout at a speed best described as optimistic.",
+  "choices": [
+   {
+    "label": "Slow down and listen",
+    "outcome": "You went round twice, signalled properly and the instructor breathed again.",
+    "effects": {
+     "stats": {
+      "discipline": 2
+     }
+    }
+   },
+   {
+    "label": "Keep your foot down",
+    "outcome": "You made it round. The instructor added three extra lessons to your plan.",
+    "effects": {
+     "stats": {
+      "happiness": 1,
+      "discipline": -2
+     },
+     "money": -90
+    }
+   }
+  ]
+ },
+ {
+  "id": "gap_year",
+  "minAge": 18,
+  "maxAge": 20,
+  "weight": 5,
+  "category": "life",
+  "text": "School is over. Before anything else, you could take a year to travel, work or just think.",
+  "choices": [
+   {
+    "label": "Backpack around the world ($3,000)",
+    "outcome": "Hostels, night buses, one stolen phone and a hundred stories.",
+    "effects": {
+     "stats": {
+      "happiness": 6,
+      "charisma": 2,
+      "smarts": 1
+     },
+     "money": -3000,
+     "flags": {
+      "gap_year": "your gap year"
+     }
+    }
+   },
+   {
+    "label": "Work and save",
+    "outcome": "A year of shifts. You started the next chapter with money in the bank.",
+    "effects": {
+     "stats": {
+      "discipline": 3
+     },
+     "money": 4000
+    }
+   },
+   {
+    "label": "Go straight on",
+    "outcome": "No pause. You kept your momentum.",
+    "effects": {
+     "stats": {
+      "discipline": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "flatmate_trouble",
+  "minAge": 19,
+  "maxAge": 30,
+  "weight": 5,
+  "category": "home",
+  "text": "Your flatmate has started eating your food, borrowing your clothes and leaving the hob on.",
+  "choices": [
+   {
+    "label": "Have an honest talk",
+    "outcome": "It was awkward for exactly four minutes, then much better.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Label everything passive-aggressively",
+    "outcome": "Your yoghurt now says \"MINE (please)\". It has not helped.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   },
+   {
+    "label": "Move out",
+    "outcome": "You found a smaller place with a door that locks. Peace.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     },
+     "money": -600
+    }
+   }
+  ]
+ },
+ {
+  "id": "first_payslip",
+  "minAge": 18,
+  "maxAge": 26,
+  "weight": 5,
+  "category": "work",
+  "text": "Your first proper payslip arrives. There is a big number at the top and a smaller one at the bottom.",
+  "choices": [
+   {
+    "label": "Learn what every deduction means",
+    "outcome": "Tax, pension, insurance. You now understand more than most adults.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "discipline": 2
+     }
+    }
+   },
+   {
+    "label": "Treat yourself ($300)",
+    "outcome": "You bought something you did not need and loved it.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "money": -300
+    }
+   },
+   {
+    "label": "Save half of it",
+    "outcome": "It felt boring. It was the smartest thing you did that year.",
+    "effects": {
+     "stats": {
+      "discipline": 3
+     }
+    }
+   }
+  ],
+  "requires": {
+   "job": true
+  }
+ },
+ {
+  "id": "friend_wedding_abroad",
+  "minAge": 24,
+  "maxAge": 38,
+  "weight": 5,
+  "category": "friends",
+  "text": "{friend} is getting married on a beach on the other side of the world. The invitation is beautiful. The flights are not.",
+  "choices": [
+   {
+    "label": "Go ($2,500)",
+    "outcome": "You cried during the vows and danced barefoot until the sun came up.",
+    "effects": {
+     "stats": {
+      "happiness": 6
+     },
+     "money": -2500,
+     "bond": {
+      "@friend": 10
+     }
+    }
+   },
+   {
+    "label": "Send a generous gift instead",
+    "outcome": "They understood, mostly. The photos looked incredible.",
+    "effects": {
+     "stats": {},
+     "money": -300,
+     "bond": {
+      "@friend": 2
+     }
+    }
+   },
+   {
+    "label": "Decline politely",
+    "outcome": "{friend} said it was fine. It was slightly less than fine.",
+    "effects": {
+     "stats": {},
+     "bond": {
+      "@friend": -5
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@friend"
+   ]
+  }
+ },
+ {
+  "id": "side_hustle",
+  "minAge": 22,
+  "maxAge": 40,
+  "weight": 5,
+  "category": "work",
+  "text": "Everyone you know seems to have a side hustle. You have a skill, an evening free and a vague plan.",
+  "choices": [
+   {
+    "label": "Start one",
+    "outcome": "You sold handmade things online. It paid for your holidays.",
+    "effects": {
+     "stats": {
+      "creativity": 2,
+      "discipline": 2
+     },
+     "money": 2500,
+     "flags": {
+      "side_hustle": "starting a side hustle"
+     }
+    }
+   },
+   {
+    "label": "Rest instead",
+    "outcome": "Your evenings stayed quiet. You slept better than everyone with a hustle.",
+    "effects": {
+     "stats": {
+      "health": 2,
+      "happiness": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "roommate_wedding_speech",
+  "minAge": 25,
+  "maxAge": 40,
+  "weight": 5,
+  "category": "friends",
+  "text": "{friend} asks you to give a speech at their engagement party. Tomorrow.",
+  "choices": [
+   {
+    "label": "Write something heartfelt",
+    "outcome": "Half the room cried. The other half pretended they had something in their eye.",
+    "effects": {
+     "stats": {
+      "charisma": 3
+     },
+     "bond": {
+      "@friend": 6
+     }
+    }
+   },
+   {
+    "label": "Wing it with embarrassing stories",
+    "outcome": "Big laughs, one gasp, and a long look from {friend}'s new in-laws.",
+    "effects": {
+     "stats": {
+      "charisma": 1,
+      "happiness": 2
+     },
+     "bond": {
+      "@friend": 1
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@friend"
+   ]
+  }
+ },
+ {
+  "id": "apartment_plants",
+  "minAge": 20,
+  "maxAge": 35,
+  "weight": 5,
+  "category": "home",
+  "text": "Your home feels a bit bare. The plant shop down the road has a sale on.",
+  "choices": [
+   {
+    "label": "Buy a whole jungle ($120)",
+    "outcome": "Twenty plants. Eighteen survived. You talk to them now.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "money": -120
+    }
+   },
+   {
+    "label": "Buy one cactus",
+    "outcome": "It is still alive. It may outlive you.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     },
+     "money": -10
+    }
+   }
+  ]
+ },
+ {
+  "id": "quarter_life_crisis",
+  "minAge": 25,
+  "maxAge": 32,
+  "weight": 5,
+  "category": "life",
+  "text": "You wake up at 3am convinced everyone else has their life figured out and you are falling behind.",
+  "choices": [
+   {
+    "label": "Talk to someone about it",
+    "outcome": "It turned out nearly everyone feels like this. That helped more than you expected.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "health": 1
+     }
+    }
+   },
+   {
+    "label": "Make a big change",
+    "outcome": "You signed up for something new the next morning. Terrifying and exciting.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "impulsivity": 2
+     }
+    }
+   },
+   {
+    "label": "Scroll until dawn",
+    "outcome": "Everyone online looked happier. They were not.",
+    "effects": {
+     "stats": {
+      "happiness": -3
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "jury_of_peers_neighbour",
+  "minAge": 21,
+  "maxAge": 45,
+  "weight": 5,
+  "category": "community",
+  "text": "Your building is voting on whether to ban bikes from the hallway. The meeting is tonight and feelings are high.",
+  "choices": [
+   {
+    "label": "Go and speak up",
+    "outcome": "You proposed a bike rack. It passed unanimously. You are now on the committee.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "karma": 2
+     }
+    }
+   },
+   {
+    "label": "Stay home",
+    "outcome": "The ban passed. Your bike lives in your kitchen now.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "cooking_disaster",
+  "minAge": 18,
+  "maxAge": 40,
+  "weight": 5,
+  "category": "home",
+  "text": "You invited people round for dinner and the main course is on fire. Literally.",
+  "choices": [
+   {
+    "label": "Order pizza and laugh it off",
+    "outcome": "Everyone agreed it was the best dinner party they had been to.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "charisma": 1
+     },
+     "money": -60
+    }
+   },
+   {
+    "label": "Serve it anyway",
+    "outcome": "You called it \"blackened\". Nobody believed you, but they ate it.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "lost_luggage",
+  "minAge": 20,
+  "maxAge": 70,
+  "weight": 5,
+  "category": "life",
+  "text": "Your suitcase did not arrive. The airline's app says it is \"in transit\", which could mean anywhere.",
+  "choices": [
+   {
+    "label": "Stay calm and file a claim",
+    "outcome": "It turned up two days later with a new sticker from a country you have never visited.",
+    "effects": {
+     "stats": {
+      "discipline": 1
+     }
+    }
+   },
+   {
+    "label": "Buy a whole new wardrobe ($400)",
+    "outcome": "Holiday you has much better taste than regular you.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     },
+     "money": -400
+    }
+   }
+  ]
+ },
+ {
+  "id": "promotion_party",
+  "minAge": 26,
+  "maxAge": 60,
+  "weight": 5,
+  "category": "work",
+  "text": "Your team throws you a surprise party for five years at the company. There is a cake with your face printed on it.",
+  "choices": [
+   {
+    "label": "Give a little speech",
+    "outcome": "You thanked everyone by name. Even the quiet guy from IT smiled.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "happiness": 3
+     }
+    }
+   },
+   {
+    "label": "Eat your own face",
+    "outcome": "You took the first slice, from the forehead. Legendary.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     }
+    }
+   }
+  ],
+  "requires": {
+   "job": true
+  }
+ },
+ {
+  "id": "work_trip_abroad",
+  "minAge": 25,
+  "maxAge": 60,
+  "weight": 5,
+  "category": "work",
+  "text": "Your boss asks you to represent the company at a conference abroad. Three days, a hotel and a lanyard.",
+  "choices": [
+   {
+    "label": "Network like mad",
+    "outcome": "You came back with forty business cards and one real friend.",
+    "effects": {
+     "stats": {
+      "charisma": 3
+     }
+    }
+   },
+   {
+    "label": "Sneak off to see the city",
+    "outcome": "You missed one talk and saw the most beautiful cathedral of your life.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     }
+    }
+   },
+   {
+    "label": "Stay in the hotel",
+    "outcome": "Room service, crisp sheets and twelve hours of sleep. Bliss.",
+    "effects": {
+     "stats": {
+      "health": 2
+     }
+    }
+   }
+  ],
+  "requires": {
+   "job": true
+  }
+ },
+ {
+  "id": "office_birthday_collection",
+  "minAge": 22,
+  "maxAge": 64,
+  "weight": 5,
+  "category": "work",
+  "text": "An envelope goes round the office for someone's birthday. You have no idea who they are.",
+  "choices": [
+   {
+    "label": "Put in $10 and sign it warmly",
+    "outcome": "They thanked you in the kitchen later. Now you know who they are.",
+    "effects": {
+     "stats": {
+      "karma": 1
+     },
+     "money": -10
+    }
+   },
+   {
+    "label": "Pass it on quickly",
+    "outcome": "Nobody noticed. Probably.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ],
+  "requires": {
+   "job": true
+  }
+ },
+ {
+  "id": "mentor_young_colleague",
+  "minAge": 32,
+  "maxAge": 62,
+  "weight": 5,
+  "category": "work",
+  "text": "A nervous new starter keeps asking you questions. Your manager suggests you mentor them.",
+  "choices": [
+   {
+    "label": "Take them under your wing",
+    "outcome": "Two years later they got promoted and thanked you in their speech.",
+    "effects": {
+     "stats": {
+      "karma": 3,
+      "charisma": 2
+     }
+    }
+   },
+   {
+    "label": "Point them to the manual",
+    "outcome": "They figured it out eventually, without you.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ],
+  "requires": {
+   "job": true
+  }
+ },
+ {
+  "id": "house_party_neighbours",
+  "minAge": 28,
+  "maxAge": 60,
+  "weight": 5,
+  "category": "home",
+  "text": "The new neighbours throw a loud party until 2am on a Tuesday.",
+  "choices": [
+   {
+    "label": "Knock and join in",
+    "outcome": "You ended up dancing in their kitchen. You are best friends now.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "charisma": 1
+     }
+    }
+   },
+   {
+    "label": "Knock and complain politely",
+    "outcome": "They apologised with a bottle of wine the next day.",
+    "effects": {
+     "stats": {
+      "charisma": 1
+     }
+    }
+   },
+   {
+    "label": "Lie awake fuming",
+    "outcome": "You did not sleep. You did compose a very strongly worded note.",
+    "effects": {
+     "stats": {
+      "health": -1,
+      "happiness": -2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "car_breakdown",
+  "minAge": 22,
+  "maxAge": 75,
+  "weight": 5,
+  "category": "life",
+  "text": "The bus you are on makes a noise like a dying goose and stops on the hard shoulder. Everyone looks at each other.",
+  "choices": [
+   {
+    "label": "Organise a group taxi",
+    "outcome": "You split a minibus with six strangers. By the time you arrived you had a new friend and a recipe for soup.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "happiness": 2
+     },
+     "money": -20
+    }
+   },
+   {
+    "label": "Wait it out with a book",
+    "outcome": "The replacement bus came two hours later. You finished the book.",
+    "effects": {
+     "stats": {
+      "smarts": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "home_burglary_scare",
+  "minAge": 25,
+  "maxAge": 80,
+  "weight": 14,
+  "category": "home",
+  "text": "You come home to find the back door open. Nothing seems to be missing, but the drawers have been searched.",
+  "choices": [
+   {
+    "label": "Change the locks ($300)",
+    "outcome": "New locks, new alarm, and you finally sleep through the night again.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     },
+     "money": -300
+    }
+   },
+   {
+    "label": "Get a big dog",
+    "outcome": "Your new dog is enormous and terrified of the hoover. Burglars do not know that.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "money": -200
+    }
+   },
+   {
+    "label": "Shrug it off",
+    "outcome": "You jumped at every noise for a month.",
+    "effects": {
+     "stats": {
+      "happiness": -3
+     }
+    }
+   }
+  ],
+  "requires": {
+   "owns": [
+    "house"
+   ]
+  }
+ },
+ {
+  "id": "parent_retires",
+  "minAge": 40,
+  "maxAge": 65,
+  "weight": 5,
+  "category": "family",
+  "text": "{parent} retires after forty years in the same job. There is a party with cheese on sticks and a very emotional speech.",
+  "choices": [
+   {
+    "label": "Give a toast",
+    "outcome": "You told the story about the day they took you to work. Everyone cried.",
+    "effects": {
+     "stats": {
+      "charisma": 2
+     },
+     "bond": {
+      "@parent": 6
+     }
+    }
+   },
+   {
+    "label": "Help them plan their new life",
+    "outcome": "They signed up for pottery, Spanish and a choir in one week. You created a monster.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     },
+     "bond": {
+      "@parent": 4
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@parent"
+   ]
+  }
+ },
+ {
+  "id": "partner_sick_care",
+  "minAge": 35,
+  "maxAge": 85,
+  "weight": 5,
+  "category": "love",
+  "text": "{partner} has a bad case of flu and is being very dramatic about it.",
+  "choices": [
+   {
+    "label": "Bring soup and sympathy",
+    "outcome": "You made soup, fetched blankets and watched their favourite films. They will never forget it.",
+    "effects": {
+     "stats": {
+      "karma": 2
+     },
+     "bond": {
+      "@partner": 6
+     }
+    }
+   },
+   {
+    "label": "Leave them to rest",
+    "outcome": "They survived. They mention it occasionally.",
+    "effects": {
+     "stats": {},
+     "bond": {
+      "@partner": -2
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@partner"
+   ]
+  }
+ },
+ {
+  "id": "partner_surprise_trip",
+  "minAge": 28,
+  "maxAge": 80,
+  "weight": 5,
+  "category": "love",
+  "text": "{partner} hands you an envelope: two tickets for a weekend away, leaving tomorrow.",
+  "choices": [
+   {
+    "label": "Pack in ten minutes",
+    "outcome": "A tiny hotel, long walks and the best conversation you have had in years.",
+    "effects": {
+     "stats": {
+      "happiness": 6
+     },
+     "bond": {
+      "@partner": 6
+     }
+    }
+   },
+   {
+    "label": "Say you cannot get time off",
+    "outcome": "They went with their sister instead. It stung.",
+    "effects": {
+     "stats": {
+      "happiness": -2
+     },
+     "bond": {
+      "@partner": -5
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@partner"
+   ]
+  }
+ },
+ {
+  "id": "child_school_play",
+  "minAge": 33,
+  "maxAge": 55,
+  "weight": 12,
+  "category": "family",
+  "text": "{child} has been cast as \"Tree Number Three\" in the school play and is taking it extremely seriously.",
+  "choices": [
+   {
+    "label": "Sit in the front row",
+    "outcome": "Tree Number Three did not move a single branch. You clapped louder than anyone.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     },
+     "bond": {
+      "@child": 6
+     }
+    }
+   },
+   {
+    "label": "Miss it for work",
+    "outcome": "{child} looked for you in the audience. You were not there.",
+    "effects": {
+     "stats": {
+      "happiness": -2
+     },
+     "bond": {
+      "@child": -6
+     }
+    }
+   }
+  ],
+  "requires": {
+   "childAge": "5-11"
+  }
+ },
+ {
+  "id": "child_asks_big_question",
+  "minAge": 33,
+  "maxAge": 55,
+  "weight": 12,
+  "category": "family",
+  "text": "{child} asks, very seriously, where people go when they die.",
+  "choices": [
+   {
+    "label": "Answer honestly and gently",
+    "outcome": "You talked for an hour. They hugged you and asked for a snack.",
+    "effects": {
+     "stats": {
+      "karma": 1
+     },
+     "bond": {
+      "@child": 5
+     }
+    }
+   },
+   {
+    "label": "Change the subject to ice cream",
+    "outcome": "It worked, for now. The question will come back.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ],
+  "requires": {
+   "childAge": "4-9"
+  }
+ },
+ {
+  "id": "teen_child_trouble",
+  "minAge": 40,
+  "maxAge": 62,
+  "weight": 12,
+  "category": "family",
+  "text": "The school calls. {child} was caught skipping class to go to the arcade.",
+  "choices": [
+   {
+    "label": "Talk, then ground them",
+    "outcome": "They sulked for a week, then told you what was really going on. You are glad you listened.",
+    "effects": {
+     "stats": {
+      "discipline": 1
+     },
+     "bond": {
+      "@child": 3
+     }
+    }
+   },
+   {
+    "label": "Shout",
+    "outcome": "The door slammed. Again.",
+    "effects": {
+     "stats": {
+      "happiness": -2
+     },
+     "bond": {
+      "@child": -5
+     }
+    }
+   },
+   {
+    "label": "Secretly admire their nerve",
+    "outcome": "You hid a smile, then made them write an apology.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     },
+     "bond": {
+      "@child": 2
+     }
+    }
+   }
+  ],
+  "requires": {
+   "childAge": "13-17"
+  }
+ },
+ {
+  "id": "child_graduates",
+  "minAge": 42,
+  "maxAge": 70,
+  "weight": 12,
+  "category": "family",
+  "text": "{child} graduates today. You are in the third row with a camera and a tissue.",
+  "choices": [
+   {
+    "label": "Cheer embarrassingly loudly",
+    "outcome": "They pretended to be mortified. The photo of their face is your favourite.",
+    "effects": {
+     "stats": {
+      "happiness": 5
+     },
+     "bond": {
+      "@child": 5
+     }
+    }
+   },
+   {
+    "label": "Take everyone out to dinner ($300)",
+    "outcome": "A long table, too much food and a toast to the future.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     },
+     "money": -300,
+     "bond": {
+      "@child": 4
+     }
+    }
+   }
+  ],
+  "requires": {
+   "childAge": "21-25"
+  }
+ },
+ {
+  "id": "midlife_hobby",
+  "minAge": 40,
+  "maxAge": 60,
+  "weight": 5,
+  "category": "life",
+  "text": "You realise you have not learned anything new just for fun in years.",
+  "choices": [
+   {
+    "label": "Take up pottery",
+    "outcome": "Your first bowl is the shape of a sad hat. You love it.",
+    "effects": {
+     "stats": {
+      "creativity": 3,
+      "happiness": 3
+     }
+    }
+   },
+   {
+    "label": "Learn a language",
+    "outcome": "You can now order coffee and apologise in Italian.",
+    "effects": {
+     "stats": {
+      "smarts": 3
+     }
+    }
+   },
+   {
+    "label": "Start running",
+    "outcome": "You ran a 5k by summer. Your knees have opinions.",
+    "effects": {
+     "stats": {
+      "health": 3,
+      "athleticism": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "reading_glasses",
+  "minAge": 42,
+  "maxAge": 55,
+  "weight": 5,
+  "category": "health",
+  "text": "You hold the menu further and further away until your arms run out.",
+  "choices": [
+   {
+    "label": "Get glasses",
+    "outcome": "You can read again. You also look very distinguished.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     },
+     "money": -150
+    }
+   },
+   {
+    "label": "Refuse to admit it",
+    "outcome": "You ordered the wrong dish three times this month.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "school_friend_found",
+  "minAge": 35,
+  "maxAge": 70,
+  "weight": 5,
+  "category": "friends",
+  "text": "A message from someone you have not spoken to since school: \"Is this really you? I have thought about you so often.\"",
+  "choices": [
+   {
+    "label": "Meet for coffee",
+    "outcome": "Three hours later you were still laughing about the chemistry teacher. It was like no time had passed.",
+    "effects": {
+     "stats": {
+      "happiness": 5
+     }
+    }
+   },
+   {
+    "label": "Reply politely and leave it",
+    "outcome": "Some memories are better as memories.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ]
+ },
+ {
+  "id": "inheritance_dispute",
+  "minAge": 40,
+  "maxAge": 75,
+  "weight": 5,
+  "category": "family",
+  "text": "After a relative's funeral, the family argues about who gets the silver tea set. Voices are being raised over the sandwiches.",
+  "choices": [
+   {
+    "label": "Step back and keep the peace",
+    "outcome": "You took nothing and kept your family. You think that was the better inheritance.",
+    "effects": {
+     "stats": {
+      "karma": 3
+     }
+    }
+   },
+   {
+    "label": "Fight for what is fair",
+    "outcome": "You got the tea set. Your cousin has not spoken to you since.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     },
+     "money": 800
+    }
+   }
+  ]
+ },
+ {
+  "id": "downsizing",
+  "minAge": 60,
+  "maxAge": 80,
+  "weight": 5,
+  "category": "home",
+  "text": "Your home feels too big now. Every room has a memory and a pile of things nobody uses.",
+  "choices": [
+   {
+    "label": "Clear it out room by room",
+    "outcome": "You found letters, drawings and a box of photos. It took a year and it was worth it.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     }
+    }
+   },
+   {
+    "label": "Leave it all as it is",
+    "outcome": "The memories stay where they are.",
+    "effects": {
+     "stats": {}
+    }
+   }
+  ]
+ },
+ {
+  "id": "learn_technology",
+  "minAge": 65,
+  "maxAge": 90,
+  "weight": 5,
+  "category": "life",
+  "text": "The bank has closed its branch and everything is an app now.",
+  "choices": [
+   {
+    "label": "Ask a young relative to teach you",
+    "outcome": "Three lessons and a lot of patience later, you can send money and voice notes.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Work it out yourself",
+    "outcome": "It took a weekend and some language, but you got there.",
+    "effects": {
+     "stats": {
+      "smarts": 3,
+      "discipline": 1
+     }
+    }
+   },
+   {
+    "label": "Refuse on principle",
+    "outcome": "You now take two buses to the nearest branch. Principles are expensive.",
+    "effects": {
+     "stats": {
+      "happiness": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "old_friends_lunch",
+  "minAge": 65,
+  "maxAge": 92,
+  "weight": 5,
+  "category": "friends",
+  "text": "Your old friends have a standing lunch on the first Monday of the month. There are fewer of you every year.",
+  "choices": [
+   {
+    "label": "Never miss one",
+    "outcome": "You laugh more on those Mondays than the rest of the month together.",
+    "effects": {
+     "stats": {
+      "happiness": 5,
+      "health": 1
+     }
+    }
+   },
+   {
+    "label": "Go when you can",
+    "outcome": "It is always lovely when you do.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "garden_competition",
+  "minAge": 60,
+  "maxAge": 90,
+  "weight": 5,
+  "category": "community",
+  "text": "The village garden show is next month and your marrows are looking competitive.",
+  "choices": [
+   {
+    "label": "Enter everything",
+    "outcome": "Second place for marrows, first place for sweet peas. A triumph.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     }
+    }
+   },
+   {
+    "label": "Enter just the roses",
+    "outcome": "Highly commended. You framed the certificate.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Judge quietly from the sidelines",
+    "outcome": "You had opinions about every entry.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "memoir_request",
+  "minAge": 75,
+  "maxAge": 100,
+  "weight": 12,
+  "category": "family",
+  "text": "{child} asks if you would record your life story so the family never loses it.",
+  "choices": [
+   {
+    "label": "Record every story",
+    "outcome": "Twelve hours of tapes, three of them about one disastrous camping trip.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     },
+     "bond": {
+      "@child": 6
+     },
+     "flags": {
+      "recorded_story": "recording your life story"
+     }
+    }
+   },
+   {
+    "label": "Pick the best ones",
+    "outcome": "One evening, one cup of tea, ten stories. Enough.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     },
+     "bond": {
+      "@child": 3
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@child"
+   ]
+  }
+ },
+ {
+  "id": "grandchild_sleepover",
+  "minAge": 50,
+  "maxAge": 90,
+  "weight": 12,
+  "category": "family",
+  "text": "{grandchild} wants to sleep over at yours and has packed a bag with nine teddies and no pyjamas.",
+  "choices": [
+   {
+    "label": "Build a blanket fort",
+    "outcome": "You stayed up past your bedtime telling stories by torchlight.",
+    "effects": {
+     "stats": {
+      "happiness": 5
+     },
+     "bond": {
+      "@grandchild": 8
+     }
+    }
+   },
+   {
+    "label": "Early night for everyone",
+    "outcome": "They were asleep by eight. You were asleep by eight-oh-five.",
+    "effects": {
+     "stats": {
+      "health": 1
+     },
+     "bond": {
+      "@grandchild": 3
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@grandchild"
+   ]
+  }
+ },
+ {
+  "id": "grandchild_school_project",
+  "minAge": 55,
+  "maxAge": 95,
+  "weight": 12,
+  "category": "family",
+  "text": "{grandchild} has a school project: interview the oldest person you know. That is apparently you.",
+  "choices": [
+   {
+    "label": "Tell them everything",
+    "outcome": "They got an A. You got a framed copy of the project.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     },
+     "bond": {
+      "@grandchild": 6
+     }
+    }
+   },
+   {
+    "label": "Make it more exciting than it was",
+    "outcome": "In their version you fought a bear. The teacher had questions.",
+    "effects": {
+     "stats": {
+      "creativity": 2,
+      "happiness": 3
+     },
+     "bond": {
+      "@grandchild": 4
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@grandchild"
+   ]
+  }
+ },
+ {
+  "id": "grandchild_teaches_you",
+  "minAge": 55,
+  "maxAge": 95,
+  "weight": 12,
+  "category": "family",
+  "text": "{grandchild} decides you need to learn a dance from the internet.",
+  "choices": [
+   {
+    "label": "Learn it properly",
+    "outcome": "You nailed it. The video has been watched by the whole family forty times.",
+    "effects": {
+     "stats": {
+      "happiness": 5,
+      "health": 1
+     },
+     "bond": {
+      "@grandchild": 6
+     }
+    }
+   },
+   {
+    "label": "Watch from the sofa",
+    "outcome": "You clapped. That counted.",
+    "effects": {
+     "stats": {
+      "happiness": 2
+     },
+     "bond": {
+      "@grandchild": 2
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@grandchild"
+   ]
+  }
+ },
+ {
+  "id": "grandchild_first_job",
+  "minAge": 60,
+  "maxAge": 100,
+  "weight": 12,
+  "category": "family",
+  "text": "{grandchild} calls to say they got their first job. They wanted you to be the first to know.",
+  "choices": [
+   {
+    "label": "Send a card with a little money",
+    "outcome": "They framed the card and spent the money on pizza for the team.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     },
+     "money": -100,
+     "bond": {
+      "@grandchild": 6
+     }
+    }
+   },
+   {
+    "label": "Give them your best work advice",
+    "outcome": "They wrote it down. All of it.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "bond": {
+      "@grandchild": 4
+     }
+    }
+   }
+  ],
+  "requires": {
+   "npcs": [
+    "@grandchild"
+   ]
+  }
+ },
+ {
+  "id": "foster_first_night",
+  "minAge": 25,
+  "maxAge": 75,
+  "weight": 10,
+  "category": "family",
+  "text": "It is late and the house is quiet, but you can hear crying from the foster room.",
+  "choices": [
+   {
+    "label": "Sit outside their door and talk softly",
+    "outcome": "You talked about nothing for an hour. Eventually the crying stopped and a small voice said \"goodnight\".",
+    "effects": {
+     "stats": {
+      "karma": 3,
+      "happiness": 1
+     }
+    }
+   },
+   {
+    "label": "Make hot chocolate for two",
+    "outcome": "You sat at the kitchen table at midnight, not saying much. It was a start.",
+    "effects": {
+     "stats": {
+      "karma": 2,
+      "happiness": 2
+     }
+    }
+   }
+  ],
+  "requires": {
+   "flags": [
+    "foster_carer"
+   ]
+  },
+  "remembers": "foster_carer"
+ },
+ {
+  "id": "foster_reunion",
+  "minAge": 30,
+  "maxAge": 90,
+  "weight": 10,
+  "category": "family",
+  "text": "A letter arrives in handwriting you do not recognise. It is from a child you once fostered, all grown up now.",
+  "choices": [
+   {
+    "label": "Write back straight away",
+    "outcome": "They are doing well. They said the year with you was when things started getting better.",
+    "effects": {
+     "stats": {
+      "happiness": 6,
+      "karma": 2
+     }
+    }
+   },
+   {
+    "label": "Read it again and again",
+    "outcome": "You keep it in your bedside drawer.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     }
+    }
+   }
+  ],
+  "requires": {
+   "flags": [
+    "foster_carer"
+   ]
+  },
+  "remembers": "foster_carer"
+ },
+ {
+  "id": "collector_rival",
+  "minAge": 16,
+  "maxAge": 90,
+  "weight": 10,
+  "category": "money",
+  "text": "Another collector at the fair wants the exact same item you do. They have deep pockets and no shame.",
+  "choices": [
+   {
+    "label": "Outbid them ($500)",
+    "outcome": "You won. They glared. It was worth every penny.",
+    "effects": {
+     "stats": {
+      "happiness": 3
+     },
+     "money": -500
+    }
+   },
+   {
+    "label": "Let them have it and befriend them",
+    "outcome": "You swapped numbers and now trade tips. Rivals make good friends.",
+    "effects": {
+     "stats": {
+      "charisma": 2,
+      "happiness": 2
+     }
+    }
+   }
+  ],
+  "requires": {
+   "flags": [
+    "collector"
+   ]
+  },
+  "remembers": "collector"
+ },
+ {
+  "id": "heirloom_story",
+  "minAge": 18,
+  "maxAge": 95,
+  "weight": 10,
+  "category": "family",
+  "text": "A relative tells you the real story behind the family heirloom, and it is nothing like the version you grew up with.",
+  "choices": [
+   {
+    "label": "Write the true story down",
+    "outcome": "Now it will be passed on with the heirloom, warts and all.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "smarts": 1
+     }
+    }
+   },
+   {
+    "label": "Keep the old version",
+    "outcome": "Some stories are better as legends.",
+    "effects": {
+     "stats": {
+      "creativity": 1
+     }
+    }
+   }
+  ],
+  "requires": {
+   "flags": [
+    "heirloom"
+   ]
+  },
+  "remembers": "heirloom"
+ },
+ {
+  "id": "neighbour_elderly",
+  "minAge": 30,
+  "maxAge": 70,
+  "weight": 5,
+  "category": "community",
+  "text": "Your elderly neighbour has not collected their post for three days.",
+  "choices": [
+   {
+    "label": "Knock and check on them",
+    "outcome": "They had a fall and could not reach the phone. You may have saved their life.",
+    "effects": {
+     "stats": {
+      "karma": 5
+     }
+    }
+   },
+   {
+    "label": "Assume they are away",
+    "outcome": "An ambulance came on the fourth day. You wish you had knocked.",
+    "effects": {
+     "stats": {
+      "happiness": -3,
+      "karma": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "charity_marathon_sponsor",
+  "minAge": 25,
+  "maxAge": 70,
+  "weight": 5,
+  "category": "community",
+  "text": "A colleague is running a marathon for charity and the sponsor form is on your desk.",
+  "choices": [
+   {
+    "label": "Sponsor generously ($100)",
+    "outcome": "They finished in five hours and thanked you in an emotional group email.",
+    "effects": {
+     "stats": {
+      "karma": 3
+     },
+     "money": -100
+    }
+   },
+   {
+    "label": "Sponsor a little ($10)",
+    "outcome": "Every bit helps.",
+    "effects": {
+     "stats": {
+      "karma": 1
+     },
+     "money": -10
+    }
+   },
+   {
+    "label": "Pretend you did not see it",
+    "outcome": "It stayed on your desk for a week, judging you.",
+    "effects": {
+     "stats": {
+      "karma": -1
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "power_of_rest",
+  "minAge": 30,
+  "maxAge": 60,
+  "weight": 5,
+  "category": "health",
+  "text": "Your body is telling you something: you have been running on coffee and four hours of sleep for months.",
+  "choices": [
+   {
+    "label": "Take a proper week off",
+    "outcome": "You slept, walked and read. You came back sharper than ever.",
+    "effects": {
+     "stats": {
+      "health": 4,
+      "happiness": 3
+     }
+    }
+   },
+   {
+    "label": "Push through",
+    "outcome": "You pushed through. Something gave in March.",
+    "effects": {
+     "stats": {
+      "health": -4
+     }
+    }
+   }
+  ],
+  "requires": {
+   "job": true
+  }
+ },
+ {
+  "id": "lottery_almost",
+  "minAge": 25,
+  "maxAge": 80,
+  "weight": 5,
+  "category": "money",
+  "text": "Your usual lottery numbers came up this week. You did not buy a ticket this week.",
+  "choices": [
+   {
+    "label": "Laugh about it",
+    "outcome": "It became your best story at parties.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   },
+   {
+    "label": "Never buy a ticket again",
+    "outcome": "You have saved hundreds since. Small comfort.",
+    "effects": {
+     "stats": {
+      "discipline": 2,
+      "happiness": -2
+     }
+    }
+   }
+  ]
+ },
+ {
+  "id": "hometown_visit",
+  "minAge": 30,
+  "maxAge": 80,
+  "weight": 5,
+  "category": "life",
+  "text": "You go back to the street where you grew up. The house is a different colour and the corner shop is a phone repair place.",
+  "choices": [
+   {
+    "label": "Knock on your old door",
+    "outcome": "The new owners showed you round. Your height marks were still on the kitchen doorframe.",
+    "effects": {
+     "stats": {
+      "happiness": 4
+     }
+    }
+   },
+   {
+    "label": "Just walk past",
+    "outcome": "Some places are better kept in memory.",
+    "effects": {
+     "stats": {
+      "happiness": 1
+     }
+    }
+   }
+  ]
+ }
+]

@@ -1387,7 +1387,7 @@
   "id": "startup_result",
   "minAge": 24,
   "maxAge": 30,
-  "weight": 24,
+  "weight": 40,
   "category": "work",
   "requires": {
    "flags": [
@@ -3388,7 +3388,7 @@
   "id": "burst_pipe",
   "minAge": 25,
   "maxAge": 90,
-  "weight": 12,
+  "weight": 18,
   "category": "home",
   "requires": {
    "owns": [
@@ -4044,7 +4044,7 @@
   "id": "grandchild_asks_story",
   "minAge": 62,
   "maxAge": 98,
-  "weight": 12,
+  "weight": 20,
   "category": "family",
   "requires": {
    "flags": [

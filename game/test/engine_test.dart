@@ -20,6 +20,7 @@ import 'package:relivable/engine/pets.dart';
 import 'package:relivable/engine/social.dart';
 import 'package:relivable/engine/love.dart';
 import 'package:relivable/engine/meta.dart';
+import 'package:relivable/engine/kin.dart';
 import 'package:relivable/engine/possessions.dart';
 import 'package:relivable/engine/profile.dart';
 import 'package:relivable/engine/recap.dart';
@@ -39,10 +40,11 @@ int listingPrice(String label) =>
     int.parse(label.split('\$').last.replaceAll(',', ''));
 
 List<Storylet> loadStorylets() {
-  final raw = File('assets/storylets/core.json').readAsStringSync();
-  return (jsonDecode(raw) as List)
-      .map((e) => Storylet.fromJson(Map<String, dynamic>.from(e)))
-      .toList();
+  return [
+    for (final file in storyletFiles)
+      ...(jsonDecode(File('assets/storylets/$file').readAsStringSync()) as List)
+          .map((e) => Storylet.fromJson(Map<String, dynamic>.from(e))),
+  ];
 }
 
 /// Plays a whole life (birth to death) choosing at random, like a player
@@ -82,6 +84,8 @@ Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
 }
 
 void main() {
+  // Seasonal events follow the real calendar; tests use a quiet day.
+  seasonClock = () => DateTime(2026, 8, 1);
   final storylets = loadStorylets();
   final engine = GameEngine(storylets);
 
@@ -106,6 +110,11 @@ void main() {
         'echo_surname',
         'echo_city',
         'echo_country',
+        // set by code: fostering, collecting, heirlooms (kin.dart,
+        // possessions.dart)
+        'foster_carer',
+        'collector',
+        'heirloom',
       }; // set by actions
       for (final s in storylets) {
         for (final c in s.choices) {
@@ -141,8 +150,16 @@ void main() {
     }
     // Very late-life (95+) and married-life storylets are checked directly
     // below: the random bot rarely lives that long and never marries.
+    // Lives the bot rarely leads (fostering, collecting, heirlooms, raising
+    // children and grandchildren) are checked directly too, with that
+    // family built for them.
+    const rare = {'foster_carer', 'collector', 'heirloom', 'grandparent'};
     bool direct(Storylet s) =>
-        s.minAge >= 95 || s.requiresFlags.contains('married');
+        s.minAge >= 95 ||
+        s.requiresFlags.contains('married') ||
+        s.requiresFlags.any(rare.contains) ||
+        s.conditions.containsKey('childAge') ||
+        s.requiresNpcs.any((n) => n == '@child' || n == '@grandchild');
     final never = storylets
         .where((s) => !fired.containsKey(s.id) && !direct(s))
         .map((s) => s.id)
@@ -152,6 +169,25 @@ void main() {
       final p = candidate(old, Random(1));
       old.npcs.add(p);
       setStage(old, p, 'married');
+      for (final f in s.requiresFlags) {
+        old.flags[f] = Memory(old.age, f);
+      }
+      final range = RegExp(r'^(\d+)')
+          .firstMatch('${s.conditions['childAge'] ?? '30'}');
+      old.npcs.add(
+        newChild(old, Random(2), ageNow: int.parse(range!.group(1)!)),
+      );
+      if (s.requiresNpcs.contains('@grandchild')) {
+        old.npcs.add(
+          Npc(
+            id: 'gc',
+            role: 'Granddaughter',
+            name: 'Ava',
+            birthYear: old.year - 6,
+            circle: 'Grandchildren',
+          ),
+        );
+      }
       expect(s.isEligible(old), isTrue, reason: s.id);
     }
     expect(
@@ -1623,5 +1659,112 @@ void main() {
     life.lastYear = [];
     yearlyMoney(life, Random(2));
     expect(life.lastYear.any((l) => l.$1 == 'Home insurance'), isTrue);
+  });
+
+  // ---------------- Wave G4: family and seasons ----------------
+
+  test('fostering: a placement, an allowance, then goodbye or adoption', () {
+    final life = engine.newLife(seed: 180)..age = 35;
+    expect(fosterLock(life), 'Needs a home of your own');
+    life.assets.add(house(life));
+    expect(fosterLock(life), isNull);
+    life.sceneQueue.add('foster_offer');
+    final offer = engine.nextScene(life)!;
+    expect(offer.text, contains('social worker'));
+    engine.choose(life, offer, offer.choices.first);
+    final f = fostersOf(life).single;
+    expect(life.flags.containsKey('foster_carer'), isTrue);
+    life.lastYear = [];
+    yearlyMoney(life, Random(1));
+    expect(
+      life.lastYear.firstWhere((l) => l.$1 == 'Fostering allowance').$2,
+      fosterAllowance,
+    );
+    // Find a placement that ends in adoption.
+    var adopted = false;
+    for (var age = 36; age < 80 && !adopted; age++) {
+      life.age = age;
+      final end = fosterEndScene([f.id], life)!;
+      if (end.choices.length == 2) {
+        engine.choose(life, end, end.choices.first);
+        adopted = true;
+      }
+    }
+    expect(adopted, isTrue);
+    expect(f.circle, 'Children');
+    expect(f.info['stats'], isA<Map>());
+    expect(childrenOf(life), contains(f));
+  });
+
+  test('surrogacy follows the country and leads to a birth', () {
+    expect(surrogacyRule('United States'), 'commercial');
+    expect(surrogacyRule('United Kingdom'), 'altruistic');
+    expect(surrogacyRule('Germany'), 'unavailable');
+    final life = engine.newLife(seed: 181, countryName: 'Germany')..age = 34;
+    life.money = 500000;
+    life.sceneQueue.add('surrogacy');
+    final scene = engine.nextScene(life)!;
+    expect(scene.text, contains('not available'));
+    expect(scene.choices.first.label, contains('abroad'));
+    var expecting = false;
+    for (var i = 0; i < 10 && !expecting; i++) {
+      scene.choices.first.run!(life, Random(i));
+      expecting = life.flags.containsKey('expecting');
+    }
+    expect(expecting, isTrue);
+  });
+
+  test('grandchildren arrive as people and grow up', () {
+    final life = engine.newLife(seed: 182)..age = 58;
+    final child = newChild(life, Random(2), ageNow: 30);
+    life.npcs.add(child);
+    life.flags['grandparent'] = Memory(57, 'becoming a grandparent');
+    final feed = grandchildrenYear(life, Random(3));
+    final g = grandchildrenOf(life).single;
+    expect(g.info['parent'], child.id);
+    expect(feed.single.text, contains('grandparent'));
+    expect(life.who('@grandchild'), g);
+    expect(engine.fill('{grandchild}', life), g.name.split(' ').first);
+    final babysit = allActions.firstWhere((a) => a.id == 'babysit');
+    expect(babysit.lockReason(life), isNull);
+    final before = g.bond;
+    babysit.run(life, Random(1));
+    expect(g.bond, greaterThan(before));
+  });
+
+  test('seasons follow the real calendar, once per season per life', () {
+    expect(seasonOn(DateTime(2026, 10, 31))?.id, 'halloween');
+    expect(seasonOn(DateTime(2027, 1, 2))?.id, 'new_year');
+    expect(seasonOn(DateTime(2026, 12, 30))?.id, 'new_year');
+    expect(seasonOn(DateTime(2026, 8, 1)), isNull);
+    final pumpkin = allActions.firstWhere((a) => a.id == 'carve_pumpkin');
+    final life = engine.newLife(seed: 183)..age = 10;
+    life.money = 100;
+    expect(pumpkin.lockReason(life), contains('Halloween'));
+    seasonClock = () => DateTime(2026, 10, 31);
+    try {
+      expect(pumpkin.lockReason(life), isNull);
+      var queued = false;
+      for (var i = 0; i < 20 && !queued; i++) {
+        seasonalYear(life, Random(i));
+        queued = life.sceneQueue.contains('season:halloween');
+      }
+      expect(queued, isTrue);
+      final scene = engine.nextScene(life)!;
+      expect(scene.text, contains('Halloween'));
+      for (var i = 0; i < 20; i++) {
+        seasonalYear(life, Random(i));
+      }
+      expect(life.sceneQueue, isEmpty);
+      for (final s in seasons) {
+        seasonClock = () => DateTime(2026, s.from ~/ 100, s.from % 100);
+        for (final age in [8, 30, 70]) {
+          life.age = age;
+          expect(seasonScene(s.id, life)?.choices, isNotEmpty, reason: s.id);
+        }
+      }
+    } finally {
+      seasonClock = () => DateTime(2026, 8, 1);
+    }
   });
 }

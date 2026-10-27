@@ -109,12 +109,12 @@ class Npc {
        memories = memories ?? [];
 
   final String id;
-  final String role;
+  String role;
   final String name;
   final int birthYear;
 
   /// Family, Partner, Friends, Work, School, Rivals, Exes, Community.
-  final String circle;
+  String circle;
   int affection;
   int trust;
   int respect;
@@ -887,6 +887,10 @@ class Life {
       ),
       '@friend' => best(
         npcs.where((n) => n.circle == 'Friends'),
+        (a, b) => b.bond.compareTo(a.bond),
+      ),
+      '@grandchild' => best(
+        npcs.where((n) => n.circle == 'Grandchildren'),
         (a, b) => b.bond.compareTo(a.bond),
       ),
       '@boss' => npc('boss'),

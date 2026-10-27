@@ -55,10 +55,12 @@ class GameController extends ChangeNotifier {
   }
 
   Future<void> _load() async {
-    final raw = await rootBundle.loadString('assets/storylets/core.json');
-    final list = (jsonDecode(raw) as List)
-        .map((e) => Storylet.fromJson(Map<String, dynamic>.from(e)))
-        .toList();
+    final list = <Storylet>[
+      for (final file in storyletFiles)
+        ...(jsonDecode(
+          await rootBundle.loadString('assets/storylets/$file'),
+        ) as List).map((e) => Storylet.fromJson(Map<String, dynamic>.from(e))),
+    ];
     engine = GameEngine(list);
     final prefs = await SharedPreferences.getInstance();
     Sound.instance.enabled = prefs.getBool('relivable.sound') ?? true;

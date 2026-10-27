@@ -6,6 +6,7 @@ import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
 import 'heists.dart';
+import 'kin.dart';
 import 'possessions.dart';
 import 'recap.dart';
 import 'pets.dart';
@@ -114,6 +115,10 @@ Storylet? buildScene(String id, Life life) {
     'plane_dealer' ||
     'home_upgrade' ||
     'disaster' => possessionScene(parts.first, parts.sublist(1), life),
+    'foster_offer' ||
+    'foster_end' ||
+    'surrogacy' ||
+    'season' => kinScene(parts.first, parts.sublist(1), life),
     _ => null,
   };
 }

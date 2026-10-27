@@ -42,6 +42,8 @@ class _PeopleTabState extends State<PeopleTab> {
     'Work': Icons.work_rounded,
     'School': Icons.school_rounded,
     'Prison': Icons.door_sliding_rounded,
+    'Foster': Icons.volunteer_activism_rounded,
+    'Grandchildren': Icons.child_friendly_rounded,
   };
 
   /// Why someone needs you, or null.

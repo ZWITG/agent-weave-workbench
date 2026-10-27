@@ -19,6 +19,7 @@ import 'jobs.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
 import 'models.dart';
+import 'kin.dart';
 import 'possessions.dart';
 import 'relationships.dart';
 import 'scenes.dart';
@@ -288,6 +289,7 @@ class GameEngine {
     life.feed.addAll(childUpdates(life, _rngFor(life, 29)));
     parentsYear(life, _rngFor(life, 43));
     familyYear(life, _rngFor(life, 47));
+    life.feed.addAll(kinYear(life, _rngFor(life, 79)));
     loveYear(life, _rngFor(life, 53));
     final trust = releaseTrust(life);
     if (trust != null) {
@@ -519,6 +521,10 @@ class GameEngine {
       .replaceAll('{sibling}', life.npc('sibling')?.name ?? 'your cousin')
       .replaceAll('{partner}', _first(life.who('@partner'), 'your partner'))
       .replaceAll('{child}', _first(life.who('@child'), 'your child'))
+      .replaceAll(
+        '{grandchild}',
+        _first(life.who('@grandchild'), 'your grandchild'),
+      )
       .replaceAll('{friend}', _first(life.who('@friend'), 'your friend'))
       .replaceAll('{boss}', _first(life.who('@boss'), 'your boss'))
       .replaceAll('{parent}', _first(life.who('@parent'), 'your parent'))
