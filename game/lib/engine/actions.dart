@@ -7,6 +7,7 @@ import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
 import 'heists.dart';
+import 'gangs.dart';
 import 'kin.dart';
 import 'possessions.dart';
 import 'shopping.dart' show shopAction;
@@ -390,4 +391,5 @@ final allActions = <GameAction>[
   ...possessionActions,
   ...kinActions,
   shopAction,
+  ...gangActions,
 ];

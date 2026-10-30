@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'gangs.dart';
 import 'actions.dart';
 import 'jobs.dart' show leaveJob;
 import 'love.dart' show partnerOf, recircle;
@@ -557,6 +558,13 @@ void enterPrison(Life l, Crime c, int years) {
 String release(Life l, {bool parole = false}) {
   final p = l.prison!;
   final left = p.left;
+  if (p.gangId != null) {
+    l.marks.add('ex_gang:${p.gangId}');
+    l.flags['prison_gang'] ??= Memory(
+      l.age,
+      'running with ${gangById(p.gangId!).name}',
+    );
+  }
   l.prison = null;
   final mate = l.npc('cellmate');
   if (mate != null) {
@@ -838,12 +846,12 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
           p.programmes * 0.05 +
           support / 400 -
           l.notoriety / 300 -
-          (p.gang ? 0.1 : 0);
+          gangParolePenalty(p);
       String hearing(Life l, Random rng, double bonus, String how) {
         p.lastHearing = l.age;
         final chance = (base + bonus).clamp(0.02, 0.9);
         final reasons =
-            'behaviour ${p.behaviour}%, ${p.programmes} programmes, family support $support%${p.gang ? ', gang membership' : ''}${l.notoriety > 20 ? ', notoriety' : ''}';
+            'behaviour ${p.behaviour}%, ${p.programmes} programmes, family support $support%${p.gang ? ', ${gangRanks[p.gangRank].toLowerCase()} in a gang' : ''}${l.notoriety > 20 ? ', notoriety' : ''}';
         if (rng.nextDouble() < chance) {
           return '$how ${release(l, parole: true)} (Chance was ${(chance * 100).round()}%: $reasons.)';
         }
@@ -1233,29 +1241,6 @@ final justiceActions = <GameAction>[
     },
   ),
   GameAction(
-    id: 'join_gang',
-    label: 'Join a prison gang',
-    category: 'Prison',
-    keywords: ['gang', 'crew', 'protection'],
-    extraCheck: (l) =>
-        _prisonOnly(l) ?? (l.prison!.gang ? 'You are already in a gang' : null),
-    run: (l, rng) {
-      final p = l.prison!;
-      p.gang = true;
-      p.respect = min(100, p.respect + 25);
-      p.behaviour = max(0, p.behaviour - 15);
-      l.stats.add('karma', -3);
-      return ActionResult(
-        'The Night Owls let you sit at their table. Nobody bothers you now, but the guards have noticed.',
-        [
-          'Respect ${p.respect}%',
-          'Behaviour ${p.behaviour}%',
-          'The parole board will see this',
-        ],
-      );
-    },
-  ),
-  GameAction(
     id: 'bribe_guard',
     label: 'Bribe a guard',
     category: 'Prison',
@@ -1327,12 +1312,7 @@ List<String> prisonYear(Life l, Random rng) {
       'Someone picked a fight with you in the yard. You lost. (Respect ${p.respect}%: working out or friends inside would help.)',
     );
   }
-  if (p.gang && rng.nextInt(100) < 20) {
-    p.behaviour = max(0, p.behaviour - 8);
-    feed.add(
-      'Your gang got into a brawl in the canteen. The guards took names.',
-    );
-  }
+  feed.addAll(gangYear(l, rng));
   p.behaviour = min(100, p.behaviour + (p.job != null ? 3 : 0));
   if (rng.nextInt(100) < (p.security == 'maximum' ? 12 : 6)) {
     l.sceneQueue.add('riot');

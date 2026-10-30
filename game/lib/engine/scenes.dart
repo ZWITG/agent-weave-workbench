@@ -6,6 +6,7 @@ import 'finance.dart';
 import 'health.dart';
 import 'homes.dart';
 import 'heists.dart';
+import 'gangs.dart';
 import 'kin.dart';
 import 'possessions.dart';
 import 'recap.dart';
@@ -99,6 +100,12 @@ Storylet? buildScene(String id, Life life) {
     'sue_trial' ||
     'sued' => lawsuitScene(parts.first, parts.sublist(1), life),
     'riot' => riotScene(life),
+    'gang_pick' ||
+    'gang_initiation' ||
+    'gang_order' ||
+    'gang_war' ||
+    'gang_pressure' ||
+    'gang_leave' => gangScene(parts.first, parts.sublist(1), life),
     'brand_deal' ||
     'scandal' ||
     'comeback' => socialScene(parts.first, parts.sublist(1), life),

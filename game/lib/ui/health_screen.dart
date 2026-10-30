@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/health.dart';
+import '../engine/gangs.dart';
 import '../engine/justice.dart';
 import '../engine/models.dart';
 import '../game_controller.dart';
@@ -338,7 +339,9 @@ class JusticeCard extends StatelessWidget {
               [
                 if (p.job != null) 'Job: ${p.job}',
                 'Programmes: ${p.programmes}',
-                if (p.gang) 'In a gang',
+                if (p.gangId != null)
+                  '${gangRanks[p.gangRank]} of ${gangById(p.gangId!).name} (standing ${p.gangStanding}%)',
+                if (p.snitch) 'Known as a snitch',
                 if (mate != null) 'Cellmate: ${mate.name} (${mate.bond}%)',
               ].join(' · '),
               style: NF.sora(12, color: NF.muted),

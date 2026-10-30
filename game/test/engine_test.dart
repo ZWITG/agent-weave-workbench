@@ -10,6 +10,7 @@ import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
 import 'package:relivable/engine/health.dart';
+import 'package:relivable/engine/gangs.dart';
 import 'package:relivable/engine/heists.dart';
 import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
@@ -1956,6 +1957,81 @@ void main() {
     expect(
       good.stats['creativity'] - g0,
       greaterThan(bad.stats['creativity'] - b0),
+    );
+  });
+
+  // ---------------- Prison gangs ----------------
+
+  Life inmate(int seed) {
+    final l = engine.newLife(seed: seed)..age = 30;
+    l.prison = Prison(crime: 'burglary', years: 8, since: 29);
+    l.money = 5000;
+    return l;
+  }
+
+  test('joining a gang: pick a crew, pass the initiation, get perks', () {
+    final l = inmate(220);
+    final join = allActions.firstWhere((a) => a.id == 'join_gang');
+    expect(join.lockReason(l), isNull);
+    engine.runAction(l, join);
+    var scene = engine.nextScene(l)!;
+    expect(scene.choices.length, gangs.length + 1);
+    engine.choose(l, scene, scene.choices[1]); // the Iron Brotherhood
+    scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:gang_initiation');
+    final health = l.stats['health'];
+    engine.choose(l, scene, scene.choices.first);
+    expect(l.prison!.gangId, 'iron');
+    expect(l.stats['health'], lessThan(health));
+    expect(join.lockReason(l), isNotNull);
+    final respect = l.prison!.respect;
+    gangYear(l, Random(1));
+    expect(l.prison!.respect, greaterThan(respect));
+  });
+
+  test('orders, wars, promotion and getting out', () {
+    final l = inmate(221);
+    l.prison!
+      ..gangId = 'owls'
+      ..gangStanding = 90
+      ..served = 2
+      ..rivalry['iron'] = 95;
+    final feed = gangYear(l, Random(2));
+    expect(l.prison!.gangRank, 1);
+    expect(feed.single, contains('Member'));
+    expect(l.sceneQueue, contains('gang_war:iron'));
+    var scene = engine.nextScene(l)!;
+    expect(scene.choices.map((c) => c.label), contains('Broker a truce'));
+    engine.choose(l, scene, scene.choices.first);
+    expect(l.prison!.rivalry['iron'], 40);
+    l.sceneQueue.add('gang_order');
+    scene = engine.nextScene(l)!;
+    expect(scene.choices.last.label, 'Tell the guards');
+    l.sceneQueue.add('gang_leave');
+    scene = engine.nextScene(l)!;
+    engine.choose(l, scene, scene.choices[1]); // buy your way out
+    expect(l.prison!.gangId, isNull);
+    expect(l.marks, contains('ex_gang:owls'));
+    final back = Life.fromJson(jsonDecode(jsonEncode(l.toJson())));
+    expect(back.prison!.rivalry, l.prison!.rivalry);
+  });
+
+  test('gang rank weighs on parole and snitches are shut out', () {
+    final p = Prison(crime: 'fraud', years: 5, since: 30);
+    expect(gangParolePenalty(p), 0);
+    p
+      ..gangId = 'ledger'
+      ..gangRank = 3;
+    expect(gangParolePenalty(p), 0.2);
+    final l = inmate(222);
+    l.prison!.snitch = true;
+    l.sceneQueue.add('gang_pick');
+    final scene = engine.nextScene(l)!;
+    expect(scene.choices.length, 1);
+    expect(
+      Prison.fromJson({'crime': 'x', 'years': 2, 'since': 1, 'gang': true})
+          .gangId,
+      'owls',
     );
   });
 }

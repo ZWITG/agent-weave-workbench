@@ -494,7 +494,21 @@ class Prison {
   int respect = 30;
   int programmes = 0;
   String? job;
-  bool gang = false;
+
+  /// The prison gang you belong to (gangs.dart), your rank in it (0
+  /// recruit, 1 member, 2 lieutenant, 3 shot-caller) and your standing
+  /// with its leaders (0..100).
+  String? gangId;
+  int gangRank = 0;
+  int gangStanding = 0;
+
+  /// Tension between your gang and each rival (0..100).
+  final Map<String, int> rivalry = {};
+
+  /// Marked a snitch: every gang knows.
+  bool snitch = false;
+
+  bool get gang => gangId != null;
   bool appealed = false;
 
   /// Age of the last parole hearing.
@@ -514,7 +528,11 @@ class Prison {
     'respect': respect,
     'programmes': programmes,
     'job': job,
-    'gang': gang,
+    'gangId': gangId,
+    'gangRank': gangRank,
+    'gangStanding': gangStanding,
+    'rivalry': rivalry,
+    'snitch': snitch,
     'appealed': appealed,
     'lastHearing': lastHearing,
   };
@@ -532,7 +550,12 @@ class Prison {
         ..respect = j['respect'] ?? 30
         ..programmes = j['programmes'] ?? 0
         ..job = j['job']
-        ..gang = j['gang'] ?? false
+        // Older saves only knew "in a gang".
+        ..gangId = j['gangId'] ?? (j['gang'] == true ? 'owls' : null)
+        ..gangRank = j['gangRank'] ?? 0
+        ..gangStanding = j['gangStanding'] ?? (j['gang'] == true ? 40 : 0)
+        ..rivalry.addAll(Map<String, int>.from(j['rivalry'] ?? {}))
+        ..snitch = j['snitch'] ?? false
         ..appealed = j['appealed'] ?? false
         ..lastHearing = j['lastHearing'];
 }
