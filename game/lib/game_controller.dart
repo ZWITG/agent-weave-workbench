@@ -326,6 +326,10 @@ class GameController extends ChangeNotifier {
     }
   }
 
+  /// The big things from the last birthday (deaths, arrests, diagnoses,
+  /// births...), shown in a pop-up so they are not lost in the feed.
+  List<String> yearHighlights = const [];
+
   void ageUp() {
     if (life == null || pendingEvent != null) return;
     lastOutcome = null;
@@ -337,7 +341,9 @@ class GameController extends ChangeNotifier {
     }
     Sound.instance.ageUp();
     _snapshot();
+    final seen = life!.feed.length;
     pendingEvent = engine!.ageUp(life!);
+    yearHighlights = bigNews(life!.feed.skip(seen));
     final freeze = recordPlayDay(profile, DateTime.now());
     if (freeze != null) toasts.add(freeze);
     _meta(['age']);
@@ -474,3 +480,34 @@ class GameController extends ChangeNotifier {
     await prefs.setBool('relivable.sound', on);
   }
 }
+
+const _bigKinds = {
+  'milestone',
+  'serious',
+  'chronic',
+  'mind',
+  'title',
+  'career',
+  'risk',
+  'house',
+  'grudge',
+};
+
+final _bigWords = RegExp(
+  r'\b(died|dies|death|passed away|funeral|arrest|prison|released|parole|'
+  r'fired|laid off|diagnos|divorc|born|pregnan|inherit|evict|bankrupt|'
+  r'warrant|recaptur|solitary|burgl|stolen|flood|fire|crash|accident|'
+  r'cancer|heart attack|engaged|married|broke up|left you|it is over|'
+  r'promot|lottery|lawsuit|sued)',
+  caseSensitive: false,
+);
+
+/// The feed lines worth stopping the player for, at most five.
+List<String> bigNews(Iterable<FeedEntry> entries) => [
+  for (final e in entries)
+    if (e.kind != 'summary' &&
+        e.kind != 'action' &&
+        e.kind != 'world' &&
+        (_bigKinds.contains(e.kind) || _bigWords.hasMatch(e.text)))
+      e.text,
+].take(5).toList();

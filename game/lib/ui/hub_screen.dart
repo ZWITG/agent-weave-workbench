@@ -471,7 +471,25 @@ class _BottomBar extends StatelessWidget {
                       : (atEnd ? 'See your life recap' : 'Live another year'),
                   child: FilledButton(
                     style: orangeButton(),
-                    onPressed: blocked ? null : controller.ageUp,
+                    onPressed: blocked
+                        ? null
+                        : () {
+                            controller.ageUp();
+                            final big = controller.yearHighlights;
+                            if (big.isEmpty) return;
+                            controller.yearHighlights = const [];
+                            showResultPopup(
+                              context,
+                              ActionResult(
+                                big.length == 1
+                                    ? big.first
+                                    : 'Some big things happened this year:',
+                                big.length == 1 ? const [] : big,
+                              ),
+                              title: 'Age ${controller.life!.age}: big news',
+                              icon: Icons.campaign_rounded,
+                            );
+                          },
                     child: Text(
                       waiting
                           ? 'Continue'

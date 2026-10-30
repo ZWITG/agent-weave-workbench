@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/actions.dart';
 import 'package:relivable/engine/kin.dart';
+import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/game_controller.dart';
 import 'package:relivable/sound.dart';
@@ -76,5 +77,20 @@ void main() {
     expect(again.life, isNotNull);
     expect(again.pendingEvent?.id, 'scene:house_view');
     expect(again.life!.currentScene, key);
+  });
+
+  test('big news from a birthday is picked out for a pop-up', () {
+    final picked = bigNews([
+      FeedEntry(30, 'Health +2 · Cash +\$400', kind: 'summary'),
+      FeedEntry(
+        30,
+        'Your grandfather died peacefully in his sleep.',
+        kind: 'npc',
+      ),
+      FeedEntry(30, 'Ana took up pottery.', kind: 'npc'),
+      FeedEntry(30, 'You were diagnosed with asthma.', kind: 'serious'),
+    ]);
+    expect(picked, hasLength(2));
+    expect(picked.first, contains('died'));
   });
 }
