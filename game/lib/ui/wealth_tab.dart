@@ -560,31 +560,43 @@ class _Overview extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text('Net worth', style: NF.sora(13, color: NF.muted)),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+              Expanded(
+                child: Text(
+                  'Net worth',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: NF.sora(13, color: NF.muted),
                 ),
-                decoration: BoxDecoration(
-                  color: NF.surface2,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(ecoIcon, size: 16, color: ecoColor),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Economy: $eco',
-                      style: NF.sora(
-                        12,
-                        weight: FontWeight.w600,
-                        color: NF.soft,
+              ),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: NF.surface2,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(ecoIcon, size: 16, color: ecoColor),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          'Economy: $eco',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: NF.sora(
+                            12,
+                            weight: FontWeight.w600,
+                            color: NF.soft,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

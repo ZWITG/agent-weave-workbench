@@ -170,15 +170,18 @@ class _HubScreenState extends State<HubScreen> {
     _toast = entry;
     Overlay.of(context).insert(entry);
     Future.delayed(const Duration(milliseconds: 2600), () {
-      entry.remove();
-      _toast = null;
+      // The screen may have closed (a life ended) and taken the toast
+      // with it; remove it only once.
+      if (entry.mounted) entry.remove();
+      if (_toast == entry) _toast = null;
       if (mounted) _nextToast();
     });
   }
 
   @override
   void dispose() {
-    _toast?.remove();
+    if (_toast?.mounted ?? false) _toast!.remove();
+    _toast = null;
     super.dispose();
   }
 
@@ -392,9 +395,13 @@ class _BottomBar extends StatelessWidget {
                             color: NF.muted,
                           ),
                           const SizedBox(width: 2),
-                          Text(
-                            'Swipe up for activities',
-                            style: NF.sora(12, color: NF.muted),
+                          Flexible(
+                            child: Text(
+                              'Swipe up for activities',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: NF.sora(12, color: NF.muted),
+                            ),
                           ),
                         ],
                       ),
@@ -431,9 +438,13 @@ class _BottomBar extends StatelessWidget {
                           children: [
                             const Icon(Icons.search, color: NF.muted, size: 20),
                             const SizedBox(width: 8),
-                            Text(
-                              'What do you want to do?',
-                              style: NF.sora(14, color: NF.muted),
+                            Expanded(
+                              child: Text(
+                                'What do you want to do?',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: NF.sora(14, color: NF.muted),
+                              ),
                             ),
                           ],
                         ),

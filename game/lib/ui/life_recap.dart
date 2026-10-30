@@ -247,53 +247,77 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
           ],
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              for (var d = 0; d < total; d++)
-                Expanded(
-                  child: Container(
-                    height: 3,
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    decoration: BoxDecoration(
-                      color: d <= i ? accent : NF.border,
-                      borderRadius: BorderRadius.circular(2),
+      // Short screens scroll the card instead of cutting it off.
+      child: LayoutBuilder(
+        builder: (context, box) => SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: box.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      for (var d = 0; d < total; d++)
+                        Expanded(
+                          child: Container(
+                            height: 3,
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            decoration: BoxDecoration(
+                              color: d <= i ? accent : NF.border,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Icon(
+                    _icons[c.kind] ?? Icons.auto_awesome_rounded,
+                    color: accent,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    c.title.toUpperCase(),
+                    style: NF.sora(12, weight: FontWeight.w700, color: accent),
+                  ),
+                  const SizedBox(height: 8),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      c.big,
+                      style: NF.sora(34, weight: FontWeight.w800),
                     ),
                   ),
-                ),
-            ],
-          ),
-          const Spacer(),
-          Icon(_icons[c.kind] ?? Icons.auto_awesome_rounded, color: accent),
-          const SizedBox(height: 12),
-          Text(
-            c.title.toUpperCase(),
-            style: NF.sora(12, weight: FontWeight.w700, color: accent),
-          ),
-          const SizedBox(height: 8),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(c.big, style: NF.sora(34, weight: FontWeight.w800)),
-          ),
-          const SizedBox(height: 12),
-          Text(c.body, style: NF.sora(16, color: NF.soft, height: 1.5)),
-          const Spacer(flex: 2),
-          Row(
-            children: [
-              const Icon(Icons.spa_rounded, size: 16, color: NF.muted),
-              const SizedBox(width: 6),
-              Text(
-                'Relivable',
-                style: NF.sora(12, weight: FontWeight.w700, color: NF.muted),
+                  const SizedBox(height: 12),
+                  Text(c.body, style: NF.sora(16, color: NF.soft, height: 1.5)),
+                  const Spacer(flex: 2),
+                  Row(
+                    children: [
+                      const Icon(Icons.spa_rounded, size: 16, color: NF.muted),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Relivable',
+                        style: NF.sora(
+                          12,
+                          weight: FontWeight.w700,
+                          color: NF.muted,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${i + 1}/$total',
+                        style: NF.sora(12, color: NF.muted),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const Spacer(),
-              Text('${i + 1}/$total', style: NF.sora(12, color: NF.muted)),
-            ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

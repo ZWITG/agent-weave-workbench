@@ -175,14 +175,27 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           ),
           Icon(categoryIconFor(_category!), color: NF.orange),
           const SizedBox(width: 8),
-          Text(_category!, style: NF.sora(22, weight: FontWeight.w700)),
+          Expanded(
+            child: Text(
+              _category!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: NF.sora(22, weight: FontWeight.w700),
+            ),
+          ),
         ],
       );
     }
     return Row(
       children: [
-        Text('Activities', style: NF.sora(22, weight: FontWeight.w700)),
-        const Spacer(),
+        Expanded(
+          child: Text(
+            'Activities',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: NF.sora(22, weight: FontWeight.w700),
+          ),
+        ),
         if (!life.classic)
           Semantics(
             label: 'Energy ${life.energy} of 10 this year',

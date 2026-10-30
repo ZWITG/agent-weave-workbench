@@ -122,11 +122,12 @@ class RecapScreen extends StatelessWidget {
                               color: rarityColor,
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              'Life Title',
-                              style: NF.sora(13, color: NF.muted),
+                            Expanded(
+                              child: Text(
+                                'Life Title',
+                                style: NF.sora(13, color: NF.muted),
+                              ),
                             ),
-                            const Spacer(),
                             Text(
                               title.rarity,
                               style: NF.sora(
@@ -215,9 +216,11 @@ class RecapScreen extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              'Your place in history',
-                              style: NF.sora(15, weight: FontWeight.w700),
+                            Expanded(
+                              child: Text(
+                                'Your place in history',
+                                style: NF.sora(15, weight: FontWeight.w700),
+                              ),
                             ),
                           ],
                         ),
@@ -299,8 +302,12 @@ class RecapScreen extends StatelessWidget {
           children: [
             const Icon(Icons.local_florist_rounded, color: NF.orange, size: 20),
             const SizedBox(width: 8),
-            Text('The funeral', style: NF.sora(15, weight: FontWeight.w700)),
-            const Spacer(),
+            Expanded(
+              child: Text(
+                'The funeral',
+                style: NF.sora(15, weight: FontWeight.w700),
+              ),
+            ),
             Text(
               f.attendance == 1 ? '1 came' : '${f.attendance} came',
               style: NF.sora(12, color: NF.muted),

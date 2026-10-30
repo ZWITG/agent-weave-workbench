@@ -50,9 +50,11 @@ class HelplinePanel extends StatelessWidget {
               children: [
                 const Icon(Icons.volunteer_activism_rounded, color: NF.blue),
                 const SizedBox(width: 8),
-                Text(
-                  'Need support in real life?',
-                  style: NF.sora(14, weight: FontWeight.w700),
+                Expanded(
+                  child: Text(
+                    'Need support in real life?',
+                    style: NF.sora(14, weight: FontWeight.w700),
+                  ),
                 ),
               ],
             ),

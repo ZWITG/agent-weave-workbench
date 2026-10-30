@@ -386,13 +386,16 @@ class _PersonSheet extends StatelessWidget {
               Row(
                 children: [
                   Text('Bond', style: NF.sora(14, color: NF.muted)),
-                  const Spacer(),
-                  Text(
-                    '${npc.bond}% · ${npc.bondLabel}',
-                    style: NF.sora(
-                      16,
-                      weight: FontWeight.w700,
-                      color: bondColor(npc.bond),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '${npc.bond}% · ${npc.bondLabel}',
+                      textAlign: TextAlign.right,
+                      style: NF.sora(
+                        16,
+                        weight: FontWeight.w700,
+                        color: bondColor(npc.bond),
+                      ),
                     ),
                   ),
                 ],
