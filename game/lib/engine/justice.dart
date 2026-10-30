@@ -668,8 +668,8 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
               needsMoney: fine,
               run: (l, rng) {
                 l.money -= fine;
-                convict(l, c, 0, 'fine');
-                return 'You paid ${_m(fine)} and got a criminal record for ${c.label.toLowerCase()}.';
+                final text = convict(l, c, 0, 'fine');
+                return 'You paid ${_m(fine)} and got a criminal record for ${c.label.toLowerCase()}.$text';
               },
             ),
             Choice(
@@ -678,8 +678,8 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
               run: (l, rng) {
                 l.stats.add('happiness', -3);
                 l.stats.add('karma', 2);
-                convict(l, c, 0, 'community service');
-                return 'You spent your weekends picking up litter in a hi-vis vest. A criminal record for ${c.label.toLowerCase()}, but no prison.';
+                final text = convict(l, c, 0, 'community service');
+                return 'You spent your weekends picking up litter in a hi-vis vest. A criminal record for ${c.label.toLowerCase()}, but no prison.$text';
               },
             ),
             Choice(
