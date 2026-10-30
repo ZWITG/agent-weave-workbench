@@ -136,3 +136,61 @@ ActionResult instrumentScored(Life life, Random rng, double score) {
     'happiness': score >= 0.5 ? 2 : 0,
   });
 }
+
+// ---------------- Hobbies and calm, played as mini-games ----------------
+
+int _by(double score, int top) => (score * top).round();
+
+ActionResult yogaScored(Life life, Random rng, double score) {
+  life.money -= 15;
+  life.fitness = min(100, life.fitness + 2 + _by(score, 4));
+  final r = statChange(
+    life,
+    score >= 0.7
+        ? 'You held the tree pose so long the teacher used you as the example.'
+        : score >= 0.4
+        ? 'You wobbled, found your balance again, and left feeling taller.'
+        : 'You fell out of every pose. Everyone does at first.',
+    {
+      'health': 1 + _by(score, 2),
+      'happiness': 1 + _by(score, 2),
+      'discipline': 1,
+    },
+  );
+  return ActionResult(r.text, ['Money −\$15', ...r.notes]);
+}
+
+ActionResult gamesScored(Life life, Random rng, double score) => statChange(
+  life,
+  score >= 0.7
+      ? 'Top of the leaderboard. Your friends are demanding a rematch.'
+      : score >= 0.4
+      ? 'A decent run. You will get that boss next time.'
+      : 'You got destroyed by a twelve-year-old online. Character building.',
+  {
+    'happiness': 1 + _by(score, 3),
+    'discipline': -1,
+    'smarts': score >= 0.8 ? 1 : 0,
+  },
+);
+
+ActionResult storyScored(Life life, Random rng, double score) => statChange(
+  life,
+  score >= 0.7
+      ? 'The plot clicked into place. You wrote until 2am and it is genuinely good.'
+      : score >= 0.4
+      ? 'A solid draft, with one twist you are particularly proud of.'
+      : 'You lost the thread halfway, but kept the best paragraph.',
+  {'creativity': 1 + _by(score, 4), 'smarts': score >= 0.5 ? 1 : 0},
+);
+
+ActionResult reflectScored(Life life, Random rng, double score) {
+  life.stress = life.stress - (3 + _by(score, 5));
+  return statChange(
+    life,
+    score >= 0.7
+        ? 'Your breathing slowed and the noise in your head went quiet.'
+        : 'It took a while to settle, but you found a moment of stillness.',
+    {'happiness': 1 + _by(score, 3), 'willpower': 1 + _by(score, 1)},
+  );
+}

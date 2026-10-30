@@ -1940,4 +1940,22 @@ void main() {
     engine.choose(life, scene, scene.choices[1]);
     expect(life.salary, anyOf(pay, (pay * 1.1).round()));
   });
+
+  test('new mini-games: playing well beats playing badly', () {
+    for (final id in ['yoga', 'video_games', 'write_story', 'reflect']) {
+      final a = allActions.firstWhere((a) => a.id == id);
+      expect(a.miniGame, isNotNull, reason: id);
+      expect(a.scored, isNotNull, reason: id);
+    }
+    final story = allActions.firstWhere((a) => a.id == 'write_story');
+    final good = engine.newLife(seed: 210)..age = 20;
+    final bad = engine.newLife(seed: 210)..age = 20;
+    final g0 = good.stats['creativity'], b0 = bad.stats['creativity'];
+    engine.runAction(good, story, score: 1);
+    engine.runAction(bad, story, score: 0);
+    expect(
+      good.stats['creativity'] - g0,
+      greaterThan(bad.stats['creativity'] - b0),
+    );
+  });
 }

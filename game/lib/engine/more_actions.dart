@@ -47,6 +47,8 @@ final moreActions = <GameAction>[
   ),
   GameAction(
     id: 'yoga',
+    miniGame: 'timing',
+    scored: yogaScored,
     label: 'Take a yoga class',
     category: 'Wellbeing',
     keywords: ['yoga', 'stretch', 'class', 'calm'],
@@ -600,6 +602,8 @@ final moreActions = <GameAction>[
   ),
   GameAction(
     id: 'write_story',
+    miniGame: 'memory',
+    scored: storyScored,
     label: 'Write a story',
     category: 'Hobbies',
     keywords: ['write', 'story', 'book', 'novel', 'poem'],
@@ -612,6 +616,8 @@ final moreActions = <GameAction>[
   ),
   GameAction(
     id: 'video_games',
+    miniGame: 'reaction',
+    scored: gamesScored,
     label: 'Play video games',
     category: 'Hobbies',
     keywords: ['games', 'gaming', 'video games', 'play', 'console'],

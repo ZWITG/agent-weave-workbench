@@ -841,7 +841,9 @@ Future<void> runActionFlow(
       context,
       a.miniGame!,
       age: c.life!.age,
-      title: a.label,
+      title: variant == null ? a.label : '${a.label} · ${variant.label}',
+      activity: a.id,
+      life: c.life,
     );
     if (score == null) return; // closed without playing
   }

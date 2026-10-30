@@ -5,6 +5,8 @@ import 'package:relivable/engine/models.dart';
 import 'package:relivable/game_controller.dart';
 import 'package:relivable/main.dart';
 import 'package:relivable/sound.dart';
+import 'package:relivable/engine/actions.dart';
+import 'package:relivable/ui/minigames.dart';
 import 'package:relivable/ui/shop_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -196,4 +198,56 @@ void main() {
       });
     }
   }
+
+  testWidgets('every activity mini-game is themed and fits a small phone', (
+    t,
+  ) async {
+    final games = allActions.where((a) => a.miniGame != null).toList();
+    expect(games.length, greaterThanOrEqualTo(11));
+    for (final a in games) {
+      expect(miniThemes.containsKey(a.id), isTrue, reason: a.id);
+    }
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    final key = GlobalKey<NavigatorState>();
+    await t.pumpWidget(
+      MaterialApp(
+        navigatorKey: key,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(1.3)),
+          child: child!,
+        ),
+        home: const Scaffold(),
+      ),
+    );
+    for (final a in games) {
+      showMiniGame(
+        key.currentContext!,
+        a.miniGame!,
+        age: 20,
+        title: a.label,
+        activity: a.id,
+      );
+      await t.pump(const Duration(milliseconds: 400));
+      await t.pump(const Duration(milliseconds: 400));
+      expect(find.text(miniThemes[a.id]!.intro), findsOneWidget, reason: a.id);
+      key.currentState!.pop();
+      await t.pump(const Duration(milliseconds: 400));
+      await t.pump(const Duration(seconds: 3));
+    }
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+  });
 }

@@ -5,6 +5,7 @@ import 'careers.dart' show studying;
 import 'health.dart' show exposeTo;
 import 'jobs.dart' show leaveJob;
 import 'justice.dart' show caughtInTheAct, convictions, hasSeriousRecord;
+import 'minigame_rules.dart';
 import 'models.dart';
 import 'possessions.dart' show hostingCapacity;
 import 'school.dart' show inSchool;
@@ -457,6 +458,8 @@ final communityActions = <GameAction>[
   ),
   GameAction(
     id: 'reflect',
+    miniGame: 'timing',
+    scored: reflectScored,
     label: 'Pray or reflect',
     category: 'Faith',
     keywords: [
