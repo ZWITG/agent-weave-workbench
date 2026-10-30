@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
@@ -21,6 +22,9 @@ import 'update_prompt.dart';
 import 'wealth_tab.dart';
 import 'people.dart';
 import 'widgets.dart';
+
+/// The web version running on an iPhone or iPad.
+bool get _iosWeb => kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
 class HubScreen extends StatefulWidget {
   const HubScreen({super.key, required this.controller});
@@ -91,37 +95,43 @@ class _HubScreenState extends State<HubScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (i) => setState(() => _tab = i),
-        height: 64,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.auto_stories_outlined),
-            selectedIcon: Icon(Icons.auto_stories),
-            label: 'Life',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'People',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.school_outlined),
-            selectedIcon: Icon(Icons.school),
-            label: 'Path',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet),
-            label: 'Wealth',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Me',
-          ),
-        ],
+      // On an iPhone home-screen web app the home indicator sits over the
+      // bottom of the page, so the tabs get a little room below them.
+      bottomNavigationBar: Container(
+        color: NF.nav,
+        padding: EdgeInsets.only(bottom: _iosWeb ? 14 : 0),
+        child: NavigationBar(
+          selectedIndex: _tab,
+          onDestinationSelected: (i) => setState(() => _tab = i),
+          height: 64,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.auto_stories_outlined),
+              selectedIcon: Icon(Icons.auto_stories),
+              label: 'Life',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.people_outline),
+              selectedIcon: Icon(Icons.people),
+              label: 'People',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.school_outlined),
+              selectedIcon: Icon(Icons.school),
+              label: 'Path',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.account_balance_wallet_outlined),
+              selectedIcon: Icon(Icons.account_balance_wallet),
+              label: 'Wealth',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person),
+              label: 'Me',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1319,6 +1329,23 @@ class _MeTabState extends State<_MeTab> {
         ],
         const SizedBox(height: 16),
         const VersionCard(),
+        if (_iosWeb) ...[
+          const SizedBox(height: 10),
+          NFCard(
+            child: Row(
+              children: [
+                const Icon(Icons.ios_share_rounded, color: NF.blue),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Play full-screen: in Safari tap Share, then Add to Home Screen. Your lives stay saved on this phone.',
+                    style: NF.sora(13, color: NF.soft),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         // Plan HE: a neutral, out-of-character way to end a life. It goes
         // straight to the recap; the support panel shows once a session.

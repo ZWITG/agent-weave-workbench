@@ -8,6 +8,8 @@ name: Relivable game
 #   rolling "relivable-latest" pre-release, which the phone app reads to
 #   update itself (game/lib/updater.dart). It is never marked "latest", so
 #   the desktop app's own updater is unaffected.
+# - publishes the web version to GitHub Pages, so it can be added to an
+#   iPhone home screen from Safari (no App Store or sideloading needed)
 # - builds an unsigned iPhone app (Relivable.ipa) for sideloading, plus an
 #   AltStore/SideStore source (altstore.json) so those stores keep it
 #   updated, and version-ios.json for the in-game update prompt.
@@ -117,7 +119,8 @@ jobs:
           gh release edit relivable-latest --repo "$REPO" --prerelease --latest=false \
             --title "Relivable 0.1.${{ github.run_number }} (latest build)" \
             --notes "Android: download Relivable.apk and open it to install. Installed copies update themselves.
-          iPhone and iPad: in AltStore or SideStore, add the source https://github.com/$REPO/releases/download/relivable-latest/altstore.json and install Relivable; the store keeps it updated. Or install Relivable.ipa with Sideloadly.
+          iPhone and iPad (easiest): open https://zwitg.github.io/agent-weave-workbench/ in Safari, tap Share, then Add to Home Screen. It runs full-screen and is always the latest version.
+          iPhone with AltStore or SideStore already installed: add the source https://github.com/$REPO/releases/download/relivable-latest/altstore.json inside the store app (opening that link in Safari only shows its data), then install Relivable.
           Windows: download RelivableSetup.exe and run it, or unzip Relivable-portable.zip."
           gh release upload relivable-latest Relivable.apk --repo "$REPO" --clobber
           gh release upload relivable-latest version.json --repo "$REPO" --clobber
@@ -156,6 +159,41 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload relivable-latest windows/installer/Output/RelivableSetup.exe windows/installer/Output/Relivable-portable.zip --repo "${{ github.repository }}" --clobber
+
+  # The web version on GitHub Pages: on an iPhone, Safari's Share > Add to
+  # Home Screen turns it into a full-screen app that is always up to date.
+  # Pages must be switched on once in the repo settings (Source: GitHub
+  # Actions); until then this job fails without affecting the others.
+  pages:
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build web for Pages
+        run: flutter build web --release --no-web-resources-cdn --pwa-strategy=none --base-href /agent-weave-workbench/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: game/build/web
+      - id: deploy
+        uses: actions/deploy-pages@v4
 
   # iOS only installs apps signed for the device, so this IPA is unsigned:
   # AltStore, SideStore or Sideloadly sign it with the player's own Apple ID
