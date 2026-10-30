@@ -286,13 +286,17 @@ Storylet? warScene(List<String> args, Life l) {
       Choice(
         label: 'Fight with your crew',
         outcome: '',
-        risk: 'Respect and standing up · health and behaviour down',
+        risk: 'Respect and standing up · health and behaviour down · 20% solitary',
         run: (l, rng) {
           l.stats.add('health', -(4 + rng.nextInt(8)));
           p.behaviour = max(0, p.behaviour - 12);
           p.respect = min(100, p.respect + 10);
           p.gangStanding = min(100, p.gangStanding + 15);
           p.rivalry[rival.id] = 40;
+          if (rng.nextInt(100) < 20) {
+            p.solitary = max(p.solitary, 1);
+            return 'It was over in four minutes. The guards picked you out on camera: a year in solitary. Your crew will not forget who stood with them.';
+          }
           return 'It was over in four minutes. Lockdown for a week. Your crew will not forget who stood with them.';
         },
       ),

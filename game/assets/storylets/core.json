@@ -1362,7 +1362,7 @@
   "id": "cooking_dream",
   "minAge": 22,
   "maxAge": 30,
-  "weight": 14,
+  "weight": 30,
   "category": "work",
   "requires": {
    "flags": [
@@ -1401,7 +1401,7 @@
   "id": "open_restaurant",
   "minAge": 26,
   "maxAge": 30,
-  "weight": 20,
+  "weight": 45,
   "category": "work",
   "requires": {
    "flags": [

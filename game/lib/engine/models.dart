@@ -508,6 +508,22 @@ class Prison {
   /// Marked a snitch: every gang knows.
   bool snitch = false;
 
+  /// Contraband (soap, phone cards, chocolate): prison's own money.
+  int stash = 0;
+
+  /// Years left in solitary confinement (usually 0).
+  int solitary = 0;
+
+  /// Trusted inmate: more freedom, a better record.
+  bool trustee = false;
+
+  /// Courses finished (prison_life.dart) and progress on a long one.
+  final List<String> courses = [];
+  int degreeYears = 0;
+
+  /// People no longer allowed to visit.
+  final List<String> banned = [];
+
   bool get gang => gangId != null;
   bool appealed = false;
 
@@ -533,6 +549,12 @@ class Prison {
     'gangStanding': gangStanding,
     'rivalry': rivalry,
     'snitch': snitch,
+    'stash': stash,
+    'solitary': solitary,
+    'trustee': trustee,
+    'courses': courses,
+    'degreeYears': degreeYears,
+    'banned': banned,
     'appealed': appealed,
     'lastHearing': lastHearing,
   };
@@ -556,6 +578,12 @@ class Prison {
         ..gangStanding = j['gangStanding'] ?? (j['gang'] == true ? 40 : 0)
         ..rivalry.addAll(Map<String, int>.from(j['rivalry'] ?? {}))
         ..snitch = j['snitch'] ?? false
+        ..stash = j['stash'] ?? 0
+        ..solitary = j['solitary'] ?? 0
+        ..trustee = j['trustee'] ?? false
+        ..courses.addAll(List<String>.from(j['courses'] ?? const []))
+        ..degreeYears = j['degreeYears'] ?? 0
+        ..banned.addAll(List<String>.from(j['banned'] ?? const []))
         ..appealed = j['appealed'] ?? false
         ..lastHearing = j['lastHearing'];
 }

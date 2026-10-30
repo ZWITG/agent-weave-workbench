@@ -12,6 +12,7 @@ import 'possessions.dart';
 import 'recap.dart';
 import 'relationships.dart' show reactionScene;
 import 'pets.dart';
+import 'prison_life.dart';
 import 'social.dart';
 import 'community.dart';
 import 'identity.dart';
@@ -106,6 +107,13 @@ Storylet? buildScene(String id, Life life) {
     'gang_war' ||
     'gang_pressure' ||
     'gang_leave' => gangScene(parts.first, parts.sublist(1), life),
+    'visit_pick' ||
+    'visit' ||
+    'prison_course' ||
+    'trustee' ||
+    'on_the_run' ||
+    'parole_checkin' ||
+    'old_crew' => prisonLifeScene(parts.first, parts.sublist(1), life),
     'brand_deal' ||
     'scandal' ||
     'comeback' => socialScene(parts.first, parts.sublist(1), life),

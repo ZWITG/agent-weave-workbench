@@ -24,6 +24,7 @@ class ActionVariant {
     this.cost = 0,
     this.withPerson = false,
     this.minAge = 0,
+    this.check,
   });
 
   final String id;
@@ -37,6 +38,9 @@ class ActionVariant {
   final bool withPerson;
   final int minAge;
 
+  /// Any other reason this way is not possible right now.
+  final String? Function(Life l)? check;
+
   /// [score] is the mini-game result (0..1), or null when there is none.
   final ActionResult Function(Life l, Random rng, Npc? who, double? score) run;
 
@@ -44,7 +48,7 @@ class ActionVariant {
     if (l.age < minAge) return 'From age $minAge';
     if (cost > 0 && l.money < cost) return 'Needs ${_m(cost)}';
     if (withPerson && companions(l).isEmpty) return 'Nobody to bring yet';
-    return null;
+    return check?.call(l);
   }
 }
 
@@ -775,6 +779,78 @@ final actionVariants = <String, List<ActionVariant>>{
           together: 'the surprise weekend away',
           bond: 12,
           cost: 900,
+        );
+      },
+    ),
+  ],
+  'prison_trade': [
+    ActionVariant(
+      id: 'protection',
+      label: 'Buy protection',
+      detail: '3 from your stash · Respect +8, safer in the yard',
+      check: (l) => (l.prison?.stash ?? 0) < 3 ? 'Needs 3 in your stash' : null,
+      run: (l, rng, who, score) {
+        final p = l.prison!;
+        p.stash -= 3;
+        p.respect = min(100, p.respect + 8);
+        return ActionResult(
+          'Three phone cards and a jar of coffee buy you a very large friend who walks the yard with you.',
+          ['Stash −3', 'Respect +8'],
+        );
+      },
+    ),
+    ActionVariant(
+      id: 'call',
+      label: 'Buy a phone call home',
+      detail: '2 from your stash · Bond +8 with who you call',
+      withPerson: true,
+      check: (l) => (l.prison?.stash ?? 0) < 2 ? 'Needs 2 in your stash' : null,
+      run: (l, rng, who, score) {
+        l.prison!.stash -= 2;
+        final b = _together(l, who, 'a phone call from prison', bond: 8);
+        l.stats.add('happiness', 4);
+        return ActionResult(
+          'Ten minutes on a borrowed phone, crouched in a corner. ${_first(who)} cried when they heard your voice.',
+          ['Stash −2', 'Happiness +4', if (b.isNotEmpty) b],
+        );
+      },
+    ),
+    ActionVariant(
+      id: 'sell',
+      label: 'Sell your stash',
+      detail: 'Everything you hold · \$60 each, paid outside',
+      check: (l) => (l.prison?.stash ?? 0) < 1 ? 'Your stash is empty' : null,
+      run: (l, rng, who, score) {
+        final p = l.prison!;
+        final cash = p.stash * 60;
+        p.stash = 0;
+        l.money += cash;
+        return ActionResult(
+          'A cousin of a cellmate pays into your account on the outside. Nobody asks questions.',
+          ['Stash sold', 'Money +${_m(cash)}'],
+        );
+      },
+    ),
+    ActionVariant(
+      id: 'lend',
+      label: 'Lend at interest',
+      detail: '4 from your stash · double back, about 35% never repay',
+      check: (l) => (l.prison?.stash ?? 0) < 4 ? 'Needs 4 in your stash' : null,
+      run: (l, rng, who, score) {
+        final p = l.prison!;
+        p.stash -= 4;
+        if (rng.nextInt(100) < 35) {
+          p.respect = max(0, p.respect - 3);
+          return ActionResult(
+            'He swore he would pay you back by Friday. He got transferred on Thursday.',
+            ['Stash −4', 'Respect −3'],
+          );
+        }
+        p.stash += 8;
+        p.respect = min(100, p.respect + 3);
+        return ActionResult(
+          'Paid back double, on time. Word gets round that you are good for business.',
+          ['Stash +4', 'Respect +3'],
         );
       },
     ),

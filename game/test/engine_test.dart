@@ -11,6 +11,7 @@ import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
 import 'package:relivable/engine/health.dart';
 import 'package:relivable/engine/gangs.dart';
+import 'package:relivable/engine/prison_life.dart';
 import 'package:relivable/engine/heists.dart';
 import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
@@ -2033,5 +2034,164 @@ void main() {
           .gangId,
       'owls',
     );
+  });
+
+  // ---------------- Prison life ----------------
+
+  test('a visit lifts a bond, and smuggling fills the stash', () {
+    final l = inmate(230);
+    final mum = l.who('@parent')!..addFacets(affection: 10);
+    final visit = allActions.firstWhere((a) => a.id == 'prison_visit');
+    expect(visit.lockReason(l), isNull);
+    engine.runAction(l, visit);
+    var scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:visit_pick');
+    final pick = scene.choices.firstWhere(
+      (c) => c.label.startsWith(mum.name.split(' ').first),
+    );
+    engine.choose(l, scene, pick);
+    scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:visit');
+    final before = mum.bond;
+    engine.choose(l, scene, scene.choices.first);
+    expect(mum.bond, greaterThan(before));
+    // Smuggling: either the stash grows or the visitor is banned.
+    l.sceneQueue.add('visit:${mum.id}');
+    scene = engine.nextScene(l)!;
+    final smuggle = scene.choices.firstWhere(
+      (c) => c.label.contains('smuggle'),
+    );
+    smuggle.run!(l, Random(5));
+    expect(l.prison!.stash > 0 || l.prison!.banned.contains(mum.id), isTrue);
+  });
+
+  test('trading in the yard spends the stash', () {
+    final l = inmate(231);
+    l.prison!.stash = 5;
+    final trade = allActions.firstWhere((a) => a.id == 'prison_trade');
+    final ways = variantsFor('prison_trade');
+    expect(ways.map((v) => v.id), containsAll(['protection', 'call', 'sell']));
+    final respect = l.prison!.respect;
+    engine.runAction(l, trade, variant: ways.first);
+    expect(l.prison!.stash, 2);
+    expect(l.prison!.respect, greaterThan(respect));
+    final money = l.money;
+    final sell = ways.firstWhere((v) => v.id == 'sell');
+    sell.run(l, Random(1), null, null);
+    expect(l.money, money + 120);
+    expect(sell.lockReason(l), isNotNull);
+  });
+
+  test('named courses: a trade certificate and a degree', () {
+    final l = inmate(232);
+    l.education = 'high school graduate';
+    l.stats.add('smarts', 100);
+    l.sceneQueue.add('prison_course');
+    var scene = engine.nextScene(l)!;
+    final trade = scene.choices.firstWhere(
+      (c) => c.label == 'Trade certificate',
+    );
+    engine.choose(l, scene, trade);
+    expect(l.marks, contains('trade_cert'));
+    expect(
+      courseLock(l, prisonCourses.firstWhere((c) => c.id == 'trade')),
+      'Done',
+    );
+    for (var i = 0; i < 3; i++) {
+      l.sceneQueue.add('prison_course');
+      scene = engine.nextScene(l)!;
+      engine.choose(
+        l,
+        scene,
+        scene.choices.firstWhere((c) => c.label.startsWith('Degree')),
+      );
+    }
+    expect(l.education, 'graduate');
+    expect(l.prison!.courses, contains('degree'));
+  });
+
+  test('solitary locks most activities, then ends', () {
+    final l = inmate(233);
+    l.prison!.solitary = 1;
+    final job = allActions.firstWhere((a) => a.id == 'prison_job');
+    final exercise = allActions.firstWhere((a) => a.id == 'cell_exercise');
+    expect(job.lockReason(l), 'Not possible in solitary');
+    expect(exercise.lockReason(l), isNull);
+    prisonLifeYear(l, Random(1));
+    expect(l.prison!.solitary, 0);
+    expect(job.lockReason(l), isNull);
+  });
+
+  test('new escape routes, life on the run and recapture', () {
+    final l = inmate(234);
+    l.prison!.job = 'Kitchen';
+    l.sceneQueue.add('escape');
+    var scene = engine.nextScene(l)!;
+    final labels = scene.choices.map((c) => c.label).toList();
+    expect(labels, contains('Hide in a delivery'));
+    final crew = scene.choices.firstWhere((c) => c.label.contains('crew'));
+    expect(crew.lock!(l), isNotNull);
+    engine.choose(
+      l,
+      scene,
+      scene.choices.firstWhere((c) => c.label == 'Hide in a delivery'),
+    );
+    scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:escape_tool');
+    // Force a success, then live as a fugitive until caught.
+    final out = inmate(235);
+    out.sceneQueue.add('escape_tool:delivery:85');
+    scene = engine.nextScene(out)!;
+    var seed = 0;
+    while (out.prison != null && seed < 50) {
+      scene.choices.first.run!(out, Random(seed++));
+      if (out.prison != null && out.prison!.solitary > 0) {
+        expect(out.prison!.solitary, 1); // a failed try is a year in solitary
+        out.prison!.solitary = 0;
+      }
+    }
+    expect(isFugitive(out), isTrue);
+    for (var i = 0; i < 40 && isFugitive(out); i++) {
+      out.age++;
+      prisonLifeYear(out, Random(i));
+    }
+    expect(isFugitive(out), isFalse);
+    expect(out.prison!.security, 'maximum');
+  });
+
+  test('parole check-ins, the halfway house and sealing a record', () {
+    final l = inmate(236);
+    l.prison!.served = 5;
+    l.record.add({'crime': 'burglary', 'age': 29, 'band': 'serious'});
+    final text = release(l, parole: true);
+    expect(text, contains('halfway house'));
+    expect(l.assets.any((a) => a.name == 'Halfway house'), isTrue);
+    l.sceneQueue.add('parole_checkin');
+    final scene = engine.nextScene(l)!;
+    final skip = scene.choices.firstWhere((c) => c.label == 'Skip it');
+    var seed = 0;
+    while (l.prison == null && seed < 40) {
+      skip.run!(l, Random(seed++));
+    }
+    expect(l.prison!.crime, 'parole violation');
+    // Years later, crime-free: seal it and the record stops counting.
+    l.prison = null;
+    l.age = 40;
+    final seal = allActions.firstWhere((a) => a.id == 'seal_record');
+    expect(seal.lockReason(l), isNull);
+    expect(hasSeriousRecord(l), isTrue);
+    engine.runAction(l, seal);
+    expect(hasSeriousRecord(l), isFalse);
+    // The halfway house runs out.
+    l.assets.removeWhere((a) => a.name != 'Halfway house');
+    prisonLifeYear(l, Random(1));
+    expect(l.assets.any((a) => a.name == 'Halfway house'), isFalse);
+    final back = Prison.fromJson(
+      Prison(crime: 'x', years: 2, since: 1).toJson()
+        ..['stash'] = 3
+        ..['courses'] = ['ged'],
+    );
+    expect(back.stash, 3);
+    expect(back.courses, ['ged']);
   });
 }

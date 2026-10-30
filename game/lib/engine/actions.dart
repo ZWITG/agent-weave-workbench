@@ -8,6 +8,7 @@ import 'health.dart';
 import 'homes.dart';
 import 'heists.dart';
 import 'gangs.dart';
+import 'prison_life.dart';
 import 'kin.dart';
 import 'possessions.dart';
 import 'shopping.dart' show shopAction;
@@ -90,6 +91,9 @@ class GameAction {
         category != 'Prison' &&
         !prisonAllowed.contains(id)) {
       return 'Not possible in prison';
+    }
+    if ((life.prison?.solitary ?? 0) > 0 && !solitaryAllowed.contains(id)) {
+      return 'Not possible in solitary';
     }
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.age > maxAge) return 'Only up to age $maxAge';
@@ -392,4 +396,5 @@ final allActions = <GameAction>[
   ...kinActions,
   shopAction,
   ...gangActions,
+  ...prisonLifeActions,
 ];

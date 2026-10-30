@@ -296,15 +296,7 @@ class Career {
     if (const {'police', 'lawyer'}.contains(id) && convictions(life) > 0) {
       return 'Blocked by a criminal record';
     }
-    if (const {
-          'teacher',
-          'doctor',
-          'nurse',
-          'politician',
-          'military',
-          'pilot',
-        }.contains(id) &&
-        hasSeriousRecord(life)) {
+    if (recordChecked.contains(id) && hasSeriousRecord(life)) {
       return 'Blocked by a serious criminal record';
     }
     return extra?.call(life);
@@ -661,6 +653,16 @@ const careers = <Career>[
 
 String? _noRecord(Life l) =>
     l.flags.containsKey('arrested') ? 'Needs a clean record' : null;
+
+/// Careers that check for a criminal record.
+const recordChecked = {
+  'teacher',
+  'doctor',
+  'nurse',
+  'politician',
+  'military',
+  'pilot',
+};
 
 Career? careerById(String? id) {
   for (final c in careers) {

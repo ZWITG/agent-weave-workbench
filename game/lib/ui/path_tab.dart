@@ -194,6 +194,8 @@ class _PathTabState extends State<PathTab> {
               (j) => switch (_jobFilter) {
                 'open' => j.lockReason(life) == null,
                 'special' => j.special,
+                'second' =>
+                  !recordChecked.contains(j.id) && j.lockReason(life) == null,
                 _ => true,
               },
             )
@@ -485,6 +487,7 @@ class _PathTabState extends State<PathTab> {
         ('all', 'All jobs'),
         ('open', 'Open to me'),
         ('special', 'Special careers'),
+        ('second', 'Second chance'),
       ])
         ChoiceChip(
           label: Text(label),

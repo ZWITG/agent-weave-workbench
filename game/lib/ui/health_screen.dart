@@ -4,6 +4,7 @@ import '../engine/health.dart';
 import '../engine/gangs.dart';
 import '../engine/justice.dart';
 import '../engine/models.dart';
+import '../engine/prison_life.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart' show showBusyNotice, showEvent;
@@ -301,7 +302,7 @@ class JusticeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = life.prison;
     final record = life.record.where((r) => r['sealed'] != true).toList();
-    if (p == null && record.isEmpty && !onParole(life)) {
+    if (p == null && record.isEmpty && !onParole(life) && !isFugitive(life)) {
       return const SizedBox.shrink();
     }
     final mate = life.npc('cellmate');
@@ -337,8 +338,17 @@ class JusticeCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               [
-                if (p.job != null) 'Job: ${p.job}',
+                if (p.solitary > 0)
+                  'In solitary: ${p.solitary} year${p.solitary == 1 ? '' : 's'} left',
+                if (p.job != null)
+                  'Job: ${p.job}${p.trustee ? ' (trustee)' : ''}',
                 'Programmes: ${p.programmes}',
+                if (p.courses.isNotEmpty)
+                  'Courses: ${[for (final c in prisonCourses)
+                    if (p.courses.contains(c.id)) c.name].join(', ')}',
+                if (p.degreeYears > 0 && !p.courses.contains('degree'))
+                  'Degree: year ${p.degreeYears} of 3',
+                'Stash: ${p.stash}',
                 if (p.gangId != null)
                   '${gangRanks[p.gangRank]} of ${gangById(p.gangId!).name} (standing ${p.gangStanding}%)',
                 if (p.snitch) 'Known as a snitch',
@@ -357,10 +367,20 @@ class JusticeCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Prison activities are in the Prison category of Activities.',
+              p.solitary > 0
+                  ? 'In solitary you can only read, meditate, write letters and exercise in your cell.'
+                  : 'Prison activities are in the Prison category of Activities.',
               style: NF.sora(12, color: NF.blue),
             ),
           ],
+          if (p == null && isFugitive(life))
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'You are on the run. Working in your own name or being famous makes it easier to find you.',
+                style: NF.sora(12, color: NF.muted),
+              ),
+            ),
           if (p == null && onParole(life))
             Padding(
               padding: const EdgeInsets.only(top: 8),

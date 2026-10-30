@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'gangs.dart';
+import 'prison_life.dart';
 import 'actions.dart';
 import 'jobs.dart' show leaveJob;
 import 'love.dart' show partnerOf, recircle;
@@ -577,9 +578,11 @@ String release(Life l, {bool parole = false}) {
   if (parole && left > 0) l.marks.add('parole_until:${l.age + left}');
   l.flags['released'] = Memory(l.age, 'walking out of prison');
   l.stats.add('happiness', 10);
-  return parole
+  final home = offerHalfwayHouse(l);
+  final text = parole
       ? 'You walked out on parole after ${p.served} years. For the next $left years: check-ins, a curfew and no more crime, or you go back.'
       : 'You served your full ${p.years} years and walked out with a plastic bag of belongings and a criminal record.';
+  return home == null ? text : '$text $home';
 }
 
 Storylet? justiceScene(String id, List<String> args, Life l) {
@@ -904,11 +907,29 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
           return 'You start planning, quietly.';
         },
       );
+      final bribe = switch (p.security) {
+        'maximum' => 12000,
+        'medium' => 6000,
+        _ => 3000,
+      };
+      final crew =
+          30 +
+          switch (p.gangId) {
+            'owls' => 10,
+            'iron' => 5,
+            _ => 0,
+          } +
+          p.gangRank * 3;
       return _scene(
         id,
         'At night you lie awake mapping the ${p.security == 'youth' ? 'centre' : 'prison'}: the cell block, the yard, the laundry, the wall. Patrols pass every twenty minutes. Which way out?',
         [
-          route('Hide in the laundry truck', 'laundry', 30, 'Base 30%'),
+          route(
+            'Hide in the laundry truck',
+            'laundry',
+            p.job == 'Laundry' ? 40 : 30,
+            p.job == 'Laundry' ? 'Base 40% (you work there)' : 'Base 30%',
+          ),
           route(
             'Over the wall at night',
             'wall',
@@ -916,6 +937,45 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
             'Base ${15 + l.stats['athleticism'] ~/ 4}% (Athleticism)',
           ),
           route('Dig a tunnel', 'tunnel', 20, 'Base 20% · slow'),
+          Choice(
+            label: 'Bribe a guard to leave a door open',
+            outcome: '',
+            needsMoney: bribe,
+            risk: 'Costs \$${bribe ~/ 1000},000 · base 45%',
+            run: (l, rng) {
+              l.money -= bribe;
+              l.sceneQueue.add('escape_tool:bribe:45');
+              return 'An envelope changes hands in the visiting room. The guard will not look at you.';
+            },
+          ),
+          route(
+            'Fake an illness for a hospital transfer',
+            'hospital',
+            10 + l.stats['smarts'] ~/ 4,
+            'Base ${10 + l.stats['smarts'] ~/ 4}% (Smarts)',
+          ),
+          Choice(
+            label: 'Get your crew to break you out',
+            outcome: '',
+            risk: 'Needs a gang · base $crew%',
+            lock: (l) => p.gang ? null : 'Needs a gang inside',
+            run: (l, rng) {
+              l.sceneQueue.add('escape_tool:crew:$crew');
+              return 'Word goes out through the crew. Someone outside is booking a van.';
+            },
+          ),
+          Choice(
+            label: 'Hide in a delivery',
+            outcome: '',
+            risk: 'Needs the kitchen or laundry job · base 35%',
+            lock: (l) => const {'Kitchen', 'Laundry'}.contains(p.job)
+                ? null
+                : 'Needs the kitchen or laundry job',
+            run: (l, rng) {
+              l.sceneQueue.add('escape_tool:delivery:35');
+              return 'You learn the delivery schedule by heart.';
+            },
+          ),
           Choice(
             label: 'Forget it',
             outcome: 'You decided freedom could wait for the legal way.',
@@ -947,13 +1007,15 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
               l.notoriety += 15;
               l.cases.add({'crime': 'escape', 'age': l.age, 'evidence': 95});
               l.flags['escaped'] = Memory(l.age, 'escaping from prison');
+              l.marks.add('fugitive');
               return 'You were out before the morning count. Free, for now, but every police officer in the country has your photo.';
             }
             final extra = 1 + rng.nextInt(4);
             p.years += extra;
             p.behaviour = max(0, p.behaviour - 20);
             if (p.security == 'minimum') p.security = 'medium';
-            return 'A guard\'s torch found you halfway there. $extra years were added to your sentence.';
+            p.solitary = max(p.solitary, 1);
+            return 'A guard\'s torch found you halfway there. $extra years were added to your sentence, and the first one is in solitary.';
           },
         );
       }
@@ -1143,28 +1205,16 @@ final justiceActions = <GameAction>[
     id: 'prison_study',
     label: 'Take a prison course',
     category: 'Prison',
-    keywords: ['study', 'course', 'education', 'class', 'exam'],
+    keywords: ['study', 'course', 'education', 'class', 'exam', 'degree'],
+    hint: (l) => l.prison == null
+        ? 'Only in prison'
+        : l.prison!.courses.isEmpty
+        ? 'Diploma, trade, anger, addiction or a degree'
+        : 'Done: ${l.prison!.courses.length} of ${prisonCourses.length}',
     extraCheck: _prisonOnly,
     run: (l, rng) {
-      final p = l.prison!;
-      p.programmes++;
-      p.behaviour = min(100, p.behaviour + 4);
-      var extra = '';
-      if (p.programmes >= 2 &&
-          const {'none', 'primary', 'secondary'}.contains(l.education)) {
-        l.education = 'high school graduate';
-        extra =
-            ' You passed the equivalency exam: you now have a school diploma.';
-      }
-      final r = statChange(
-        l,
-        'You sat in a classroom with bars on the windows and learned something.$extra',
-        {'smarts': 3},
-      );
-      return ActionResult(r.text, [
-        ...r.notes,
-        'Programmes ${p.programmes} (parole board likes these)',
-      ]);
+      l.sceneQueue.add('prison_course');
+      return ActionResult('You look at the education noticeboard.');
     },
   ),
   GameAction(
@@ -1296,11 +1346,14 @@ final justiceActions = <GameAction>[
 /// While in prison, only prison activities (and a few quiet ones) work.
 const prisonAllowed = {'meditate', 'read'};
 
+/// In solitary confinement only these are possible.
+const solitaryAllowed = {'meditate', 'read', 'write_letters', 'cell_exercise'};
+
 /// Each birthday in prison (plan Prison chapter): time served, respect,
 /// safety, parole hearings and release.
 List<String> prisonYear(Life l, Random rng) {
   final p = l.prison;
-  if (p == null) return const [];
+  if (p == null) return prisonLifeYear(l, rng);
   final feed = <String>[];
   p.served++;
   l.reason = 'Prison';
@@ -1312,7 +1365,9 @@ List<String> prisonYear(Life l, Random rng) {
       'Someone picked a fight with you in the yard. You lost. (Respect ${p.respect}%: working out or friends inside would help.)',
     );
   }
-  feed.addAll(gangYear(l, rng));
+  if (p.solitary == 0) feed.addAll(gangYear(l, rng));
+  feed.addAll(prisonLifeYear(l, rng));
+  if (l.prison == null) return feed;
   p.behaviour = min(100, p.behaviour + (p.job != null ? 3 : 0));
   if (rng.nextInt(100) < (p.security == 'maximum' ? 12 : 6)) {
     l.sceneQueue.add('riot');

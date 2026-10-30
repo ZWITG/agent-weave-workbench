@@ -468,6 +468,7 @@ String _decide(Life l, Career c, Random rng) {
                   100 -
               c.baseSalary / 200000 -
               min(0.18, convictions(l) * 0.06) +
+              (l.marks.contains('trade_cert') && convictions(l) > 0 ? 0.1 : 0) +
               (c.special ? l.fame / 400 : 0) -
               (c.special ? 0.1 : 0) +
               (l.difficulty == 'easy'
