@@ -495,8 +495,8 @@ String convict(Life l, Crime c, int years, String how) {
     'your conviction for ${c.label.toLowerCase()}',
   );
   _clearMods(l);
-  final seized = c.id == 'car_theft' &&
-      l.assets.any((a) => a.info['stolen'] == true);
+  final seized =
+      c.id == 'car_theft' && l.assets.any((a) => a.info['stolen'] == true);
   if (seized) {
     l.assets.removeWhere((a) => a.info['stolen'] == true);
     if (!l.has('car')) l.flags.remove('owns_car');

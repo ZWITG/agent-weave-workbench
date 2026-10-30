@@ -446,8 +446,9 @@ class _WealthTabState extends State<WealthTab> {
     for (final a in life.assets) {
       final group = switch (a.kind) {
         'house' || 'rental' => 'Homes',
-        'valuable' || 'collectible' || 'heirloom' =>
-          'Valuables and collectibles',
+        'valuable' ||
+        'collectible' ||
+        'heirloom' => 'Valuables and collectibles',
         _ => 'Vehicles',
       };
       groups[group]!.add(a);

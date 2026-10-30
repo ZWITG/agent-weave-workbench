@@ -360,50 +360,46 @@ Storylet? stolenCarScene(List<String> args, Life l) {
       ? 'Stolen SUV'
       : 'Stolen sports car';
   final cars = l.assets.where((a) => a.kind == 'car').length;
-  return _scene(
-    'crime_car',
-    'The car is yours for now. What do you do with it?',
-    [
-      Choice(
-        label: 'Sell it to a chop shop',
-        outcome: '',
-        risk: 'Money +${_m(gain)} today',
-        run: (l, rng) {
-          l.money += gain;
-          return '${c.done.replaceAll('{gain}', _m(gain))} (Money +${_m(gain)}.)';
-        },
-      ),
-      Choice(
-        label: 'Keep it',
-        outcome: '',
-        risk: 'Swap the plates · more evidence · seized if you are convicted',
-        lock: (_) => cars >= 2 ? 'You already have two cars' : null,
-        run: (l, rng) {
-          l.flags['owns_car'] = Memory(l.age, 'keeping a stolen car');
-          l.assets.add(
-            Asset(
-              id: 'stolen${l.age}_${l.assets.length}',
-              kind: 'car',
-              name: name,
-              value: gain,
-              yearlyCost: 600 + gain ~/ 10,
-              since: l.age,
-              condition: 60 + rng.nextInt(31),
-              info: {'dep': 15, 'stolen': true},
-            ),
-          );
-          for (final k in l.cases.reversed) {
-            if (k['crime'] == 'car_theft' && k['age'] == l.age) {
-              k['evidence'] = min(95, (k['evidence'] as int) + 12);
-              break;
-            }
+  return _scene('crime_car', 'The car is yours for now. What do you do with it?', [
+    Choice(
+      label: 'Sell it to a chop shop',
+      outcome: '',
+      risk: 'Money +${_m(gain)} today',
+      run: (l, rng) {
+        l.money += gain;
+        return '${c.done.replaceAll('{gain}', _m(gain))} (Money +${_m(gain)}.)';
+      },
+    ),
+    Choice(
+      label: 'Keep it',
+      outcome: '',
+      risk: 'Swap the plates · more evidence · seized if you are convicted',
+      lock: (_) => cars >= 2 ? 'You already have two cars' : null,
+      run: (l, rng) {
+        l.flags['owns_car'] = Memory(l.age, 'keeping a stolen car');
+        l.assets.add(
+          Asset(
+            id: 'stolen${l.age}_${l.assets.length}',
+            kind: 'car',
+            name: name,
+            value: gain,
+            yearlyCost: 600 + gain ~/ 10,
+            since: l.age,
+            condition: 60 + rng.nextInt(31),
+            info: {'dep': 15, 'stolen': true},
+          ),
+        );
+        for (final k in l.cases.reversed) {
+          if (k['crime'] == 'car_theft' && k['age'] == l.age) {
+            k['evidence'] = min(95, (k['evidence'] as int) + 12);
+            break;
           }
-          l.stats.add('happiness', 3);
-          return 'New plates, a respray in a friend\'s garage and a story about an auction. The ${name.substring(7)} is yours now. Evidence +12.';
-        },
-      ),
-    ],
-  );
+        }
+        l.stats.add('happiness', 3);
+        return 'New plates, a respray in a friend\'s garage and a story about an auction. The ${name.substring(7)} is yours now. Evidence +12.';
+      },
+    ),
+  ]);
 }
 
 final crimeJobActions = <GameAction>[
