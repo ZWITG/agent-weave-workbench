@@ -483,10 +483,55 @@ String _decide(Life l, Career c, Random rng) {
   if (rng.nextDouble() < p) {
     final had = l.job;
     startCareer(l, c);
-    return '${had == null ? 'You got the job!' : 'You handed in your notice as $had: you got the job!'} You start as ${c.title} on ${_m(l.salary)} a year. $summary';
+    l.sceneQueue.insert(0, 'job_offer:${c.id}:${(score * 100).round()}');
+    return '${had == null ? 'You got the job!' : 'You handed in your notice as $had: you got the job!'} They offer you ${c.title} on ${_m(l.salary)} a year. $summary';
   }
   l.stats.add('happiness', -3);
   return 'A polite email: they went with someone else. Your chance was about $pct%. $summary Tip: raise ${c.keyStat} or ask a close friend for a referral.';
+}
+
+/// The offer after a good interview: take it, negotiate the pay, or ask
+/// for more time off instead.
+Storylet? jobOfferScene(List<String> args, Life l) {
+  final c = careerById(args.isEmpty ? null : args.first);
+  if (c == null || l.careerId != c.id) return null;
+  final interview = args.length > 1 ? int.tryParse(args[1]) ?? 50 : 50;
+  final odds = (35 + l.stats['charisma'] ~/ 3 + interview ~/ 5).clamp(10, 85);
+  return Storylet(
+    id: 'scene:job_offer',
+    text:
+        'HR sends the contract for ${c.title}: ${_m(l.salary)} a year. You could sign it as it is, or try your luck.',
+    category: 'work',
+    scene: true,
+    choices: [
+      Choice(
+        label: 'Sign it',
+        outcome: 'You signed on the line and bought a new pen to celebrate.',
+      ),
+      Choice(
+        label: 'Ask for 10% more',
+        outcome: '',
+        risk: 'About $odds% chance · Charisma and your interview help',
+        run: (l, rng) {
+          if (rng.nextInt(100) < odds) {
+            final more = (l.salary * 0.1).round();
+            l.salary += more;
+            return 'They came back the next day: yes. ${_m(more)} a year more, for one awkward email.';
+          }
+          return 'They said the offer is final. You signed anyway, and nobody holds it against you.';
+        },
+      ),
+      Choice(
+        label: 'Ask for more holiday instead',
+        outcome: '',
+        run: (l, rng) {
+          l.stats.add('happiness', 2);
+          l.stress = max(0, l.stress - 10);
+          return 'Five extra days off a year, agreed without a fight. Your future self says thank you.';
+        },
+      ),
+    ],
+  );
 }
 
 // ---------------- Special-career scenes ----------------

@@ -610,18 +610,36 @@ Storylet? homeScene(String id, List<String> args, Life l) {
         (c) => c.id == args.first,
         orElse: () => cars.first,
       );
-      final down = (c.price * 0.1).round();
+      // A second argument is the discount won by haggling (0 = tried, no).
+      final haggled = args.length > 1;
+      final off = haggled ? int.tryParse(args[1]) ?? 0 : 0;
+      final price = (c.price * (100 - off) / 100).round();
+      final down = (price * 0.1).round();
       final rate = 0.05 + (850 - creditOf(l)) / 550 * 0.07;
       return _scene(
         id,
-        'The ${c.name.toLowerCase()} costs ${_m(c.price)}. Running costs are about ${_m(c.upkeep)} a year. How do you want to pay?',
+        'The ${c.name.toLowerCase()} costs ${_m(price)}${off > 0 ? ' after your haggling ($off% off)' : ''}. Running costs are about ${_m(c.upkeep)} a year. How do you want to pay?',
         [
+          if (!haggled)
+            Choice(
+              label: 'Haggle for a better price',
+              outcome: '',
+              risk: 'Charisma helps · they may not budge',
+              run: (l, rng) {
+                final win = rng.nextInt(100) < 40 + l.stats['charisma'] ~/ 3;
+                final got = win ? 5 + rng.nextInt(8) : 0;
+                l.sceneQueue.insert(0, 'car_pay:${c.id}:$got');
+                return win
+                    ? 'You walked towards the door. The salesperson "spoke to the manager" and knocked $got% off.'
+                    : 'The salesperson smiled. "That is already our best price." It was worth a try.';
+              },
+            ),
           Choice(
-            label: 'Pay cash (${_m(c.price)})',
+            label: 'Pay cash (${_m(price)})',
             outcome: '',
-            needsMoney: c.price,
+            needsMoney: price,
             run: (l, rng) {
-              l.money -= c.price;
+              l.money -= price;
               return addCarModel(l, c, 'You paid in full.');
             },
           ),
@@ -641,8 +659,7 @@ Storylet? homeScene(String id, List<String> args, Life l) {
             run: (l, rng) {
               l.money -= down;
               l.credit ??= 640;
-              l.debts['Auto loan'] =
-                  (l.debts['Auto loan'] ?? 0) + c.price - down;
+              l.debts['Auto loan'] = (l.debts['Auto loan'] ?? 0) + price - down;
               l.rates['Auto loan'] = rate;
               return addCarModel(
                 l,

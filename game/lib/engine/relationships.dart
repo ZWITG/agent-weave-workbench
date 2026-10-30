@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'storylet.dart';
 import 'family.dart' show familyInteractions;
 import 'love.dart' show loveInteractions;
 import 'school.dart' show schoolInteractions;
@@ -893,10 +894,271 @@ const interactionGroups = [
 ];
 
 /// Runs an interaction and counts it toward this year's uses.
-ActionResult runInteraction(Life life, Npc npc, Interaction i, Random rng) {
+ActionResult runInteraction(
+  Life life,
+  Npc npc,
+  Interaction i,
+  Random rng, {
+  InteractionVariant? variant,
+}) {
   final k = i.multiplier(life, npc);
   life.interactionCounts[i.key(npc)] = i.usesThisYear(life, npc) + 1;
-  return i.run(life, npc, k, rng);
+  if (variant != null) {
+    if (variant.cost > 0) life.money -= variant.cost;
+    final r = variant.run(
+      life,
+      npc,
+      k * (variant.suits(life, npc) ? 1.5 : 1),
+      rng,
+    );
+    return ActionResult(r.text, [
+      if (variant.cost > 0) 'Money −\$${variant.cost}',
+      ...r.notes,
+      if (variant.suits(life, npc)) 'Just their thing',
+    ]);
+  }
+  final r = i.run(life, npc, k, rng);
+  // A fight doesn't end when the door slams: what you do next matters.
+  if (i.group == 'Conflict' &&
+      npc.alive &&
+      !life.sceneQueue.any((q) => q.startsWith('reaction:'))) {
+    life.sceneQueue.add('reaction:${npc.id}');
+  }
+  return r;
+}
+
+// ---------------- Ways to spend time and talk ----------------
+
+/// Who someone is, for what they enjoy.
+String tasteFor(Life l, Npc n) {
+  if (n.circle == 'Partner') return 'partner';
+  final a = n.ageIn(l.year);
+  if (a < 13) return 'kid';
+  if (a < 18) return 'teen';
+  if (a >= 65) return 'elder';
+  return 'adult';
+}
+
+class InteractionVariant {
+  const InteractionVariant({
+    required this.id,
+    required this.label,
+    required this.detail,
+    required this.run,
+    this.cost = 0,
+    this.likes = const {},
+  });
+
+  final String id;
+  final String label;
+  final String detail;
+  final int cost;
+
+  /// Who especially enjoys this (kid, teen, adult, elder, partner): half
+  /// as much effect again.
+  final Set<String> likes;
+  final ActionResult Function(Life life, Npc npc, double k, Random rng) run;
+
+  bool suits(Life l, Npc n) => likes.contains(tasteFor(l, n));
+
+  String? lockReason(Life l) =>
+      cost > 0 && l.money < cost ? 'Needs \$$cost' : null;
+}
+
+final interactionVariants = <String, List<InteractionVariant>>{
+  'spend_time': [
+    InteractionVariant(
+      id: 'film',
+      label: 'See a film (\$30)',
+      detail: 'Affection +4',
+      cost: 30,
+      likes: {'kid', 'teen'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        'You shared a giant popcorn with ${n.name} and argued about the ending all the way home.',
+        affection: _k(4, k),
+        familiarity: _k(2, k),
+      ),
+    ),
+    InteractionVariant(
+      id: 'dinner',
+      label: 'Dinner out (\$60)',
+      detail: 'Affection +4, trust +2',
+      cost: 60,
+      likes: {'partner', 'adult', 'elder'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        'A long dinner with ${n.name}. The staff started stacking chairs around you.',
+        affection: _k(4, k),
+        trust: _k(2, k),
+      ),
+    ),
+    InteractionVariant(
+      id: 'walk',
+      label: 'A long walk',
+      detail: 'Trust +3, familiarity +2 · free',
+      likes: {'elder', 'adult'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        'You walked with ${n.name} until the streetlights came on.',
+        trust: _k(3, k),
+        familiarity: _k(2, k),
+      ),
+    ),
+    InteractionVariant(
+      id: 'games',
+      label: 'Play games',
+      detail: 'Affection +3, familiarity +3 · free',
+      likes: {'kid', 'teen'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        rng.nextBool()
+            ? '${n.name} won every round and was insufferable about it.'
+            : 'You let ${n.name} win. They know. They don\'t care.',
+        affection: _k(3, k),
+        familiarity: _k(3, k),
+      ),
+    ),
+  ],
+  'talk': [
+    InteractionVariant(
+      id: 'day',
+      label: 'Ask about their day',
+      detail: 'Trust +3',
+      likes: {'kid', 'elder'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        '${n.name} told you everything, in great detail, and seemed lighter for it.',
+        trust: _k(3, k),
+        affection: _k(1, k),
+      ),
+    ),
+    InteractionVariant(
+      id: 'memories',
+      label: 'Talk about old times',
+      detail: 'Affection +4',
+      likes: {'elder', 'partner', 'adult'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        n.memories.any((m) => !m.negative)
+            ? 'You both laughed about ${n.memories.firstWhere((m) => !m.negative).text}.'
+            : 'You remembered things neither of you had thought about in years.',
+        affection: _k(4, k),
+      ),
+    ),
+    InteractionVariant(
+      id: 'future',
+      label: 'Talk about the future',
+      detail: 'Trust +2, respect +2',
+      likes: {'partner', 'teen'},
+      run: (l, n, k, rng) => _bond(
+        l,
+        n,
+        'You talked about plans, hopes and one slightly ridiculous dream. ${n.name} took it seriously.',
+        trust: _k(2, k),
+        respect: _k(2, k),
+      ),
+    ),
+    InteractionVariant(
+      id: 'difficult',
+      label: 'Bring up something difficult',
+      detail:
+          'Risky: much closer, or an argument (better odds with a high Bond)',
+      run: (l, n, k, rng) => rng.nextInt(100) < 40 + n.bond ~/ 2
+          ? _bond(
+              l,
+              n,
+              'It was hard to say and hard to hear. Then ${n.name} hugged you and said, "Thank you for telling me."',
+              trust: 6,
+              affection: 3,
+              memory: NpcMemory(
+                age: l.age,
+                text: 'you trusting me with something hard',
+                valence: 2,
+                intensity: 3,
+              ),
+            )
+          : _bond(
+              l,
+              n,
+              '${n.name} took it badly. Voices were raised. You both need time.',
+              affection: -2,
+              resentment: 4,
+            ),
+    ),
+  ],
+};
+
+List<InteractionVariant> interactionVariantsFor(String id) =>
+    interactionVariants[id] ?? const [];
+
+/// After a fight: apologise, stand firm, give space or make a peace offering.
+Storylet? reactionScene(List<String> args, Life l) {
+  final n = args.isEmpty ? null : l.npc(args.first);
+  if (n == null || !n.alive) return null;
+  final name = n.name.split(' ').first;
+  final angry = n.resentment >= 30;
+  return Storylet(
+    id: 'scene:reaction',
+    text: angry
+        ? '$name is still furious. Their messages are short, and they leave the room when you walk in.'
+        : '$name has gone quiet since the row. Things feel off between you.',
+    category: 'friends',
+    scene: true,
+    choices: [
+      Choice(
+        label: 'Apologise properly',
+        outcome: '',
+        run: (l, rng) {
+          n.addFacets(affection: 2, trust: 1, resentment: -6);
+          n.remember(
+            NpcMemory(
+              age: l.age,
+              text: 'you apologising after our fight',
+              valence: 1,
+              intensity: 2,
+            ),
+          );
+          l.stats.add('karma', 1);
+          return 'You said sorry and meant it. $name let out a long breath. "Okay. Thank you."';
+        },
+      ),
+      Choice(
+        label: 'Stand your ground',
+        outcome: '',
+        risk: 'They respect you more, and resent you more',
+        run: (l, rng) {
+          n.addFacets(respect: 3, resentment: 2);
+          l.stats.add('willpower', 1);
+          return 'You explained why you meant it. $name didn\'t agree, but they heard you.';
+        },
+      ),
+      Choice(
+        label: 'Give them space',
+        outcome: '',
+        run: (l, rng) {
+          n.addFacets(affection: -1, resentment: -2);
+          return 'You let it rest. Time did some of the work.';
+        },
+      ),
+      Choice(
+        label: 'Send a peace offering (\$30)',
+        outcome: '',
+        needsMoney: 30,
+        run: (l, rng) {
+          l.money -= 30;
+          n.addFacets(affection: 3, resentment: -4);
+          return 'Their favourite snacks and a note. $name sent back a single heart emoji. Progress.';
+        },
+      ),
+    ],
+  );
 }
 
 /// Yearly relationship upkeep: drift without contact, fading memories,

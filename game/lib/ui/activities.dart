@@ -4,6 +4,7 @@ import '../engine/actions.dart';
 import '../engine/profile.dart';
 import '../engine/models.dart';
 import '../engine/relationships.dart';
+import '../engine/variants.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'minigames.dart';
@@ -429,14 +430,21 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         borderRadius: BorderRadius.circular(14),
         onTap: lock != null
             ? null
-            : () {
+            : () async {
+                final nav = Navigator.of(context);
                 final busy = c.busyReason;
                 if (busy != null) {
-                  showBusyNotice(context, c, busy);
+                  await showBusyNotice(context, c, busy);
                   return;
                 }
-                final r = c.interact(n, i);
-                final nav = Navigator.of(context)..pop();
+                InteractionVariant? how;
+                final ways = interactionVariantsFor(i.id);
+                if (ways.isNotEmpty) {
+                  how = await pickInteractionVariant(context, life, n, i, ways);
+                  if (how == null || !nav.mounted) return;
+                }
+                final r = c.interact(n, i, variant: how);
+                nav.pop();
                 if (c.pendingEvent != null) {
                   showEvent(nav.context, c);
                   return;
@@ -600,6 +608,136 @@ Widget actionRow(
   );
 }
 
+/// Choose how to do an activity. Locked options stay visible with why.
+Future<ActionVariant?> pickVariant(
+  BuildContext context,
+  Life life,
+  GameAction a,
+  List<ActionVariant> options,
+) => showModalBottomSheet<ActionVariant>(
+  context: context,
+  backgroundColor: NF.surface,
+  isScrollControlled: true,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+  ),
+  builder: (ctx) => ConstrainedBox(
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(ctx).size.height * 0.8,
+    ),
+    child: ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+      children: [
+        Text(a.label, style: NF.sora(18, weight: FontWeight.w700)),
+        Text('How do you want to do it?', style: NF.sora(13, color: NF.muted)),
+        const SizedBox(height: 12),
+        for (final v in options) ...[
+          OptionRow(
+            icon: v.withPerson
+                ? Icons.group_add_rounded
+                : categoryIconFor(a.category),
+            title: v.label,
+            detail:
+                v.lockReason(life) ??
+                (v.withPerson ? '${v.detail} · pick who' : v.detail),
+            locked: v.lockReason(life) != null,
+            onTap: () => Navigator.pop(ctx, v),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
+    ),
+  ),
+);
+
+/// Choose how to spend time with someone or what to talk about. Options
+/// they especially enjoy are marked.
+Future<InteractionVariant?> pickInteractionVariant(
+  BuildContext context,
+  Life life,
+  Npc npc,
+  Interaction i,
+  List<InteractionVariant> ways,
+) => showModalBottomSheet<InteractionVariant>(
+  context: context,
+  backgroundColor: NF.surface,
+  isScrollControlled: true,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+  ),
+  builder: (ctx) => ConstrainedBox(
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(ctx).size.height * 0.8,
+    ),
+    child: ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+      children: [
+        Text(
+          '${i.label} · ${npc.name.split(' ').first}',
+          style: NF.sora(18, weight: FontWeight.w700),
+        ),
+        Text('What would you like to do?', style: NF.sora(13, color: NF.muted)),
+        const SizedBox(height: 12),
+        for (final w in ways) ...[
+          OptionRow(
+            icon: w.suits(life, npc)
+                ? Icons.favorite_rounded
+                : Icons.chat_bubble_outline_rounded,
+            title: w.label,
+            detail:
+                w.lockReason(life) ??
+                (w.suits(life, npc)
+                    ? '${w.detail} · just their thing'
+                    : w.detail),
+            locked: w.lockReason(life) != null,
+            onTap: () => Navigator.pop(ctx, w),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
+    ),
+  ),
+);
+
+/// Choose who comes along, closest first.
+Future<Npc?> pickCompanion(BuildContext context, Life life, String what) =>
+    showModalBottomSheet<Npc>(
+      context: context,
+      backgroundColor: NF.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(ctx).size.height * 0.8,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          children: [
+            Text(
+              'Who comes along?',
+              style: NF.sora(18, weight: FontWeight.w700),
+            ),
+            Text(what, style: NF.sora(13, color: NF.muted)),
+            const SizedBox(height: 12),
+            for (final n in companions(life).take(15)) ...[
+              OptionRow(
+                icon: Icons.person_rounded,
+                title: '${n.name.split(' ').first} · ${n.role}',
+                detail: 'Bond ${n.bond}% · ${n.bondLabel}',
+                onTap: () => Navigator.pop(ctx, n),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ],
+        ),
+      ),
+    );
+
 /// "Not yet": an event (or its next step) on the Life tab comes first.
 /// "Go to event" closes any sheets and screens and shows it.
 Future<void> showBusyNotice(
@@ -647,12 +785,25 @@ Future<void> runActionFlow(
     await showBusyNotice(context, c, busy);
     return;
   }
+  // How to do it (light or hard session, which trip, who to bring).
+  ActionVariant? variant;
+  Npc? who;
+  final options = variantsFor(a.id);
+  if (options.isNotEmpty) {
+    variant = await pickVariant(context, c.life!, a, options);
+    if (variant == null || !context.mounted) return;
+    if (variant.withPerson) {
+      who = await pickCompanion(context, c.life!, variant.label);
+      if (who == null || !context.mounted) return;
+    }
+  }
   // Confirm big decisions (plan UX §8.5): crime, quitting, moving abroad,
   // or spending more than half your cash.
   final big =
       a.category == 'Crime' ||
       const {'quit_job', 'retire', 'emigrate', 'name_change'}.contains(a.id) ||
-      (a.cost > 0 && a.cost > c.life!.money / 2);
+      (a.cost > 0 && a.cost > c.life!.money / 2) ||
+      (variant != null && variant.cost > c.life!.money / 2);
   if (c.profile.confirmBig && big) {
     final ok = await showDialog<bool>(
       context: context,
@@ -695,7 +846,7 @@ Future<void> runActionFlow(
     if (score == null) return; // closed without playing
   }
   final before = c.pendingEvent;
-  final r = c.runAction(a, score: score);
+  final r = c.runAction(a, score: score, variant: variant, who: who);
   if (closeSheet) nav.pop();
   if (!nav.mounted) return;
   // The activity opened a scene (an interview, a viewing...): go straight

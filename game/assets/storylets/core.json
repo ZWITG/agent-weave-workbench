@@ -186,6 +186,17 @@
       "happiness": -2
      }
     }
+   },
+   {
+    "label": "Ask the teacher if you can help",
+    "outcome": "The teacher gave you the very important job of handing out the crayons. You felt about ten feet tall.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "discipline": 1,
+      "charisma": 1
+     }
+    }
    }
   ]
  },
@@ -337,6 +348,16 @@
       "happiness": -2
      }
     }
+   },
+   {
+    "label": "Ask a friend to quiz you",
+    "outcome": "You took turns firing questions at each other. You learned it, and laughed a lot.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "happiness": 1
+     }
+    }
    }
   ]
  },
@@ -379,6 +400,16 @@
      },
      "flags": {
       "avoided_duarte": "hiding from Duarte"
+     }
+    }
+   },
+   {
+    "label": "Make him laugh instead",
+    "outcome": "You made a joke at your own expense. Duarte snorted, despite himself. He left you alone after that.",
+    "effects": {
+     "stats": {
+      "charisma": 3,
+      "happiness": 1
      }
     }
    }
@@ -518,6 +549,16 @@
       "clique_code": "the coding club"
      }
     }
+   },
+   {
+    "label": "Stay friends with everyone",
+    "outcome": "You floated between all three groups. Nobody quite claims you, and everybody likes you.",
+    "effects": {
+     "stats": {
+      "charisma": 3,
+      "happiness": 1
+     }
+    }
    }
   ]
  },
@@ -603,6 +644,16 @@
       "willpower": 2
      }
     }
+   },
+   {
+    "label": "Just talk to them about something normal",
+    "outcome": "You asked about the homework. They answered, then kept talking. It counts.",
+    "effects": {
+     "stats": {
+      "charisma": 3,
+      "happiness": 3
+     }
+    }
    }
   ]
  },
@@ -646,6 +697,16 @@
      },
      "stats": {
       "happiness": 2
+     }
+    }
+   },
+   {
+    "label": "Go, but leave by eleven",
+    "outcome": "You had a great time and left before anything went wrong. Smart.",
+    "effects": {
+     "stats": {
+      "happiness": 3,
+      "discipline": 2
      }
     }
    }
@@ -768,6 +829,17 @@
       "happiness": 6,
       "charisma": 2
      }
+    }
+   },
+   {
+    "label": "Do a part-time course while you work",
+    "outcome": "Evenings at college, days at work. Slower, but no big debt.",
+    "effects": {
+     "stats": {
+      "smarts": 2,
+      "discipline": 3
+     },
+     "money": -800
     }
    }
   ]
@@ -1090,6 +1162,20 @@
      },
      "stats": {
       "happiness": -1
+     }
+    }
+   },
+   {
+    "label": "Find a flatmate to split the rent",
+    "outcome": "A stranger from the internet who turned out to be lovely. Rent halved, fridge shared.",
+    "effects": {
+     "money": -600,
+     "stats": {
+      "happiness": 4,
+      "charisma": 1
+     },
+     "flags": {
+      "own_flat": "your first flat"
      }
     }
    }
@@ -1439,6 +1525,16 @@
       "happiness": -3
      }
     }
+   },
+   {
+    "label": "Rest properly for a fortnight",
+    "outcome": "Early nights, real food, no phone in bed. It helped more than you expected.",
+    "effects": {
+     "stats": {
+      "health": 3,
+      "happiness": 1
+     }
+    }
    }
   ]
  },
@@ -1642,6 +1738,16 @@
      "money": 300,
      "stats": {
       "karma": -6
+     }
+    }
+   },
+   {
+    "label": "Track the owner down yourself",
+    "outcome": "You found them on social media. They cried, hugged you and insisted on buying you lunch.",
+    "effects": {
+     "stats": {
+      "karma": 7,
+      "happiness": 3
      }
     }
    }
@@ -2284,6 +2390,18 @@
       "happiness": 1
      }
     }
+   },
+   {
+    "label": "Volunteer to run the trust falls",
+    "outcome": "You caught everyone, including your boss. That has to count for something.",
+    "effects": {
+     "stats": {
+      "charisma": 2
+     },
+     "bond": {
+      "@boss": 4
+     }
+    }
    }
   ]
  },
@@ -2332,6 +2450,19 @@
     "effects": {
      "stats": {
       "happiness": 1
+     }
+    }
+   },
+   {
+    "label": "Take the interview and decide later",
+    "outcome": "You went, they loved you, and you now know exactly what you are worth.",
+    "effects": {
+     "stats": {
+      "happiness": 2,
+      "charisma": 1
+     },
+     "flags": {
+      "counter_offer": "getting a counter-offer"
      }
     }
    }
@@ -2685,6 +2816,19 @@
      },
      "bond": {
       "@partner": -7
+     }
+    }
+   },
+   {
+    "label": "Make a budget together",
+    "outcome": "A spreadsheet, two cups of tea and one compromise each. It worked.",
+    "effects": {
+     "stats": {
+      "discipline": 3,
+      "smarts": 1
+     },
+     "bond": {
+      "@partner": 4
      }
     }
    }
@@ -3472,6 +3616,19 @@
       "neighbour_feud": "complaining about the new neighbours"
      }
     }
+   },
+   {
+    "label": "Offer to help them unload",
+    "outcome": "You carried a sofa up two flights of stairs. They have been your favourite neighbours ever since.",
+    "effects": {
+     "stats": {
+      "karma": 4,
+      "health": -1
+     },
+     "flags": {
+      "good_neighbour": "welcoming the new neighbours"
+     }
+    }
    }
   ]
  },
@@ -3581,6 +3738,16 @@
     "effects": {
      "stats": {
       "happiness": 4
+     }
+    }
+   },
+   {
+    "label": "Report the number to the police",
+    "outcome": "The officer thanked you: three other people had called about the same number this week.",
+    "effects": {
+     "stats": {
+      "karma": 3,
+      "smarts": 1
      }
     }
    }
@@ -3720,6 +3887,16 @@
       "happiness": 1
      }
     }
+   },
+   {
+    "label": "Organise a smaller get-together",
+    "outcome": "Just the old gang, a long table and stories nobody else would understand.",
+    "effects": {
+     "stats": {
+      "happiness": 4,
+      "charisma": 1
+     }
+    }
    }
   ]
  },
@@ -3791,7 +3968,7 @@
   "id": "friend_repays",
   "minAge": 30,
   "maxAge": 80,
-  "weight": 25,
+  "weight": 60,
   "category": "friends",
   "requires": {
    "flags": [
@@ -3874,6 +4051,17 @@
       "happiness": 3
      },
      "money": -700
+    }
+   },
+   {
+    "label": "Start looking after yourself",
+    "outcome": "You booked a check-up, bought trainers and actually used them.",
+    "effects": {
+     "stats": {
+      "health": 3,
+      "discipline": 1
+     },
+     "money": -100
     }
    }
   ]
@@ -4216,6 +4404,16 @@
       "happiness": -2
      }
     }
+   },
+   {
+    "label": "Ask to be foreperson",
+    "outcome": "You kept twelve strangers on track and got everyone home on time. You are weirdly proud.",
+    "effects": {
+     "stats": {
+      "karma": 2,
+      "charisma": 2
+     }
+    }
    }
   ]
  },
@@ -4294,6 +4492,18 @@
       "karma": 4,
       "happiness": 3
      }
+    }
+   },
+   {
+    "label": "Light the barbecue and invite the street",
+    "outcome": "Every freezer had to be emptied anyway. It became the best street party in years.",
+    "effects": {
+     "stats": {
+      "happiness": 5,
+      "charisma": 2,
+      "karma": 2
+     },
+     "money": -40
     }
    }
   ]

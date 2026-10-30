@@ -9,6 +9,7 @@ import 'heists.dart';
 import 'kin.dart';
 import 'possessions.dart';
 import 'recap.dart';
+import 'relationships.dart' show reactionScene;
 import 'pets.dart';
 import 'social.dart';
 import 'community.dart';
@@ -39,6 +40,7 @@ Storylet? buildScene(String id, Life life) {
     'lessons' => lessonsScene(),
     'tryouts' => tryoutsScene(life),
     'cheat' => cheatScene(),
+    'job_offer' => jobOfferScene(parts.sublist(1), life),
     'interview' =>
       parts.length == 3
           ? interviewScene(life, parts[1], int.tryParse(parts[2]) ?? 0)
@@ -119,6 +121,7 @@ Storylet? buildScene(String id, Life life) {
     'foster_end' ||
     'surrogacy' ||
     'season' => kinScene(parts.first, parts.sublist(1), life),
+    'reaction' => reactionScene(parts.sublist(1), life),
     _ => null,
   };
 }
@@ -249,6 +252,22 @@ Storylet? _illness(String id, String key, Life life) {
         l.stats.add('health', sev);
         l.stats.add('happiness', -1);
         return 'Four hours in a plastic chair, then a brisk young doctor sorted you out in ten minutes. Expensive, but you walked out feeling much better.';
+      },
+    ),
+    Choice(
+      label: 'Ask a pharmacist (\$15)',
+      outcome: '',
+      risk: 'Cheap · fine for mild illnesses',
+      needsMoney: 15,
+      run: (l, rng) {
+        l.reason = 'Pharmacy for ${ill.name}';
+        l.money -= 15;
+        if (sev <= 6 || rng.nextInt(100) < 40) {
+          l.stats.add('health', sev ~/ 3 + 1);
+          return 'The pharmacist knew exactly what you needed. Three days later you were fine.';
+        }
+        l.stats.add('health', -1);
+        return 'The pharmacist frowned and told you to see a doctor if it did not clear up. It did not, for a while.';
       },
     ),
     Choice(

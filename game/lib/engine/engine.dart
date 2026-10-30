@@ -26,6 +26,7 @@ import 'relationships.dart';
 import 'scenes.dart';
 import 'school.dart';
 import 'storylet.dart';
+import 'variants.dart';
 import 'world.dart';
 import 'world_data.dart';
 
@@ -579,9 +580,16 @@ class GameEngine {
 
   List<GameAction> get actions => allActions;
 
-  /// Runs an activity. [score] (0..1) comes from its mini-game, if played.
-  ActionResult runAction(Life life, GameAction action, {double? score}) {
-    final lock = action.lockReason(life);
+  /// Runs an activity. [score] (0..1) comes from its mini-game, if played;
+  /// [variant] is how the player chose to do it, and [who] who came along.
+  ActionResult runAction(
+    Life life,
+    GameAction action, {
+    double? score,
+    ActionVariant? variant,
+    Npc? who,
+  }) {
+    final lock = action.lockReason(life) ?? variant?.lockReason(life);
     if (lock != null) return ActionResult(lock, ['Why: $lock']);
     final rng = _rngFor(life, action.id.hashCode);
     final again = life.usedActions.contains(action.id);
@@ -590,7 +598,9 @@ class GameEngine {
       life.energy = max(0, life.energy - 1);
     }
     life.usedActions.add(action.id);
-    final result = score != null && action.scored != null
+    final result = variant != null
+        ? variant.run(life, rng, who, score?.clamp(0, 1))
+        : score != null && action.scored != null
         ? action.scored!(life, rng, score.clamp(0, 1))
         : action.run(life, rng);
     final text = fill(result.text, life);
@@ -750,10 +760,15 @@ class GameEngine {
 
   // ---------- Person interactions (People tab, action search) ----------
 
-  ActionResult interact(Life life, Npc npc, Interaction i) {
+  ActionResult interact(
+    Life life,
+    Npc npc,
+    Interaction i, {
+    InteractionVariant? variant,
+  }) {
     final rng = _rngFor(life, i.key(npc).hashCode);
     life.reason = '${i.label} · ${npc.name}';
-    final r = runInteraction(life, npc, i, rng);
+    final r = runInteraction(life, npc, i, rng, variant: variant);
     final text = fill(r.text, life);
     life.feed.add(FeedEntry(life.age, text, kind: 'action'));
     return ActionResult(text, r.notes);

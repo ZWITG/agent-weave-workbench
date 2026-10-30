@@ -13,6 +13,7 @@ import 'engine/meta.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
+import 'engine/variants.dart';
 import 'engine/profile.dart';
 import 'engine/scenes.dart';
 import 'engine/world.dart';
@@ -422,10 +423,21 @@ class GameController extends ChangeNotifier {
     return r;
   }
 
-  ActionResult runAction(GameAction action, {double? score}) {
+  ActionResult runAction(
+    GameAction action, {
+    double? score,
+    ActionVariant? variant,
+    Npc? who,
+  }) {
     final busy = busyReason;
     if (busy != null) return ActionResult(busy);
-    final r = engine!.runAction(life!, action, score: score);
+    final r = engine!.runAction(
+      life!,
+      action,
+      score: score,
+      variant: variant,
+      who: who,
+    );
     _sceneAfterAction();
     _meta([
       'action:${action.id}',
@@ -438,10 +450,14 @@ class GameController extends ChangeNotifier {
   }
 
   /// Runs a person interaction from the People tab or the action search.
-  ActionResult interact(Npc npc, Interaction interaction) {
+  ActionResult interact(
+    Npc npc,
+    Interaction interaction, {
+    InteractionVariant? variant,
+  }) {
     final busy = busyReason;
     if (busy != null) return ActionResult(busy);
-    final r = engine!.interact(life!, npc, interaction);
+    final r = engine!.interact(life!, npc, interaction, variant: variant);
     _sceneAfterAction();
     _meta(['interaction:${npc.circle}']);
     _save();

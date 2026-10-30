@@ -24,6 +24,7 @@ import 'package:relivable/engine/kin.dart';
 import 'package:relivable/engine/possessions.dart';
 import 'package:relivable/engine/profile.dart';
 import 'package:relivable/engine/shopping.dart';
+import 'package:relivable/engine/variants.dart';
 import 'package:relivable/engine/recap.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
@@ -1779,6 +1780,7 @@ void main() {
     expect(dealsOn(quiet), dealsOn(DateTime(2026, 8, 1)));
     expect(dealsOn(quiet).length, 3);
     final life = engine.newLife(seed: 190)..age = 30;
+    life.economy = 'Normal';
     final laptop = itemById('laptop')!;
     final full = priceOf(life, laptop, quiet);
     if (!dealsOn(quiet).containsKey('laptop')) {
@@ -1873,5 +1875,69 @@ void main() {
     expect(life.subs, isEmpty);
     final copy = Life.fromJson(jsonDecode(jsonEncode(life.toJson())));
     expect(copy.toJson(), life.toJson());
+  });
+
+  // ---------------- More control ----------------
+
+  test('activities offer ways to do them, and who to bring', () {
+    final life = engine.newLife(seed: 200)..age = 30;
+    life.money = 10000;
+    final gym = allActions.firstWhere((a) => a.id == 'gym');
+    expect(variantsFor('gym').map((v) => v.id), contains('hard'));
+    final buddy = variantsFor('gym').firstWhere((v) => v.withPerson);
+    final friend = life.who('@parent')!;
+    final before = friend.bond;
+    final r = engine.runAction(life, gym, variant: buddy, who: friend);
+    expect(friend.bond, greaterThan(before));
+    expect(r.notes.any((n) => n.startsWith('Bond with')), isTrue);
+    final trip = allActions.firstWhere((a) => a.id == 'vacation');
+    final beach = variantsFor('vacation').first;
+    life.money = 100;
+    expect(beach.lockReason(life), contains('Needs'));
+    life.money = 5000;
+    engine.runAction(life, trip, variant: beach);
+    expect(life.money, 2000);
+    // Going all out can strain something; the odds show before choosing.
+    final hard = variantsFor('gym').firstWhere((v) => v.id == 'hard');
+    expect(hard.detail, contains('strain'));
+  });
+
+  test('time with people: options they enjoy, and fights that follow up', () {
+    final life = engine.newLife(seed: 201)..age = 40;
+    life.money = 1000;
+    final mum = life.who('@parent')!;
+    final spend = interactions.firstWhere((i) => i.id == 'spend_time');
+    final ways = interactionVariantsFor('spend_time');
+    final walk = ways.firstWhere((w) => w.id == 'walk');
+    expect(walk.suits(life, mum), isTrue);
+    final r = engine.interact(life, mum, spend, variant: walk);
+    expect(r.notes, contains('Just their thing'));
+    final argue = interactions.firstWhere((i) => i.id == 'argue');
+    engine.interact(life, mum, argue);
+    expect(life.sceneQueue, contains('reaction:${mum.id}'));
+    final scene = engine.nextScene(life)!;
+    expect(scene.choices.length, 4);
+    final resentment = mum.resentment;
+    engine.choose(life, scene, scene.choices.first);
+    expect(mum.resentment, lessThan(resentment));
+  });
+
+  test('haggling for a car and negotiating a job offer', () {
+    final life = engine.newLife(seed: 202)..age = 30;
+    life.money = 100000;
+    life.sceneQueue.add('car_pay:family');
+    var scene = engine.nextScene(life)!;
+    expect(scene.choices.first.label, contains('Haggle'));
+    engine.choose(life, scene, scene.choices.first);
+    scene = engine.nextScene(life)!;
+    expect(scene.choices.first.label, isNot(contains('Haggle')));
+    final job = careers.firstWhere((c) => c.lockReason(life) == null);
+    startCareer(life, job);
+    life.sceneQueue.add('job_offer:${job.id}:90');
+    scene = engine.nextScene(life)!;
+    expect(scene.choices.map((c) => c.label), contains('Ask for 10% more'));
+    final pay = life.salary;
+    engine.choose(life, scene, scene.choices[1]);
+    expect(life.salary, anyOf(pay, (pay * 1.1).round()));
   });
 }
