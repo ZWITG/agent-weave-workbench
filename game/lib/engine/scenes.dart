@@ -111,7 +111,9 @@ Storylet? buildScene(String id, Life life) {
     'crime_plan' ||
     'crime_go' ||
     'crime_twist' ||
-    'crime_car' => crimeJobScene(parts.first, parts.sublist(1), life),
+    'crime_car' ||
+    'murder_pick' ||
+    'murder_how' => crimeJobScene(parts.first, parts.sublist(1), life),
     'visit_pick' ||
     'visit' ||
     'prison_course' ||

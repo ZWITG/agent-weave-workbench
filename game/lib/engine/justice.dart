@@ -222,6 +222,22 @@ const crimes = <Crime>[
     caught: 'The getaway driver panicked and drove into a bollard. Sirens everywhere.',
   ),
   (
+    id: 'murder',
+    label: 'Murder',
+    minAge: 18,
+    risk: 55,
+    evidence: 80,
+    band: 'severe',
+    gainMin: 0,
+    gainMax: 0,
+    karma: -40,
+    violent: true,
+    since: 0,
+    done: '',
+    caught:
+        'Detectives found what you missed. A neighbour remembered your car.',
+  ),
+  (
     id: 'heist',
     label: 'Heist',
     minAge: 18,
@@ -271,7 +287,7 @@ const crimes = <Crime>[
 Crime crimeById(String id) =>
     crimes.firstWhere((c) => c.id == id, orElse: () => crimes.first);
 
-const violentCrimes = {'assault', 'armed_robbery'};
+const violentCrimes = {'assault', 'armed_robbery', 'murder'};
 
 /// Street smarts: plan "Cunning", from Smarts and Charisma.
 int cunning(Life l) => (l.stats['smarts'] + l.stats['charisma']) ~/ 2;
@@ -399,6 +415,11 @@ List<String> justiceYear(Life l, Random rng) {
         'Detectives knocked on your door about the ${crime.label.toLowerCase()} ${l.age - (c['age'] as int) <= 0 ? 'this year' : '${l.age - (c['age'] as int)} years ago'}.',
       );
       break;
+    }
+    if (c['crime'] == 'murder') {
+      // No statute of limitations: the file stays open.
+      c['evidence'] = max(15, ev - 3);
+      continue;
     }
     c['evidence'] = ev - 8;
     if (ev - 8 < 5) l.cases.remove(c);
@@ -1169,6 +1190,23 @@ final justiceActions = <GameAction>[
     'hide income',
   ], extra: (l) => l.salary < 30000 ? 'Needs a salary of \$30,000+' : null),
   _crimeAction(crimeById('assault'), ['assault', 'fight', 'attack', 'punch']),
+  GameAction(
+    id: 'murder',
+    label: 'Murder',
+    category: 'Crime',
+    keywords: ['murder', 'kill', 'homicide'],
+    minAge: 18,
+    extraCheck: (l) => l.prison != null
+        ? 'Not possible in prison'
+        : murderTargets(l).isEmpty
+        ? 'There is nobody you know well enough'
+        : null,
+    hint: (l) => riskHint(caughtOdds(l, crimeById('murder')).$1, 'severe'),
+    run: (l, rng) {
+      l.sceneQueue.add('murder_pick');
+      return ActionResult('A dark thought you cannot shake.');
+    },
+  ),
   _crimeAction(crimeById('armed_robbery'), [
     'rob',
     'robbery',

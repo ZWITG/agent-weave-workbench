@@ -402,6 +402,126 @@ Storylet? stolenCarScene(List<String> args, Life l) {
   ]);
 }
 
+// ---------------- Murder ----------------
+
+/// People you could go after: living adults you know, people who wronged
+/// you first.
+List<Npc> murderTargets(Life l) =>
+    l.npcs
+        .where(
+          (n) =>
+              n.alive &&
+              n.circle != 'Pets' &&
+              n.circle != 'Children' &&
+              n.circle != 'Grandchildren' &&
+              n.ageIn(l.year) >= 18,
+        )
+        .toList()
+      ..sort(
+        (a, b) => (b.resentment - b.bond).compareTo(a.resentment - a.bond),
+      );
+
+Storylet? murderPickScene(Life l) {
+  final people = murderTargets(l).take(5).toList();
+  if (people.isEmpty || l.prison != null) return null;
+  return _scene('murder_pick', 'You cannot stop thinking about it. Who?', [
+    for (final n in people)
+      Choice(
+        label: '${n.name} (${n.role.toLowerCase()})',
+        outcome: '',
+        risk: n.circle == 'Family' || n.circle == 'Partner'
+            ? 'Family · the police always look close to home first'
+            : 'Bond ${n.bond}',
+        run: (l, rng) {
+          l.sceneQueue.insert(0, 'murder_how:${n.id}');
+          return 'You start watching ${n.name.split(' ').first}: when they leave, when they are alone.';
+        },
+      ),
+    Choice(
+      label: 'Let it go',
+      outcome:
+          'You pushed the thought away. Some lines are not worth crossing.',
+    ),
+  ]);
+}
+
+Storylet? murderHowScene(List<String> args, Life l) {
+  if (args.isEmpty || l.prison != null) return null;
+  final n = l.npcs.where((x) => x.id == args.first && x.alive).firstOrNull;
+  if (n == null) return null;
+  final c = crimeById('murder');
+  final close = n.circle == 'Family' || n.circle == 'Partner';
+  final base = caughtOdds(l, c).$1 + (close ? 10 : 0) - crimeSkill(l) ~/ 10;
+  const hitman = 25000;
+  Choice how(String label, String note, int dRisk, {int cost = 0}) {
+    final odds = (base + dRisk).clamp(5, 95);
+    return Choice(
+      label: label,
+      outcome: '',
+      risk: '$note · risk about $odds%',
+      lock: (l) => l.money < cost ? 'Needs ${_m(cost)}' : null,
+      run: (l, rng) => commitMurder(l, n, rng, odds, cost),
+    );
+  }
+
+  final first = n.name.split(' ').first;
+  return _scene('murder_how', 'You have a plan for $first. How?', [
+    how(
+      'Make it look like an accident',
+      'Smarts help',
+      -5 - (l.stats['smarts'] - 50) ~/ 5,
+    ),
+    how(
+      'Do it yourself, quickly',
+      'Athleticism helps',
+      8 - (l.stats['athleticism'] - 50) ~/ 10,
+    ),
+    how('Hire someone', '${_m(hitman)} · they might talk', -15, cost: hitman),
+    Choice(
+      label: 'Walk away',
+      outcome: 'You could not go through with it. You never told anyone how close you came.',
+    ),
+  ]);
+}
+
+/// The victim dies; the player either gets away with it (a case that
+/// never goes cold) or is arrested.
+String commitMurder(Life l, Npc n, Random rng, int odds, int cost) {
+  final c = crimeById('murder');
+  l.reason = c.label;
+  l.money -= cost;
+  l.stats.add('karma', c.karma);
+  l.stats.add('happiness', -8);
+  n.alive = false;
+  n.info['diedAge'] = n.ageIn(l.year);
+  n.info['murdered'] = true;
+  l.flags['killer'] = Memory(l.age, 'what you did to ${n.name}');
+  l.notoriety += 5;
+  if (n.circle == 'Partner') {
+    l.flags['widowed'] = Memory(l.age, 'losing ${n.name}');
+  }
+  // Killing someone in the family leaves the rest of it uneasy around you.
+  if (n.circle == 'Family' || n.circle == 'Partner') {
+    for (final o in l.npcs) {
+      if (o.alive && (o.circle == 'Family' || o.circle == 'Partner')) {
+        o.addFacets(trust: -8);
+      }
+    }
+  }
+  final first = n.name.split(' ').first;
+  if (rng.nextInt(100) < odds) {
+    l.sceneQueue.insert(0, 'arrest:murder:${min(95, c.evidence + 10)}');
+    return '$first is dead. ${c.caught} (Risk was $odds%.)';
+  }
+  final ev = (c.evidence - 20 + rng.nextInt(20) - crimeSkill(l) ~/ 5).clamp(
+    20,
+    95,
+  );
+  l.cases.add({'crime': c.id, 'age': l.age, 'evidence': ev});
+  _setSkill(l, crimeSkill(l) + 6);
+  return '$first is dead, and for now nobody knows it was you. At the funeral you stood at the back. A murder case never closes: evidence $ev/100.';
+}
+
 final crimeJobActions = <GameAction>[
   GameAction(
     id: 'lie_low',
@@ -432,5 +552,7 @@ Storylet? crimeJobScene(String id, List<String> args, Life l) => switch (id) {
   'crime_go' => goScene(args, l),
   'crime_twist' => twistScene(args, l),
   'crime_car' => stolenCarScene(args, l),
+  'murder_pick' => murderPickScene(l),
+  'murder_how' => murderHowScene(args, l),
   _ => null,
 };

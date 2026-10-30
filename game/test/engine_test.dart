@@ -68,8 +68,9 @@ Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
       engine.choose(life, event, open[rng.nextInt(open.length)]);
       event = engine.nextScene(life);
     }
+    // Murder means decades in prison; the bot would hide most of the game.
     final open = engine.actions
-        .where((a) => a.lockReason(life) == null)
+        .where((a) => a.id != 'murder' && a.lockReason(life) == null)
         .toList();
     if (open.isNotEmpty && rng.nextBool()) {
       engine.runAction(life, open[rng.nextInt(open.length)]);
@@ -2265,5 +2266,37 @@ void main() {
       contains('stolen car'),
     );
     expect(l.assets.any((a) => a.info['stolen'] == true), isFalse);
+  });
+
+  test('murder: pick someone, they die, and the case never goes cold', () {
+    final l = engine.newLife(seed: 252)..age = 30;
+    final murder = allActions.firstWhere((a) => a.id == 'murder');
+    expect(murder.lockReason(l), isNull);
+    engine.runAction(l, murder);
+    var scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:murder_pick');
+    final victim = murderTargets(l).first;
+    engine.choose(l, scene, scene.choices.first);
+    scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:murder_how');
+    // Getting away with it: the victim dies and a case stays open.
+    commitMurder(l, victim, Random(1), 0, 0);
+    expect(victim.alive, isFalse);
+    final file = l.cases.last;
+    expect(file['crime'], 'murder');
+    for (var i = 0; i < 20; i++) {
+      justiceYear(l, Random(1000 + i)..nextInt(1));
+      if (l.cases.isEmpty) break;
+    }
+    // Either it is still open or the police finally came for you.
+    expect(
+      l.cases.any((c) => c['crime'] == 'murder') ||
+          l.sceneQueue.any((s) => s.startsWith('arrest:murder')),
+      isTrue,
+    );
+    expect(
+      sentenceYears(l, crimeById('murder'), 80, Random(1)),
+      greaterThanOrEqualTo(10),
+    );
   });
 }
