@@ -10,6 +10,7 @@ import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
 import 'package:relivable/engine/health.dart';
+import 'package:relivable/engine/crime_jobs.dart';
 import 'package:relivable/engine/gangs.dart';
 import 'package:relivable/engine/prison_life.dart';
 import 'package:relivable/engine/heists.dart';
@@ -2212,5 +2213,30 @@ void main() {
     final doctor = allActions.firstWhere((a) => a.id == 'apply_job');
     expect(redoable.contains(doctor.id), isFalse);
     expect(gainFactor(0, 90), lessThan(gainFactor(0, 30)));
+  });
+
+  test('a crime is a job: target, approach, twist, and street skill', () {
+    final l = engine.newLife(seed: 250)..age = 25;
+    final burglary = allActions.firstWhere((a) => a.id == 'burglary');
+    engine.runAction(l, burglary);
+    var scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:crime_plan');
+    expect(scene.choices.length, 4);
+    engine.choose(l, scene, scene.choices[2]); // the mansion
+    scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:crime_go');
+    expect(scene.choices[2].lock!(l), isNotNull); // no lookout yet
+    l.sceneQueue.add('crime_twist:burglary:0:100');
+    scene = engine.nextScene(l)!;
+    expect(scene.choices.first.label, contains('Grab'));
+    // Getting away with it raises street skill and leaves a case.
+    final before = l.cases.length;
+    finishCrime(l, crimeById('burglary'), Random(1), 0, 100);
+    expect(crimeSkill(l), 4);
+    expect(l.cases.length, before + 1);
+    final lie = allActions.firstWhere((a) => a.id == 'lie_low');
+    final ev = l.cases.last['evidence'] as int;
+    engine.runAction(l, lie);
+    expect(l.cases.isEmpty || (l.cases.last['evidence'] as int) < ev, isTrue);
   });
 }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'crime_jobs.dart';
 import 'gangs.dart';
 import 'prison_life.dart';
 import 'actions.dart';
@@ -1122,7 +1123,11 @@ GameAction _crimeAction(
     return extra?.call(l);
   },
   hint: (l) => riskHint(caughtOdds(l, c).$1, c.band),
-  run: (l, rng) => commitCrime(l, c, rng),
+  run: (l, rng) {
+    if (!plannedCrimes.contains(c.id)) return commitCrime(l, c, rng);
+    l.sceneQueue.add('crime_plan:${c.id}');
+    return ActionResult('You start thinking it through.');
+  },
 );
 
 final justiceActions = <GameAction>[

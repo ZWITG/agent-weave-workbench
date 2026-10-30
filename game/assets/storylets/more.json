@@ -1147,7 +1147,7 @@
   "id": "home_burglary_scare",
   "minAge": 25,
   "maxAge": 80,
-  "weight": 14,
+  "weight": 24,
   "category": "home",
   "text": "You come home to find the back door open. Nothing seems to be missing, but the drawers have been searched.",
   "choices": [
