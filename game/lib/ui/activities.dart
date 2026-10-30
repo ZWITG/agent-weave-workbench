@@ -39,9 +39,51 @@ const activityCategories = <(String, IconData)>[
   ('Seasonal', Icons.event_available_rounded),
 ];
 
-extension on List<(String, IconData)> {
-  (String, IconData) named(String name) => firstWhere((e) => e.$1 == name);
-}
+/// The categories in a few friendly groups, so the home view reads as a
+/// handful of short sections instead of one big grid.
+const activityGroups = <(String, String, List<String>)>[
+  (
+    'Look after yourself',
+    'Body, mind and the things you love',
+    ['Wellbeing', 'Health', 'Hobbies', 'Faith'],
+  ),
+  ('People', 'Love, friends and family', ['Love', 'Social', 'Family']),
+  (
+    'Work and money',
+    'Learn, earn, save and buy',
+    ['School', 'Work', 'Money', 'Assets', 'Licences'],
+  ),
+  (
+    'Out and about',
+    'Trips, pets, who you are and the news',
+    ['Travel', 'Pets', 'Identity', 'News'],
+  ),
+  ('Rules and risks', 'Lawyers, courts and crime', ['Law', 'Crime']),
+];
+
+/// One plain sentence at the top of each category.
+const categoryBlurbs = <String, String>{
+  'Wellbeing': 'Small things that lift your mood and keep you steady.',
+  'Health': 'Doctors, check-ups and getting better.',
+  'School': 'Study, exams and school life.',
+  'Work': 'Find a job, do well in it, or change direction.',
+  'Money': 'Banking, saving, borrowing and investing.',
+  'Love': 'Dating, romance and your partner.',
+  'Social': 'Going out, friends and being seen.',
+  'Hobbies': 'Make things, play and practise.',
+  'Travel': 'Holidays, weekends away and moving abroad.',
+  'Assets': 'Homes, cars and the things you own.',
+  'Pets': 'Adopt and care for animals.',
+  'Licences': 'Driving and other licences.',
+  'Identity': 'Your name, your look and who you are.',
+  'Faith': 'Belief, ritual and community.',
+  'Law': 'Lawyers, lawsuits and your record.',
+  'Crime': 'Risky choices. You might get caught.',
+  'Prison': 'Make the most of your time inside.',
+  'News': 'What is happening in the world.',
+  'Family': 'Time with the people closest to you.',
+  'Seasonal': 'On for a short time only.',
+};
 
 IconData categoryIconFor(String c) => activityCategories
     .firstWhere((e) => e.$1 == c, orElse: () => (c, Icons.auto_awesome_rounded))
@@ -148,6 +190,15 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
         children: [
           _header(),
+          if (_category == null && !searching) ...[
+            const SizedBox(height: 4),
+            Text(
+              life.classic
+                  ? 'Pick anything to do this year. Tap a group to see what is in it.'
+                  : 'Pick what to do this year. Most activities use 1 energy, and it refills on your birthday.',
+              style: NF.sora(13, color: NF.muted),
+            ),
+          ],
           const SizedBox(height: 12),
           _searchField(),
           const SizedBox(height: 18),
@@ -257,51 +308,94 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   // ---------------- Home ----------------
 
   List<Widget> _home(BuildContext context) {
-    final suggested = _suggested();
+    final suggested = _suggested().take(3).toList();
+    // Right now: prison while inside, and seasonal activities while on.
+    final now = [
+      if (life.prison != null) 'Prison',
+      if (_in('Seasonal').any(_inSeason)) 'Seasonal',
+    ];
+    bool ready(String cat) => _in(cat).any(_open);
+    final later = [
+      for (final g in activityGroups)
+        for (final cat in g.$3)
+          if (_in(cat).isNotEmpty && !ready(cat)) cat,
+    ];
     return [
       if (suggested.isNotEmpty) ...[
-        Text('Suggested for you', style: NF.sora(15, weight: FontWeight.w700)),
-        const SizedBox(height: 10),
+        _sectionTitle('Good ideas right now', 'Tap one to do it'),
         for (final a in suggested) ...[
           actionRow(context, c, a),
           const SizedBox(height: 8),
         ],
         const SizedBox(height: 14),
       ],
-      Text('Browse', style: NF.sora(15, weight: FontWeight.w700)),
-      const SizedBox(height: 10),
-      LayoutBuilder(
-        builder: (context, box) {
-          final cols = box.maxWidth > 420 ? 4 : 3;
-          final w = (box.maxWidth - (cols - 1) * 10) / cols;
-          return Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              // In prison the Prison tile comes first; outside, it hides.
-              // Seasonal activities show first, and only while their
-              // season is on.
-              for (final (cat, icon) in [
-                if (life.prison != null) activityCategories.named('Prison'),
-                if (_in('Seasonal').any(_inSeason))
-                  activityCategories.named('Seasonal'),
-                ...activityCategories.where(
-                  (e) => e.$1 != 'Prison' && e.$1 != 'Seasonal',
-                ),
-              ])
-                if (_in(cat).isNotEmpty)
-                  SizedBox(width: w, child: _categoryTile(cat, icon)),
-            ],
-          );
-        },
-      ),
+      if (now.isNotEmpty) ...[
+        _sectionTitle(
+          life.prison != null ? 'Inside' : 'On now',
+          life.prison != null
+              ? 'Most other activities wait until you are out'
+              : 'Only for a short time',
+        ),
+        _tiles(now),
+        const SizedBox(height: 18),
+      ],
+      for (final g in activityGroups)
+        if (g.$3.any((cat) => _in(cat).isNotEmpty && ready(cat))) ...[
+          _sectionTitle(g.$1, g.$2),
+          _tiles([
+            for (final cat in g.$3)
+              if (_in(cat).isNotEmpty && ready(cat)) cat,
+          ]),
+          const SizedBox(height: 18),
+        ],
+      if (later.isNotEmpty) ...[
+        TextButton.icon(
+          onPressed: () => setState(() => _showLocked = !_showLocked),
+          icon: Icon(
+            _showLocked ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+          ),
+          label: Text(
+            _showLocked
+                ? 'Hide what unlocks later'
+                : '${later.length} more unlock later',
+          ),
+        ),
+        if (_showLocked) _tiles(later),
+      ],
     ];
   }
+
+  Widget _sectionTitle(String title, String sub) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: NF.sora(15, weight: FontWeight.w700)),
+        const SizedBox(height: 2),
+        Text(sub, style: NF.sora(12, color: NF.muted)),
+      ],
+    ),
+  );
+
+  Widget _tiles(List<String> cats) => LayoutBuilder(
+    builder: (context, box) {
+      final cols = box.maxWidth > 420 ? 4 : 3;
+      final w = (box.maxWidth - (cols - 1) * 10) / cols;
+      return Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: [
+          for (final cat in cats)
+            SizedBox(width: w, child: _categoryTile(cat, categoryIconFor(cat))),
+        ],
+      );
+    },
+  );
 
   Widget _categoryTile(String cat, IconData icon) {
     final all = _in(cat);
     final open = all.where(_open).length;
-    final label = open == 0 ? _earliestUnlock(all) : '$open open';
+    final label = open == 0 ? _earliestUnlock(all) : '$open to do';
     return Semantics(
       button: true,
       label: '$cat, $label',
@@ -311,7 +405,10 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => setState(() => _category = cat),
+          onTap: () => setState(() {
+            _category = cat;
+            _showLocked = false;
+          }),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
             child: Column(
@@ -354,19 +451,48 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   List<Widget> _categoryPage(BuildContext context, String cat) {
     final all = _in(cat);
     final open = all.where(_open).toList();
-    final locked = all.where((a) => !_open(a)).toList();
+    final done = all
+        .where((a) => !_open(a) && a.lockReason(life) == 'Done this year')
+        .toList();
+    final locked = all.where((a) => !_open(a) && !done.contains(a)).toList();
+    final free = open.where((a) => a.cost == 0).toList();
+    final paid = open.where((a) => a.cost > 0).toList();
+    List<Widget> rows(List<GameAction> list) => [
+      for (final a in list) ...[
+        actionRow(context, c, a),
+        const SizedBox(height: 8),
+      ],
+    ];
     return [
+      if (categoryBlurbs[cat] != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 14),
+          child: Text(categoryBlurbs[cat]!, style: NF.sora(14, color: NF.soft)),
+        ),
       if (open.isEmpty)
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(
-            'Nothing here is open yet. See below for when each one unlocks.',
+            done.isNotEmpty
+                ? 'You have done everything here this year. More next year.'
+                : 'Nothing here is open yet. See below for when each one unlocks.',
             style: NF.sora(14, color: NF.muted),
           ),
         ),
-      for (final a in open) ...[
-        actionRow(context, c, a),
-        const SizedBox(height: 8),
+      // Short lists stay as one list; longer ones split by price.
+      if (open.length <= 5 || free.isEmpty || paid.isEmpty)
+        ...rows(open)
+      else ...[
+        _sectionTitle('Free', 'No money needed'),
+        ...rows(free),
+        const SizedBox(height: 10),
+        _sectionTitle('Costs money', 'The price shows on each one'),
+        ...rows(paid),
+      ],
+      if (done.isNotEmpty) ...[
+        const SizedBox(height: 10),
+        _sectionTitle('Done this year', 'Ready again after your birthday'),
+        ...rows(done),
       ],
       if (locked.isNotEmpty) ...[
         const SizedBox(height: 6),
@@ -376,14 +502,12 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
             _showLocked ? Icons.expand_less_rounded : Icons.expand_more_rounded,
           ),
           label: Text(
-            '${_showLocked ? 'Hide' : 'Show'} ${locked.length} locked',
+            _showLocked
+                ? 'Hide what is not open yet'
+                : '${locked.length} not open yet',
           ),
         ),
-        if (_showLocked)
-          for (final a in locked) ...[
-            actionRow(context, c, a),
-            const SizedBox(height: 8),
-          ],
+        if (_showLocked) ...rows(locked),
       ],
     ];
   }
