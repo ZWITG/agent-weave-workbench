@@ -89,17 +89,34 @@ class GameController extends ChangeNotifier {
     }
     final saved = prefs.getString(_saveKey);
     if (saved != null) {
+      Map<String, dynamic>? j;
       try {
-        final j = jsonDecode(saved) as Map<String, dynamic>;
+        j = jsonDecode(saved) as Map<String, dynamic>;
         life = Life.fromJson(Map<String, dynamic>.from(j['life']));
-        final pid = j['pending'] as String?;
-        if (pid != null) {
-          pendingEvent = pid.startsWith('scene:')
-              ? buildScene(pid.substring(6), life!)
-              : engine!.storylets.where((s) => s.id == pid).firstOrNull;
-        }
       } catch (_) {
         life = null;
+      }
+      // An unfinished event is rebuilt from its full key; if that fails the
+      // life carries on without it rather than being lost.
+      final pid = j?['pending'] as String?;
+      if (life != null && pid != null) {
+        try {
+          pendingEvent = pid.startsWith('scene:')
+              ? buildScene(life!.currentScene ?? pid.substring(6), life!)
+              : engine!.storylets.where((s) => s.id == pid).firstOrNull;
+        } catch (_) {
+          pendingEvent = null;
+        }
+        if (pendingEvent == null) {
+          life!.currentScene = null;
+          life!.feed.add(
+            FeedEntry(
+              life!.age,
+              'An unfinished moment from last time could not be picked up again.',
+              kind: 'nudge',
+            ),
+          );
+        }
       }
     }
     loading = false;
@@ -205,6 +222,29 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Why nothing else can start right now, or null. An event on screen, or
+  /// the next step of one, has to be finished first.
+  String? get busyReason {
+    final l = life;
+    if (l == null || !l.alive) return null;
+    if (pendingEvent != null) return 'Finish the event on the Life tab first.';
+    if (l.sceneQueue.isNotEmpty) {
+      return lastOutcome != null
+          ? 'Tap Continue on the Life tab to finish what you started.'
+          : 'Something is waiting for you on the Life tab.';
+    }
+    return null;
+  }
+
+  /// Set when the Life tab should come to the front (an event opened from
+  /// another tab or screen). The hub reads and clears it.
+  bool wantLifeTab = false;
+
+  void goToEvent() {
+    wantLifeTab = true;
+    notifyListeners();
+  }
+
   /// Shows any scene queued from a screen (identity changes...).
   void showQueued() {
     _sceneAfterAction();
@@ -215,7 +255,7 @@ class GameController extends ChangeNotifier {
   /// Queues a scene from a screen (Health screen "Get support"...) and
   /// shows it on the Life tab.
   void openScene(String id) {
-    if (life == null) return;
+    if (life == null || busyReason != null) return;
     life!.sceneQueue.add(id);
     _sceneAfterAction();
     _save();
@@ -288,6 +328,12 @@ class GameController extends ChangeNotifier {
   void ageUp() {
     if (life == null || pendingEvent != null) return;
     lastOutcome = null;
+    if (life!.sceneQueue.isNotEmpty) {
+      _sceneAfterAction();
+      _save();
+      notifyListeners();
+      return;
+    }
     Sound.instance.ageUp();
     _snapshot();
     pendingEvent = engine!.ageUp(life!);
@@ -332,7 +378,12 @@ class GameController extends ChangeNotifier {
   }
 
   void choose(Choice choice) {
-    if (life == null || pendingEvent == null) return;
+    // A second tap on a card that is already fading away does nothing.
+    if (life == null ||
+        pendingEvent == null ||
+        !pendingEvent!.choices.contains(choice)) {
+      return;
+    }
     lastOutcome = engine!.choose(life!, pendingEvent!, choice);
     Sound.instance.outcome(lastOutcome!.tone);
     pendingEvent = null;
@@ -341,14 +392,19 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// "Continue" on an outcome: the next step of the same story follows
+  /// straight away.
   void dismissOutcome() {
     lastOutcome = null;
+    _sceneAfterAction();
+    _save();
     notifyListeners();
   }
 
   /// Runs a Wealth-tab money action (deposit, loan, sell...) and saves.
   T wealth<T>(T Function(Life life) action) {
     final r = action(life!);
+    _sceneAfterAction();
     _meta(const []);
     _save();
     notifyListeners();
@@ -357,6 +413,8 @@ class GameController extends ChangeNotifier {
 
   // Results play their own good/bad sound when the pop-up opens.
   ActionResult applyForJob(Career career) {
+    final busy = busyReason;
+    if (busy != null) return ActionResult(busy);
     final r = engine!.applyForJob(life!, career);
     _sceneAfterAction();
     _save();
@@ -365,6 +423,8 @@ class GameController extends ChangeNotifier {
   }
 
   ActionResult runAction(GameAction action, {double? score}) {
+    final busy = busyReason;
+    if (busy != null) return ActionResult(busy);
     final r = engine!.runAction(life!, action, score: score);
     _sceneAfterAction();
     _meta([
@@ -379,6 +439,8 @@ class GameController extends ChangeNotifier {
 
   /// Runs a person interaction from the People tab or the action search.
   ActionResult interact(Npc npc, Interaction interaction) {
+    final busy = busyReason;
+    if (busy != null) return ActionResult(busy);
     final r = engine!.interact(life!, npc, interaction);
     _sceneAfterAction();
     _meta(['interaction:${npc.circle}']);

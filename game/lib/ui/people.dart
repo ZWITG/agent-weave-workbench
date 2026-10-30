@@ -4,7 +4,7 @@ import '../engine/models.dart';
 import '../engine/relationships.dart';
 import '../game_controller.dart';
 import '../theme.dart';
-import 'activities.dart' show OptionRow;
+import 'activities.dart' show OptionRow, showBusyNotice, showEvent;
 import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
@@ -535,7 +535,18 @@ class _PersonSheet extends StatelessWidget {
                   );
                   if (ok != true || !context.mounted) return;
                 }
+                final busy = controller.busyReason;
+                if (busy != null) {
+                  await showBusyNotice(context, controller, busy);
+                  return;
+                }
                 final r = controller.interact(npc, i);
+                // An interaction that opens a scene (a proposal, a fight...)
+                // closes this sheet and shows it.
+                if (controller.pendingEvent != null) {
+                  showEvent(context, controller);
+                  return;
+                }
                 showResultPopup(
                   context,
                   r,

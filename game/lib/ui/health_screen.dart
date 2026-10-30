@@ -5,6 +5,7 @@ import '../engine/justice.dart';
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'activities.dart' show showBusyNotice, showEvent;
 import 'widgets.dart';
 
 /// "Need support in real life?" (plan Module 9 and Compliance): shown in
@@ -201,8 +202,13 @@ class HealthScreen extends StatelessWidget {
   }
 
   void _open(BuildContext context, String scene) {
+    final busy = controller.busyReason;
+    if (busy != null) {
+      showBusyNotice(context, controller, busy);
+      return;
+    }
     controller.openScene(scene);
-    Navigator.of(context).pop();
+    showEvent(context, controller);
   }
 
   Widget _condition(BuildContext context, Condition c) {

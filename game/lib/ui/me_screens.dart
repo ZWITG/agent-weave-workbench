@@ -10,6 +10,7 @@ import '../engine/love.dart' show partnerOf;
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'activities.dart' show runActionFlow, showEvent;
 import 'result_popup.dart';
 import 'widgets.dart';
 
@@ -762,6 +763,9 @@ class IdentityCard extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(ctx);
                       controller.showQueued();
+                      if (controller.pendingEvent != null) {
+                        showEvent(context, controller);
+                      }
                     },
                     child: const Text('Done'),
                   ),
@@ -836,9 +840,12 @@ class CountryCard extends StatelessWidget {
             label: Text(lock ?? 'Move abroad'),
             onPressed: lock != null
                 ? null
-                : () {
-                    controller.runAction(move);
-                  },
+                : () => runActionFlow(
+                    context,
+                    controller,
+                    move,
+                    closeSheet: false,
+                  ),
           ),
         ],
       ),

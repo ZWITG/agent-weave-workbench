@@ -259,14 +259,14 @@ final _baseActions = <GameAction>[
     category: 'Work',
     keywords: ['job', 'work', 'career', 'apply', 'employment', 'hire'],
     minAge: 18,
-    extraCheck: (life) => studying(life) ? 'Finish your course first' : null,
+    // With no openings it stays locked, so it never costs energy for nothing.
+    extraCheck: (life) => studying(life)
+        ? 'Finish your course first'
+        : careers.any((c) => c.lockReason(life) == null)
+        ? null
+        : 'No openings you qualify for yet · see the Path tab',
     run: (life, rng) {
       final open = careers.where((c) => c.lockReason(life) == null).toList();
-      if (open.isEmpty) {
-        return ActionResult('There were no openings you qualify for.', [
-          'See the job board on the Path tab',
-        ]);
-      }
       return applyForCareer(life, open[rng.nextInt(open.length)], rng);
     },
   ),

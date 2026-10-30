@@ -664,6 +664,10 @@ class Life {
   /// Code-driven events waiting to be shown (scenes.dart ids).
   final List<String> sceneQueue = [];
 
+  /// The queue key (with its arguments) of the scene on screen, so it can
+  /// be rebuilt exactly after a restart.
+  String? currentScene;
+
   /// School and university record (school.dart).
   SchoolRecord school = SchoolRecord();
 
@@ -968,6 +972,7 @@ class Life {
     'jobLostAge': jobLostAge,
     'chapter': chapter,
     'sceneQueue': sceneQueue,
+    'currentScene': currentScene,
     'school': school.toJson(),
     'performance': performance,
     'attractedTo': attractedTo,
@@ -1098,6 +1103,7 @@ class Life {
       ])
       ..discovered.addAll(List<String>.from(j['discovered'] ?? []))
       ..sceneQueue.addAll(List<String>.from(j['sceneQueue'] ?? []))
+      ..currentScene = j['currentScene']
       ..performance = j['performance'] ?? 55
       ..attractedTo = j['attractedTo'] ?? ''
       ..generation = j['generation'] ?? 1

@@ -9,6 +9,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'hub_kit.dart';
+import 'result_popup.dart';
 import 'health_screen.dart' show JusticeCard;
 import 'school_card.dart';
 import 'widgets.dart';
@@ -461,7 +462,19 @@ class _PathTabState extends State<PathTab> {
       locked: lock != null,
       trailing: Icons.send_rounded,
       // Applying opens a 3-question interview on the Life tab.
-      onTap: () => c.applyForJob(j),
+      onTap: () {
+        final busy = c.busyReason;
+        if (busy != null) {
+          showBusyNotice(context, c, busy);
+          return;
+        }
+        final r = c.applyForJob(j);
+        if (c.pendingEvent != null) {
+          showEvent(context, c);
+        } else {
+          showResultPopup(context, r, title: j.title, icon: Icons.work_rounded);
+        }
+      },
     );
   }
 

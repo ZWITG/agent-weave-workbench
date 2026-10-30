@@ -48,6 +48,14 @@ class _HubScreenState extends State<HubScreen> {
       });
     }
     _lastEvent = event;
+    if (c.wantLifeTab) {
+      c.wantLifeTab = false;
+      if (_tab != 0) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _tab = 0);
+        });
+      }
+    }
     if (c.toasts.isNotEmpty && _toast == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _nextToast());
     }
@@ -337,6 +345,9 @@ class _BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blocked = controller.pendingEvent != null;
+    // A story step is waiting: the button shows it instead of skipping a
+    // year past it.
+    final waiting = !blocked && controller.life!.sceneQueue.isNotEmpty;
     final atEnd = controller.life!.age >= sliceEndAge;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -434,13 +445,19 @@ class _BottomBar extends StatelessWidget {
                 Tooltip(
                   message: blocked
                       ? 'Choose an option first'
+                      : waiting
+                      ? 'Carry on with what you started'
                       : (atEnd ? 'See your life recap' : 'Live another year'),
                   child: FilledButton(
                     style: orangeButton(),
-                    onPressed: blocked
-                        ? null
-                        : (atEnd ? () => controller.ageUp() : controller.ageUp),
-                    child: Text(atEnd ? 'Recap' : 'Age +1'),
+                    onPressed: blocked ? null : controller.ageUp,
+                    child: Text(
+                      waiting
+                          ? 'Continue'
+                          : atEnd
+                          ? 'Recap'
+                          : 'Age +1',
+                    ),
                   ),
                 ),
               ],

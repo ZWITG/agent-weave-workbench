@@ -238,7 +238,10 @@ class GameEngine {
     final workedHard = life.usedActions.contains('work_harder');
     final slacked = life.usedActions.contains('slack_off');
     life.age += 1;
-    life.idleYears = life.usedActions.isEmpty ? life.idleYears + 1 : 0;
+    // A year spent only with people still counts as an active year.
+    life.idleYears = life.usedActions.isEmpty && life.interactionCounts.isEmpty
+        ? life.idleYears + 1
+        : 0;
     life.usedActions.clear();
     life.interactionCounts.clear();
     life.energy = 10;
@@ -384,8 +387,12 @@ class GameEngine {
   /// The next queued scene that still makes sense, if any.
   Storylet? nextScene(Life life) {
     while (life.sceneQueue.isNotEmpty) {
-      final s = buildScene(life.sceneQueue.removeAt(0), life);
-      if (s != null) return s;
+      final key = life.sceneQueue.removeAt(0);
+      final s = buildScene(key, life);
+      if (s != null) {
+        life.currentScene = key;
+        return s;
+      }
     }
     return null;
   }
@@ -423,6 +430,7 @@ class GameEngine {
   }
 
   Outcome choose(Life life, Storylet event, Choice choice) {
+    if (event.scene) life.currentScene = null;
     life.lastSeen[event.id] = life.age;
     final statsBefore = {for (final k in Stats.visible) k: life.stats[k]};
     final bondsBefore = {for (final n in life.npcs) n.id: n.bond};
@@ -573,6 +581,8 @@ class GameEngine {
 
   /// Runs an activity. [score] (0..1) comes from its mini-game, if played.
   ActionResult runAction(Life life, GameAction action, {double? score}) {
+    final lock = action.lockReason(life);
+    if (lock != null) return ActionResult(lock, ['Why: $lock']);
     final rng = _rngFor(life, action.id.hashCode);
     final again = life.usedActions.contains(action.id);
     life.reason = action.label;

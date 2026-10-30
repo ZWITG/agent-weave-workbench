@@ -417,8 +417,17 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         onTap: lock != null
             ? null
             : () {
+                final busy = c.busyReason;
+                if (busy != null) {
+                  showBusyNotice(context, c, busy);
+                  return;
+                }
                 final r = c.interact(n, i);
                 final nav = Navigator.of(context)..pop();
+                if (c.pendingEvent != null) {
+                  showEvent(nav.context, c);
+                  return;
+                }
                 showResultPopup(
                   nav.context,
                   r,
@@ -578,6 +587,41 @@ Widget actionRow(
   );
 }
 
+/// "Not yet": an event (or its next step) on the Life tab comes first.
+/// "Go to event" closes any sheets and screens and shows it.
+Future<void> showBusyNotice(
+  BuildContext context,
+  GameController c,
+  String reason,
+) async {
+  final go = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: NF.surface,
+      title: Text('Not yet', style: NF.sora(18, weight: FontWeight.w700)),
+      content: Text(reason, style: NF.sora(14, color: NF.soft)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('OK'),
+        ),
+        FilledButton(
+          style: primaryButton(),
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Go to event'),
+        ),
+      ],
+    ),
+  );
+  if (go == true && context.mounted) showEvent(context, c);
+}
+
+/// Closes sheets and screens and brings the Life tab (and its event) up.
+void showEvent(BuildContext context, GameController c) {
+  Navigator.of(context).popUntil((r) => r.isFirst);
+  c.goToEvent();
+}
+
 Future<void> runActionFlow(
   BuildContext context,
   GameController c,
@@ -585,6 +629,11 @@ Future<void> runActionFlow(
   bool closeSheet = true,
 }) async {
   final nav = Navigator.of(context);
+  final busy = c.busyReason;
+  if (busy != null) {
+    await showBusyNotice(context, c, busy);
+    return;
+  }
   // Confirm big decisions (plan UX §8.5): crime, quitting, moving abroad,
   // or spending more than half your cash.
   final big =
@@ -632,9 +681,16 @@ Future<void> runActionFlow(
     );
     if (score == null) return; // closed without playing
   }
+  final before = c.pendingEvent;
   final r = c.runAction(a, score: score);
   if (closeSheet) nav.pop();
   if (!nav.mounted) return;
+  // The activity opened a scene (an interview, a viewing...): go straight
+  // to it instead of showing a pop-up that only says it started.
+  if (c.pendingEvent != null && c.pendingEvent != before) {
+    showEvent(nav.context, c);
+    return;
+  }
   if (a.screen == 'newspaper') {
     openNewspaper(nav.context, c);
     return;
