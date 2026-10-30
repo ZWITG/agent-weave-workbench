@@ -26,6 +26,7 @@ class WorldStory {
     this.effect,
     this.effectYears = 1,
     this.person,
+    this.template,
   });
 
   final int year;
@@ -46,6 +47,9 @@ class WorldStory {
   /// Set when a player's life made this story (Ledger entries).
   final String? person;
 
+  /// The template this story was written from, so it is not reused soon.
+  final String? template;
+
   bool get mine => person != null;
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +61,7 @@ class WorldStory {
     if (effect != null) 'effect': effect,
     'effectYears': effectYears,
     if (person != null) 'person': person,
+    if (template != null) 'template': template,
   };
 
   factory WorldStory.fromJson(Map<String, dynamic> j) => WorldStory(
@@ -68,6 +73,7 @@ class WorldStory {
     effect: j['effect'],
     effectYears: j['effectYears'] ?? 1,
     person: j['person'],
+    template: j['template'],
   );
 }
 
@@ -445,11 +451,26 @@ class World {
 
   // ---------------- Writing the news ----------------
 
+  /// Templates (or headlines) used in [scope] over the last [years] years.
+  Set<String> _recent(int y, String scope, int years) => {
+    for (var k = y - years; k < y; k++)
+      for (final s in stories[k] ?? const <WorldStory>[])
+        if (s.scope == scope && !s.mine) s.template ?? s.headline,
+  };
+
   WorldStory _economyStory(int y, Random rng) {
     final e = economyFor(y);
     final (mean, _) = fundReturns[e]!;
     final t = _economyTemplates[e]!;
-    final pick = t[rng.nextInt(t.length)];
+    // A long slump or boom gets a different story each year.
+    final used = _recent(y, 'global', 4);
+    final fresh = [
+      for (final x in t)
+        if (!used.contains(x.$1)) x,
+    ];
+    final pick = (fresh.isEmpty
+        ? t
+        : fresh)[rng.nextInt(fresh.isEmpty ? t.length : fresh.length)];
     return WorldStory(
       year: y,
       category: 'economy',
@@ -459,6 +480,7 @@ class World {
           '${mean >= 0 ? '+' : ''}$mean% this year.',
       effect: pick.$3,
       effectYears: 2,
+      template: pick.$1,
     );
   }
 
@@ -470,10 +492,17 @@ class World {
     String? country,
     String? city,
   }) {
-    var t = list[rng.nextInt(list.length)];
-    // Rare stories come up about once in 30 years, not once in a dozen.
-    while (t.rare && rng.nextInt(100) < 85) {
-      t = list[rng.nextInt(list.length)];
+    // Nothing that ran here in the last few years (most of the list), and
+    // rare stories only about once in 30 years.
+    final used = _recent(y, scope, max(2, list.length * 2 ~/ 3));
+    final fresh = [
+      for (final x in list)
+        if (!used.contains(x.headline)) x,
+    ];
+    final pool = fresh.isEmpty ? list : fresh;
+    var t = pool[rng.nextInt(pool.length)];
+    for (var i = 0; i < 4 && t.rare && rng.nextInt(100) < 85; i++) {
+      t = pool[rng.nextInt(pool.length)];
     }
     final c = country == null
         ? countries[rng.nextInt(countries.length)]
@@ -499,6 +528,7 @@ class World {
       scope: scope,
       effect: t.effect,
       effectYears: t.years,
+      template: t.headline,
     );
   }
 }
@@ -556,6 +586,16 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
       'Shoppers are spending, factories are running extra shifts and recruiters are back on campus.',
       'hiring_up',
     ),
+    (
+      'Help wanted: signs go up in every shop window',
+      'There are more jobs than people to fill them. Employers are offering signing bonuses just to get staff through the door.',
+      'hiring_up',
+    ),
+    (
+      'The good times roll on, but economists warn of a bubble',
+      'Prices of everything from houses to trainers keep climbing. Some say it cannot last. Nobody is listening.',
+      null,
+    ),
   ],
   'Normal': [
     (
@@ -566,6 +606,21 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
     (
       'A quiet year for the markets',
       'No crash, no bubble. Economists admitted they had very little to say this year.',
+      null,
+    ),
+    (
+      'Small businesses report a steady, unremarkable year',
+      'Cafés, plumbers and corner shops say trade was "fine, thanks". It was the most common answer in the survey.',
+      null,
+    ),
+    (
+      'Interest rates held for another year',
+      'The central bank left rates where they were. Savers grumbled, borrowers shrugged.',
+      null,
+    ),
+    (
+      'Electric cars outsell petrol for the first time',
+      'Car dealers say buyers have made up their minds. Petrol stations are quietly adding chargers.',
       null,
     ),
   ],
@@ -580,6 +635,11 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
       'Food, fuel and energy bills have jumped. Families are cutting back and the central bank is under pressure.',
       'inflation',
     ),
+    (
+      'Factories quieter as orders dry up',
+      'Manufacturers say new orders fell for the third month running. Overtime has been cancelled across the industry.',
+      null,
+    ),
   ],
   'Recession': [
     (
@@ -590,6 +650,16 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
     (
       'Layoffs spread as the downturn deepens',
       'From factories to tech firms, companies are letting staff go. Savers are being told to keep calm.',
+      'hiring_down',
+    ),
+    (
+      'The recession drags on, but there are green shoots',
+      'Job losses are slowing and some shops report a better month. Economists are careful not to say "recovery" yet.',
+      null,
+    ),
+    (
+      'Food banks report record demand',
+      'Families who never needed help before are queuing for groceries. Volunteers say they have never been busier.',
       'hiring_down',
     ),
   ],
@@ -603,6 +673,11 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
       'House prices plunge as the banks stop lending',
       'Homeowners have watched their biggest asset shrink overnight. Estate agents report empty viewings.',
       'housing_crash',
+    ),
+    (
+      'Governments rush to rescue failing banks',
+      'Emergency loans worth billions were agreed overnight. Cash machines are working, ministers stressed, several times.',
+      'hiring_down',
     ),
   ],
 };
@@ -677,6 +752,42 @@ const _globalTemplates = [
     rare: true,
   ),
   _Template(
+    'science',
+    'First crewed mission lands on Mars',
+    'Four astronauts stepped onto the red dust live on every screen in the world. One of them said, "It is very quiet."',
+  ),
+  _Template(
+    'science',
+    'AI system passes medical exams with top marks',
+    'Doctors say it will help, not replace them. Medical students are less sure.',
+  ),
+  _Template(
+    'weather',
+    'Floods sweep through river towns on three continents',
+    'Rivers burst their banks after weeks of record rain. Thousands of homes are under water and insurers are counting the cost.',
+  ),
+  _Template(
+    'politics',
+    'Peace deal ends a ten-year war',
+    'Crowds danced in the streets as the agreement was signed. Refugees are beginning the long journey home.',
+    effect: 'festival',
+  ),
+  _Template(
+    'sport',
+    'The Olympics open with a record number of countries',
+    'Two hundred and six teams marched into the stadium. The opening ceremony featured a thousand drummers and one very nervous horse.',
+  ),
+  _Template(
+    'health',
+    'Breakthrough treatment slows memory loss in old age',
+    'Trials show patients kept their memories for years longer. Families are calling it "a miracle with side effects".',
+  ),
+  _Template(
+    'culture',
+    'Video game becomes the best-selling entertainment ever',
+    'More people have played it than watched any film. Parents report that dinner is now served "after this level".',
+  ),
+  _Template(
     'culture',
     'A dance called "the Wobble" takes over the internet',
     'Nobody knows who started it. Everybody, including several prime ministers, has now done it.',
@@ -714,6 +825,39 @@ const _nationalTemplates = [
     'sport',
     '{country}\'s national team reaches its first ever final',
     'Flags hung from every window. The team lost the final, but nobody seemed to mind.',
+    effect: 'festival',
+  ),
+  _Template(
+    'politics',
+    'Scandal topples {country}\'s finance minister',
+    'Leaked messages showed public money spent on a private yacht. The minister resigned "to spend more time with family".',
+  ),
+  _Template(
+    'science',
+    '{country} launches its first satellite',
+    'The rocket took off on its second attempt. The first was postponed because of a seagull.',
+  ),
+  _Template(
+    'politics',
+    '{country} raises the minimum wage',
+    'The lowest-paid workers get a pay rise this year. Shop owners warn prices may follow.',
+    effect: 'hiring_up',
+  ),
+  _Template(
+    'weather',
+    'Coldest winter in {country} for forty years',
+    'Pipes froze, schools closed and heating bills doubled. Children built snowmen the size of bus shelters.',
+    effect: 'flu',
+  ),
+  _Template(
+    'health',
+    'Doctors strike across {country} over pay',
+    'Hospitals are running emergency cover only. Patients have been asked to "please not get ill this week".',
+  ),
+  _Template(
+    'culture',
+    '{country} wins the international song contest',
+    'Nobody expected it, least of all the singer. The country will host next year\'s show.',
     effect: 'festival',
   ),
   _Template(
@@ -788,6 +932,40 @@ const _localTemplates = [
     'Estate agents say demand has never been higher. Long-time residents are less thrilled.',
     effect: 'rent_up',
     years: 2,
+  ),
+  _Template(
+    'local',
+    '{city} hospital gets a new wing',
+    'Two hundred new beds and a children\'s ward painted by local schools. The car park is still too small.',
+  ),
+  _Template(
+    'local',
+    'Water main bursts, flooding {city} high street',
+    'Shops were closed for a week and a café served coffee from a rowing boat. Repairs will take months.',
+  ),
+  _Template(
+    'crime',
+    'Gang leader jailed after {city} drug raids',
+    'Police say the streets are calmer. Residents say they will believe it when they see it.',
+    effect: 'policing',
+  ),
+  _Template(
+    'local',
+    '{city} football club promoted after 30 years',
+    'The open-top bus took four hours to get through the crowds. The mayor wore the scarf all week.',
+    effect: 'festival',
+  ),
+  _Template(
+    'local',
+    'Big supermarket chain closes its {city} stores',
+    'Hundreds of staff lose their jobs as the chain pulls out of the city. Local shops hope to pick up the trade.',
+    effect: 'hiring_down',
+  ),
+  _Template(
+    'local',
+    'New university campus opens in {city}',
+    'Thousands of students are arriving, and so are new cafés, bars and landlords. Rents are already rising.',
+    effect: 'rent_up',
   ),
   _Template(
     'local',

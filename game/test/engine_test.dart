@@ -162,12 +162,18 @@ void main() {
     // children and grandchildren) are checked directly too, with that
     // family built for them.
     const rare = {'foster_carer', 'collector', 'heirloom', 'grandparent'};
-    // Short-window chains the bot finds only a few times in 500 lives
-    // (startup idea then invest; teen party then caught at 16-18);
-    // checked directly below.
-    const chains = {'startup_result', 'caught_sneaking'};
+    // Follow-ups to an earlier choice with a short age window (Tomás's
+    // wedding, the startup's result, getting caught sneaking out...): the
+    // random bot reaches each only a handful of times in 500 lives, so
+    // which ones it misses changes with any tweak. They are checked
+    // directly below; the flags they need are covered by the "no dead
+    // events" test above.
+    bool chain(Storylet s) =>
+        s.remembers != null &&
+        s.requiresFlags.isNotEmpty &&
+        s.maxAge - s.minAge <= 8;
     bool direct(Storylet s) =>
-        chains.contains(s.id) ||
+        chain(s) ||
         s.minAge >= 95 ||
         s.requiresFlags.contains('married') ||
         s.requiresFlags.any(rare.contains) ||
@@ -190,6 +196,19 @@ void main() {
       old.npcs.add(
         newChild(old, Random(2), ageNow: int.parse(range!.group(1)!)),
       );
+      for (final id in s.requiresNpcs.where((n) => !n.startsWith('@'))) {
+        if (old.npc(id) == null) {
+          old.npcs.add(
+            Npc(
+              id: id,
+              role: 'Friend',
+              name: id,
+              birthYear: old.year - old.age,
+              circle: 'Friends',
+            ),
+          );
+        }
+      }
       if (s.requiresNpcs.contains('@grandchild')) {
         old.npcs.add(
           Npc(
@@ -2391,5 +2410,42 @@ void main() {
     expect(notes.where((x) => x.contains('joined your friends')).length, 2);
     // Test scores still show; only odds are hidden.
     expect(hideOdds('You scored 72/100.'), 'You scored 72/100.');
+  });
+
+  test('the news does not repeat itself year after year', () {
+    final w = World(seed: 77);
+    final c = countries.first;
+    final city = c.cities.first;
+    for (var y = 2026; y < 2086; y++) {
+      w.ensureYear(y, c.name, city);
+    }
+    for (final scope in ['global', c.name, city]) {
+      final seen = <String, int>{};
+      for (var y = 2026; y < 2086; y++) {
+        for (final s in w.stories[y]!.where(
+          (s) => s.scope == scope && s.category != 'economy',
+        )) {
+          final last = seen[s.template!];
+          if (last != null) {
+            expect(y - last, greaterThanOrEqualTo(5), reason: s.headline);
+          }
+          seen[s.template!] = y;
+        }
+      }
+    }
+    // A run of the same economy never prints the same story two years in a row.
+    for (var y = 2027; y < 2086; y++) {
+      final a = w.stories[y - 1]!.firstWhere((s) => s.category == 'economy');
+      final b = w.stories[y]!.firstWhere((s) => s.category == 'economy');
+      if (w.economyFor(y) == w.economyFor(y - 1) &&
+          (const {
+            'Boom',
+            'Normal',
+            'Recession',
+            'Slowdown',
+          }.contains(w.economyFor(y)))) {
+        expect(b.headline, isNot(a.headline), reason: '$y');
+      }
+    }
   });
 }
