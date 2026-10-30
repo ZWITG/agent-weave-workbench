@@ -100,11 +100,16 @@ class ActivitiesPanel extends StatefulWidget {
     required this.controller,
     required this.scrollController,
     this.focusSearch = false,
+    this.docked = false,
   });
 
   final GameController controller;
   final ScrollController scrollController;
   final bool focusSearch;
+
+  /// Shown beside the game on a wide (desktop) window instead of in a
+  /// sheet: nothing to close after an activity.
+  final bool docked;
 
   @override
   State<ActivitiesPanel> createState() => _ActivitiesPanelState();
@@ -324,7 +329,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       if (suggested.isNotEmpty) ...[
         _sectionTitle('Good ideas right now', 'Tap one to do it'),
         for (final a in suggested) ...[
-          actionRow(context, c, a),
+          actionRow(context, c, a, closeSheet: !widget.docked),
           const SizedBox(height: 8),
         ],
         const SizedBox(height: 14),
@@ -459,7 +464,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
     final paid = open.where((a) => a.cost > 0).toList();
     List<Widget> rows(List<GameAction> list) => [
       for (final a in list) ...[
-        actionRow(context, c, a),
+        actionRow(context, c, a, closeSheet: !widget.docked),
         const SizedBox(height: 8),
       ],
     ];
@@ -528,7 +533,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
     }
     return [
       for (final a in actions) ...[
-        actionRow(context, c, a),
+        actionRow(context, c, a, closeSheet: !widget.docked),
         const SizedBox(height: 8),
       ],
       if (people.isNotEmpty) ...[
@@ -568,7 +573,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
                   if (how == null || !nav.mounted) return;
                 }
                 final r = c.interact(n, i, variant: how);
-                nav.pop();
+                if (!widget.docked) nav.pop();
                 if (c.pendingEvent != null) {
                   showEvent(nav.context, c);
                   return;

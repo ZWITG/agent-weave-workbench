@@ -37,6 +37,19 @@ class HubScreen extends StatefulWidget {
 class _HubScreenState extends State<HubScreen> {
   int _tab = 0;
   String? _lastEvent;
+  final _dockScroll = ScrollController();
+
+  static const _destinations = [
+    (Icons.auto_stories_outlined, Icons.auto_stories, 'Life'),
+    (Icons.people_outline, Icons.people, 'People'),
+    (Icons.school_outlined, Icons.school, 'Path'),
+    (
+      Icons.account_balance_wallet_outlined,
+      Icons.account_balance_wallet,
+      'Wealth',
+    ),
+    (Icons.person_outline, Icons.person, 'Me'),
+  ];
 
   GameController get c => widget.controller;
   Life get life => c.life!;
@@ -70,30 +83,75 @@ class _HubScreenState extends State<HubScreen> {
       WealthTab(controller: c),
       _MeTab(controller: c),
     ];
-    return Scaffold(
-      backgroundColor: NF.bg,
-      body: GlowBackground(
-        child: SafeArea(
-          bottom: false,
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: Column(
-                children: [
-                  _Header(life: life),
-                  Expanded(
-                    child: IndexedStack(index: _tab, children: tabs),
+    // Desktop and other wide windows: tabs down the left, the game in the
+    // middle and Activities always open on the right.
+    final wide = MediaQuery.sizeOf(context).width >= 1000;
+    final game = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: wide ? 720 : 560),
+      child: Column(
+        children: [
+          _Header(life: life),
+          Expanded(
+            child: IndexedStack(index: _tab, children: tabs),
+          ),
+          _BottomBar(
+            controller: c,
+            onActivities: () => _openSearch(context),
+            onSearch: () => _openSearch(context, focusSearch: true),
+          ),
+        ],
+      ),
+    );
+    if (wide) {
+      return Scaffold(
+        backgroundColor: NF.bg,
+        body: GlowBackground(
+          child: SafeArea(
+            child: Row(
+              children: [
+                NavigationRail(
+                  backgroundColor: NF.nav,
+                  extended: MediaQuery.sizeOf(context).width >= 1300,
+                  selectedIndex: _tab,
+                  onDestinationSelected: (i) => setState(() => _tab = i),
+                  labelType: MediaQuery.sizeOf(context).width >= 1300
+                      ? NavigationRailLabelType.none
+                      : NavigationRailLabelType.all,
+                  destinations: [
+                    for (final (icon, selected, label) in _destinations)
+                      NavigationRailDestination(
+                        icon: Icon(icon),
+                        selectedIcon: Icon(selected),
+                        label: Text(label),
+                      ),
+                  ],
+                ),
+                Expanded(child: Center(child: game)),
+                Container(
+                  width: 400,
+                  decoration: BoxDecoration(
+                    color: NF.surface,
+                    border: Border(
+                      left: BorderSide(color: NF.muted.withValues(alpha: 0.2)),
+                    ),
                   ),
-                  _BottomBar(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: ActivitiesPanel(
                     controller: c,
-                    onActivities: () => _openSearch(context),
-                    onSearch: () => _openSearch(context, focusSearch: true),
+                    scrollController: _dockScroll,
+                    docked: true,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      );
+    }
+    return Scaffold(
+      backgroundColor: NF.bg,
+      body: GlowBackground(
+        child: SafeArea(bottom: false, child: Center(child: game)),
       ),
       // On an iPhone home-screen web app the home indicator sits over the
       // bottom of the page, so the tabs get a little room below them.
@@ -104,32 +162,13 @@ class _HubScreenState extends State<HubScreen> {
           selectedIndex: _tab,
           onDestinationSelected: (i) => setState(() => _tab = i),
           height: 64,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.auto_stories_outlined),
-              selectedIcon: Icon(Icons.auto_stories),
-              label: 'Life',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.people_outline),
-              selectedIcon: Icon(Icons.people),
-              label: 'People',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.school_outlined),
-              selectedIcon: Icon(Icons.school),
-              label: 'Path',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.account_balance_wallet_outlined),
-              selectedIcon: Icon(Icons.account_balance_wallet),
-              label: 'Wealth',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Me',
-            ),
+          destinations: [
+            for (final (icon, selected, label) in _destinations)
+              NavigationDestination(
+                icon: Icon(icon),
+                selectedIcon: Icon(selected),
+                label: label,
+              ),
           ],
         ),
       ),
@@ -190,6 +229,7 @@ class _HubScreenState extends State<HubScreen> {
 
   @override
   void dispose() {
+    _dockScroll.dispose();
     if (_toast?.mounted ?? false) _toast!.remove();
     _toast = null;
     super.dispose();

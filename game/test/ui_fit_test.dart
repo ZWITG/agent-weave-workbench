@@ -250,4 +250,35 @@ void main() {
     FlutterError.onError = old;
     expect(problems, isEmpty, reason: problems.join('\n'));
   });
+
+  testWidgets('desktop: side tabs, the game and Activities side by side', (
+    t,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(1366, 768);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.text('Activities'), findsWidgets);
+    await t.tap(find.text('Wellbeing').first);
+    await _pump(t);
+    await t.tap(find.text('Wealth').first);
+    await _pump(t);
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+  });
 }
