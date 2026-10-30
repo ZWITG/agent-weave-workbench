@@ -706,7 +706,7 @@ ActionResult buyItem(
       ),
     );
     notes.add(
-      'Kept on the Wealth tab · worth about ${_m((price * i.resale / 100).round())}',
+      'Kept on Wealth › What you own · worth about ${_m((price * i.resale / 100).round())}',
     );
   } else if (i.years > 0) {
     l.items.add({

@@ -23,6 +23,95 @@ const _deptIcons = <String, IconData>{
   'stuff': Icons.inventory_2_rounded,
 };
 
+/// One thing bought in the shop that lasts, with Return and Sell. Shown in
+/// the shop's "Your stuff" and on the Wealth tab's "What you own".
+class OwnedItemCard extends StatelessWidget {
+  const OwnedItemCard({
+    super.key,
+    required this.controller,
+    required this.item,
+  });
+  final GameController controller;
+  final Map<String, dynamic> item;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = controller;
+    final life = c.life!;
+    final i = itemById(item['id'] as String);
+    if (i == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: NFCard(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(_deptIcons[i.dept], color: NF.orange),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    i.name,
+                    style: NF.sora(15, weight: FontWeight.w700),
+                  ),
+                ),
+                Text(
+                  '${item['left']} yr${item['left'] == 1 ? '' : 's'} left',
+                  style: NF.sora(12, color: NF.muted),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Bought at ${item['age']} for ${money(item['paid'] as int)}${i.yearly.isEmpty ? '' : ' · ${i.yearly.entries.map((e) => '${_stat(e.key)} +${e.value} a year').join(', ')}'}',
+              style: NF.sora(12, color: NF.soft),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              alignment: WrapAlignment.end,
+              children: [
+                OutlinedButton(
+                  onPressed: returnLock(life, item) == null
+                      ? () {
+                          final r = c.wealth((l) => returnItem(l, item));
+                          showResultPopup(
+                            context,
+                            r,
+                            title: 'Returned',
+                            icon: Icons.undo_rounded,
+                          );
+                        }
+                      : null,
+                  child: Text(
+                    returnLock(life, item) == null
+                        ? 'Return'
+                        : 'Return (this year only)',
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed: () {
+                    final r = c.wealth((l) => sellItem(l, item));
+                    showResultPopup(
+                      context,
+                      r,
+                      title: 'Sold',
+                      icon: Icons.sell_rounded,
+                    );
+                  },
+                  child: Text('Sell for ${money(resaleOf(item))}'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 String _stat(String k) => '${k[0].toUpperCase()}${k.substring(1)}';
 
 /// The shop, laid out like the Activities panel: sale banner, today's
@@ -181,7 +270,7 @@ class _ShopScreenState extends State<ShopScreen> {
     final sub = switch (d) {
       'subs' => 'Paid each birthday · cancel any time',
       'gifts' => 'Pick someone, then a gift they will love',
-      'luxury' => 'Kept on the Wealth tab and can be sold',
+      'luxury' => 'Kept on Wealth › What you own and can be sold',
       'stuff' => 'Return things bought this year, or sell them second-hand',
       _ => 'Effects show on each item',
     };
@@ -236,80 +325,11 @@ class _ShopScreenState extends State<ShopScreen> {
     return [
       if (items.isEmpty)
         Text(
-          'Things that last (tech, furniture, gear) show up here. Luxury items are on the Wealth tab.',
+          'Things that last (tech, furniture, gear) show up here. Everything you own, homes and valuables included, is listed on Wealth › What you own.',
           style: NF.sora(14, color: NF.muted),
         ),
       for (final item in List<Map<String, dynamic>>.from(items))
-        if (itemById(item['id'] as String) case final i?)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: NFCard(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(_deptIcons[i.dept], color: NF.orange),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          i.name,
-                          style: NF.sora(15, weight: FontWeight.w700),
-                        ),
-                      ),
-                      Text(
-                        '${item['left']} yr${item['left'] == 1 ? '' : 's'} left',
-                        style: NF.sora(12, color: NF.muted),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Bought at ${item['age']} for ${money(item['paid'] as int)}${i.yearly.isEmpty ? '' : ' · ${i.yearly.entries.map((e) => '${_stat(e.key)} +${e.value} a year').join(', ')}'}',
-                    style: NF.sora(12, color: NF.soft),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    alignment: WrapAlignment.end,
-                    children: [
-                      OutlinedButton(
-                        onPressed: returnLock(life, item) == null
-                            ? () {
-                                final r = c.wealth((l) => returnItem(l, item));
-                                showResultPopup(
-                                  context,
-                                  r,
-                                  title: 'Returned',
-                                  icon: Icons.undo_rounded,
-                                );
-                              }
-                            : null,
-                        child: Text(
-                          returnLock(life, item) == null
-                              ? 'Return'
-                              : 'Return (this year only)',
-                        ),
-                      ),
-                      OutlinedButton(
-                        onPressed: () {
-                          final r = c.wealth((l) => sellItem(l, item));
-                          showResultPopup(
-                            context,
-                            r,
-                            title: 'Sold',
-                            icon: Icons.sell_rounded,
-                          );
-                        },
-                        child: Text('Sell for ${money(resaleOf(item))}'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+        OwnedItemCard(controller: c, item: item),
       if (life.subs.isNotEmpty) ...[
         const HubHeading('Subscriptions'),
         for (final id in List<String>.from(life.subs))

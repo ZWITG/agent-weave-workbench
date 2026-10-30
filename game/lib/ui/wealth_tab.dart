@@ -23,7 +23,7 @@ const _good = Color(0xFF5EE6A8);
 /// The Wealth tab (plan S40–S44), shaped like the Activities panel: net
 /// worth on top, a search box, "Suggested for you", then Browse tiles that
 /// each open one section (cash flow, lifestyle, bank and loans, investing,
-/// business, home and vehicles, money activities).
+/// business, everything you own, money activities).
 class WealthTab extends StatefulWidget {
   const WealthTab({super.key, required this.controller});
   final GameController controller;
@@ -72,9 +72,9 @@ class _WealthTabState extends State<WealthTab> {
       'Start one, run it, sell it',
     ),
     'assets': (
-      'Home and vehicles',
+      'What you own',
       Icons.home_work_rounded,
-      'What you own and what it costs',
+      'Homes, cars, valuables and everyday stuff',
     ),
     'more': (
       'Money activities',
@@ -188,9 +188,9 @@ class _WealthTabState extends State<WealthTab> {
             : (life.age < 18 ? 'From age 18' : 'Start investing'),
       'business' => life.business?.name ?? 'None yet',
       'assets' =>
-        life.assets.isEmpty
+        life.assets.length + life.items.length == 0
             ? (life.age < 18 ? 'From age 18' : 'Nothing owned')
-            : '${life.assets.length} owned',
+            : '${life.assets.length + life.items.length} owned',
       _ => '${openMoney.length} open',
     };
     final sale = saleOn(DateTime.now());
@@ -209,7 +209,8 @@ class _WealthTabState extends State<WealthTab> {
           status: status(e.key),
           alert: (e.key == 'flow' && short) || (e.key == 'bank' && debt > 0),
           dim: switch (e.key) {
-            'invest' || 'assets' || 'business' => life.age < 18,
+            'assets' => life.age < 18 && life.items.isEmpty,
+            'invest' || 'business' => life.age < 18,
             'more' => openMoney.isEmpty,
             _ => false,
           },
@@ -431,12 +432,28 @@ class _WealthTabState extends State<WealthTab> {
   (String, bool, VoidCallback) _act(String l, bool on, VoidCallback f) =>
       (l, on, f);
 
-  // ---------------- Home and vehicles ----------------
+  // ---------------- What you own ----------------
 
+  /// Every owned thing in one place: homes, vehicles, valuables and the
+  /// lasting things bought in the shop.
   List<Widget> _assets(BuildContext context, Life life) {
     final shop = allActions.where((a) => a.category == 'Assets').toList();
+    final groups = <String, List<Asset>>{
+      'Homes': [],
+      'Vehicles': [],
+      'Valuables and collectibles': [],
+    };
+    for (final a in life.assets) {
+      final group = switch (a.kind) {
+        'house' || 'rental' => 'Homes',
+        'valuable' || 'collectible' || 'heirloom' =>
+          'Valuables and collectibles',
+        _ => 'Vehicles',
+      };
+      groups[group]!.add(a);
+    }
     return [
-      if (life.assets.isEmpty)
+      if (life.assets.isEmpty && life.items.isEmpty)
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Text(
@@ -446,31 +463,42 @@ class _WealthTabState extends State<WealthTab> {
             style: NF.sora(14, color: NF.muted),
           ),
         ),
-      for (final a in life.assets) ...[
-        _AssetCard(
-          asset: a,
-          onSell: () => _sell(context, a),
-          onRepair: a.kind == 'house' && a.condition < 80
-              ? (life.money >= repairCost(a)
-                    ? () => _homeWork(context, 'Repairs', repairHome, a)
-                    : null)
-              : null,
-          repairLabel: 'Repair (${money(repairCost(a))})',
-          onRenovate: a.kind == 'house' && renovateLock(life, a) == null
-              ? () => _homeWork(context, 'Renovation', renovateHome, a)
-              : null,
-          renovateLabel: 'Renovate (${money(renovationCost(a))})',
-          rent: a.info['let'] == true ? rentFor(a) : null,
-        ),
-        const SizedBox(height: 8),
+      for (final g in groups.entries)
+        if (g.value.isNotEmpty) ...[
+          HubHeading(g.key),
+          for (final a in g.value) ...[
+            _assetCard(context, life, a),
+            const SizedBox(height: 8),
+          ],
+        ],
+      if (life.items.isNotEmpty) ...[
+        const HubHeading('Everyday stuff', sub: 'Tech, furniture and gear'),
+        for (final item in List<Map<String, dynamic>>.from(life.items))
+          OwnedItemCard(controller: c, item: item),
       ],
-      const SizedBox(height: 4),
+      const HubHeading('Buy'),
       for (final a in shop) ...[
         actionRow(context, c, a, closeSheet: false),
         const SizedBox(height: 8),
       ],
     ];
   }
+
+  Widget _assetCard(BuildContext context, Life life, Asset a) => _AssetCard(
+    asset: a,
+    onSell: () => _sell(context, a),
+    onRepair: a.kind == 'house' && a.condition < 80
+        ? (life.money >= repairCost(a)
+              ? () => _homeWork(context, 'Repairs', repairHome, a)
+              : null)
+        : null,
+    repairLabel: 'Repair (${money(repairCost(a))})',
+    onRenovate: a.kind == 'house' && renovateLock(life, a) == null
+        ? () => _homeWork(context, 'Renovation', renovateHome, a)
+        : null,
+    renovateLabel: 'Renovate (${money(renovationCost(a))})',
+    rent: a.info['let'] == true ? rentFor(a) : null,
+  );
 
   void _homeWork(
     BuildContext context,
