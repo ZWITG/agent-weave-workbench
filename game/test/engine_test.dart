@@ -32,6 +32,7 @@ import 'package:relivable/engine/recap.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
+import 'package:relivable/engine/news_impact.dart';
 import 'package:relivable/engine/npc_life.dart';
 import 'package:relivable/engine/odds.dart';
 import 'package:relivable/engine/relationships.dart';
@@ -161,7 +162,11 @@ void main() {
     // children and grandchildren) are checked directly too, with that
     // family built for them.
     const rare = {'foster_carer', 'collector', 'heirloom', 'grandparent'};
+    // A three-step chain (business streak, startup idea, invest) the bot
+    // finds only a few times in 500 lives; checked directly below.
+    const chains = {'startup_result'};
     bool direct(Storylet s) =>
+        chains.contains(s.id) ||
         s.minAge >= 95 ||
         s.requiresFlags.contains('married') ||
         s.requiresFlags.any(rare.contains) ||
@@ -2325,5 +2330,37 @@ void main() {
       expect(a.hintFor(l) ?? '', isNot(contains('%')), reason: a.id);
     }
     expect(Choice(label: 'x', outcome: '', risk: '40%').risk, isNull);
+  });
+
+  test('the news reaches your life: pay, homes and a choice', () {
+    final l = engine.newLife(seed: 254)..age = 35;
+    l.job = 'Accountant';
+    l.salary = 50000;
+    WorldStory story(String effect) => WorldStory(
+      year: l.year,
+      category: 'economy',
+      headline: effect,
+      body: '',
+      effect: effect,
+    );
+    // A recession puts your job on the line.
+    final feed = newsYear(l, [story('hiring_down')], Random(1));
+    expect(feed, isEmpty);
+    expect(l.sceneQueue.last, 'news_hit:hiring_down');
+    final scene = engine.nextScene(
+      l..sceneQueue.removeRange(0, l.sceneQueue.length - 1),
+    )!;
+    expect(scene.id, 'scene:news_hit');
+    engine.choose(l, scene, scene.choices.first); // take the pay cut
+    expect(l.salary, 45000);
+    // A boom raises pay; a tax cut pays a rebate.
+    final cash = l.money;
+    newsYear(l, [story('hiring_up'), story('tax_cut')], Random(1));
+    expect(l.salary, greaterThan(45000));
+    expect(l.money, greaterThan(cash));
+    // Inflation makes living cost more.
+    final before = livingCost(l);
+    l.worldMods = {'prices': 15};
+    expect(livingCost(l), greaterThan(before));
   });
 }

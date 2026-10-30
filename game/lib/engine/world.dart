@@ -76,28 +76,44 @@ typedef WorldEffect = ({Map<String, int> mods, String you});
 /// What news can change. Mods are summed per place and capped at ±20.
 const worldEffects = <String, WorldEffect>{
   'hiring_up': (
-    mods: {'hiring': 8},
-    you: 'Jobs are easier to get: hiring chances +8%',
+    mods: {'hiring': 10},
+    you: 'Jobs are easier to get, and pay is rising',
   ),
   'hiring_down': (
-    mods: {'hiring': -10},
-    you: 'Jobs are harder to get: hiring chances −10%',
+    mods: {'hiring': -12},
+    you: 'Jobs are harder to get, and companies are cutting staff',
   ),
-  'rent_up': (mods: {'rent': 12}, you: 'Rent costs 12% more'),
+  'rent_up': (mods: {'rent': 20}, you: 'Rent costs 20% more'),
   'policing': (
-    mods: {'policing': 15},
+    mods: {'policing': 20},
     you: 'More police on the streets: crime is riskier',
   ),
   'heatwave': (mods: {'health': -1}, you: 'A hot, tiring year: Health −1'),
   'flu': (mods: {'health': -2}, you: 'Bad flu season: Health −2'),
   'festival': (
-    mods: {'happiness': 1},
-    you: 'A good mood in town: Happiness +1',
+    mods: {'happiness': 3},
+    you: 'A good mood in town: Happiness +3',
   ),
   'fourday': (
-    mods: {'happiness': 2},
-    you: 'Shorter working weeks: Happiness +2',
+    mods: {'happiness': 4},
+    you: 'Shorter working weeks: Happiness +4',
   ),
+  'pandemic': (
+    mods: {'health': -2, 'happiness': -5, 'hiring': -8},
+    you: 'A pandemic: Health −2, Happiness −5, fewer jobs',
+  ),
+  'inflation': (
+    mods: {'prices': 15, 'happiness': -2},
+    you: 'Living costs 15% more',
+  ),
+  'crime_wave': (
+    mods: {'happiness': -2},
+    you: 'Break-ins near you: homes are at risk',
+  ),
+  'housing_boom': (mods: {'rent': 10}, you: 'Home values up 15%, rents up 10%'),
+  'housing_crash': (mods: {'happiness': -2}, you: 'Home values down 20%'),
+  'tax_cut': (mods: {'happiness': 2}, you: 'A tax rebate for workers'),
+  'tax_rise': (mods: {'happiness': -2}, you: 'Workers pay more tax this year'),
 };
 
 /// Family-name reputation axes (plan: Fame, Infamy, Wealth, Philanthropy,
@@ -454,7 +470,11 @@ class World {
     String? country,
     String? city,
   }) {
-    final t = list[rng.nextInt(list.length)];
+    var t = list[rng.nextInt(list.length)];
+    // Rare stories come up about once in 30 years, not once in a dozen.
+    while (t.rare && rng.nextInt(100) < 85) {
+      t = list[rng.nextInt(list.length)];
+    }
     final c = country == null
         ? countries[rng.nextInt(countries.length)]
         : countryNamed(country);
@@ -490,12 +510,16 @@ class _Template {
     this.body, {
     this.effect,
     this.years = 1,
+    this.rare = false,
   });
   final String category;
   final String headline;
   final String body;
   final String? effect;
   final int years;
+
+  /// Once-in-a-generation stories (pandemics, oil shocks).
+  final bool rare;
 }
 
 const _companies = [
@@ -551,6 +575,11 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
       'Businesses are cautious and some have paused hiring. Experts say it is a wobble, not a crisis, for now.',
       null,
     ),
+    (
+      'Prices soar as inflation hits a 30-year high',
+      'Food, fuel and energy bills have jumped. Families are cutting back and the central bank is under pressure.',
+      'inflation',
+    ),
   ],
   'Recession': [
     (
@@ -569,6 +598,11 @@ const _economyTemplates = <String, List<(String, String, String?)>>{
       'Markets crash: worst week in a generation',
       'Share prices have collapsed after a run on several banks. Investors watched years of gains vanish in days.',
       'hiring_down',
+    ),
+    (
+      'House prices plunge as the banks stop lending',
+      'Homeowners have watched their biggest asset shrink overnight. Estate agents report empty viewings.',
+      'housing_crash',
     ),
   ],
 };
@@ -627,6 +661,22 @@ const _globalTemplates = [
     'After a decade of talks, 140 countries agreed to protect a third of the world\'s seas.',
   ),
   _Template(
+    'health',
+    'A new virus spreads around the world',
+    'Borders are closing, offices are emptying and hospitals are filling up. Scientists say a vaccine is at least a year away.',
+    effect: 'pandemic',
+    years: 2,
+    rare: true,
+  ),
+  _Template(
+    'economy',
+    'Oil price shock sends prices soaring everywhere',
+    'A conflict far away has doubled the price of fuel. Everything that travels by lorry now costs more.',
+    effect: 'inflation',
+    years: 2,
+    rare: true,
+  ),
+  _Template(
     'culture',
     'A dance called "the Wobble" takes over the internet',
     'Nobody knows who started it. Everybody, including several prime ministers, has now done it.',
@@ -667,6 +717,25 @@ const _nationalTemplates = [
     effect: 'festival',
   ),
   _Template(
+    'politics',
+    '{country} cuts income tax for workers',
+    'The government says it wants to "put money back in people\'s pockets". Workers will see a rebate this year.',
+    effect: 'tax_cut',
+  ),
+  _Template(
+    'politics',
+    '{country} raises taxes to pay for its debts',
+    'The finance minister apologised in advance. Workers will pay more this year.',
+    effect: 'tax_rise',
+  ),
+  _Template(
+    'economy',
+    'House prices boom across {country}',
+    'Homeowners are celebrating and first-time buyers are despairing. Some homes sold within an hour of being listed.',
+    effect: 'housing_boom',
+    years: 2,
+  ),
+  _Template(
     'health',
     'Free health check-ups for everyone in {country}',
     'A new scheme lets anyone visit a doctor once a year for free. Waiting rooms are busy.',
@@ -700,6 +769,12 @@ const _localTemplates = [
     'Officers will be on foot in the city centre every evening. Pickpockets have been warned.',
     effect: 'policing',
     years: 2,
+  ),
+  _Template(
+    'crime',
+    'Wave of break-ins hits {city} homes',
+    'Police say a gang is targeting houses while owners are at work. Locksmiths have a waiting list.',
+    effect: 'crime_wave',
   ),
   _Template(
     'local',

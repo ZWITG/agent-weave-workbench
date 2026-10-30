@@ -750,6 +750,8 @@ class _FeedBubble extends StatelessWidget {
     if (entry.kind == 'summary') return _summaryBubble();
     final milestone = entry.kind == 'milestone';
     final action = entry.kind == 'action';
+    // The news reaching your life (news_impact.dart).
+    final news = entry.kind == 'news';
     return Align(
       alignment: action ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -758,7 +760,7 @@ class _FeedBubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: action ? NF.surface2 : NF.surface,
-          border: milestone
+          border: milestone || news
               ? Border.all(color: NF.orange.withValues(alpha: 0.6))
               : null,
           borderRadius: BorderRadius.only(
@@ -775,11 +777,15 @@ class _FeedBubble extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 2, right: 8),
               child: Icon(
-                milestone
+                news
+                    ? Icons.newspaper_rounded
+                    : milestone
                     ? Icons.star_rounded
                     : (action ? Icons.bolt_rounded : Icons.chat_bubble_rounded),
                 size: 15,
-                color: milestone ? NF.orange : (action ? NF.blue : NF.muted),
+                color: milestone || news
+                    ? NF.orange
+                    : (action ? NF.blue : NF.muted),
               ),
             ),
             Flexible(

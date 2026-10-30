@@ -17,6 +17,7 @@ import 'justice.dart';
 import 'family.dart';
 import 'love.dart';
 import 'jobs.dart';
+import 'news_impact.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
 import 'models.dart';
@@ -380,12 +381,21 @@ class GameEngine {
     if (life.education == 'university' && life.school.major == null) {
       life.sceneQueue.add('choose_major');
     }
+    // The news reaching your life follows the year's event instead of
+    // replacing it (news_impact.dart).
+    final news = [
+      for (final k in life.sceneQueue)
+        if (k.startsWith('news_hit:')) k,
+    ];
+    life.sceneQueue.removeWhere((k) => k.startsWith('news_hit:'));
     final scene = nextScene(life);
+    life.sceneQueue.addAll(news);
     if (scene != null) return scene;
 
     final event = pickStorylet(life, rng);
     if (event == null) {
       life.feed.add(FeedEntry(life.age, _quietYear(life, rng)));
+      return nextScene(life);
     }
     return event;
   }
@@ -696,6 +706,14 @@ class GameEngine {
     final news = world.headlineFor(year, life.country, life.city);
     if (news != null) {
       life.feed.add(FeedEntry(life.age, news.headline, kind: 'world'));
+    }
+    // This year's stories reach your life: pay, homes, tax, and a choice.
+    final fresh = [
+      for (final s in world.storiesFor(year, life.country, life.city))
+        if (!s.mine && s.effect != null) s,
+    ];
+    for (final line in newsYear(life, fresh, _rngFor(life, 89))) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'news'));
     }
   }
 

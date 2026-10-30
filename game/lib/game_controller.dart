@@ -482,6 +482,7 @@ class GameController extends ChangeNotifier {
 }
 
 const _bigKinds = {
+  'news',
   'milestone',
   'serious',
   'chronic',

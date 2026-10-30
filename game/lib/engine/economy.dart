@@ -56,7 +56,9 @@ bool livesWithFamily(Life life) => !life.has('house') && !life.has('rental');
 
 int livingCost(Life life, [String? tier]) {
   final t = lifestyles[tier ?? life.lifestyle]!;
-  return livesWithFamily(life) ? t.withFamily : t.alone;
+  final base = livesWithFamily(life) ? t.withFamily : t.alone;
+  // Inflation in the news pushes living costs up.
+  return (base * (100 + (life.worldMods['prices'] ?? 0)) / 100).round();
 }
 
 // ---------------- Taxes and debts ----------------

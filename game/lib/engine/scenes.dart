@@ -22,6 +22,7 @@ import 'family.dart';
 import 'jobs.dart';
 import 'love.dart';
 import 'models.dart';
+import 'news_impact.dart';
 import 'school.dart';
 import 'storylet.dart';
 
@@ -108,6 +109,7 @@ Storylet? buildScene(String id, Life life) {
     'gang_war' ||
     'gang_pressure' ||
     'gang_leave' => gangScene(parts.first, parts.sublist(1), life),
+    'news_hit' => newsScene(parts.sublist(1), life),
     'crime_plan' ||
     'crime_go' ||
     'crime_twist' ||
