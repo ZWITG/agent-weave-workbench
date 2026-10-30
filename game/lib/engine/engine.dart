@@ -593,16 +593,20 @@ class GameEngine {
     if (lock != null) return ActionResult(lock, ['Why: $lock']);
     final rng = _rngFor(life, action.id.hashCode);
     final again = life.usedActions.contains(action.id);
+    final times = timesThisYear(life, action.id);
     life.reason = action.label;
     if (!life.classic && !action.repeatable) {
       life.energy = max(0, life.energy - 1);
     }
+    if (again) life.usedActions.add('again:${action.id}:$times');
     life.usedActions.add(action.id);
-    final result = variant != null
+    final before = {for (final k in Stats.visible) k: life.stats[k]};
+    var result = variant != null
         ? variant.run(life, rng, who, score?.clamp(0, 1))
         : score != null && action.scored != null
         ? action.scored!(life, rng, score.clamp(0, 1))
         : action.run(life, rng);
+    if (!action.repeatable) result = _softenGains(life, before, times, result);
     final text = fill(result.text, life);
     if (!(action.repeatable && again)) {
       life.feed.add(FeedEntry(life.age, text, kind: 'action'));
@@ -617,6 +621,41 @@ class GameEngine {
     }
     checkDeeds(life);
     return ActionResult(text, [...result.notes, ?hooked]);
+  }
+
+  /// Shrinks the visible stat gains an activity just made (see
+  /// [gainFactor]) and rewrites its notes to match. Losses stay as they are.
+  ActionResult _softenGains(
+    Life life,
+    Map<String, int> before,
+    int times,
+    ActionResult r,
+  ) {
+    final notes = [...r.notes];
+    for (final k in Stats.visible) {
+      final gain = life.stats[k] - before[k]!;
+      if (gain <= 0) continue;
+      final kept = (gain * gainFactor(times, before[k]!)).round();
+      if (kept == gain) continue;
+      life.stats.add(k, kept - gain);
+      final name = '${k[0].toUpperCase()}${k.substring(1)}';
+      final i = notes.indexWhere((n) => n.startsWith('$name +'));
+      if (i >= 0) {
+        if (kept > 0) {
+          notes[i] = '$name +$kept';
+        } else {
+          notes.removeAt(i);
+        }
+      }
+    }
+    if (times > 0) {
+      notes.add(
+        times + 1 >= maxRedo
+            ? 'Done ${times + 1} times this year: it helps less each time'
+            : 'Again this year: it helps less each time',
+      );
+    }
+    return ActionResult(r.text, notes);
   }
 
   static const _exposures = {

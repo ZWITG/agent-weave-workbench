@@ -97,7 +97,12 @@ class GameAction {
     }
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.age > maxAge) return 'Only up to age $maxAge';
-    if (!repeatable && life.usedActions.contains(id)) return 'Done this year';
+    if (!repeatable && life.usedActions.contains(id)) {
+      if (!redoable.contains(id)) return 'Done this year';
+      if (timesThisYear(life, id) >= maxRedo) {
+        return 'Done $maxRedo times this year';
+      }
+    }
     if (!repeatable && !life.classic && life.energy <= 0) {
       return 'No energy left this year';
     }
@@ -115,6 +120,53 @@ class GameAction {
 }
 
 String _signed(int v) => v > 0 ? '+$v' : '−${v.abs()}';
+
+/// Everyday activities you can do again in the same year (up to [maxRedo]
+/// times). Each repeat costs energy and helps less than the last.
+const redoable = {
+  'read',
+  'gym',
+  'meditate',
+  'walk',
+  'yoga',
+  'paint',
+  'instrument',
+  'write_story',
+  'write_song',
+  'video_games',
+  'go_out',
+  'nightlife',
+  'family_dinner',
+  'study',
+  'volunteer',
+  'party',
+  'cell_exercise',
+  'prison_gym',
+};
+const maxRedo = 3;
+
+/// How many times [id] has been done this year.
+int timesThisYear(Life life, String id) => !life.usedActions.contains(id)
+    ? 0
+    : 1 + life.usedActions.where((a) => a.startsWith('again:$id:')).length;
+
+/// How much of a stat gain lands: repeats in one year help less, and the
+/// higher a stat already is, the harder it is to push further.
+double gainFactor(int timesBefore, int current) {
+  final repeat = switch (timesBefore) {
+    0 => 1.0,
+    1 => 0.5,
+    _ => 0.25,
+  };
+  final ceiling = current >= 85
+      ? 0.25
+      : current >= 70
+      ? 0.5
+      : current >= 55
+      ? 0.75
+      : 1.0;
+  return repeat * ceiling;
+}
 
 ActionResult statChange(Life life, String text, Map<String, int> deltas) {
   final notes = <String>[];

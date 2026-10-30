@@ -2194,4 +2194,23 @@ void main() {
     expect(back.stash, 3);
     expect(back.courses, ['ged']);
   });
+
+  test('everyday activities can be redone, and help less each time', () {
+    final l = engine.newLife(seed: 240)..age = 25;
+    l.stats.add('health', -100);
+    l.stats.add('health', 20);
+    final gym = allActions.firstWhere((a) => a.id == 'gym');
+    final gains = <int>[];
+    for (var i = 0; i < maxRedo; i++) {
+      expect(gym.lockReason(l), isNull, reason: 'try ${i + 1}');
+      final h = l.stats['health'];
+      engine.runAction(l, gym);
+      gains.add(l.stats['health'] - h);
+    }
+    expect(gym.lockReason(l), contains('times this year'));
+    expect(gains.first, greaterThan(gains.last));
+    final doctor = allActions.firstWhere((a) => a.id == 'apply_job');
+    expect(redoable.contains(doctor.id), isFalse);
+    expect(gainFactor(0, 90), lessThan(gainFactor(0, 30)));
+  });
 }
