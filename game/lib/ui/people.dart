@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/models.dart';
+import '../engine/odds.dart';
 import '../engine/relationships.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -600,7 +601,7 @@ class _PersonSheet extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                lock ?? i.hint(life, npc),
+                lock ?? hideOdds(i.hint(life, npc)),
                 style: NF.sora(
                   11,
                   color: lock != null

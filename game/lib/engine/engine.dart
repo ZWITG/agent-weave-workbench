@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'odds.dart';
 import 'careers.dart';
 import 'dynasty.dart';
 import 'economy.dart';
@@ -37,8 +38,8 @@ const sliceEndAge = 120;
 /// The result of choosing an option on an event card.
 class Outcome {
   Outcome(
-    this.text,
-    this.notes, {
+    String text,
+    List<String> notes, {
     this.headline = '',
     this.tone = 'neutral',
     this.category = 'life',
@@ -46,7 +47,11 @@ class Outcome {
     this.bondDeltas = const {},
     this.moneyDelta = 0,
     this.echoes = const [],
-  });
+  }) : text = hideOdds(text),
+       notes = [
+         for (final n in notes)
+           if (hideOdds(n) case final h when h.isNotEmpty) h,
+       ];
 
   final String text;
   final List<String> notes;

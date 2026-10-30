@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'odds.dart';
+
 import 'careers.dart';
 import 'dynasty.dart';
 import 'family.dart';
@@ -28,7 +30,12 @@ import 'models.dart';
 import 'more_actions.dart';
 
 class ActionResult {
-  ActionResult(this.text, [this.notes = const []]);
+  ActionResult(String text, [List<String> notes = const []])
+    : text = hideOdds(text),
+      notes = [
+        for (final n in notes)
+          if (hideOdds(n) case final h when h.isNotEmpty) h,
+      ];
   final String text;
   final List<String> notes;
 }
@@ -85,6 +92,9 @@ class GameAction {
   /// Live detail shown under the label instead of the price (for example
   /// the risk of a crime right now).
   final String? Function(Life life)? hint;
+
+  /// The hint as the player sees it: never the odds.
+  String? hintFor(Life l) => hideOddsOrNull(hint?.call(l));
 
   /// Null when the action can be used now, otherwise the reason it can't.
   String? lockReason(Life life) {

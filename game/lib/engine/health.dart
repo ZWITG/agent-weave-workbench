@@ -612,7 +612,7 @@ Storylet? healthScene(String id, List<String> args, Life l) {
               return win;
             }
             l.stats.add('health', -6);
-            return '$lose Odds were $odds% at stage ${c.stage}; catching it earlier helps.';
+            return '$lose Odds were $odds% at stage ${c.stage}. Catching it earlier helps.';
           },
         );
       }

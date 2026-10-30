@@ -33,6 +33,7 @@ import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/npc_life.dart';
+import 'package:relivable/engine/odds.dart';
 import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/engine/scenes.dart';
 import 'package:relivable/engine/school.dart';
@@ -693,7 +694,7 @@ void main() {
     expect(promotionOdds(life), greaterThan(30));
   });
 
-  test('Kindling shows three profiles with compatibility and odds', () {
+  test('Kindling shows three profiles with compatibility, odds hidden', () {
     final life = engine.newLife(seed: 90)..age = 25;
     life.money = 1000;
     life.sceneQueue.add('kindling');
@@ -705,10 +706,7 @@ void main() {
     }
     final out = engine.choose(life, scene, scene.choices.first);
     expect(life.money, 940);
-    expect(
-      partnerOf(life) != null || out.text.contains('Odds were about'),
-      isTrue,
-    );
+    expect(partnerOf(life) != null || !out.text.contains('%'), isTrue);
   });
 
   test('proposal, prenup and wedding lead to marriage', () {
@@ -973,7 +971,7 @@ void main() {
     life.sceneQueue.add('trial:burglary:50:88');
     final trial = engine.nextScene(life)!;
     final out = engine.choose(life, trial, trial.choices.first);
-    expect(out.text, contains('Conviction chance'));
+    expect(out.text, isNot(contains('Conviction chance')));
     life.prison = null;
     life.record
       ..clear()
@@ -1012,7 +1010,7 @@ void main() {
     us.conditions.first.known = true;
     us.sceneQueue.add('treat:cancer');
     final treat = engine.nextScene(us)!;
-    expect(treat.choices.first.risk, contains('85% success at stage 1'));
+    expect(treat.choices.first.risk, 'A chance of success at stage 1');
     final before = healthRiskFactor(us);
     us.conditions.first.stage = 4;
     expect(healthRiskFactor(us), greaterThan(before * 5));
@@ -1031,7 +1029,7 @@ void main() {
     expect(healthCosts(life).map((c) => c.$1), contains('Drinking'));
     life.sceneQueue.add('rehab:alcohol');
     final rehab = engine.nextScene(life)!;
-    expect(rehab.choices.first.risk, contains('% chance'));
+    expect(rehab.choices.first.risk, startsWith('A chance'));
     life.addictions.clear();
     life.recovery['alcohol'] = 0;
     var relapsed = false;
@@ -2298,5 +2296,34 @@ void main() {
       sentenceYears(l, crimeById('murder'), 80, Random(1)),
       greaterThanOrEqualTo(10),
     );
+  });
+
+  test('the player never sees the odds, only prices and rates', () {
+    expect(hideOdds('Smarts help · risk about 40%'), 'Smarts help');
+    expect(hideOdds('About 62% to win at trial'), 'A chance to win at trial');
+    expect(
+      hideOdds('The car had a tracker. (Risk was 40%.)'),
+      'The car had a tracker.',
+    );
+    expect(
+      hideOdds('Guilty. Conviction chance was 62%: your record.'),
+      'Guilty.',
+    );
+    expect(
+      hideOdds('You left evidence behind: 45/100. Done.'),
+      'You left evidence behind. Done.',
+    );
+    expect(hideOdds('Why: 10% restocking fee'), 'Why: 10% restocking fee');
+    expect(hideOdds('Saved \$20 (25% off)'), 'Saved \$20 (25% off)');
+    expect(
+      hideOdds('Bond 60% · Ask about their day'),
+      'Bond 60% · Ask about their day',
+    );
+    // Every choice and crime hint in the game comes out clean.
+    final l = engine.newLife(seed: 253)..age = 30;
+    for (final a in allActions.where((a) => a.category == 'Crime')) {
+      expect(a.hintFor(l) ?? '', isNot(contains('%')), reason: a.id);
+    }
+    expect(Choice(label: 'x', outcome: '', risk: '40%').risk, isNull);
   });
 }

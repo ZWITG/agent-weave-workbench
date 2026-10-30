@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'careers.dart' show careers, startCareer;
 import 'models.dart';
+import 'odds.dart';
 
 /// Every storylet file in assets/storylets, in load order.
 const storyletFiles = ['core.json', 'more.json'];
@@ -175,8 +176,9 @@ class Choice {
     this.needs = const {},
     this.needsMoney = 0,
     this.lock,
-    this.risk,
-  }) : effects = effects ?? Effects();
+    String? risk,
+  }) : effects = effects ?? Effects(),
+       risk = hideOddsOrNull(risk);
 
   final String label;
   final String outcome;

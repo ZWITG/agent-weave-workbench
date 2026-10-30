@@ -519,7 +519,7 @@ String commitMurder(Life l, Npc n, Random rng, int odds, int cost) {
   );
   l.cases.add({'crime': c.id, 'age': l.age, 'evidence': ev});
   _setSkill(l, crimeSkill(l) + 6);
-  return '$first is dead, and for now nobody knows it was you. At the funeral you stood at the back. A murder case never closes: evidence $ev/100.';
+  return '$first is dead, and for now nobody knows it was you. At the funeral you stood at the back. A murder case never closes.';
 }
 
 final crimeJobActions = <GameAction>[

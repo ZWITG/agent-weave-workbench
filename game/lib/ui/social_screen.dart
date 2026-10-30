@@ -280,15 +280,8 @@ class SocialScreen extends StatelessWidget {
                                       ),
                                       Text(
                                         lock ??
-                                            'Reach ${reachBand(viral)} (${viral.toStringAsFixed(1)}% viral) · Risk ${riskLabel(t.risk)} · ${t.blurb}',
-                                        style: NF.sora(
-                                          12,
-                                          color: lock == null
-                                              ? (t.risk == 2
-                                                    ? NF.orange
-                                                    : NF.muted)
-                                              : NF.muted,
-                                        ),
+                                            'Reach ${reachBand(viral)} · ${t.blurb}',
+                                        style: NF.sora(12, color: NF.muted),
                                       ),
                                     ],
                                   ),

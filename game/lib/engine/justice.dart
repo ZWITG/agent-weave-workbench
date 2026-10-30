@@ -345,8 +345,10 @@ bool onParole(Life l) {
   return (p.clamp(3, 90), why);
 }
 
-String riskHint(int p, String band) =>
-    'Risk ${riskBand(p).toLowerCase()} ($p%) · $band offence';
+/// Crimes show how serious they are, never the odds (see odds.dart).
+String riskHint(int p, String band) => '${_cap(band)} offence';
+
+String _cap(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
 String riskBand(int p) => p < 20
     ? 'Low'

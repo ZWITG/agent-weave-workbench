@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'odds.dart';
+
 /// Visible and hidden stats. All values are clamped to 0–100.
 class Stats {
   Stats(Map<String, int> values) : values = Map.of(values);
@@ -327,7 +329,8 @@ class Npc {
 
 /// One line of the life feed (a chat bubble in the Night Feed design).
 class FeedEntry {
-  FeedEntry(this.age, this.text, {this.kind = 'event', this.who});
+  FeedEntry(this.age, String text, {this.kind = 'event', this.who})
+    : text = hideOdds(text);
   final int age;
   final String text;
 

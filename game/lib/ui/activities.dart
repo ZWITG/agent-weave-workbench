@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
+import '../engine/odds.dart';
 import '../engine/profile.dart';
 import '../engine/models.dart';
 import '../engine/relationships.dart';
@@ -605,7 +606,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      lock ?? 'Bond ${n.bond}% · ${i.hint(life, n)}',
+                      lock ?? 'Bond ${n.bond}% · ${hideOdds(i.hint(life, n))}',
                       style: NF.sora(
                         12,
                         color: lock == null ? NF.muted : NF.orange,
@@ -724,7 +725,7 @@ Widget actionRow(
   final life = c.life!;
   final lock = a.lockReason(life);
   final price =
-      a.hint?.call(life) ??
+      a.hintFor(life) ??
       a.priceNote ??
       (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Free');
   return OptionRow(
@@ -940,7 +941,7 @@ Future<void> runActionFlow(
         backgroundColor: NF.surface,
         title: Text('${a.label}?', style: NF.sora(18, weight: FontWeight.w700)),
         content: Text(
-          a.hint?.call(c.life!) ??
+          a.hintFor(c.life!) ??
               a.priceNote ??
               (a.cost > 0
                   ? 'Costs ${money(a.cost)}'
