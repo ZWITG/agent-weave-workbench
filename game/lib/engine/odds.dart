@@ -83,7 +83,10 @@ String hideOdds(String text) {
         '',
       )
       // "evidence behind: 45/100", "Evidence 45/100"
-      .replaceAll(RegExp(r':? ?\b\d+/100\b'), '');
+      .replaceAllMapped(
+        RegExp(r'([Ee]vidence(?: behind)?):? ?\d+/100\b'),
+        (m) => m[1]!,
+      );
   if (!s.contains('%')) return s.trim();
   final parts = s.split(' · ').map(_clause).where((p) => p.isNotEmpty);
   return parts.join(' · ').trim();

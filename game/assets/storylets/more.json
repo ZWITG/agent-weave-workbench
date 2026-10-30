@@ -1089,7 +1089,13 @@
      "stats": {
       "happiness": 3,
       "charisma": 1
-     }
+     },
+     "addNpcs": [
+      {
+       "role": "Neighbour",
+       "bond": 65
+      }
+     ]
     }
    },
    {
@@ -1129,7 +1135,14 @@
       "charisma": 2,
       "happiness": 2
      },
-     "money": -20
+     "money": -20,
+     "addNpcs": [
+      {
+       "role": "Friend from the minibus",
+       "ageOffset": 5,
+       "bond": 55
+      }
+     ]
     }
    },
    {
@@ -2009,7 +2022,13 @@
      "stats": {
       "charisma": 2,
       "happiness": 2
-     }
+     },
+     "addNpcs": [
+      {
+       "role": "Fellow collector",
+       "bond": 55
+      }
+     ]
     }
    }
   ],

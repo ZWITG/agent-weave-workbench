@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'careers.dart' show careers, startCareer;
+import 'friends.dart';
 import 'models.dart';
 import 'odds.dart';
 
@@ -248,6 +249,8 @@ class Effects {
   final Map<String, dynamic> npcMemory;
 
   /// New people entering the life: {"id", "role", "name", "circle", "bond", "ageOffset"}.
+  /// Without a name, a new friend with a local name is made (friends.dart).
+  /// "count" makes several.
   final List<Map<String, dynamic>> addNpcs;
 
   /// NPC ids whose negative memories fade and resentment drops (reconciliation).
@@ -301,6 +304,20 @@ class Effects {
       life.flags.remove(f);
     }
     for (final a in addNpcs) {
+      if (a['name'] == null) {
+        final rng = Random(life.seed * 31 + life.age * 977 + life.npcs.length);
+        for (var i = 0; i < ((a['count'] as int?) ?? 1); i++) {
+          final n = meetFriend(
+            life,
+            rng,
+            role: a['role'] ?? 'Friend',
+            bond: (a['bond'] as int?) ?? 60,
+            ageOffset: (a['ageOffset'] as int?) ?? 0,
+          );
+          notes.add('${n.name} joined your friends');
+        }
+        continue;
+      }
       if (life.npc(a['id']) != null) continue;
       final n = Npc(
         id: a['id'],

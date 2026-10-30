@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'friends.dart';
 import 'models.dart';
 import 'relationships.dart';
 import 'storylet.dart';
@@ -834,7 +835,19 @@ Storylet examScene(Life l) => Storylet(
                 .clamp(0, 100);
         life.school.testScore = score;
         life.stats.add('happiness', 2);
-        return 'Half revision, half snacks and gossip. You scored $score/100 and made two new friends.';
+        final a = meetFriend(
+          life,
+          rng,
+          role: 'Friend from study group',
+          spread: 1,
+        );
+        final b = meetFriend(
+          life,
+          rng,
+          role: 'Friend from study group',
+          spread: 1,
+        );
+        return 'Half revision, half snacks and gossip. You scored $score/100 and made two new friends: ${a.name.split(' ').first} and ${b.name.split(' ').first}.';
       },
     ),
     Choice(

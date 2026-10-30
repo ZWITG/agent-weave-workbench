@@ -162,9 +162,10 @@ void main() {
     // children and grandchildren) are checked directly too, with that
     // family built for them.
     const rare = {'foster_carer', 'collector', 'heirloom', 'grandparent'};
-    // A three-step chain (business streak, startup idea, invest) the bot
-    // finds only a few times in 500 lives; checked directly below.
-    const chains = {'startup_result'};
+    // Short-window chains the bot finds only a few times in 500 lives
+    // (startup idea then invest; teen party then caught at 16-18);
+    // checked directly below.
+    const chains = {'startup_result', 'caught_sneaking'};
     bool direct(Storylet s) =>
         chains.contains(s.id) ||
         s.minAge >= 95 ||
@@ -2362,5 +2363,33 @@ void main() {
     final before = livingCost(l);
     l.worldMods = {'prices': 15};
     expect(livingCost(l), greaterThan(before));
+  });
+
+  test('friends you make join People', () {
+    final l = engine.newLife(seed: 255)..age = 20;
+    l.stats.values['charisma'] = 100;
+    final before = l.npcs.where((n) => n.circle == 'Friends').length;
+    final make = allActions.firstWhere((a) => a.id == 'make_friend');
+    for (var i = 0; i < 3; i++) {
+      engine.runAction(l, make);
+    }
+    expect(
+      l.npcs.where((n) => n.circle == 'Friends').length,
+      greaterThan(before),
+    );
+    // A storylet can add a new, named friend without a fixed name.
+    final e = Effects(
+      addNpcs: [
+        {'role': 'Neighbour', 'count': 2},
+      ],
+    );
+    final n = l.npcs.length;
+    final notes = e.apply(l);
+    expect(l.npcs.length, n + 2);
+    expect(l.npcs.last.circle, 'Friends');
+    expect(l.npcs.last.name, contains(' '));
+    expect(notes.where((x) => x.contains('joined your friends')).length, 2);
+    // Test scores still show; only odds are hidden.
+    expect(hideOdds('You scored 72/100.'), 'You scored 72/100.');
   });
 }

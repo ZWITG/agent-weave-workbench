@@ -1916,7 +1916,13 @@
      "stats": {
       "creativity": 1,
       "karma": 1
-     }
+     },
+     "addNpcs": [
+      {
+       "role": "Friend from daycare",
+       "bond": 60
+      }
+     ]
     }
    }
   ]
@@ -3345,7 +3351,14 @@
      "stats": {
       "happiness": 4,
       "smarts": 2
-     }
+     },
+     "addNpcs": [
+      {
+       "role": "Friend from evening class",
+       "ageOffset": 15,
+       "bond": 60
+      }
+     ]
     }
    },
    {
@@ -4328,7 +4341,13 @@
     "effects": {
      "stats": {
       "happiness": 3
-     }
+     },
+     "addNpcs": [
+      {
+       "role": "Old friend",
+       "bond": 50
+      }
+     ]
     }
    },
    {

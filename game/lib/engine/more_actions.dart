@@ -7,6 +7,7 @@ import 'economy.dart';
 import 'minigame_rules.dart';
 import 'health.dart' show careCost, conditionInfo;
 import 'justice.dart' show caughtInTheAct, riskHint;
+import 'friends.dart';
 import 'models.dart';
 
 /// The expanded Activities set: the genre's Activities menu (gym, doctor,
@@ -259,15 +260,23 @@ final moreActions = <GameAction>[
     category: 'Social',
     keywords: ['friend', 'friends', 'lonely', 'meet', 'social'],
     minAge: 5,
-    run: (life, rng) => _roll(rng, 45 + life.stats['charisma'] ~/ 2)
-        ? statChange(
-            life,
-            'You clicked with someone straight away. Plans already made.',
-            {'happiness': 4, 'charisma': 2},
-          )
-        : statChange(life, 'You tried. It was awkward. Maybe next time.', {
-            'happiness': -1,
-          }),
+    run: (life, rng) {
+      if (!_roll(rng, 45 + life.stats['charisma'] ~/ 2)) {
+        return statChange(life, 'You tried. It was awkward. Maybe next time.', {
+          'happiness': -1,
+        });
+      }
+      final f = meetFriend(life, rng);
+      final r = statChange(
+        life,
+        'You clicked with ${f.name.split(' ').first} straight away. Plans already made.',
+        {'happiness': 4, 'charisma': 2},
+      );
+      return ActionResult(r.text, [
+        ...r.notes,
+        '${f.name} joined your friends',
+      ]);
+    },
   ),
   GameAction(
     id: 'skip_class',
