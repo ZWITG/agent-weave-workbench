@@ -3,8 +3,6 @@ part of 'minigames.dart';
 // More mini-games, so activities rotate between different kinds of play.
 // Each one finishes through _Done with a score from 0 to 1.
 
-const _good = Color(0xFF5EE6A8);
-
 /// A repeating game clock, cancelled with the widget.
 mixin _Ticking<T extends StatefulWidget> on State<T> {
   static const _step = Duration(milliseconds: 33);
@@ -33,7 +31,13 @@ mixin _Ticking<T extends StatefulWidget> on State<T> {
   }
 }
 
-Widget _progress(String label, double v, {Color color = _good}) => Column(
+/// A labelled bar in the activity's colours.
+Widget _progress(
+  BuildContext context,
+  String label,
+  double v, {
+  Color? color,
+}) => Column(
   crossAxisAlignment: CrossAxisAlignment.stretch,
   children: [
     Text(label, style: NF.sora(14, color: NF.muted)),
@@ -43,8 +47,8 @@ Widget _progress(String label, double v, {Color color = _good}) => Column(
       child: LinearProgressIndicator(
         value: v.clamp(0.0, 1.0),
         minHeight: 12,
-        backgroundColor: NF.surface2,
-        color: color,
+        backgroundColor: _skinOf(context).panel,
+        color: color ?? _skinOf(context).zone,
       ),
     ),
   ],
@@ -123,17 +127,17 @@ class _SneakGameState extends State<_SneakGame> with _Ticking {
           decoration: BoxDecoration(
             color: _watching
                 ? NF.danger.withValues(alpha: 0.35)
-                : _good.withValues(alpha: 0.18),
+                : _skinOf(context).zone.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // The guard, camera or mark: bright when looking at you.
               Icon(
-                _watching
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded,
+                _skinOf(context).watcher,
                 size: 56,
+                color: _watching ? NF.text : NF.muted.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 6),
               Text(
@@ -144,7 +148,7 @@ class _SneakGameState extends State<_SneakGame> with _Ticking {
           ),
         ),
         const SizedBox(height: 24),
-        _progress('How close you are', _pos),
+        _progress(context, 'How close you are', _pos),
         const SizedBox(height: 28),
         Listener(
           onPointerDown: (_) => setState(() => _holding = true),
@@ -154,12 +158,18 @@ class _SneakGameState extends State<_SneakGame> with _Ticking {
             height: 90,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: _holding ? NF.orange : NF.surface2,
+              color: _holding
+                  ? _skinOf(context).accent
+                  : _skinOf(context).panel,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               'Hold to ${widget.button.toLowerCase()}',
-              style: NF.sora(20, weight: FontWeight.w700),
+              style: NF.sora(
+                20,
+                weight: FontWeight.w700,
+                color: _holding ? _skinOf(context).onAccent : NF.text,
+              ),
             ),
           ),
         ),
@@ -222,7 +232,12 @@ class _BalanceGameState extends State<_BalanceGame> with _Ticking {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _progress('Hold it…', elapsed / _length, color: NF.orange),
+        _progress(
+          context,
+          'Hold it…',
+          elapsed / _length,
+          color: _skinOf(context).accent,
+        ),
         const SizedBox(height: 30),
         LayoutBuilder(
           builder: (context, box) {
@@ -234,7 +249,7 @@ class _BalanceGameState extends State<_BalanceGame> with _Ticking {
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: NF.surface2,
+                        color: _skinOf(context).panel,
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
@@ -246,20 +261,25 @@ class _BalanceGameState extends State<_BalanceGame> with _Ticking {
                     bottom: 0,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: _good.withValues(alpha: 0.4),
+                        color: _skinOf(context).zone.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                   Positioned(
-                    left: (w - 24) * (_x + 1) / 2,
-                    top: 10,
-                    bottom: 10,
-                    width: 24,
+                    left: (w - 44) * (_x + 1) / 2,
+                    top: 8,
+                    bottom: 8,
+                    width: 44,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: NF.orange,
-                        borderRadius: BorderRadius.circular(12),
+                        color: _skinOf(context).accent,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        _skinOf(context).marker ?? Icons.circle,
+                        color: _skinOf(context).onAccent,
+                        size: 28,
                       ),
                     ),
                   ),
@@ -273,7 +293,7 @@ class _BalanceGameState extends State<_BalanceGame> with _Ticking {
           children: [
             Expanded(
               child: FilledButton(
-                style: primaryButton(),
+                style: _skinOf(context).button(),
                 onPressed: () => _nudge(-1),
                 child: const Icon(Icons.chevron_left_rounded, size: 36),
               ),
@@ -281,7 +301,7 @@ class _BalanceGameState extends State<_BalanceGame> with _Ticking {
             const SizedBox(width: 16),
             Expanded(
               child: FilledButton(
-                style: primaryButton(),
+                style: _skinOf(context).button(),
                 onPressed: () => _nudge(1),
                 child: const Icon(Icons.chevron_right_rounded, size: 36),
               ),
@@ -370,7 +390,7 @@ class _BreathGameState extends State<_BreathGame> with _Ticking {
                 height: 260 * _target,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: _good, width: 4),
+                  border: Border.all(color: _skinOf(context).zone, width: 4),
                 ),
               ),
               Container(
@@ -378,7 +398,7 @@ class _BreathGameState extends State<_BreathGame> with _Ticking {
                 height: 260 * _r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: NF.blue.withValues(alpha: 0.5),
+                  color: _skinOf(context).accent.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -393,12 +413,18 @@ class _BreathGameState extends State<_BreathGame> with _Ticking {
             height: 80,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: _holding ? NF.blue : NF.surface2,
+              color: _holding
+                  ? _skinOf(context).accent
+                  : _skinOf(context).panel,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               _holding ? 'Let go at the ring' : 'Hold to breathe in',
-              style: NF.sora(18, weight: FontWeight.w700),
+              style: NF.sora(
+                18,
+                weight: FontWeight.w700,
+                color: _holding ? _skinOf(context).onAccent : NF.text,
+              ),
             ),
           ),
         ),
@@ -486,23 +512,11 @@ class _BlackjackGameState extends State<_BlackjackGame> {
       Wrap(
         spacing: 6,
         children: [
-          for (final c in h)
-            Container(
-              width: 48,
-              height: 68,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF7F3EC),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                c == 1 ? 'A' : '$c',
-                style: NF.sora(
-                  22,
-                  weight: FontWeight.w700,
-                  color: const Color(0xFF16213A),
-                ),
-              ),
+          for (var i = 0; i < h.length; i++)
+            _PlayingCard(
+              rank: h[i] == 1 ? 'A' : '${h[i]}',
+              suit: (h[i] * 7 + i + who.length) % 4,
+              width: 54,
             ),
         ],
       ),
@@ -532,7 +546,7 @@ class _BlackjackGameState extends State<_BlackjackGame> {
         const SizedBox(height: 16),
         if (_over)
           FilledButton(
-            style: primaryButton(),
+            style: _skinOf(context).button(),
             onPressed: _next,
             child: Text(_hand == 2 ? 'See result' : 'Next hand'),
           )
@@ -541,13 +555,13 @@ class _BlackjackGameState extends State<_BlackjackGame> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FilledButton(
-                style: orangeButton(),
+                style: _skinOf(context).button(),
                 onPressed: _hit,
                 child: const Text('Hit'),
               ),
               const SizedBox(width: 12),
               FilledButton(
-                style: primaryButton(),
+                style: _skinOf(context).button(),
                 onPressed: _stand,
                 child: const Text('Stand'),
               ),
@@ -629,7 +643,12 @@ class _LanesGameState extends State<_LanesGame> with _Ticking {
     }
     return Column(
       children: [
-        _progress('Hits $_hits of 3', elapsed / _length, color: NF.orange),
+        _progress(
+          context,
+          'Hits $_hits of 3',
+          elapsed / _length,
+          color: _skinOf(context).accent,
+        ),
         const SizedBox(height: 10),
         Expanded(
           child: LayoutBuilder(
@@ -643,10 +662,16 @@ class _LanesGameState extends State<_LanesGame> with _Ticking {
                       width: w - 8,
                       top: 0,
                       bottom: 0,
+                      // See-through lanes, so the road or the stars show.
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: NF.surface2,
+                          color: _skinOf(context).panel.withValues(alpha: 0.35),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _skinOf(context).accent
+                                .withValues(alpha: 0.25),
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -659,10 +684,10 @@ class _LanesGameState extends State<_LanesGame> with _Ticking {
                   Positioned(
                     left: w * _lane + w / 2 - 24,
                     top: h * 0.88,
-                    child: const Icon(
-                      Icons.directions_car_filled_rounded,
+                    child: Icon(
+                      _skinOf(context).player,
                       size: 48,
-                      color: NF.orange,
+                      color: _skinOf(context).accent,
                     ),
                   ),
                 ],
@@ -675,7 +700,7 @@ class _LanesGameState extends State<_LanesGame> with _Ticking {
           children: [
             Expanded(
               child: FilledButton(
-                style: primaryButton(),
+                style: _skinOf(context).button(),
                 onPressed: () => _move(-1),
                 child: const Icon(Icons.chevron_left_rounded, size: 36),
               ),
@@ -683,7 +708,7 @@ class _LanesGameState extends State<_LanesGame> with _Ticking {
             const SizedBox(width: 16),
             Expanded(
               child: FilledButton(
-                style: primaryButton(),
+                style: _skinOf(context).button(),
                 onPressed: () => _move(1),
                 child: const Icon(Icons.chevron_right_rounded, size: 36),
               ),
@@ -773,9 +798,10 @@ class _WhackGameState extends State<_WhackGame> with _Ticking {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _progress(
+          context,
           'Hit $_hit · avoid the grey ones',
           elapsed / _length,
-          color: NF.orange,
+          color: _skinOf(context).accent,
         ),
         const SizedBox(height: 18),
         Wrap(
@@ -790,7 +816,7 @@ class _WhackGameState extends State<_WhackGame> with _Ticking {
                   height: 104,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: NF.surface2,
+                    color: _skinOf(context).panel,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: switch (_up[i]) {
@@ -798,7 +824,7 @@ class _WhackGameState extends State<_WhackGame> with _Ticking {
                     (false, _) => Icon(
                       widget.target,
                       size: 56,
-                      color: NF.orange,
+                      color: _skinOf(context).accent,
                     ),
                     _ => null,
                   },
@@ -827,19 +853,13 @@ class _RhythmGame extends StatefulWidget {
 }
 
 class _RhythmGameState extends State<_RhythmGame> with _Ticking {
-  static const _colors = [
-    Color(0xFF7C9CFF),
-    Color(0xFFFFB86B),
-    Color(0xFF5EE6A8),
-    Color(0xFFFF8FC7),
-  ];
   static const _notes = 14;
   final _rng = Random();
   late final _song = List.generate(_notes, (_) => _rng.nextInt(4));
   int _beat = -1;
   double _next = 0.8;
   bool _tapped = false;
-  int _good = 0;
+  int _onBeat = 0;
   double? _score;
 
   double get _gap => max(0.42, 0.85 - _beat * 0.03) + widget.ease * 0.1;
@@ -859,7 +879,7 @@ class _RhythmGameState extends State<_RhythmGame> with _Ticking {
       _next = _gap;
       if (_beat >= _notes) {
         stopTicking();
-        _score = _good / _notes;
+        _score = _onBeat / _notes;
       }
     }
   }
@@ -868,7 +888,7 @@ class _RhythmGameState extends State<_RhythmGame> with _Ticking {
     if (_beat < 0 || _beat >= _notes || _tapped) return;
     setState(() {
       _tapped = true;
-      if (_song[_beat] == i) _good++;
+      if (_song[_beat] == i) _onBeat++;
     });
   }
 
@@ -877,7 +897,7 @@ class _RhythmGameState extends State<_RhythmGame> with _Ticking {
     if (_score != null) {
       return _Done(
         score: _score!,
-        line: '$_good of $_notes notes on the beat',
+        line: '$_onBeat of $_notes notes on the beat',
         onDone: widget.onDone,
       );
     }
@@ -901,29 +921,12 @@ class _RhythmGameState extends State<_RhythmGame> with _Ticking {
           runSpacing: 14,
           children: [
             for (var i = 0; i < 4; i++)
-              Semantics(
-                button: true,
+              _Pad(
+                index: i,
                 label: widget.names[i],
-                child: GestureDetector(
-                  onTapDown: (_) => _press(i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 80),
-                    width: 130,
-                    height: 130,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: _colors[i].withValues(alpha: lit == i ? 1 : 0.3),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: lit == i
-                          ? [BoxShadow(color: _colors[i], blurRadius: 30)]
-                          : null,
-                    ),
-                    child: Text(
-                      widget.names[i],
-                      style: NF.sora(18, weight: FontWeight.w700),
-                    ),
-                  ),
-                ),
+                lit: lit == i,
+                onTap: () => _press(i),
+                dim: 0.3,
               ),
           ],
         ),
@@ -1021,16 +1024,17 @@ class _WordsGameState extends State<_WordsGame> with _Ticking {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _progress(
+          context,
           'Word ${_i + 1} of ${_picks.length}',
           _left / _limit,
-          color: NF.orange,
+          color: _skinOf(context).accent,
         ),
         const SizedBox(height: 24),
         Container(
           height: 64,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: NF.surface2,
+            color: _skinOf(context).panel,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Text(
@@ -1053,7 +1057,7 @@ class _WordsGameState extends State<_WordsGame> with _Ticking {
                     padding: EdgeInsets.zero,
                     backgroundColor: _typed.contains(k)
                         ? NF.surface
-                        : NF.orange,
+                        : _skinOf(context).accent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -1061,7 +1065,13 @@ class _WordsGameState extends State<_WordsGame> with _Ticking {
                   onPressed: () => _tap(k),
                   child: Text(
                     _tiles[k].$2,
-                    style: NF.sora(22, weight: FontWeight.w700),
+                    style: NF.sora(
+                      22,
+                      weight: FontWeight.w700,
+                      color: _typed.contains(k)
+                          ? NF.muted
+                          : _skinOf(context).onAccent,
+                    ),
                   ),
                 ),
               ),

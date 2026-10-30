@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../engine/models.dart';
 import '../theme.dart';
-import 'widgets.dart';
 
+part 'minigame_skins.dart';
 part 'minigames_more.dart';
 
 /// Short mini-games for some activities. Each returns a score from 0 to 1,
@@ -280,7 +280,6 @@ class _MiniGameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     void finish(double s) => Navigator.of(context).pop(s);
     final instructions = intro;
-    final shooter = activity == 'video_games';
     final Widget game = switch (id) {
       'reps' => _RepsGame(
         onDone: finish,
@@ -312,13 +311,13 @@ class _MiniGameScreen extends StatelessWidget {
       'lanes' => _LanesGame(
         onDone: finish,
         ease: ease,
-        hazard: shooter ? Icons.public_rounded : Icons.change_history_rounded,
+        hazard: skinFor(activity).hazard,
       ),
       'whack' => _WhackGame(
         onDone: finish,
         ease: ease,
-        target: shooter ? Icons.android_rounded : Icons.sports_mma_rounded,
-        decoy: shooter ? Icons.person_rounded : Icons.block_rounded,
+        target: skinFor(activity).target,
+        decoy: skinFor(activity).decoy,
       ),
       'rhythm' => _RhythmGame(onDone: finish, names: theme.pads, ease: ease),
       'words' => _WordsGame(
@@ -328,56 +327,61 @@ class _MiniGameScreen extends StatelessWidget {
       ),
       _ => const SizedBox.shrink(),
     };
+    final skin = skinFor(activity);
     return Scaffold(
-      backgroundColor: NF.bg,
-      body: GlowBackground(
-        child: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          tooltip: 'Close without playing',
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.close_rounded),
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: NF.sora(20, weight: FontWeight.w700),
+      backgroundColor: skin.bottom,
+      body: _SkinScope(
+        skin: skin,
+        child: CustomPaint(
+          painter: _ScenePainter(skin),
+          child: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            tooltip: 'Close without playing',
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: const Icon(Icons.close_rounded),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      instructions,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      style: NF.sora(15, color: NF.soft, height: 1.4),
-                    ),
-                    const SizedBox(height: 16),
-                    // Every game is laid out on the same stage and scaled
-                    // down to fit small phones and large text.
-                    Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: SizedBox(width: 360, height: 480, child: game),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: NF.sora(20, weight: FontWeight.w700),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: () => finish(_skipScore),
-                      child: const Text('Skip and decide for me'),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        instructions,
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: NF.sora(15, color: NF.soft, height: 1.4),
+                      ),
+                      const SizedBox(height: 16),
+                      // Every game is laid out on the same stage and scaled
+                      // down to fit small phones and large text.
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: SizedBox(width: 360, height: 480, child: game),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () => finish(_skipScore),
+                        child: const Text('Skip and decide for me'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -399,8 +403,8 @@ class _Done extends StatelessWidget {
   Widget build(BuildContext context) {
     final pct = (score * 100).round();
     final color = score >= 0.7
-        ? const Color(0xFF5EE6A8)
-        : (score >= 0.4 ? NF.orange : NF.danger);
+        ? _skinOf(context).zone
+        : (score >= 0.4 ? _skinOf(context).accent : NF.danger);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -416,7 +420,7 @@ class _Done extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         FilledButton(
-          style: primaryButton(),
+          style: _skinOf(context).button(),
           onPressed: () => onDone(score),
           child: const Text('Continue'),
         ),
@@ -475,19 +479,20 @@ class _RepsGameState extends State<_RepsGame> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('$_taps', style: NF.sora(72, weight: FontWeight.w700)),
+        _Barbell(lift: min(1.0, _taps / widget.target)),
+        Text('$_taps', style: NF.sora(56, weight: FontWeight.w700)),
         Text(
           _t == null ? 'Tap to start' : '${_left.toStringAsFixed(1)} s left',
           style: NF.sora(15, color: NF.muted),
         ),
         const SizedBox(height: 28),
         SizedBox(
-          width: 180,
-          height: 180,
+          width: 160,
+          height: 160,
           child: FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: NF.orange,
-              foregroundColor: NF.bg,
+              backgroundColor: _skinOf(context).accent,
+              foregroundColor: _skinOf(context).onAccent,
               shape: const CircleBorder(),
             ),
             onPressed: _tap,
@@ -495,7 +500,11 @@ class _RepsGameState extends State<_RepsGame> {
               fit: BoxFit.scaleDown,
               child: Text(
                 widget.button,
-                style: NF.sora(28, weight: FontWeight.w700, color: NF.bg),
+                style: NF.sora(
+                  28,
+                  weight: FontWeight.w700,
+                  color: _skinOf(context).onAccent,
+                ),
               ),
             ),
           ),
@@ -733,10 +742,12 @@ class _QuizGameState extends State<_QuizGame> {
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(120, 60),
                     backgroundColor: _picked == null
-                        ? NF.surface2
+                        ? _skinOf(context).panel
                         : (o == a
-                              ? const Color(0xFF5EE6A8)
-                              : (o == _picked ? NF.danger : NF.surface2)),
+                              ? _skinOf(context).zone
+                              : (o == _picked
+                                    ? NF.danger
+                                    : _skinOf(context).panel)),
                     foregroundColor: _picked != null && (o == a || o == _picked)
                         ? NF.bg
                         : NF.text,
@@ -859,7 +870,7 @@ class _TimingGameState extends State<_TimingGame>
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: NF.surface2,
+                        color: _skinOf(context).panel,
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
@@ -871,25 +882,36 @@ class _TimingGameState extends State<_TimingGame>
                     bottom: 0,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF5EE6A8).withValues(alpha: 0.45),
+                        color: _skinOf(context).zone.withValues(alpha: 0.45),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                   AnimatedBuilder(
                     animation: _c,
-                    builder: (_, _) => Positioned(
-                      left: (w - 8) * _c.value,
-                      top: 0,
-                      bottom: 0,
-                      width: 8,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: NF.orange,
-                          borderRadius: BorderRadius.circular(4),
+                    // The marker carries the activity's icon (a bag, a
+                    // wallet, a pose) when it has one.
+                    builder: (_, _) {
+                      final k = _skinOf(context);
+                      final mw = k.marker == null ? 8.0 : 40.0;
+                      return Positioned(
+                        left: (w - mw) * _c.value,
+                        top: 0,
+                        bottom: 0,
+                        width: mw,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: k.accent,
+                            borderRadius: BorderRadius.circular(
+                              k.marker == null ? 4 : 12,
+                            ),
+                          ),
+                          child: k.marker == null
+                              ? null
+                              : Icon(k.marker, color: k.onAccent, size: 26),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -898,7 +920,7 @@ class _TimingGameState extends State<_TimingGame>
         ),
         const SizedBox(height: 32),
         FilledButton(
-          style: orangeButton(),
+          style: _skinOf(context).button(),
           onPressed: _stop,
           child: Text(widget.button),
         ),
@@ -969,22 +991,10 @@ class _CardsGameState extends State<_CardsGame> {
           style: NF.sora(14, color: NF.muted),
         ),
         const SizedBox(height: 14),
-        Container(
+        _PlayingCard(
+          rank: _name(_card),
+          suit: (_card + _round) % 4,
           width: 120,
-          height: 170,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF7F3EC),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Text(
-            _name(_card),
-            style: NF.sora(
-              52,
-              weight: FontWeight.w700,
-              color: const Color(0xFF16213A),
-            ),
-          ),
         ),
         const SizedBox(height: 12),
         Text(_msg, style: NF.sora(14, color: NF.soft)),
@@ -993,13 +1003,13 @@ class _CardsGameState extends State<_CardsGame> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FilledButton(
-              style: primaryButton(),
+              style: _skinOf(context).button(),
               onPressed: () => _guess(false),
               child: const Text('Lower'),
             ),
             const SizedBox(width: 12),
             FilledButton(
-              style: orangeButton(),
+              style: _skinOf(context).button(),
               onPressed: () => _guess(true),
               child: const Text('Higher'),
             ),
@@ -1114,11 +1124,37 @@ class _ReactionGameState extends State<_ReactionGame> {
         onDone: widget.onDone,
       );
     }
+    final k = _skinOf(context);
+    final arcade = k.scene == 'arcade';
     final (color, text) = switch (_light) {
-      'green' => (const Color(0xFF2E9E6A), widget.go),
+      'green' => (arcade ? k.zone : const Color(0xFF2E9E6A), widget.go),
       'amber' => (const Color(0xFFB8860B), 'Not yet…'),
-      'wait' => (NF.surface2, _line),
-      _ => (const Color(0xFF8A2E3A), widget.wait),
+      'wait' => (k.panel, _line),
+      _ => (arcade ? k.panel : const Color(0xFF8A2E3A), widget.wait),
+    };
+    // Driving: a real traffic light. The arcade: a target in the sights.
+    final Widget face = switch (k.scene) {
+      'road' => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _TrafficLight(light: _light),
+          const SizedBox(height: 12),
+          Text(text, style: NF.sora(30, weight: FontWeight.w700)),
+        ],
+      ),
+      'arcade' => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _light == 'green' ? k.target : Icons.gps_not_fixed_rounded,
+            size: 120,
+            color: _light == 'green' ? k.onAccent : k.zone,
+          ),
+          const SizedBox(height: 12),
+          Text(text, style: NF.sora(34, weight: FontWeight.w700)),
+        ],
+      ),
+      _ => Text(text, style: NF.sora(40, weight: FontWeight.w700)),
     };
     return Column(
       children: [
@@ -1136,17 +1172,14 @@ class _ReactionGameState extends State<_ReactionGame> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 100),
                 decoration: BoxDecoration(
-                  color: color,
+                  color: k.scene == 'road' ? Colors.transparent : color,
                   borderRadius: BorderRadius.circular(28),
+                  boxShadow: arcade && _light == 'green'
+                      ? [BoxShadow(color: k.zone, blurRadius: 40)]
+                      : null,
                 ),
                 alignment: Alignment.center,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    text,
-                    style: NF.sora(40, weight: FontWeight.w700),
-                  ),
-                ),
+                child: FittedBox(fit: BoxFit.scaleDown, child: face),
               ),
             ),
           ),
@@ -1176,12 +1209,6 @@ class _MemoryGame extends StatefulWidget {
 }
 
 class _MemoryGameState extends State<_MemoryGame> {
-  static const _colors = [
-    Color(0xFF7C9CFF),
-    Color(0xFFFFB86B),
-    Color(0xFF5EE6A8),
-    Color(0xFFFF8FC7),
-  ];
   // Simon-style: start with three steps and add one each round, up to
   // seven. The score is how far you got.
   static const _start = 3, _top = 7;
@@ -1259,29 +1286,11 @@ class _MemoryGameState extends State<_MemoryGame> {
           runSpacing: 14,
           children: [
             for (var i = 0; i < 4; i++)
-              Semantics(
-                button: true,
+              _Pad(
+                index: i,
                 label: widget.names[i],
-                child: GestureDetector(
-                  onTap: () => _press(i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 120),
-                    width: 130,
-                    height: 130,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: _colors[i].withValues(alpha: _lit == i ? 1 : 0.35),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: _lit == i
-                          ? [BoxShadow(color: _colors[i], blurRadius: 30)]
-                          : null,
-                    ),
-                    child: Text(
-                      widget.names[i],
-                      style: NF.sora(18, weight: FontWeight.w700),
-                    ),
-                  ),
-                ),
+                lit: _lit == i,
+                onTap: () => _press(i),
               ),
           ],
         ),
