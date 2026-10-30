@@ -2239,4 +2239,31 @@ void main() {
     engine.runAction(l, lie);
     expect(l.cases.isEmpty || (l.cases.last['evidence'] as int) < ev, isTrue);
   });
+
+  test('a stolen car can be sold to a chop shop or kept', () {
+    final l = engine.newLife(seed: 251)..age = 25;
+    l.assets.removeWhere((a) => a.kind == 'car');
+    final cash = l.money;
+    finishCrime(l, crimeById('car_theft'), Random(1), 0, 100);
+    expect(l.money, cash); // nothing paid until you choose
+    var scene = engine.nextScene(l)!;
+    expect(scene.id, 'scene:crime_car');
+    final ev = l.cases.last['evidence'] as int;
+    engine.choose(l, scene, scene.choices[1]); // keep it
+    final car = l.assets.singleWhere((a) => a.info['stolen'] == true);
+    expect(car.kind, 'car');
+    expect(car.name, startsWith('Stolen'));
+    expect(l.cases.last['evidence'] as int, greaterThan(ev));
+    // Selling the next one pays instead.
+    finishCrime(l, crimeById('car_theft'), Random(2), 0, 100);
+    scene = engine.nextScene(l)!;
+    engine.choose(l, scene, scene.choices.first);
+    expect(l.money, greaterThan(cash));
+    // A car theft conviction takes the stolen car back.
+    expect(
+      convict(l, crimeById('car_theft'), 0, 'fine'),
+      contains('stolen car'),
+    );
+    expect(l.assets.any((a) => a.info['stolen'] == true), isFalse);
+  });
 }

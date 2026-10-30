@@ -335,13 +335,75 @@ String finishCrime(Life l, Crime c, Random rng, int odds, int gainPct) {
       ? 0
       : c.gainMin + rng.nextInt(c.gainMax - c.gainMin + 1);
   final gain = base * gainPct * (100 + skill) ~/ 10000;
-  l.money += gain;
   l.notoriety += c.band == 'minor' ? 0 : 2;
   _setSkill(l, skill + 4);
   final ev = (c.evidence + rng.nextInt(15) - 5 - skill ~/ 10).clamp(5, 95);
   l.cases.add({'crime': c.id, 'age': l.age, 'evidence': ev});
+  if (c.id == 'car_theft' && gain > 0) {
+    l.sceneQueue.insert(0, 'crime_car:$gain');
+    return 'You got the car away clean. You left evidence behind: $ev/100. Street skill is now ${skillName(crimeSkill(l)).toLowerCase()}.';
+  }
+  l.money += gain;
   final text = c.done.replaceAll('{gain}', _m(gain));
   return '$text${gain > 0 ? ' (Money +${_m(gain)}.)' : ''} You left evidence behind: $ev/100. Street skill is now ${skillName(crimeSkill(l)).toLowerCase()}.';
+}
+
+/// A stolen car: sell it to a chop shop or keep it with swapped plates.
+/// A kept car is more evidence, and a car theft conviction takes it away.
+Storylet? stolenCarScene(List<String> args, Life l) {
+  final gain = int.tryParse(args.firstOrNull ?? '') ?? 0;
+  if (gain <= 0 || l.prison != null) return null;
+  final c = crimeById('car_theft');
+  final name = gain < 4000
+      ? 'Stolen hatchback'
+      : gain < 12000
+      ? 'Stolen SUV'
+      : 'Stolen sports car';
+  final cars = l.assets.where((a) => a.kind == 'car').length;
+  return _scene(
+    'crime_car',
+    'The car is yours for now. What do you do with it?',
+    [
+      Choice(
+        label: 'Sell it to a chop shop',
+        outcome: '',
+        risk: 'Money +${_m(gain)} today',
+        run: (l, rng) {
+          l.money += gain;
+          return '${c.done.replaceAll('{gain}', _m(gain))} (Money +${_m(gain)}.)';
+        },
+      ),
+      Choice(
+        label: 'Keep it',
+        outcome: '',
+        risk: 'Swap the plates · more evidence · seized if you are convicted',
+        lock: (_) => cars >= 2 ? 'You already have two cars' : null,
+        run: (l, rng) {
+          l.flags['owns_car'] = Memory(l.age, 'keeping a stolen car');
+          l.assets.add(
+            Asset(
+              id: 'stolen${l.age}_${l.assets.length}',
+              kind: 'car',
+              name: name,
+              value: gain,
+              yearlyCost: 600 + gain ~/ 10,
+              since: l.age,
+              condition: 60 + rng.nextInt(31),
+              info: {'dep': 15, 'stolen': true},
+            ),
+          );
+          for (final k in l.cases.reversed) {
+            if (k['crime'] == 'car_theft' && k['age'] == l.age) {
+              k['evidence'] = min(95, (k['evidence'] as int) + 12);
+              break;
+            }
+          }
+          l.stats.add('happiness', 3);
+          return 'New plates, a respray in a friend\'s garage and a story about an auction. The ${name.substring(7)} is yours now. Evidence +12.';
+        },
+      ),
+    ],
+  );
 }
 
 final crimeJobActions = <GameAction>[
@@ -373,5 +435,6 @@ Storylet? crimeJobScene(String id, List<String> args, Life l) => switch (id) {
   'crime_plan' => planScene(args, l),
   'crime_go' => goScene(args, l),
   'crime_twist' => twistScene(args, l),
+  'crime_car' => stolenCarScene(args, l),
   _ => null,
 };

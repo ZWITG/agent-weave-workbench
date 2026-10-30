@@ -495,9 +495,16 @@ String convict(Life l, Crime c, int years, String how) {
     'your conviction for ${c.label.toLowerCase()}',
   );
   _clearMods(l);
-  if (years == 0) return '';
+  final seized = c.id == 'car_theft' &&
+      l.assets.any((a) => a.info['stolen'] == true);
+  if (seized) {
+    l.assets.removeWhere((a) => a.info['stolen'] == true);
+    if (!l.has('car')) l.flags.remove('owns_car');
+  }
+  final lost = seized ? ' Police took back the stolen car.' : '';
+  if (years == 0) return lost;
   enterPrison(l, c, years);
-  return ' ${youth ? 'Youth detention' : 'Prison'}: $years ${years == 1 ? 'year' : 'years'}${violated ? ' (including time for breaking parole)' : ''}.';
+  return '$lost ${youth ? 'Youth detention' : 'Prison'}: $years ${years == 1 ? 'year' : 'years'}${violated ? ' (including time for breaking parole)' : ''}.';
 }
 
 void enterPrison(Life l, Crime c, int years) {
