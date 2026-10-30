@@ -98,6 +98,7 @@ class _HubScreenState extends State<HubScreen> {
             controller: c,
             onActivities: () => _openSearch(context),
             onSearch: () => _openSearch(context, focusSearch: true),
+            docked: wide,
           ),
         ],
       ),
@@ -390,8 +391,12 @@ class _BottomBar extends StatelessWidget {
     required this.controller,
     required this.onSearch,
     required this.onActivities,
+    this.docked = false,
   });
   final GameController controller;
+
+  /// Activities are already open beside the game (desktop).
+  final bool docked;
   final VoidCallback onSearch;
   final VoidCallback onActivities;
 
@@ -412,54 +417,55 @@ class _BottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Semantics(
-              button: true,
-              label: 'Open activities',
-              excludeSemantics: true,
-              child: InkWell(
-                onTap: onActivities,
-                borderRadius: BorderRadius.circular(999),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 6,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: NF.borderStrong,
-                          borderRadius: BorderRadius.circular(999),
+            if (!docked)
+              Semantics(
+                button: true,
+                label: 'Open activities',
+                excludeSemantics: true,
+                child: InkWell(
+                  onTap: onActivities,
+                  borderRadius: BorderRadius.circular(999),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: NF.borderStrong,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.keyboard_arrow_up_rounded,
-                            size: 18,
-                            color: NF.muted,
-                          ),
-                          const SizedBox(width: 2),
-                          Flexible(
-                            child: Text(
-                              'Swipe up for activities',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: NF.sora(12, color: NF.muted),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.keyboard_arrow_up_rounded,
+                              size: 18,
+                              color: NF.muted,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 2),
+                            Flexible(
+                              child: Text(
+                                'Swipe up for activities',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: NF.sora(12, color: NF.muted),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
             const SizedBox(height: 6),
             Row(
               // Left-hand layout mirrors the Age +1 / search cluster.
