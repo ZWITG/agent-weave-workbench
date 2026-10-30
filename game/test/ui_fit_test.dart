@@ -232,23 +232,96 @@ void main() {
         home: const Scaffold(),
       ),
     );
+    // Every game an activity rotates through, with its own instructions.
     for (final a in games) {
-      showMiniGame(
-        key.currentContext!,
-        a.miniGame!,
-        age: 20,
-        title: a.label,
-        activity: a.id,
-      );
-      await t.pump(const Duration(milliseconds: 400));
-      await t.pump(const Duration(milliseconds: 400));
-      expect(find.text(miniThemes[a.id]!.intro), findsOneWidget, reason: a.id);
-      key.currentState!.pop();
-      await t.pump(const Duration(milliseconds: 400));
-      await t.pump(const Duration(seconds: 3));
+      final pool = miniPools[a.id] ?? [a.miniGame!];
+      expect(pool.length, greaterThanOrEqualTo(2), reason: a.id);
+      for (final g in pool) {
+        showMiniGame(
+          key.currentContext!,
+          a.miniGame!,
+          age: 20,
+          title: a.label,
+          activity: a.id,
+          game: g,
+        );
+        await t.pump(const Duration(milliseconds: 400));
+        await t.pump(const Duration(milliseconds: 400));
+        await t.pump(const Duration(seconds: 2));
+        expect(
+          find.text(miniIntro(a.id, g)),
+          findsOneWidget,
+          reason: '${a.id} / $g',
+        );
+        key.currentState!.pop();
+        await t.pump(const Duration(milliseconds: 400));
+        await t.pump(const Duration(seconds: 3));
+      }
+    }
+    // The same activity never offers the same game twice in a row.
+    for (final id in miniPools.keys) {
+      var last = pickMiniGame(id, '');
+      for (var i = 0; i < 10; i++) {
+        final g = pickMiniGame(id, '');
+        expect(g, isNot(last), reason: id);
+        last = g;
+      }
     }
     FlutterError.onError = old;
     expect(problems, isEmpty, reason: problems.join('\n'));
+  });
+
+  testWidgets('timed mini-games run to a score; blackjack plays out', (
+    t,
+  ) async {
+    final key = GlobalKey<NavigatorState>();
+    await t.pumpWidget(MaterialApp(navigatorKey: key, home: const Scaffold()));
+    for (final (activity, g) in [
+      ('reflect', 'balance'),
+      ('driving_lessons', 'lanes'),
+      ('video_games', 'whack'),
+      ('instrument', 'rhythm'),
+      ('study', 'words'),
+    ]) {
+      double? score = -1;
+      showMiniGame(
+        key.currentContext!,
+        'reps',
+        age: 20,
+        title: g,
+        activity: activity,
+        game: g,
+      ).then((v) => score = v);
+      // Words gives 14 seconds a word if nobody plays.
+      for (var i = 0; i < 200; i++) {
+        await t.pump(const Duration(milliseconds: 250));
+      }
+      expect(find.text('Continue'), findsOneWidget, reason: g);
+      await t.tap(find.text('Continue'));
+      await t.pumpAndSettle();
+      expect(score, inInclusiveRange(0, 1), reason: g);
+    }
+    double? score = -1;
+    showMiniGame(
+      key.currentContext!,
+      'cards',
+      age: 20,
+      title: 'Casino',
+      activity: 'casino',
+      game: 'blackjack',
+    ).then((v) => score = v);
+    await t.pumpAndSettle();
+    for (var hand = 0; hand < 3; hand++) {
+      if (find.text('Stand').evaluate().isNotEmpty) {
+        await t.tap(find.text('Stand'));
+        await t.pump();
+      }
+      await t.tap(find.textContaining(hand == 2 ? 'See result' : 'Next hand'));
+      await t.pump();
+    }
+    await t.tap(find.text('Continue'));
+    await t.pumpAndSettle();
+    expect(score, inInclusiveRange(0, 1));
   });
 
   testWidgets('desktop: side tabs, the game and Activities side by side', (

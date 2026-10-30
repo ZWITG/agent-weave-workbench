@@ -7,6 +7,8 @@ import '../engine/models.dart';
 import '../theme.dart';
 import 'widgets.dart';
 
+part 'minigames_more.dart';
+
 /// Short mini-games for some activities. Each returns a score from 0 to 1,
 /// or null if the player closes it. "Skip" always resolves at 0.6, so
 /// nobody is penalised for not playing (plan: accessible by default).
@@ -19,7 +21,9 @@ Future<double?> showMiniGame(
   required String title,
   String? activity,
   Life? life,
+  String? game,
 }) {
+  id = game ?? pickMiniGame(activity, id);
   final theme = miniThemes[activity] ?? _defaults[id]!;
   final stat = life == null ? 50 : life.stats[theme.stat];
   final ease = ((stat - 50) / 100).clamp(-0.5, 0.5).toDouble();
@@ -32,10 +36,129 @@ Future<double?> showMiniGame(
         title: title,
         theme: theme,
         ease: ease,
+        intro: miniIntro(activity, id),
+        activity: activity,
       ),
     ),
   );
 }
+
+/// The games each activity rotates between, so the same activity is not
+/// always the same game.
+const miniPools = <String, List<String>>{
+  'study': ['quiz', 'words'],
+  'gym': ['reps', 'whack'],
+  'shoplift': ['sneak', 'timing'],
+  'pickpocket': ['sneak', 'timing'],
+  'reflect': ['breath', 'balance'],
+  'yoga': ['balance', 'breath', 'timing'],
+  'casino': ['blackjack', 'cards'],
+  'instrument': ['rhythm', 'memory'],
+  'write_story': ['words', 'memory'],
+  'video_games': ['whack', 'lanes', 'reaction'],
+  'driving_lessons': ['lanes', 'reaction'],
+};
+
+final _lastGame = <String, String>{};
+final _pickRng = Random();
+
+/// A game for [activity], never the one played there last time.
+String pickMiniGame(String? activity, String fallback) {
+  final pool = miniPools[activity];
+  if (activity == null || pool == null || pool.isEmpty) return fallback;
+  final options = pool.where((g) => g != _lastGame[activity]).toList();
+  final g = options[_pickRng.nextInt(options.length)];
+  _lastGame[activity] = g;
+  return g;
+}
+
+/// Instructions for one game, worded for the activity.
+String miniIntro(String? activity, String game) =>
+    _intros[activity]?[game] ??
+    (activity != null && miniPools[activity]?.first == game
+        ? miniThemes[activity]?.intro
+        : null) ??
+    _defaults[game]!.intro;
+
+const _intros = <String, Map<String, String>>{
+  'study': {
+    'words':
+        'Unscramble three words from today\'s lessons before time runs out.',
+  },
+  'gym': {'whack': 'Hit the pads as they light up. Leave the grey ones alone.'},
+  'shoplift': {
+    'sneak': 'Hold to edge closer, but only while the guard looks away.',
+    'timing': 'The guard keeps glancing over. Grab it while the marker is in the blind spot. Three tries, each faster.',
+  },
+  'pickpocket': {
+    'sneak': 'Hold to get closer while they are distracted. Freeze when they look round.',
+    'timing': 'Wait for the crowd to jostle. Lift the wallet while the marker is in the green. Three tries, each faster.',
+  },
+  'reflect': {
+    'breath': 'Hold to breathe in. Let go when your breath reaches the ring. Three breaths.',
+    'balance':
+        'Keep your thoughts centred: nudge the marker back into the calm zone.',
+  },
+  'yoga': {
+    'balance': 'Hold the pose: nudge left and right to stay in the steady zone for 8 seconds.',
+    'breath': 'Breathe with the pose. Hold to breathe in, let go at the ring.',
+    'timing': 'Find your balance: tap while the marker is in the steady zone. Three poses, each harder.',
+  },
+  'casino': {
+    'blackjack': 'Blackjack: three hands against the dealer. Get closer to 21 without going over.',
+    'cards': 'Higher or lower: five cards. A streak pays best.',
+  },
+  'instrument': {
+    'rhythm': 'Play along: tap each pad as it lights up, on the beat. The song speeds up.',
+    'memory':
+        'Listen to the melody, then play it back. Each round adds a note.',
+  },
+  'write_story': {
+    'words': 'Unscramble three words for your story before the ink dries.',
+    'memory': 'Remember the plot beats, then write them in order. Each round adds a beat.',
+  },
+  'video_games': {
+    'whack': 'Enemies pop up: tap them fast. Do not shoot your teammates (the grey ones).',
+    'lanes': 'Dodge the asteroids: move left and right for 12 seconds.',
+    'reaction': 'Final boss, three rounds. Fire the moment the target lights up, not on the fake-outs.',
+  },
+  'driving_lessons': {
+    'lanes': 'Stay in your lane, then change lanes to miss the cones. Three hits and you fail.',
+    'reaction': 'The light is red. Brake the moment it turns green. Three junctions, and watch for amber.',
+  },
+};
+
+/// Words for the unscramble game, by activity.
+const _wordLists = <String, List<String>>{
+  'study': [
+    'atom',
+    'verb',
+    'graph',
+    'planet',
+    'fraction',
+    'history',
+    'energy',
+    'climate',
+    'equation',
+    'poem',
+    'magnet',
+    'theory',
+  ],
+  'write_story': [
+    'hero',
+    'secret',
+    'twist',
+    'villain',
+    'castle',
+    'letter',
+    'storm',
+    'ending',
+    'mystery',
+    'journey',
+    'promise',
+    'shadow',
+  ],
+};
 
 const _skipScore = 0.6;
 
@@ -71,6 +194,14 @@ final _defaults = <String, MiniTheme>{
     stat: 'athleticism',
   ),
   'memory': _t('Watch the pattern, then play it back.', stat: 'creativity'),
+  'sneak': _t('Hold to move, but only while nobody is looking.'),
+  'balance': _t('Nudge left and right to keep the marker in the middle.'),
+  'breath': _t('Hold to breathe in, let go at the ring.'),
+  'blackjack': _t('Blackjack: get closer to 21 than the dealer.'),
+  'lanes': _t('Move left and right to dodge what comes at you.'),
+  'whack': _t('Tap the targets as they pop up. Not the grey ones.'),
+  'rhythm': _t('Tap each pad as it lights up, on the beat.'),
+  'words': _t('Unscramble the words before time runs out.'),
 };
 
 /// Themes by activity id.
@@ -132,11 +263,15 @@ class _MiniGameScreen extends StatelessWidget {
     required this.title,
     required this.theme,
     required this.ease,
+    required this.intro,
+    this.activity,
   });
   final String id;
   final int age;
   final String title;
   final MiniTheme theme;
+  final String intro;
+  final String? activity;
 
   /// −0.5 (the stat is far below average) to 0.5 (far above).
   final double ease;
@@ -144,7 +279,8 @@ class _MiniGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void finish(double s) => Navigator.of(context).pop(s);
-    final instructions = theme.intro;
+    final instructions = intro;
+    final shooter = activity == 'video_games';
     final Widget game = switch (id) {
       'reps' => _RepsGame(
         onDone: finish,
@@ -168,6 +304,27 @@ class _MiniGameScreen extends StatelessWidget {
         onDone: finish,
         names: theme.pads,
         stepMs: (500 + ease * 200).round(),
+      ),
+      'sneak' => _SneakGame(onDone: finish, button: theme.button, ease: ease),
+      'balance' => _BalanceGame(onDone: finish, ease: ease),
+      'breath' => _BreathGame(onDone: finish, ease: ease),
+      'blackjack' => _BlackjackGame(onDone: finish),
+      'lanes' => _LanesGame(
+        onDone: finish,
+        ease: ease,
+        hazard: shooter ? Icons.public_rounded : Icons.change_history_rounded,
+      ),
+      'whack' => _WhackGame(
+        onDone: finish,
+        ease: ease,
+        target: shooter ? Icons.android_rounded : Icons.sports_mma_rounded,
+        decoy: shooter ? Icons.person_rounded : Icons.block_rounded,
+      ),
+      'rhythm' => _RhythmGame(onDone: finish, names: theme.pads, ease: ease),
+      'words' => _WordsGame(
+        onDone: finish,
+        words: _wordLists[activity] ?? _wordLists['study']!,
+        ease: ease,
       ),
       _ => const SizedBox.shrink(),
     };
@@ -400,7 +557,85 @@ class _QuizGameState extends State<_QuizGame> {
       ['Asia', 'Europe', 'South America'],
     ),
     ('What do bees make?', 'Honey', ['Silk', 'Wax only', 'Milk']),
+    ('How many legs does a spider have?', '8', ['6', '10', '12']),
+    ('What is the capital of Japan?', 'Tokyo', ['Kyoto', 'Osaka', 'Seoul']),
+    ('Which is a mammal?', 'Dolphin', ['Shark', 'Trout', 'Octopus']),
+    ('What is 3 squared?', '9', ['6', '8', '12']),
+    (
+      'Which colour do blue and yellow make?',
+      'Green',
+      ['Purple', 'Orange', 'Brown'],
+    ),
+    ('How many minutes are in two hours?', '120', ['100', '90', '140']),
+    ('What is the opposite of "ancient"?', 'Modern', ['Old', 'Huge', 'Rare']),
+    (
+      'Which planet has rings you can see?',
+      'Saturn',
+      ['Mars', 'Mercury', 'Venus'],
+    ),
+    ('What is a baby frog called?', 'Tadpole', ['Cub', 'Kid', 'Fry']),
+    (
+      'Who painted the Mona Lisa?',
+      'Leonardo da Vinci',
+      ['Picasso', 'Van Gogh', 'Monet'],
+    ),
+    ('How many continents are there?', '7', ['5', '6', '8']),
+    (
+      'What is the hardest natural material?',
+      'Diamond',
+      ['Gold', 'Iron', 'Granite'],
+    ),
+    (
+      'What is the longest river in Africa?',
+      'The Nile',
+      ['The Congo', 'The Niger', 'The Zambezi'],
+    ),
+    (
+      'What do you call a shape with 8 sides?',
+      'Octagon',
+      ['Hexagon', 'Pentagon', 'Decagon'],
+    ),
+    ('What is 1/4 as a percentage?', '25%', ['20%', '40%', '75%']),
+    (
+      'Which gas do we breathe out?',
+      'Carbon dioxide',
+      ['Oxygen', 'Hydrogen', 'Neon'],
+    ),
+    (
+      'Which bone protects the brain?',
+      'The skull',
+      ['The spine', 'The ribs', 'The pelvis'],
+    ),
+    (
+      'What is the freezing point of water?',
+      '0 °C',
+      ['10 °C', '−10 °C', '4 °C'],
+    ),
+    ('Which is the smallest prime number?', '2', ['1', '3', '5']),
+    (
+      'Who developed the theory of relativity?',
+      'Einstein',
+      ['Newton', 'Darwin', 'Curie'],
+    ),
+    ('What is the plural of "mouse"?', 'Mice', ['Mouses', 'Meese', 'Mousen']),
+    (
+      'In which country are the pyramids of Giza?',
+      'Egypt',
+      ['Mexico', 'Peru', 'Greece'],
+    ),
+    ('What is 7 × 8?', '56', ['54', '48', '64']),
+    ('Which instrument has 88 keys?', 'Piano', ['Organ', 'Harp', 'Accordion']),
+    (
+      'What does a thermometer measure?',
+      'Temperature',
+      ['Weight', 'Speed', 'Pressure'],
+    ),
+    ('How many days are in a leap year?', '366', ['365', '364', '360']),
+    ('What is the largest planet?', 'Jupiter', ['Saturn', 'Neptune', 'Earth']),
   ];
+
+  /// Facts already asked this session, so quizzes do not repeat.
+  static final _asked = <int>{};
 
   late final List<(String, String, List<String>)> _qs = [
     for (var i = 0; i < 3; i++)
@@ -414,11 +649,13 @@ class _QuizGameState extends State<_QuizGame> {
   String? _picked;
 
   (String, String, List<String>) _fact() {
+    if (_asked.length >= _facts.length - 3) _asked.clear();
     var k = _rng.nextInt(_facts.length);
-    while (_used.contains(k)) {
+    while (_used.contains(k) || _asked.contains(k)) {
       k = (k + 1) % _facts.length;
     }
     _used.add(k);
+    _asked.add(k);
     final (q, a, wrong) = _facts[k];
     return (q, a, [a, ...wrong]..shuffle(_rng));
   }
@@ -547,14 +784,21 @@ class _TimingGame extends StatefulWidget {
 
 class _TimingGameState extends State<_TimingGame>
     with SingleTickerProviderStateMixin {
+  // Three rounds: each one faster, with a narrower window in a new place.
+  static const _rounds = 3;
+  final _rng = Random();
   late final AnimationController _c = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1100),
   )..repeat(reverse: true);
-  late final double _zone = widget.zone;
-  late final double _zoneStart =
-      0.1 + Random().nextDouble() * (0.85 - widget.zone);
-  double? _stoppedAt;
+  int _round = 0;
+  int _hits = 0;
+  bool _paused = false;
+  String _msg = '';
+  late double _zone = widget.zone;
+  late double _zoneStart = _place();
+
+  double _place() => 0.05 + _rng.nextDouble() * (0.9 - _zone);
 
   @override
   void dispose() {
@@ -563,25 +807,48 @@ class _TimingGameState extends State<_TimingGame>
   }
 
   void _stop() {
-    if (_stoppedAt != null) return;
+    if (_paused || _round >= _rounds) return;
     _c.stop();
-    setState(() => _stoppedAt = _c.value);
+    final v = _c.value;
+    final hit = v >= _zoneStart && v <= _zoneStart + _zone;
+    setState(() {
+      if (hit) _hits++;
+      _msg = hit ? 'In the window!' : 'Missed.';
+      _paused = true;
+    });
+    Future.delayed(const Duration(milliseconds: 650), () {
+      if (!mounted) return;
+      setState(() {
+        _round++;
+        _paused = false;
+        if (_round >= _rounds) return;
+        _zone = max(0.07, _zone * 0.75);
+        _zoneStart = _place();
+        _c.duration = Duration(milliseconds: 1100 - _round * 250);
+        _c.repeat(reverse: true);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_stoppedAt != null) {
-      final hit =
-          _stoppedAt! >= _zoneStart && _stoppedAt! <= _zoneStart + _zone;
+    if (_round >= _rounds) {
       return _Done(
-        score: hit ? 1 : 0,
-        line: hit ? 'Perfect timing.' : 'Missed the window.',
+        score: _hits / _rounds,
+        line: _hits == _rounds
+            ? 'Perfect timing, every time.'
+            : '$_hits of $_rounds in the window',
         onDone: widget.onDone,
       );
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Text(
+          'Try ${_round + 1} of $_rounds${_msg.isEmpty ? '' : ' · $_msg'}',
+          style: NF.sora(14, color: NF.muted),
+        ),
+        const SizedBox(height: 14),
         LayoutBuilder(
           builder: (context, box) {
             final w = box.maxWidth;
@@ -652,8 +919,11 @@ class _CardsGame extends StatefulWidget {
 class _CardsGameState extends State<_CardsGame> {
   final _rng = Random();
   late int _card = 2 + _rng.nextInt(11);
+  static const _rounds = 5;
   int _round = 0;
   int _wins = 0;
+  int _streak = 0;
+  int _best = 0;
   String _msg = '';
 
   static String _name(int v) => switch (v) {
@@ -668,7 +938,12 @@ class _CardsGameState extends State<_CardsGame> {
     final next = 1 + _rng.nextInt(13);
     final win = next == _card || (higher ? next > _card : next < _card);
     setState(() {
-      if (win) _wins++;
+      if (win) {
+        _wins++;
+        _best = max(_best, ++_streak);
+      } else {
+        _streak = 0;
+      }
       _msg =
           '${_name(next)}: ${win ? 'you win the round' : 'you lose the round'}';
       _card = next;
@@ -678,17 +953,21 @@ class _CardsGameState extends State<_CardsGame> {
 
   @override
   Widget build(BuildContext context) {
-    if (_round >= 3) {
+    if (_round >= _rounds) {
+      // A run of wins pays a little extra.
       return _Done(
-        score: _wins / 3,
-        line: '$_wins of 3 rounds won',
+        score: ((_wins + (_best >= 3 ? 1 : 0)) / _rounds).clamp(0.0, 1.0),
+        line: '$_wins of $_rounds right · best streak $_best',
         onDone: widget.onDone,
       );
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Round ${_round + 1} of 3', style: NF.sora(14, color: NF.muted)),
+        Text(
+          'Card ${_round + 1} of $_rounds${_streak >= 2 ? ' · streak $_streak' : ''}',
+          style: NF.sora(14, color: NF.muted),
+        ),
         const SizedBox(height: 14),
         Container(
           width: 120,
@@ -751,21 +1030,47 @@ class _ReactionGame extends StatefulWidget {
 }
 
 class _ReactionGameState extends State<_ReactionGame> {
-  bool _green = false;
+  // Three rounds; sometimes the light flashes amber first. Tapping on amber
+  // or red counts as a false start.
+  static const _rounds = 3;
+  final _rng = Random();
+  String _light = 'red';
   DateTime? _greenAt;
   Timer? _t;
-  double? _score;
+  int _round = 0;
+  final _scores = <double>[];
   String _line = '';
 
   @override
   void initState() {
     super.initState();
-    _t = Timer(Duration(milliseconds: 1200 + Random().nextInt(1800)), () {
+    _arm();
+  }
+
+  void _arm() {
+    _light = 'red';
+    final wait = 1000 + _rng.nextInt(1800);
+    final fake = _round > 0 && _rng.nextInt(100) < 50;
+    _t = Timer(Duration(milliseconds: fake ? wait ~/ 2 : wait), () {
       if (!mounted) return;
-      setState(() {
-        _green = true;
-        _greenAt = DateTime.now();
-      });
+      if (fake) {
+        setState(() => _light = 'amber');
+        _t = Timer(Duration(milliseconds: 500 + _rng.nextInt(500)), () {
+          if (!mounted) return;
+          setState(() => _light = 'red');
+          _t = Timer(Duration(milliseconds: 600 + _rng.nextInt(900)), _go);
+        });
+      } else {
+        _go();
+      }
+    });
+  }
+
+  void _go() {
+    if (!mounted) return;
+    setState(() {
+      _light = 'green';
+      _greenAt = DateTime.now();
     });
   }
 
@@ -776,48 +1081,77 @@ class _ReactionGameState extends State<_ReactionGame> {
   }
 
   void _tap() {
-    if (_score != null) return;
+    if (_round >= _rounds || _light == 'wait') return;
     _t?.cancel();
-    if (!_green) {
-      setState(() {
-        _score = 0;
-        _line = 'Too soon! Wait for it.';
-      });
-      return;
+    double s;
+    if (_light != 'green') {
+      s = 0;
+      _line = 'False start!';
+    } else {
+      final ms = DateTime.now().difference(_greenAt!).inMilliseconds;
+      s = ((900 + widget.bonusMs - ms) / 600).clamp(0.0, 1.0);
+      _line = '$ms ms';
     }
-    final ms = DateTime.now().difference(_greenAt!).inMilliseconds;
     setState(() {
-      _score = ((900 + widget.bonusMs - ms) / 600).clamp(0.0, 1.0);
-      _line = '$ms ms reaction';
+      _scores.add(s);
+      _light = 'wait';
+    });
+    Future.delayed(const Duration(milliseconds: 700), () {
+      if (!mounted) return;
+      setState(() {
+        _round++;
+        if (_round < _rounds) _arm();
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_score != null) {
-      return _Done(score: _score!, line: _line, onDone: widget.onDone);
+    if (_round >= _rounds) {
+      return _Done(
+        score: _scores.reduce((a, b) => a + b) / _rounds,
+        line: 'Three rounds · last: $_line',
+        onDone: widget.onDone,
+      );
     }
-    return GestureDetector(
-      onTap: _tap,
-      child: Semantics(
-        button: true,
-        label: _green ? '${widget.go} Tap now' : '${widget.wait} Wait',
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          decoration: BoxDecoration(
-            color: _green ? const Color(0xFF2E9E6A) : const Color(0xFF8A2E3A),
-            borderRadius: BorderRadius.circular(28),
-          ),
-          alignment: Alignment.center,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              _green ? widget.go : widget.wait,
-              style: NF.sora(40, weight: FontWeight.w700),
+    final (color, text) = switch (_light) {
+      'green' => (const Color(0xFF2E9E6A), widget.go),
+      'amber' => (const Color(0xFFB8860B), 'Not yet…'),
+      'wait' => (NF.surface2, _line),
+      _ => (const Color(0xFF8A2E3A), widget.wait),
+    };
+    return Column(
+      children: [
+        Text(
+          'Round ${_round + 1} of $_rounds',
+          style: NF.sora(14, color: NF.muted),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: GestureDetector(
+            onTapDown: (_) => _tap(),
+            child: Semantics(
+              button: true,
+              label: _light == 'green' ? '${widget.go} Tap now' : 'Wait',
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                alignment: Alignment.center,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    text,
+                    style: NF.sora(40, weight: FontWeight.w700),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -848,10 +1182,15 @@ class _MemoryGameState extends State<_MemoryGame> {
     Color(0xFF5EE6A8),
     Color(0xFFFF8FC7),
   ];
-  final _seq = List.generate(4, (_) => Random().nextInt(4));
+  // Simon-style: start with three steps and add one each round, up to
+  // seven. The score is how far you got.
+  static const _start = 3, _top = 7;
+  final _rng = Random();
+  late final _seq = List.generate(_start, (_) => _rng.nextInt(4));
   int? _lit;
   bool _showing = true;
   int _pos = 0;
+  int _cleared = 0;
   double? _score;
 
   @override
@@ -861,27 +1200,37 @@ class _MemoryGameState extends State<_MemoryGame> {
   }
 
   Future<void> _play() async {
+    setState(() => _showing = true);
     await Future.delayed(const Duration(milliseconds: 600));
-    for (final s in _seq) {
+    // Later rounds play a little faster.
+    final step = max(260, widget.stepMs - _cleared * 50);
+    for (final s in List.of(_seq)) {
       if (!mounted) return;
       setState(() => _lit = s);
-      await Future.delayed(Duration(milliseconds: widget.stepMs));
+      await Future.delayed(Duration(milliseconds: step));
       if (!mounted) return;
       setState(() => _lit = null);
-      await Future.delayed(const Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 180));
     }
     if (mounted) setState(() => _showing = false);
   }
 
   void _press(int i) {
     if (_showing || _score != null) return;
-    if (_seq[_pos] == i) {
-      _pos++;
-      if (_pos == _seq.length) setState(() => _score = 1);
-      setState(() {});
-    } else {
-      setState(() => _score = _pos / _seq.length);
+    if (_seq[_pos] != i) {
+      setState(() => _score = _cleared / (_top - _start + 1));
+      return;
     }
+    setState(() => _pos++);
+    if (_pos < _seq.length) return;
+    _cleared++;
+    if (_seq.length >= _top) {
+      setState(() => _score = 1);
+      return;
+    }
+    _pos = 0;
+    _seq.add(_rng.nextInt(4));
+    _play();
   }
 
   @override
@@ -889,7 +1238,9 @@ class _MemoryGameState extends State<_MemoryGame> {
     if (_score != null) {
       return _Done(
         score: _score!,
-        line: '$_pos of 4 in the right order',
+        line: _score == 1
+            ? 'All the way to seven. Flawless.'
+            : 'Remembered $_cleared round${_cleared == 1 ? '' : 's'} (longest ${_cleared == 0 ? 0 : _start + _cleared - 1})',
         onDone: widget.onDone,
       );
     }
@@ -897,7 +1248,9 @@ class _MemoryGameState extends State<_MemoryGame> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          _showing ? 'Watch…' : 'Your turn: ${_pos + 1} of 4',
+          _showing
+              ? 'Watch… (${_seq.length} steps)'
+              : 'Your turn: ${_pos + 1} of ${_seq.length}',
           style: NF.sora(16, color: NF.soft),
         ),
         const SizedBox(height: 20),
