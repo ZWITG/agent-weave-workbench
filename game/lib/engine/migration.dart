@@ -6,6 +6,7 @@ import 'jobs.dart' show leaveJob;
 import 'justice.dart' show convictions;
 import 'models.dart';
 import 'storylet.dart';
+import 'underworld.dart' show leaveCrewForMove;
 import 'world_data.dart';
 
 // Moving abroad without a visa: three ways across, life without papers
@@ -76,6 +77,8 @@ String? migrateLock(Life l, String route) {
 
 void _arrive(Life l, CountryData c, String from) {
   if (l.job != null) leaveJob(l);
+  final crewLine = leaveCrewForMove(l);
+  if (crewLine != null) l.feed.add(FeedEntry(l.age, crewLine, kind: 'nudge'));
   l.assets.removeWhere((a) => a.kind == 'rental');
   l.marks
     ..removeWhere(
@@ -159,6 +162,7 @@ String deport(Life l) {
   final home = countryNamed(origin ?? l.country);
   final from = l.country;
   if (l.job != null) leaveJob(l, fired: true);
+  leaveCrewForMove(l);
   l.assets.removeWhere((a) => a.kind == 'rental');
   l.marks.removeWhere(
     (m) =>

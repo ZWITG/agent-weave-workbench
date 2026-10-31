@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'careers.dart' show studying;
 import 'currency.dart' show currencyLabel;
+import 'underworld.dart' show leaveCrewForMove;
 import 'health.dart' show exposeTo;
 import 'jobs.dart' show leaveJob;
 import 'justice.dart' show caughtInTheAct, convictions, hasSeriousRecord;
@@ -131,6 +132,8 @@ String emigrateTo(Life l, String to, Random rng) {
   final from = l.country;
   final hadJob = l.job;
   if (l.job != null) leaveJob(l);
+  final crewLine = leaveCrewForMove(l);
+  if (crewLine != null) l.feed.add(FeedEntry(l.age, crewLine, kind: 'nudge'));
   l.assets.removeWhere((a) => a.kind == 'rental');
   l.country = c.name;
   l.city = c.cities[rng.nextInt(c.cities.length)];

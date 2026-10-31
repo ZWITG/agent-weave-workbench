@@ -167,7 +167,10 @@ int insurancePremium(Life l) {
 /// What a treatment that lists at [base] dollars costs you here.
 int careCost(Life l, int base) {
   if (l.age < 18) return 0;
-  final system = healthSystem(l);
+  // Without papers there is no public healthcare: you pay as you go.
+  final system = l.marks.contains('undocumented')
+      ? 'out of pocket'
+      : healthSystem(l);
   if (system == 'universal') return (base * 0.05 / 10).round() * 10;
   final local = system == 'out of pocket' ? base * 0.35 : base.toDouble();
   final covers = insurancePlans[l.insurance]?.covers ?? 0;

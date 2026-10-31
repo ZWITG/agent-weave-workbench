@@ -115,6 +115,15 @@ double crewCut(Life l) => const [0.5, 0.4, 0.3, 0.2, 0.0][crewRank(l)];
 int streetRep(Life l) =>
     (crimeSkill(l) + l.notoriety * 2 + convictions(l) * 8).clamp(0, 100);
 
+/// Moving to another country ends your crew life; returns a feed line
+/// (or null when you were not in a crew).
+String? leaveCrewForMove(Life l) {
+  final crew = crewOf(l);
+  if (crew == null) return null;
+  _leaveCrew(l);
+  return 'Moving abroad ended your time with ${crew.name}. Nobody threw a party.';
+}
+
 void _leaveCrew(Life l) {
   final name = crewOf(l)?.name;
   l.crew
@@ -394,6 +403,13 @@ List<String> crewYear(Life l, Random rng) {
   final feed = <String>[];
   dirtyMoneyYear(l, rng);
   final crew = crewOf(l);
+  if (crew == null &&
+      l.prison == null &&
+      l.businesses.isNotEmpty &&
+      !l.sceneQueue.contains('biz_racket') &&
+      _roll(rng, 6)) {
+    l.sceneQueue.add('biz_racket');
+  }
   if (crew == null || l.prison != null) return feed;
   final rank = crewRank(l);
   // Rackets: lieutenants and up earn from the crew's business.
@@ -831,6 +847,52 @@ Storylet? underworldScene(String id, List<String> args, Life l) {
           Choice(
             label: 'Stay',
             outcome: 'You decided you are in this for life.',
+          ),
+        ],
+      );
+    case 'biz_racket':
+      if (l.businesses.isEmpty || inCrew(l)) return null;
+      final b = l.businesses.first;
+      final c = crewList[Random(l.seed + l.age).nextInt(crewList.length)];
+      final fee = max(2000, l.valueOfBusiness(b) ~/ 20);
+      return _scene(
+        id,
+        'Two men from ${c.name} walk into ${b.name} and admire the windows. "Nice place. Be a shame if something happened to it. ${_m(fee)} a year keeps it safe."',
+        [
+          Choice(
+            label: 'Pay them (${_m(fee)})',
+            outcome: '',
+            needsMoney: fee,
+            run: (l, rng) {
+              l.money -= fee;
+              return 'You paid. They come by every year now, polite and terrifying.';
+            },
+          ),
+          Choice(
+            label: 'Refuse',
+            outcome: '',
+            risk: 'They may make an example of you',
+            run: (l, rng) {
+              if (_roll(rng, 50)) {
+                b.quality = max(5, b.quality - 15);
+                b.satisfaction = max(0, b.satisfaction - 10);
+                l.money -= fee;
+                return 'A brick through the window, then a small fire in the bins. The repairs cost ${_m(fee)} and customers stayed away.';
+              }
+              return 'They shrugged and left. You check the windows every night now.';
+            },
+          ),
+          Choice(
+            label: 'Go to the police',
+            outcome: '',
+            run: (l, rng) {
+              l.stats.add('karma', 2);
+              if (_roll(rng, 30)) {
+                l.stats.add('health', -15);
+                return 'The police made arrests. A week later someone was waiting for you in the car park.';
+              }
+              return 'Detectives took your statement and the crew stayed away. For now.';
+            },
           ),
         ],
       );

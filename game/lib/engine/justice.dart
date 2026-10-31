@@ -6,6 +6,7 @@ import 'prison_life.dart';
 import 'actions.dart';
 import 'jobs.dart' show leaveJob;
 import 'love.dart' show partnerOf, recircle;
+import 'underworld.dart' show crewOf, crewRank, informant;
 import 'models.dart';
 import 'storylet.dart';
 import 'world_data.dart';
@@ -664,6 +665,21 @@ String convict(Life l, Crime c, int years, String how) {
     'youth': youth,
     'sealed': false,
   });
+  // A conviction is front-page news for anyone famous.
+  if (l.fame >= 10) {
+    l.image = (l.image - (c.violent ? 25 : 12)).clamp(-100, 100);
+    l.fame = (l.fame + 3).clamp(0, 100);
+    for (final k in l.followers.keys.toList()) {
+      l.followers[k] = (l.followers[k]! * 0.85).round();
+    }
+    l.feed.add(
+      FeedEntry(
+        l.age,
+        'Your conviction made the front pages. Sponsors went quiet and some followers unfollowed.',
+        kind: 'news',
+      ),
+    );
+  }
   l.flags['convicted'] = Memory(
     l.age,
     'your conviction for ${c.label.toLowerCase()}',
@@ -729,6 +745,25 @@ void enterPrison(Life l, Crime c, int years) {
   );
   l.flags['prison'] = Memory(l.age, 'going to prison');
   l.stats.add('happiness', -12);
+  // Your crew looks after its own inside, and word travels about informants.
+  final crew = crewOf(l);
+  if (crew != null) {
+    final p = l.prison!;
+    p.respect = min(100, p.respect + 10 + crewRank(l) * 5);
+    if (informant(l) && rng.nextInt(100) < 25) {
+      p.snitch = true;
+      p.respect = max(0, p.respect - 30);
+    }
+    l.feed.add(
+      FeedEntry(
+        l.age,
+        p.snitch
+            ? 'Word got inside before you did: people know you talked to the police.'
+            : 'Inmates who know ${crew.name} nodded at you in the yard. The crew looks after its own.',
+        kind: 'nudge',
+      ),
+    );
+  }
   l.feed.add(
     FeedEntry(
       l.age,

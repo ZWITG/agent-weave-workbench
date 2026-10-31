@@ -129,3 +129,11 @@ Named updates since the game was created (26 October 2026). Newest last.
 - Life without papers: only cash-in-hand jobs at lower pay, no bank loans, and immigration checks where you can run, claim asylum or go home.
 - A criminal conviction means deportation; a deportation on file makes future visas harder.
 - Get legal: apply for papers (strong through marriage, fair after years of work) or wait for an amnesty after five years.
+
+## 2.13 "Joined Up" (31 Oct)
+- No papers, no free public healthcare; the mortgage refusal now says why.
+- Famous people's convictions hit their image and followers.
+- Your crew looks after you in prison (and word gets out about informants); moving abroad or being deported ends your crew membership.
+- Funerals while you are in prison: ask for day release, write a letter, or grieve alone.
+- Businesses slip while their owner is in prison; crews can lean on business owners for protection money.
+- The big-news pop-up now catches deportations, amnesties, asylum, crew promotions, billionaire news and grandchildren.

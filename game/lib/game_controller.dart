@@ -549,7 +549,9 @@ final _bigWords = RegExp(
   r'fired|laid off|diagnos|divorc|born|pregnan|inherit|evict|bankrupt|'
   r'warrant|recaptur|solitary|burgl|stolen|flood|fire|crash|accident|'
   r'cancer|heart attack|engaged|married|broke up|left you|it is over|'
-  r'promot|lottery|lawsuit|sued)',
+  r'promot|lottery|lawsuit|sued|deport|amnesty|asylum|legal status|'
+  r'billionaire|richest|rich list|Lieutenant|Underboss|Boss of|informant|'
+  r'grandchild|grandparent|will is read|estate)',
   caseSensitive: false,
 );
 

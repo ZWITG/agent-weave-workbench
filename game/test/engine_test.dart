@@ -3463,4 +3463,51 @@ void main() {
     expect(undocumented(l), isFalse);
     expect(visaOdds(l, 'Canada').$1, lessThan(before));
   });
+
+  test('systems are linked: papers, fame, crews, prison and business', () {
+    // Without papers: no free public healthcare, and a clear mortgage reason.
+    final u = engine.newLife(seed: 1201, countryName: 'United Kingdom')
+      ..age = 30;
+    final free = careCost(u, 1000);
+    u.marks.add('undocumented');
+    expect(careCost(u, 1000), greaterThan(free));
+    u.money = 50000;
+    u.salary = 30000;
+    u.job = 'Cook';
+    expect(buyLock(u, 200000), contains('papers'));
+    // A famous person's conviction costs image and followers.
+    final f = engine.newLife(seed: 1202)..age = 30;
+    f.fame = 50;
+    f.image = 40;
+    f.followers['vybe'] = 1000000;
+    convict(f, crimeById('fraud'), 0, 'a fine');
+    expect(f.image, lessThan(40));
+    expect(f.followers['vybe'], lessThan(1000000));
+    // Crews look after members inside, and end when you move abroad.
+    final c = engine.newLife(seed: 1203)..age = 30;
+    c.crew.addAll({'id': 'harbour', 'rank': 2, 'respect': 10, 'loyalty': 60});
+    enterPrison(c, crimeById('smuggling'), 3);
+    expect(c.prison!.respect, greaterThan(30));
+    c.prison = null;
+    c.money = 10000;
+    emigrateTo(c, 'Canada', Random(1));
+    if (c.country == 'Canada') expect(inCrew(c), isFalse);
+    // A funeral from prison offers prison choices.
+    final p = engine.newLife(seed: 1204)..age = 40;
+    p.prison = Prison(crime: 'fraud', years: 4, since: 39);
+    final mum = p.npc('mother')!..alive = false;
+    final scene = buildScene('loss:${mum.id}', p)!;
+    expect(scene.choices.first.label, contains('day release'));
+    // Businesses suffer with the owner inside; crews lean on owners.
+    final b = engine.newLife(seed: 1205)..age = 35;
+    b.businesses.add(
+      Business(name: 'Test Café', industry: 'cafe', tier: 'mid', since: 30)
+        ..quality = 60,
+    );
+    b.prison = Prison(crime: 'fraud', years: 2, since: 35);
+    businessYear(b, Random(1), b.businesses.first);
+    expect(b.businesses.first.reasons.first, 'The owner is in prison');
+    b.prison = null;
+    expect(buildScene('biz_racket', b), isNotNull);
+  });
 }

@@ -224,6 +224,9 @@ String? buyLock(Life l, int price) {
   if (l.salary <= 0 && l.pension <= 0 && l.business == null) {
     return 'A mortgage needs an income';
   }
+  if (l.marks.contains('undocumented')) {
+    return 'No bank will give a mortgage without papers';
+  }
   if (loansBlocked(l)) return 'No mortgage for 7 years after bankruptcy';
   if (creditOf(l) < 580) return 'Needs Fair credit (580+) for a mortgage';
   if (homeOf(l) != null &&

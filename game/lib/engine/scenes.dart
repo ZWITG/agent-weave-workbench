@@ -93,6 +93,7 @@ Storylet? buildScene(String id, Life life) {
     'crew_found_out' ||
     'crew_coup' ||
     'crew_leave' ||
+    'biz_racket' ||
     'unexplained_wealth' => underworldScene(
       parts.first,
       parts.sublist(1),

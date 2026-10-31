@@ -240,6 +240,51 @@ Storylet? lifeEventScene(String id, List<String> args, Life l) {
           return custom?.call(l, rng) ?? text;
         },
       );
+      // From a cell, the choices are different.
+      if (l.prison != null) {
+        final p = l.prison!;
+        return _scene(
+          'loss',
+          'A guard brings the news: $who has died. The funeral is on Friday, and you are inside.',
+          [
+            Choice(
+              label: 'Ask for a supervised day release',
+              outcome: '',
+              risk: 'Good behaviour helps',
+              run: (l, rng) {
+                l.flags['funeral:${n.id}'] = Memory(
+                  l.age,
+                  'saying goodbye to $who',
+                );
+                if (rng.nextInt(100) < p.behaviour) {
+                  for (final f in family) {
+                    f.addFacets(affection: 4);
+                  }
+                  easeAftermath(l);
+                  return 'Two officers drove you there and stood at the back. You said goodbye in handcuffs, and your family hugged you anyway.';
+                }
+                l.stats.add('happiness', -5);
+                return 'Request denied. You spent Friday staring at the wall at the time the service started.';
+              },
+            ),
+            Choice(
+              label: 'Write a letter to be read at the service',
+              outcome: '',
+              run: (l, rng) {
+                for (final f in family) {
+                  f.addFacets(affection: 3);
+                }
+                easeAftermath(l);
+                return '${family.isEmpty ? 'A friend' : _first(family.first)} read it out. People told you afterwards that the whole room went quiet.';
+              },
+            ),
+            Choice(
+              label: 'Grieve alone',
+              outcome: 'You told nobody inside. That night you did not sleep.',
+            ),
+          ],
+        );
+      }
       return _scene(
         'loss',
         'The funeral for $who is on Friday. ${family.isEmpty ? 'It falls to you to decide how to say goodbye.' : 'The family is looking to you.'}',

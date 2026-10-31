@@ -971,6 +971,12 @@ int businessYear(Life l, Random rng, [Business? which]) {
       (35, 'Premium prices without premium quality'),
   ]..sort((a, b) => b.$1.compareTo(a.$1));
   b.reasons = [for (final r in reasons.take(3)) r.$2];
+  // Run from a prison cell, a business drifts.
+  if (l.prison != null) {
+    b.quality = max(5, b.quality - 6);
+    b.morale = max(0, b.morale - 8);
+    b.reasons = ['The owner is in prison', ...b.reasons.take(2)];
+  }
   b.boost = 0; // festivals, contracts and the like last one year
   maybeTradeEvent(l, b, rng);
   // The year changes the business too.
