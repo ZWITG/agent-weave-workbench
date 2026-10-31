@@ -61,7 +61,7 @@ Future<bool> showUpdatePrompt(BuildContext context, UpdateInfo u) async {
     builder: (ctx) => AlertDialog(
       backgroundColor: NF.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      icon: const Icon(Icons.system_update_rounded, color: NF.blue, size: 34),
+      icon: Icon(Icons.system_update_rounded, color: NF.blue, size: 34),
       title: Text(
         'A new version is ready',
         style: NF.sora(19, weight: FontWeight.w700),
@@ -177,7 +177,7 @@ class _VersionCardState extends State<VersionCard> {
       color: NF.surface,
       borderRadius: BorderRadius.circular(16),
       child: ListTile(
-        leading: const Icon(Icons.system_update_rounded, color: NF.blue),
+        leading: Icon(Icons.system_update_rounded, color: NF.blue),
         title: Text(
           'Relivable $appVersion',
           style: NF.sora(15, weight: FontWeight.w600),

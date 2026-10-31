@@ -175,7 +175,7 @@ class MarketList extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.candlestick_chart_rounded, color: NF.blue),
+              Icon(Icons.candlestick_chart_rounded, color: NF.blue),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -448,7 +448,7 @@ class BusinessCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.storefront_rounded, color: NF.orange),
+              Icon(Icons.storefront_rounded, color: NF.orange),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(

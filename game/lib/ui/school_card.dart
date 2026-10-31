@@ -28,7 +28,7 @@ class SchoolCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.school_rounded, color: NF.orange, size: 20),
+              Icon(Icons.school_rounded, color: NF.orange, size: 20),
               const SizedBox(width: 8),
               Text(
                 inSchool(life)
@@ -140,7 +140,7 @@ class SchoolCard extends StatelessWidget {
                         ),
                       ),
                       Text('${t.bond}%', style: NF.sora(13, color: NF.soft)),
-                      const Icon(Icons.chevron_right_rounded, color: NF.muted),
+                      Icon(Icons.chevron_right_rounded, color: NF.muted),
                     ],
                   ),
                 ),

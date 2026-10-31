@@ -57,7 +57,7 @@ class RecapScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.local_florist_rounded,
                           color: NF.orange,
                           size: 28,
@@ -181,10 +181,7 @@ class RecapScreen extends StatelessWidget {
                             style: NF.sora(15, color: NF.soft),
                           ),
                         const SizedBox(height: 16),
-                        const SectionLabel(
-                          'Moments that mattered',
-                          color: NF.blue,
-                        ),
+                        SectionLabel('Moments that mattered', color: NF.blue),
                         const SizedBox(height: 8),
                         if (memories.isEmpty)
                           Text(
@@ -210,7 +207,7 @@ class RecapScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.public_rounded,
                               color: NF.blue,
                               size: 20,
@@ -300,7 +297,7 @@ class RecapScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.local_florist_rounded, color: NF.orange, size: 20),
+            Icon(Icons.local_florist_rounded, color: NF.orange, size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -348,7 +345,7 @@ class RecapScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.account_tree_rounded, color: NF.blue, size: 20),
+            Icon(Icons.account_tree_rounded, color: NF.blue, size: 20),
             const SizedBox(width: 8),
             Text(
               'The ${life.surname} dynasty',

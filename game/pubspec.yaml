@@ -28,3 +28,11 @@ flutter:
     - family: Sora
       fonts:
         - asset: assets/fonts/Sora-Variable.ttf
+    - family: Caveat
+      fonts:
+        - asset: assets/fonts/Caveat-Bold.ttf
+          weight: 700
+    - family: StardosStencil
+      fonts:
+        - asset: assets/fonts/StardosStencil-Bold.ttf
+          weight: 700

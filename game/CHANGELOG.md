@@ -143,3 +143,8 @@ Named updates since the game was created (26 October 2026). Newest last.
 - The world reaches the newer systems: amnesties give papers; crackdowns make crossings and checks riskier; policing raises suspicion of dirty money; crew rackets follow the economy; tourists fill cafés; a pandemic empties restaurants, cancels tours and favours apps; market frenzies boost insider trading and crypto.
 - An infamous family name gets you noticed by crews.
 - Your biggest moves go into the world's history and your family's reputation: billionaires, the super-rich, foundations, space flights, crime bosses, secret witnesses, business empires, local music stars and deportations.
+
+## 2.15 "Yard Time" (31 Oct)
+- The whole game changes look while you are in prison: institutional green with chalk-mint accents, and back to Night Feed the day you are released.
+- Decals: a chain-link fence along the top, a padlock on the year, a chalk tally card ("2 years down, 3 to go") with your release year, parole countdown and a stencilled block tag, a chalk sun, a barbed-wire divider, and stencil stamps on prison stories (YARD, VISIT, LETTER, COURSE, WORK, FIGHT, GANG, PAROLE, SOLITARY).
+- Prison values replace outside ones: Behaviour and Respect instead of Smarts and Looks, your stash instead of your bank balance, your prison job and prison instead of job and city, and "Serve a year" instead of Age +1.

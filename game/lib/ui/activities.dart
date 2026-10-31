@@ -362,7 +362,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.bolt_rounded, size: 16, color: NF.blue),
+                  Icon(Icons.bolt_rounded, size: 16, color: NF.blue),
                   const SizedBox(width: 4),
                   Text(
                     '${life.energy}/10',
@@ -386,12 +386,12 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
     decoration: InputDecoration(
       hintText: 'Search activities and people',
       hintStyle: NF.sora(14, color: NF.muted),
-      prefixIcon: const Icon(Icons.search, color: NF.muted),
+      prefixIcon: Icon(Icons.search, color: NF.muted),
       suffixIcon: _q.isEmpty
           ? null
           : IconButton(
               tooltip: 'Clear search',
-              icon: const Icon(Icons.close_rounded, color: NF.muted),
+              icon: Icon(Icons.close_rounded, color: NF.muted),
               onPressed: () => setState(() {
                 _search.clear();
                 _q = '';

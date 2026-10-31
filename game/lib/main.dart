@@ -29,6 +29,9 @@ class RelivableApp extends StatelessWidget {
 
   Widget _app() {
     final p = controller.profile;
+    // In prison the whole game wears Yard Time (theme.dart, yard_time.dart).
+    final l = controller.life;
+    NF.prison = l != null && l.alive && l.prison != null;
     return MaterialApp(
       title: 'Relivable',
       debugShowCheckedModeBanner: false,

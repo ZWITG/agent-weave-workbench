@@ -26,12 +26,12 @@ class HubSearch extends StatelessWidget {
     decoration: InputDecoration(
       hintText: hint,
       hintStyle: NF.sora(14, color: NF.muted),
-      prefixIcon: const Icon(Icons.search, color: NF.muted),
+      prefixIcon: Icon(Icons.search, color: NF.muted),
       suffixIcon: controller.text.isEmpty
           ? null
           : IconButton(
               tooltip: 'Clear search',
-              icon: const Icon(Icons.close_rounded, color: NF.muted),
+              icon: Icon(Icons.close_rounded, color: NF.muted),
               onPressed: () {
                 controller.clear();
                 onChanged('');

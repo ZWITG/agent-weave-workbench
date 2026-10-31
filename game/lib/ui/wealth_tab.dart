@@ -972,7 +972,7 @@ class _CashFlow extends StatelessWidget {
             ),
           for (final l in life.lastYear) _line(l.$1, l.$2),
           if (life.lastYear.isNotEmpty) ...[
-            const Divider(color: NF.border, height: 18),
+            Divider(color: NF.border, height: 18),
             _line('Change in cash', total, bold: true),
           ],
           _forecast(),
@@ -1414,7 +1414,7 @@ class _AssetCardState extends State<_AssetCard> {
 Widget _small(String label, VoidCallback? onTap) => OutlinedButton(
   style: OutlinedButton.styleFrom(
     foregroundColor: NF.text,
-    side: const BorderSide(color: NF.borderStrong),
+    side: BorderSide(color: NF.borderStrong),
     visualDensity: VisualDensity.compact,
   ),
   onPressed: onTap,
@@ -1535,7 +1535,7 @@ class _AmountSheetState extends State<_AmountSheet> {
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: NF.text,
-                        side: const BorderSide(color: NF.borderStrong),
+                        side: BorderSide(color: NF.borderStrong),
                       ),
                       onPressed: () =>
                           setState(() => _v = (widget.max * f).roundToDouble()),

@@ -54,7 +54,7 @@ class HelplinePanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.volunteer_activism_rounded, color: NF.blue),
+                Icon(Icons.volunteer_activism_rounded, color: NF.blue),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -93,7 +93,7 @@ class HealthScreen extends StatelessWidget {
       listenable: controller,
       builder: (context, _) {
         final life = controller.life;
-        if (life == null) return const SizedBox.shrink();
+        if (life == null) return SizedBox.shrink();
         final body = life.conditions
             .where((c) => conditionInfo[c.id]?.kind != 'mind')
             .toList();
@@ -107,7 +107,7 @@ class HealthScreen extends StatelessWidget {
             title: Text('Health', style: NF.sora(18, weight: FontWeight.w700)),
           ),
           body: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
+            padding: EdgeInsets.fromLTRB(20, 4, 20, 28),
             children: [
               const SectionLabel('Body'),
               const SizedBox(height: 10),
@@ -135,7 +135,7 @@ class HealthScreen extends StatelessWidget {
               for (final c in body.where((c) => c.known))
                 _condition(context, c),
               const SizedBox(height: 18),
-              const SectionLabel('Mind', color: NF.blue),
+              SectionLabel('Mind', color: NF.blue),
               const SizedBox(height: 10),
               // What recent big moments are still doing to you.
               for (final (kind, left, who) in activeAftermaths(life))
@@ -176,7 +176,7 @@ class HealthScreen extends StatelessWidget {
                 ),
               const HelplinePanel(),
               const SizedBox(height: 18),
-              const SectionLabel('Care', color: NF.orange),
+              SectionLabel('Care', color: NF.orange),
               const SizedBox(height: 10),
               NFCard(
                 child: Column(

@@ -10,12 +10,13 @@ class StatBar extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
-    this.color = NF.blue,
+    this._color,
   });
 
   final String label;
   final int value;
-  final Color color;
+  final Color? _color;
+  Color get color => _color ?? NF.blue;
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +85,17 @@ class Avatar extends StatelessWidget {
 }
 
 class Pill extends StatelessWidget {
-  const Pill(this.text, {super.key, this.bg = NF.orange, this.fg = NF.bg});
+  const Pill(this.text, {super.key, this._bg, this._fg});
   final String text;
-  final Color bg;
-  final Color fg;
+  final Color? _bg;
+  final Color? _fg;
+  Color get bg => _bg ?? NF.orange;
+  Color get fg => _fg ?? NF.bg;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(999),
@@ -106,9 +109,10 @@ class Pill extends StatelessWidget {
 }
 
 class SectionLabel extends StatelessWidget {
-  const SectionLabel(this.text, {super.key, this.color = NF.orange});
+  const SectionLabel(this.text, {super.key, this._color});
   final String text;
-  final Color color;
+  final Color? _color;
+  Color get color => _color ?? NF.orange;
 
   @override
   Widget build(BuildContext context) => Text(
@@ -124,11 +128,12 @@ class NFCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(18),
-    this.color = NF.surface,
+    this._color,
   });
   final Widget child;
   final EdgeInsets padding;
-  final Color color;
+  final Color? _color;
+  Color get color => _color ?? NF.surface;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -154,8 +159,8 @@ ButtonStyle primaryButton() => FilledButton.styleFrom(
 ButtonStyle secondaryButton() => OutlinedButton.styleFrom(
   backgroundColor: NF.surface2,
   foregroundColor: NF.text,
-  minimumSize: const Size(64, 56),
-  side: const BorderSide(color: NF.borderStrong),
+  minimumSize: Size(64, 56),
+  side: BorderSide(color: NF.borderStrong),
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
   textStyle: NF.sora(14, weight: FontWeight.w600),
 );
@@ -165,7 +170,7 @@ ButtonStyle orangeButton() => FilledButton.styleFrom(
   foregroundColor: NF.bg,
   disabledBackgroundColor: NF.surface2,
   disabledForegroundColor: NF.muted,
-  minimumSize: const Size(104, 52),
+  minimumSize: Size(104, 52),
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   textStyle: NF.sora(16, weight: FontWeight.w700),
 );
@@ -173,7 +178,10 @@ ButtonStyle orangeButton() => FilledButton.styleFrom(
 // ---------------- Richer visuals (Night Feed v2) ----------------
 
 /// Per-stat accent colours (distinct in lightness as well as hue) and icons.
-const statStyle = <String, (Color, IconData)>{
+final statStyle = <String, (Color, IconData)>{
+  // Prison values, shown instead of Smarts and Looks while inside.
+  'behaviour': (const Color(0xFF9FE0C1), Icons.verified_user_rounded),
+  'respect': (const Color(0xFFE3A06B), Icons.front_hand_rounded),
   'happiness': (Color(0xFFFFD166), Icons.sentiment_satisfied_alt_rounded),
   'health': (Color(0xFF5EE6A8), Icons.favorite_rounded),
   'smarts': (NF.blue, Icons.psychology_rounded),
@@ -189,21 +197,33 @@ class GlowBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const Positioned.fill(child: ColoredBox(color: NF.bg)),
+        Positioned.fill(child: ColoredBox(color: NF.bg)),
         Positioned(
           top: -140,
           left: -120,
-          child: _glow(const Color(0xFF7C9CFF), 360, 0.22),
+          child: _glow(
+            NF.prison ? const Color(0xFF4D7A69) : const Color(0xFF7C9CFF),
+            360,
+            0.22,
+          ),
         ),
         Positioned(
           top: 220,
           right: -160,
-          child: _glow(const Color(0xFFFFB86B), 320, 0.13),
+          child: _glow(
+            NF.prison ? const Color(0xFFE3CF7A) : const Color(0xFFFFB86B),
+            320,
+            NF.prison ? 0.06 : 0.13,
+          ),
         ),
         Positioned(
           bottom: -160,
           left: 40,
-          child: _glow(const Color(0xFFB57CFF), 340, 0.12),
+          child: _glow(
+            NF.prison ? const Color(0xFF2C433B) : const Color(0xFFB57CFF),
+            340,
+            0.12,
+          ),
         ),
         Positioned.fill(child: child),
       ],
@@ -372,7 +392,7 @@ class AgeRingAvatar extends StatelessWidget {
                   value: p,
                   strokeWidth: 3.5,
                   backgroundColor: NF.surface2,
-                  valueColor: const AlwaysStoppedAnimation(NF.orange),
+                  valueColor: AlwaysStoppedAnimation(NF.orange),
                 ),
               ),
             ),
@@ -382,10 +402,13 @@ class AgeRingAvatar extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF9DB4FF), Color(0xFF6A7FE8)],
+                  // In prison the avatar takes the yard's green.
+                  colors: NF.prison
+                      ? const [Color(0xFF5C8A78), Color(0xFF3E6B5B)]
+                      : const [Color(0xFF9DB4FF), Color(0xFF6A7FE8)],
                 ),
                 boxShadow: [
                   BoxShadow(

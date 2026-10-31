@@ -596,7 +596,7 @@ class _PersonSheet extends StatelessWidget {
                     ),
                   ),
                   if (lock != null)
-                    const Icon(Icons.lock_outline, size: 14, color: NF.muted),
+                    Icon(Icons.lock_outline, size: 14, color: NF.muted),
                 ],
               ),
               const SizedBox(height: 4),

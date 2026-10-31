@@ -34,7 +34,7 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
   var _hide = shareSafe;
   var _busy = false;
 
-  static const _accent = <String, Color>{
+  static final _accent = <String, Color>{
     'birth': Color(0xFF5EE6A8),
     'childhood': Color(0xFFFFD166),
     'school': NF.blue,
@@ -227,7 +227,7 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
         showCheckmark: true,
         backgroundColor: NF.surface2,
         selectedColor: NF.blue.withValues(alpha: 0.28),
-        side: const BorderSide(color: NF.border),
+        side: BorderSide(color: NF.border),
         onSelected: (v) => setState(() => _hide = next(v)),
       );
 
@@ -296,7 +296,7 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
                   const Spacer(flex: 2),
                   Row(
                     children: [
-                      const Icon(Icons.spa_rounded, size: 16, color: NF.muted),
+                      Icon(Icons.spa_rounded, size: 16, color: NF.muted),
                       const SizedBox(width: 6),
                       Text(
                         'Relivable',

@@ -43,10 +43,7 @@ class SocialScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(
-                          Icons.phone_iphone_rounded,
-                          color: NF.orange,
-                        ),
+                        Icon(Icons.phone_iphone_rounded, color: NF.orange),
                         const SizedBox(width: 8),
                         Text(
                           '${followersLabel(l.followers.values.fold(0, (a, b) => a + b))} followers',
@@ -93,7 +90,7 @@ class SocialScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.star_rounded,
                               color: NF.orange,
                               size: 16,
@@ -107,10 +104,7 @@ class SocialScreen extends StatelessWidget {
                                 style: NF.sora(12, color: NF.soft),
                               ),
                             ),
-                            const Icon(
-                              Icons.chevron_right_rounded,
-                              color: NF.muted,
-                            ),
+                            Icon(Icons.chevron_right_rounded, color: NF.muted),
                           ],
                         ),
                       ),
@@ -391,7 +385,7 @@ Widget _fameCard(Life l) {
       children: [
         Row(
           children: [
-            const Icon(Icons.star_rounded, color: NF.orange),
+            Icon(Icons.star_rounded, color: NF.orange),
             const SizedBox(width: 8),
             Text('Fame ${l.fame}', style: NF.sora(18, weight: FontWeight.w700)),
             const Spacer(),

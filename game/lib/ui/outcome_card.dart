@@ -123,11 +123,7 @@ class OutcomeCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.history_rounded,
-                        size: 16,
-                        color: NF.orange,
-                      ),
+                      Icon(Icons.history_rounded, size: 16, color: NF.orange),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(e, style: NF.sora(13, color: NF.soft)),

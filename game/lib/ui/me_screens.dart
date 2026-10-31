@@ -168,7 +168,7 @@ Future<void> showRewind(BuildContext context, GameController c) async {
           children: [
             Row(
               children: [
-                const Icon(Icons.history_toggle_off_rounded, color: NF.blue),
+                Icon(Icons.history_toggle_off_rounded, color: NF.blue),
                 const SizedBox(width: 8),
                 Text('Rewind', style: NF.sora(20, weight: FontWeight.w700)),
               ],
@@ -186,7 +186,7 @@ Future<void> showRewind(BuildContext context, GameController c) async {
               for (final age in c.rewindAges)
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.replay_rounded, color: NF.blue),
+                  leading: Icon(Icons.replay_rounded, color: NF.blue),
                   title: Text(
                     'Back to age $age',
                     style: NF.sora(15, weight: FontWeight.w600),
@@ -455,7 +455,7 @@ class FamilyTree extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.account_tree_rounded, color: NF.blue, size: 20),
+              Icon(Icons.account_tree_rounded, color: NF.blue, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -532,7 +532,7 @@ class FamilyTree extends StatelessWidget {
     ),
   );
 
-  Widget _link() => const Padding(
+  Widget _link() => Padding(
     padding: EdgeInsets.only(left: 12, top: 2),
     child: SizedBox(
       height: 10,
@@ -583,7 +583,7 @@ class IdentityCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.face_rounded, color: NF.blue, size: 20),
+              Icon(Icons.face_rounded, color: NF.blue, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -799,7 +799,7 @@ class CountryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.flag_rounded, color: NF.orange, size: 20),
+              Icon(Icons.flag_rounded, color: NF.orange, size: 20),
               const SizedBox(width: 8),
               Text(l.country, style: NF.sora(15, weight: FontWeight.w700)),
               const Spacer(),

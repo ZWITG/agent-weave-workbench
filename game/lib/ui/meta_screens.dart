@@ -42,7 +42,7 @@ class GoalsScreen extends StatelessWidget {
                       NF.orange,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   Expanded(
                     child: _stat(
                       Icons.local_fire_department_rounded,
@@ -53,12 +53,12 @@ class GoalsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 'A day counts when you live at least one year. One free freeze a week covers a missed day. Sparks are earned, never sold.',
                 style: NF.sora(12, color: NF.muted),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
               const SectionLabel('Today'),
               const SizedBox(height: 10),
               for (final g in goalsFor(now))
@@ -113,7 +113,7 @@ class GoalsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              const SectionLabel('Archive (free)', color: NF.blue),
+              SectionLabel('Archive (free)', color: NF.blue),
               const SizedBox(height: 10),
               for (final w in archiveWeeks(now))
                 ListTile(

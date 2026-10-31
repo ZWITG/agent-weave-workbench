@@ -61,11 +61,11 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
         child: SafeArea(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
+              constraints: BoxConstraints(maxWidth: 480),
               child: ListView(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 children: [
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   const SectionLabel('Relivable'),
                   const SizedBox(height: 12),
                   Text(
@@ -107,7 +107,7 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SectionLabel('How hard?', color: NF.blue),
+                        SectionLabel('How hard?', color: NF.blue),
                         const SizedBox(height: 10),
                         PickList<String>(
                           label: 'Difficulty',
@@ -146,7 +146,7 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SectionLabel('Or build a life', color: NF.blue),
+                        SectionLabel('Or build a life', color: NF.blue),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _name,
@@ -262,7 +262,7 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SectionLabel('Have a seed code?', color: NF.blue),
+                        SectionLabel('Have a seed code?', color: NF.blue),
                         const SizedBox(height: 10),
                         TextField(
                           controller: _seed,

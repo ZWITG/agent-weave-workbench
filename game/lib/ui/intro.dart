@@ -242,7 +242,7 @@ class _IntroSplashState extends State<IntroSplash>
                     child: Container(
                       width: 26,
                       height: 26,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: NF.orange,
                         shape: BoxShape.circle,
                       ),

@@ -232,7 +232,7 @@ class _ShopScreenState extends State<ShopScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.local_offer_rounded, color: NF.orange),
+                Icon(Icons.local_offer_rounded, color: NF.orange),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(

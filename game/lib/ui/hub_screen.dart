@@ -24,6 +24,7 @@ import 'update_prompt.dart';
 import 'wealth_tab.dart';
 import 'people.dart';
 import 'widgets.dart';
+import 'yard_time.dart';
 
 /// The web version running on an iPhone or iPad.
 bool get _iosWeb => kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
@@ -92,6 +93,7 @@ class _HubScreenState extends State<HubScreen> {
       constraints: BoxConstraints(maxWidth: wide ? 720 : 560),
       child: Column(
         children: [
+          if (NF.prison) const FenceStrip(),
           _Header(
             life: life,
             // Tapping your money opens the Wealth tab.
@@ -213,7 +215,7 @@ class _HubScreenState extends State<HubScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.emoji_events_rounded, color: NF.orange),
+                  Icon(Icons.emoji_events_rounded, color: NF.orange),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -300,16 +302,21 @@ class _Header extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Age ${life.age} · ${life.job ?? life.stage}',
+                  life.prison != null
+                      ? 'Age ${life.age} · ${life.prison!.job ?? (life.prison!.youth ? 'Youth detention' : 'Inmate')}'
+                      : 'Age ${life.age} · ${life.job ?? life.stage}',
                   style: NF.sora(13, color: NF.soft),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  '${life.city}, ${life.country}',
+                  life.prison != null
+                      ? '${life.city} Prison · ${life.prison!.security} security'
+                      : '${life.city}, ${life.country}',
                   style: NF.sora(12, color: NF.muted),
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (life.prison != null)
+                // Outside the Yard Time look (e.g. a test), still say so.
+                if (life.prison != null && !NF.prison)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
@@ -350,7 +357,31 @@ class _Header extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Pill('${life.year}'),
+              if (life.prison != null)
+                Container(
+                  padding: const EdgeInsets.fromLTRB(8, 6, 12, 6),
+                  decoration: BoxDecoration(
+                    color: NF.orange,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.lock_rounded, size: 13, color: NF.bg),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${life.year}',
+                        style: NF.sora(
+                          13,
+                          weight: FontWeight.w700,
+                          color: NF.bg,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Pill('${life.year}'),
               const SizedBox(height: 6),
               Semantics(
                 label: 'Bank balance ${money(life.money)}. Open Wealth',
@@ -374,14 +405,19 @@ class _Header extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.account_balance_wallet_rounded,
+                        Icon(
+                          life.prison != null
+                              ? Icons.inventory_2_rounded
+                              : Icons.account_balance_wallet_rounded,
                           size: 14,
                           color: Color(0xFF5EE6A8),
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          money(life.money),
+                          // Inside, what counts is your stash.
+                          life.prison != null
+                              ? 'Stash ${life.prison!.stash}'
+                              : money(life.money),
                           style: NF.sora(
                             13,
                             weight: FontWeight.w700,
@@ -522,7 +558,7 @@ class _BottomBar extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.keyboard_arrow_up_rounded,
                               size: 18,
                               color: NF.muted,
@@ -576,14 +612,10 @@ class _BottomBar extends StatelessWidget {
                               border: Border.all(color: NF.border),
                             ),
                             child: narrow
-                                ? const Icon(
-                                    Icons.search,
-                                    color: NF.muted,
-                                    size: 20,
-                                  )
+                                ? Icon(Icons.search, color: NF.muted, size: 20)
                                 : Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.search,
                                         color: NF.muted,
                                         size: 20,
@@ -683,6 +715,11 @@ class _BottomBar extends StatelessWidget {
                           ? 'Continue'
                           : atEnd
                           ? 'Recap'
+                          : controller.life!.prison != null
+                          // Narrow phones get the short form.
+                          ? (MediaQuery.sizeOf(context).width < 360
+                                ? 'Serve +1'
+                                : 'Serve a year')
                           : 'Age +1',
                     ),
                   ),
@@ -717,6 +754,24 @@ const _feedFilters = <String, Set<String>?>{
 class _LifeTabState extends State<_LifeTab> {
   String _filter = 'All';
 
+  /// A stat tile: everyday stats with their history; prison values
+  /// (behaviour, respect) from the sentence.
+  Widget _statTile(BuildContext context, Life life, String k) {
+    final p = life.prison;
+    if (k == 'behaviour' || k == 'respect') {
+      return StatTile(
+        statKey: k,
+        value: k == 'behaviour' ? p!.behaviour : p!.respect,
+      );
+    }
+    return StatTile(
+      statKey: k,
+      value: life.stats[k],
+      trend: life.stats[k] - (life.lastYearStats[k] ?? life.stats[k]),
+      onTap: () => showStatHistory(context, life, k),
+    );
+  }
+
   GameController get controller => widget.controller;
 
   @override
@@ -730,37 +785,26 @@ class _LifeTabState extends State<_LifeTab> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       children: [
-        for (final row in const [
+        if (life.prison != null) ...[
+          YardCard(life: life),
+          const SizedBox(height: 10),
+        ],
+        // Inside, Behaviour and Respect replace Smarts and Looks.
+        for (final row in [
           ['happiness', 'health'],
-          ['smarts', 'looks'],
+          life.prison != null ? ['behaviour', 'respect'] : ['smarts', 'looks'],
         ]) ...[
           Row(
             children: [
-              Expanded(
-                child: StatTile(
-                  statKey: row[0],
-                  value: life.stats[row[0]],
-                  trend:
-                      life.stats[row[0]] -
-                      (life.lastYearStats[row[0]] ?? life.stats[row[0]]),
-                  onTap: () => showStatHistory(context, life, row[0]),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: StatTile(
-                  statKey: row[1],
-                  value: life.stats[row[1]],
-                  trend:
-                      life.stats[row[1]] -
-                      (life.lastYearStats[row[1]] ?? life.stats[row[1]]),
-                  onTap: () => showStatHistory(context, life, row[1]),
-                ),
-              ),
+              for (final k in row) ...[
+                if (k != row.first) const SizedBox(width: 10),
+                Expanded(child: _statTile(context, life, k)),
+              ],
             ],
           ),
           const SizedBox(height: 10),
         ],
+        if (life.prison != null) const BarbedWire(),
         const SizedBox(height: 4),
         AnimatedSwitcher(
           duration: motion(context, const Duration(milliseconds: 350)),
@@ -823,6 +867,10 @@ class _LifeTabState extends State<_LifeTab> {
           if (i == 0 || feed[i].age != feed[i - 1].age)
             _YearDivider(age: feed[i].age, year: life.birthYear + feed[i].age),
           _FeedBubble(
+            // Stories from inside get a stencil stamp.
+            stamp: life.prison != null && feed[i].age >= life.prison!.since
+                ? prisonStamp(feed[i].text)
+                : null,
             entry: feed[i],
             onTap: feed[i].kind == 'world' && feed[i].age == life.age
                 ? () => _readPaper(context, controller)
@@ -881,12 +929,27 @@ void _readPaper(BuildContext context, GameController c) {
 }
 
 class _FeedBubble extends StatelessWidget {
-  const _FeedBubble({required this.entry, this.onTap});
+  const _FeedBubble({required this.entry, this.onTap, this.stamp});
   final FeedEntry entry;
   final VoidCallback? onTap;
 
+  /// A stencil stamp for prison stories (yard_time.dart).
+  final String? stamp;
+
   @override
   Widget build(BuildContext context) {
+    final s = stamp;
+    if (s == null) return _bubble();
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Padding(padding: const EdgeInsets.only(top: 6), child: _bubble()),
+        Positioned(top: 0, right: 12, child: PrisonStamp(s)),
+      ],
+    );
+  }
+
+  Widget _bubble() {
     if (entry.kind == 'world') return _newsBubble();
     if (entry.kind == 'npc') return _npcBubble();
     if (entry.kind == 'summary') return _summaryBubble();
@@ -964,7 +1027,7 @@ class _FeedBubble extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.newspaper_rounded, size: 20, color: NF.blue),
+                Icon(Icons.newspaper_rounded, size: 20, color: NF.blue),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -994,11 +1057,7 @@ class _FeedBubble extends StatelessWidget {
                     'Read',
                     style: NF.sora(12, weight: FontWeight.w700, color: NF.blue),
                   ),
-                  const Icon(
-                    Icons.chevron_right_rounded,
-                    size: 18,
-                    color: NF.blue,
-                  ),
+                  Icon(Icons.chevron_right_rounded, size: 18, color: NF.blue),
                 ],
               ],
             ),
@@ -1158,11 +1217,7 @@ class _EventCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.history_rounded,
-                      size: 14,
-                      color: NF.orange,
-                    ),
+                    Icon(Icons.history_rounded, size: 14, color: NF.orange),
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
@@ -1508,7 +1563,7 @@ class _MeTabState extends State<_MeTab> {
           NFCard(
             child: Row(
               children: [
-                const Icon(Icons.ios_share_rounded, color: NF.blue),
+                Icon(Icons.ios_share_rounded, color: NF.blue),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -1601,7 +1656,7 @@ class _WorldCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.public_rounded, color: NF.blue, size: 20),
+              Icon(Icons.public_rounded, color: NF.blue, size: 20),
               const SizedBox(width: 8),
               Text('Your world', style: NF.sora(15, weight: FontWeight.w700)),
             ],

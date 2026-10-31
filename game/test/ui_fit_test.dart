@@ -8,6 +8,8 @@ import 'package:relivable/sound.dart';
 import 'package:relivable/engine/actions.dart';
 import 'package:relivable/ui/activities.dart';
 import 'package:relivable/ui/intro.dart';
+import 'package:relivable/theme.dart';
+import 'package:relivable/ui/yard_time.dart';
 import 'package:relivable/ui/minigames.dart';
 import 'package:relivable/ui/shop_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -437,6 +439,40 @@ void main() {
     await _tapText(t, 'White-collar');
     expect(find.text('Fraud'), findsOneWidget);
     expect(t.takeException(), isNull);
+  });
+
+  testWidgets('prison wears Yard Time, and release takes it off', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    final l = c.life!;
+    l.prison = Prison(crime: 'burglary', years: 5, since: 32)
+      ..served = 2
+      ..behaviour = 68
+      ..respect = 41
+      ..stash = 12;
+    l.feed.add(FeedEntry(34, 'An hour in the yard in the sun.'));
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    expect(NF.prison, isTrue);
+    expect(find.text('2 years down, 3 to go'), findsOneWidget);
+    expect(find.text('Serve +1'), findsOneWidget); // narrow phone
+    expect(find.text('Behaviour'), findsOneWidget);
+    expect(find.text('Respect'), findsOneWidget);
+    expect(find.text('Smarts'), findsNothing);
+    expect(find.text('Stash 12'), findsOneWidget);
+    expect(prisonStamp('An hour in the yard in the sun.'), 'YARD');
+    expect(t.takeException(), isNull);
+    // Released: back to the everyday look and values.
+    l.prison = null;
+    c.notifyListeners();
+    await _pump(t);
+    expect(NF.prison, isFalse);
+    expect(find.text('Age +1'), findsOneWidget);
+    expect(find.text('Smarts'), findsOneWidget);
   });
 
   testWidgets('moving abroad picks a country from a drop-down list', (t) async {
