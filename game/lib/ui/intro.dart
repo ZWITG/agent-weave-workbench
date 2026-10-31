@@ -141,25 +141,33 @@ class _IntroSplashState extends State<IntroSplash>
                   // Wide letters that settle from further apart.
                   Transform.translate(
                     offset: Offset(0, (1 - letters) * size * 0.25),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Transform(
+                    // The letters are drawn 25% wider than the font (the
+                    // extended look), so they are fitted into 1/1.25 of
+                    // the room first and never run off the edge.
+                    child: LayoutBuilder(
+                      builder: (context, box) => Transform(
                         alignment: Alignment.centerLeft,
                         transform: Matrix4.diagonal3Values(1.25, 1, 1),
-                        child: Text(
-                          'ZWITG',
-                          style: NF
-                              .sora(
-                                size,
-                                weight: FontWeight.w700,
-                                color: _cream,
-                              )
-                              .copyWith(
-                                letterSpacing:
-                                    size * (0.32 + (1 - letters) * 0.35),
-                                height: 1,
-                              ),
+                        child: SizedBox(
+                          width: box.maxWidth / 1.25,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'ZWITG',
+                              style: NF
+                                  .sora(
+                                    size,
+                                    weight: FontWeight.w700,
+                                    color: _cream,
+                                  )
+                                  .copyWith(
+                                    letterSpacing:
+                                        size * (0.32 + (1 - letters) * 0.35),
+                                    height: 1,
+                                  ),
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -117,3 +117,4 @@ Named updates since the game was created (26 October 2026). Newest last.
 ## 2.10 "Curtain Up" (31 Oct)
 - An opening animation when the game starts or is opened again: the ZWITG mark (letters settle, the red line draws across), then the Relivable logo, then into the game.
 - Tap to skip; shorter and calmer with Reduce motion on.
+- Shareable intro videos in `media/` (square 1080×1080 and vertical 1080×1920), rebuilt with `tool/make_intro_video.sh`.
