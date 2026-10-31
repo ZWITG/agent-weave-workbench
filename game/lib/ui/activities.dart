@@ -937,6 +937,45 @@ void showEvent(BuildContext context, GameController c) {
   c.goToEvent();
 }
 
+/// Asks what to call a new song, starting from a suggested title. Returns
+/// the name typed, or null to keep the suggestion.
+Future<String?> askSongTitle(BuildContext context, String suggested) {
+  final field = TextEditingController(text: suggested);
+  return showDialog<String>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: NF.surface,
+      title: Text(
+        'Name your song',
+        style: NF.sora(18, weight: FontWeight.w700),
+      ),
+      content: TextField(
+        controller: field,
+        autofocus: true,
+        maxLength: 40,
+        textCapitalization: TextCapitalization.words,
+        decoration: const InputDecoration(hintText: 'Song title'),
+        onSubmitted: (v) => Navigator.pop(ctx, v),
+        onTap: () => field.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: field.text.length,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text('Keep "$suggested"'),
+        ),
+        FilledButton(
+          style: primaryButton(),
+          onPressed: () => Navigator.pop(ctx, field.text),
+          child: const Text('Name it'),
+        ),
+      ],
+    ),
+  );
+}
+
 Future<void> runActionFlow(
   BuildContext context,
   GameController c,
@@ -1012,7 +1051,18 @@ Future<void> runActionFlow(
     if (score == null) return; // closed without playing
   }
   final before = c.pendingEvent;
-  final r = c.runAction(a, score: score, variant: variant, who: who);
+  final songsBefore = c.life!.songs.length;
+  var r = c.runAction(a, score: score, variant: variant, who: who);
+  // A new song: let the player give it their own title.
+  if (c.life!.songs.length > songsBefore && context.mounted) {
+    final song = c.life!.songs.last;
+    final old = song['title'] as String;
+    final name = await askSongTitle(context, old);
+    if (name != null && name.trim().isNotEmpty && name.trim() != old) {
+      final now = c.wealth((l) => renameSong(l, song, name));
+      r = ActionResult(r.text.replaceAll('"$old"', '"$now"'), r.notes);
+    }
+  }
   if (closeSheet) nav.pop();
   if (!nav.mounted) return;
   // The activity opened a scene (an interview, a viewing...): go straight

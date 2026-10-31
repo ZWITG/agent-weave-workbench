@@ -6,6 +6,7 @@ import 'package:relivable/game_controller.dart';
 import 'package:relivable/main.dart';
 import 'package:relivable/sound.dart';
 import 'package:relivable/engine/actions.dart';
+import 'package:relivable/ui/activities.dart';
 import 'package:relivable/ui/minigames.dart';
 import 'package:relivable/ui/shop_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -357,6 +358,41 @@ void main() {
     expect(c.life!.followers['vybe'], isNotNull);
     // Let the achievement toasts that the first post unlocks play out.
     for (var i = 0; i < 12; i++) {
+      await t.pump(const Duration(seconds: 3));
+    }
+  });
+
+  testWidgets('players name their own songs', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.profile.autoMiniGames = true;
+    final write = c.engine!.actions.firstWhere((a) => a.id == 'write_song');
+    await t.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () =>
+                  runActionFlow(context, c, write, closeSheet: false),
+              child: const Text('Write'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await t.tap(find.text('Write'));
+    await _pump(t);
+    await _tapText(t, 'Pop');
+    expect(find.text('Name your song'), findsOneWidget);
+    await t.enterText(find.byType(TextField), '  Kitchen   Disco  ');
+    await _tapText(t, 'Name it');
+    expect(c.life!.songs.last['title'], 'Kitchen Disco');
+    expect(find.textContaining('"Kitchen Disco"'), findsOneWidget);
+    for (var i = 0; i < 6; i++) {
       await t.pump(const Duration(seconds: 3));
     }
   });

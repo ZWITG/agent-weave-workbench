@@ -149,6 +149,15 @@ ActionResult writeSong(Life l, Random rng, String genre, double? score) {
   );
 }
 
+/// Gives a song your own title. Returns the title it ended up with: the
+/// trimmed name, or the old one if the name is blank.
+String renameSong(Life l, Map<String, dynamic> song, String name) {
+  final t = name.trim().replaceAll(RegExp(r'\s+'), ' ');
+  if (t.isEmpty) return song['title'] as String;
+  song['title'] = t.length > 40 ? t.substring(0, 40).trim() : t;
+  return song['title'] as String;
+}
+
 // ---------------- Road to the Underground ----------------
 
 /// The Music category and its chapter open once you have written three

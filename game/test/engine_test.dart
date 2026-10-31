@@ -2838,4 +2838,14 @@ void main() {
       expect(tour.lockReason(l), isNull);
     },
   );
+
+  test('song titles: your own name, tidied', () {
+    final l = engine.newLife(seed: 264)..age = 20;
+    writeSong(l, Random(1), 'rock', 0.8);
+    final song = l.songs.last;
+    final old = song['title'];
+    expect(renameSong(l, song, '   '), old);
+    expect(renameSong(l, song, '  Late   Bus Home '), 'Late Bus Home');
+    expect(renameSong(l, song, 'x' * 60).length, 40);
+  });
 }
