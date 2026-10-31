@@ -1163,8 +1163,7 @@ Storylet? businessScene(String id, List<String> args, Life l) {
             Choice(
               label: '${ind.name} · from ${_m(startupCost(ind, 'budget'))}',
               outcome: '',
-              risk:
-                  '${bizKinds[ind.id]?.blurb ?? ''} Key skill: ${_cap(ind.stat)} (yours ${l.stats[ind.stat]})',
+              risk: 'Skill: ${_cap(ind.stat)}',
               run: (l, rng) {
                 l.sceneQueue.add('biz_tier:${ind.id}');
                 return 'A ${ind.name.toLowerCase()} it is. Now: what kind?';
@@ -1180,7 +1179,7 @@ Storylet? businessScene(String id, List<String> args, Life l) {
       final ind = industryById(args.first);
       return _scene(
         id,
-        'Every ${ind.name.toLowerCase()} needs a place in the market. Budget sells more for less; premium charges more but customers expect quality.',
+        '${bizKinds[ind.id]?.blurb ?? ''} Your ${ind.stat}: ${l.stats[ind.stat]}. Every ${ind.name.toLowerCase()} needs a place in the market. Budget sells more for less; premium charges more but customers expect quality.',
         [
           for (final e in bizTiers.entries)
             Choice(

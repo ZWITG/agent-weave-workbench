@@ -966,8 +966,9 @@ Storylet? tradeEventScene(List<String> args, Life l) {
         }),
         c('Let the cleaner keep it', (l, b, rng) {
           _bump(b, morale: 6);
-          if (odds(rng, 60))
+          if (odds(rng, 60)) {
             return 'Nobody asked. The cleaner was very grateful.';
+          }
           _bump(b, brand: -15);
           l.money -= 3000;
           return 'The client noticed. You refunded the money and lost the contract.';
