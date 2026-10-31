@@ -362,6 +362,49 @@ void main() {
     }
   });
 
+  testWidgets('moving abroad picks a country from a drop-down list', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    final move = c.engine!.actions.firstWhere((a) => a.id == 'emigrate');
+    await t.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () =>
+                  runActionFlow(context, c, move, closeSheet: false),
+              child: const Text('Move'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await t.tap(find.text('Move'));
+    await _pump(t);
+    expect(find.text('Choose a country'), findsOneWidget);
+    // Just looking uses nothing up.
+    expect(c.life!.usedActions, isNot(contains('emigrate')));
+    await t.tap(find.text('Choose a country'));
+    await _pump(t);
+    await t.tap(find.text('Japan').last);
+    await _pump(t);
+    expect(find.text('Visa'), findsOneWidget);
+    expect(find.textContaining('Apply for a visa'), findsOneWidget);
+    final cash = c.life!.money;
+    await t.tap(find.textContaining('Apply for a visa'));
+    await _pump(t);
+    expect(c.life!.money, lessThanOrEqualTo(cash - 3000));
+    expect(c.life!.usedActions, contains('emigrate'));
+    expect(find.text('Moving to Japan'), findsOneWidget);
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(seconds: 3));
+    }
+  });
+
   testWidgets('players name their own songs', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);

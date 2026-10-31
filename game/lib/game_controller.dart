@@ -10,6 +10,7 @@ import 'engine/dynasty.dart';
 import 'engine/engine.dart';
 import 'engine/health.dart' show endThisLifeRules;
 import 'engine/meta.dart';
+import 'engine/community.dart' show emigrateTo;
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
@@ -457,6 +458,23 @@ class GameController extends ChangeNotifier {
     _save();
     notifyListeners();
     return r;
+  }
+
+  /// Moving abroad to [country], chosen on the Move abroad screen: the
+  /// same activity (energy, once a year, the feed) with the country set.
+  ActionResult emigrate(String country) {
+    final a = engine!.actions.firstWhere((x) => x.id == 'emigrate');
+    return runAction(
+      GameAction(
+        id: a.id,
+        label: a.label,
+        category: a.category,
+        keywords: a.keywords,
+        minAge: a.minAge,
+        extraCheck: a.extraCheck,
+        run: (l, rng) => ActionResult(emigrateTo(l, country, rng)),
+      ),
+    );
   }
 
   /// Runs a person interaction from the People tab or the action search.

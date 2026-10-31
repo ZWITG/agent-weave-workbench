@@ -11,6 +11,7 @@ import '../game_controller.dart';
 import '../sound.dart';
 import '../theme.dart';
 import 'minigames.dart';
+import 'move_abroad.dart';
 import 'newspaper.dart';
 import 'social_screen.dart';
 import 'people.dart';
@@ -986,6 +987,15 @@ Future<void> runActionFlow(
   final busy = c.busyReason;
   if (busy != null) {
     await showBusyNotice(context, c, busy);
+    return;
+  }
+  // Moving abroad has its own screen with a country list; nothing is
+  // used up until you apply.
+  if (a.screen == 'move_abroad') {
+    if (closeSheet) nav.pop();
+    nav.push(
+      MaterialPageRoute(builder: (_) => MoveAbroadScreen(controller: c)),
+    );
     return;
   }
   // How to do it (light or hard session, which trip, who to bring).

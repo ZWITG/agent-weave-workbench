@@ -107,6 +107,41 @@ Storylet _scene(
   return (p.clamp(5, 95), why);
 }
 
+/// The cost of applying for a visa and moving.
+const emigrateCost = 3000;
+
+/// Plain words for how a visa application looks.
+String visaOutlook(int odds) => odds >= 60
+    ? 'A visa looks likely'
+    : odds < 30
+    ? 'A visa will be hard to get'
+    : 'A visa is possible';
+
+/// Applies for a visa to [to] and, if it is granted, moves there.
+String emigrateTo(Life l, String to, Random rng) {
+  final c = countryNamed(to);
+  final (odds, why) = visaOdds(l, to);
+  l.money -= emigrateCost;
+  if (rng.nextInt(100) >= odds) {
+    return 'The visa was refused. Main factors: ${why.take(3).join(', ')}. You can try again another year.';
+  }
+  final from = l.country;
+  final hadJob = l.job;
+  if (l.job != null) leaveJob(l);
+  l.assets.removeWhere((a) => a.kind == 'rental');
+  l.country = c.name;
+  l.city = c.cities[rng.nextInt(c.cities.length)];
+  l.marks.add('lived:${c.name}');
+  l.flags['emigrated'] = Memory(l.age, 'moving from $from to ${c.name}');
+  for (final n in l.npcs.where(
+    (n) => n.circle == 'Family' || n.circle == 'Friends',
+  )) {
+    n.addFacets(affection: -3);
+  }
+  l.stats.add('happiness', 5);
+  return 'You landed in ${l.city} with two suitcases and a head full of plans. ${hadJob == null ? '' : 'You left your job as $hadJob behind. '}Healthcare, laws and prices work differently here: check your country card on the Me tab.';
+}
+
 Storylet? communityScene(String id, List<String> args, Life l) {
   switch (id) {
     case 'emigrate':
@@ -130,30 +165,7 @@ Storylet? communityScene(String id, List<String> args, Life l) {
                         ? ' A visa will be hard to get.'
                         : ''}${prof.climate == 'hostile' ? ' Warning: LGBTQ+ people face legal risk here.' : ''}',
                 needsMoney: 3000,
-                run: (l, rng) {
-                  l.money -= 3000;
-                  if (rng.nextInt(100) >= odds) {
-                    return 'The visa was refused. Main factors: ${why.take(3).join(', ')}. You can try again another year.';
-                  }
-                  final from = l.country;
-                  final hadJob = l.job;
-                  if (l.job != null) leaveJob(l);
-                  l.assets.removeWhere((a) => a.kind == 'rental');
-                  l.country = c.name;
-                  l.city = c.cities[rng.nextInt(c.cities.length)];
-                  l.marks.add('lived:${c.name}');
-                  l.flags['emigrated'] = Memory(
-                    l.age,
-                    'moving from $from to ${c.name}',
-                  );
-                  for (final n in l.npcs.where(
-                    (n) => n.circle == 'Family' || n.circle == 'Friends',
-                  )) {
-                    n.addFacets(affection: -3);
-                  }
-                  l.stats.add('happiness', 5);
-                  return 'You landed in ${l.city} with two suitcases and a head full of plans. ${hadJob == null ? '' : 'You left your job as $hadJob behind. '}Healthcare, laws and prices work differently here: check your country card on the Me tab.';
-                },
+                run: (l, rng) => emigrateTo(l, c.name, rng),
               );
             }(),
           Choice(
@@ -516,8 +528,10 @@ final communityActions = <GameAction>[
     category: 'Travel',
     keywords: ['emigrate', 'move abroad', 'visa', 'move country', 'abroad'],
     minAge: 18,
-    priceNote: '\$3,000 · visa odds shown per country',
+    priceNote: '\$3,000 · pick a country from the list',
     extraCheck: (l) => studying(l) ? 'Finish your course first' : null,
+    // The Move abroad screen picks the country (ui/move_abroad.dart).
+    screen: 'move_abroad',
     run: (l, rng) {
       l.sceneQueue.add('emigrate');
       return ActionResult('You open the visa website.');

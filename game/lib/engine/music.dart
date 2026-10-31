@@ -338,12 +338,11 @@ ActionResult releaseSongs(
         (album ? 1.2 : 1);
     // A little luck either way; the song itself decides.
     final streams =
-        (audience * hit * promo * (0.85 + rng.nextDouble() * 0.3) * 5)
-            .round();
+        (audience * hit * promo * (0.85 + rng.nextDouble() * 0.3) * 5).round();
     // Good songs turn listeners into fans; weak ones barely do.
     final fans = listenersOf(l);
-    final newFans =
-        (streams * 0.05 * q / 100 * (1 - fans / fanCeiling)).round();
+    final newFans = (streams * 0.05 * q / 100 * (1 - fans / fanCeiling))
+        .round();
     l.music['fans'] = (fans + max(0, newFans)).clamp(0, fanCeiling);
     s['out'] = true;
     s['released'] = l.age;
