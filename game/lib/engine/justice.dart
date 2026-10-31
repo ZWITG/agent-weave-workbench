@@ -496,6 +496,8 @@ String riskBand(int p) => p < 20
     : 'Very high';
 
 int _gain(Life l, Crime c, Random rng) => switch (c.id) {
+  'insider_trading' when (l.worldMods['markets'] ?? 0) > 0 =>
+    ((c.gainMin + rng.nextInt(c.gainMax - c.gainMin + 1)) * 1.5).round(),
   'embezzlement' => (l.salary * (0.08 + rng.nextDouble() * 0.07)).round(),
   'tax_evasion' => (l.salary * 0.15).round(),
   _ => c.gainMax <= 0 ? 0 : c.gainMin + rng.nextInt(c.gainMax - c.gainMin + 1),

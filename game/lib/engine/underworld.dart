@@ -143,7 +143,8 @@ void dirtyMoneyYear(Life l, Random rng) {
       l.salary + l.businesses.fold(0, (s, b) => s + max(0, b.profit));
   final suspicion =
       (l.dirty / (l.dirty + honest * 2 + 40000) * 35).round() -
-      (informant(l) ? 15 : 0);
+      (informant(l) ? 15 : 0) +
+      (l.worldMods['policing'] ?? 0) ~/ 2;
   if (l.prison == null &&
       !l.sceneQueue.any((s) => s.startsWith('unexplained')) &&
       _roll(rng, suspicion)) {
@@ -253,7 +254,8 @@ final launderVariants = <ActionVariant>[
     detail: '12% cost · fast, prices swing',
     check: (l) => l.year < 2013 ? 'Not until 2013' : null,
     run: (l, rng, who, score) {
-      final swing = rng.nextInt(41) - 20;
+      // A market frenzy in the news lifts crypto, for now.
+      final swing = rng.nextInt(41) - 20 + (l.worldMods['markets'] ?? 0) ~/ 2;
       final take = min(80000, l.dirty);
       final r = launder(
         l,
@@ -407,14 +409,25 @@ List<String> crewYear(Life l, Random rng) {
       l.prison == null &&
       l.businesses.isNotEmpty &&
       !l.sceneQueue.contains('biz_racket') &&
-      _roll(rng, 6)) {
+      _roll(rng, max(1, 6 - (l.worldMods['gangs'] ?? 0) ~/ 5))) {
     l.sceneQueue.add('biz_racket');
   }
   if (crew == null || l.prison != null) return feed;
   final rank = crewRank(l);
   // Rackets: lieutenants and up earn from the crew's business.
   if (rank >= 2) {
-    final take = [0, 0, 20000, 60000, 200000][rank] + rng.nextInt(10000);
+    // Rackets follow the economy, and a police crackdown squeezes them.
+    final econ = switch (l.economy) {
+      'Boom' => 1.25,
+      'Recession' || 'Crash' => 0.7,
+      _ => 1.0,
+    };
+    final squeeze = 1 - (l.worldMods['gangs'] ?? 0) / 40;
+    final take =
+        (([0, 0, 20000, 60000, 200000][rank] + rng.nextInt(10000)) *
+                econ *
+                squeeze)
+            .round();
     l.money += take;
     l.dirty += take;
     feed.add(
@@ -453,7 +466,9 @@ List<String> crewYear(Life l, Random rng) {
     l.sceneQueue.add('crew_test');
   } else if (roll < 18 + 10 + rivalry(l) ~/ 4) {
     l.sceneQueue.add('crew_rival');
-  } else if (roll < 50 && heat(l) >= 35 && !informant(l)) {
+  } else if (roll < 50 + (l.worldMods['gangs'] ?? 0) &&
+      heat(l) >= 35 - (l.worldMods['gangs'] ?? 0) &&
+      !informant(l)) {
     l.sceneQueue.add('crew_cops');
   }
   return feed;
@@ -465,10 +480,13 @@ void crewInviteYear(Life l, Random rng) {
       l.prison != null ||
       l.age < 18 ||
       l.crew['left'] != null ||
-      streetRep(l) < 30) {
+      streetRep(l) + (l.worldMods['infamy'] ?? 0) < 30) {
     return;
   }
-  if (_roll(rng, 15)) l.sceneQueue.add('crew_invite');
+  // An infamous family name opens doors in the underworld.
+  if (_roll(rng, 15 + (l.worldMods['infamy'] ?? 0))) {
+    l.sceneQueue.add('crew_invite');
+  }
 }
 
 // ---------------- Scenes ----------------

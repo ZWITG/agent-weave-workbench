@@ -829,6 +829,103 @@ class GameEngine {
         axes: {'power': 8, 'fame': 4},
       );
     }
+    // The newer stages of life leave their mark on the world too.
+    if (life.flags.containsKey('billionaire')) {
+      deed(
+        'billionaire',
+        '$who joins the world\'s billionaires',
+        'The ${life.surname} fortune has passed \$1 billion. Rich-list editors '
+            'are adding a new name, and $city is adding a new mansion.',
+        axes: {'wealth': 30, 'fame': 10, 'power': 10},
+        national: true,
+        category: 'economy',
+      );
+    } else if (life.flags.containsKey('upper_echelon')) {
+      deed(
+        'upper_echelon',
+        'A new name among $city\'s super-rich',
+        '$who is now worth more than \$100 million, according to people who '
+            'count such things.',
+        axes: {'wealth': 20, 'power': 5},
+        national: true,
+        category: 'economy',
+      );
+    }
+    if (life.marks.contains('foundation')) {
+      deed(
+        'foundation',
+        'The ${life.surname} Foundation opens its doors',
+        'Schools and clinics across the country will be funded by a new '
+            'foundation set up by $who.',
+        axes: {'philanthropy': 25, 'fame': 5},
+        national: true,
+      );
+    }
+    if (life.flags.containsKey('astronaut')) {
+      deed(
+        'space',
+        '$who returns from space',
+        'The $city native described the view as "too big for words" and '
+            'then used quite a lot of words about it.',
+        axes: {'fame': 12},
+        national: true,
+        category: 'science',
+      );
+    }
+    if (life.flags.containsKey('crew_boss')) {
+      deed(
+        'crime_boss',
+        'Police name $who as the new head of a $city crime family',
+        'Detectives say a change at the top of one of the city\'s crews has '
+            'left rivals nervous. $who has not been charged with anything.',
+        axes: {'infamy': 25, 'power': 15},
+        category: 'crime',
+      );
+    }
+    if (life.flags.containsKey('witness_protection')) {
+      deed(
+        'witness',
+        'Secret witness brings down a $city crime family',
+        'A former insider\'s testimony led to a string of convictions. The '
+            'witness has vanished into a new life.',
+        axes: {'infamy': 5},
+        national: true,
+        category: 'crime',
+      );
+    }
+    if (life.businesses.length >= 3) {
+      deed(
+        'business_empire',
+        '$who now runs ${life.businesses.length} businesses in $city',
+        'From ${life.businesses.first.name} to ${life.businesses.last.name}, '
+            '$who has built a small local empire.',
+        axes: {'wealth': 10, 'power': 6, 'fame': 4},
+        category: 'economy',
+      );
+    }
+    if (life.flags.containsKey('underground')) {
+      deed(
+        'musician',
+        'Local musician $who is packing out $city venues',
+        'A year ago they were playing open mics. Now the queue for their '
+            'shows goes round the block.',
+        axes: {'fame': 8},
+      );
+    }
+    if (life.flags.containsKey('deported')) {
+      deed(
+        'deported',
+        life.flags.containsKey('crossed_border')
+            ? '$who deported after years without papers'
+            : '$who turned back at the border',
+        life.flags.containsKey('crossed_border')
+            ? 'Neighbours described a quiet, hard-working person. Campaigners '
+                  'say the case shows the system is broken.'
+            : 'Border officers stopped $who and sent them home. The case was '
+                  'one of hundreds this year.',
+        axes: {'infamy': 3},
+      );
+    }
     if (life.lastSeen.containsKey('sibling_generous_thanks')) {
       deed(
         'bakery',

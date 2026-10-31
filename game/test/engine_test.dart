@@ -3510,4 +3510,54 @@ void main() {
     b.prison = null;
     expect(buildScene('biz_racket', b), isNotNull);
   });
+
+  test('the evolving world reaches the newer systems', () {
+    // An amnesty in the news gives papers; a crackdown raises the stakes.
+    final u = engine.newLife(seed: 1301)..age = 30;
+    u.marks.addAll(['undocumented', 'papers_since:29', 'origin:Mexico']);
+    u.worldMods = {'amnesty': 20};
+    final lines = migrationYear(u, Random(1));
+    expect(lines.single, contains('amnesty'));
+    expect(undocumented(u), isFalse);
+    // Tourists fill cafés; a pandemic empties them and favours apps.
+    int revenue(String industry, Map<String, int> mods) {
+      final l = engine.newLife(seed: 1302)..age = 35;
+      l.worldMods = mods;
+      final b = Business(name: 'X', industry: industry, tier: 'mid', since: 30)
+        ..staff = 4
+        ..quality = 60;
+      l.businesses.add(b);
+      businessYear(l, Random(7), b);
+      return b.revenue;
+    }
+
+    expect(revenue('cafe', {'tourism': 15}), greaterThan(revenue('cafe', {})));
+    expect(revenue('cafe', {'lockdown': 20}), lessThan(revenue('cafe', {})));
+    expect(revenue('app', {'lockdown': 20}), greaterThan(revenue('app', {})));
+    // Tours stop in a pandemic.
+    final m = engine.newLife(seed: 1303)..age = 30;
+    m.fame = 60;
+    m.worldMods = {'lockdown': 20};
+    final tour = allActions.firstWhere((a) => a.id == 'go_on_tour');
+    expect(tour.lockReason(m), contains('pandemic'));
+    // A crackdown squeezes racket income.
+    int rackets(Map<String, int> mods) {
+      final l = engine.newLife(seed: 1304)..age = 40;
+      l.worldMods = mods;
+      l.crew.addAll({'id': 'harbour', 'rank': 3, 'respect': 10, 'loyalty': 60});
+      final before = l.money;
+      crewYear(l, Random(9));
+      return l.money - before;
+    }
+
+    expect(rackets({'gangs': 20}), lessThan(rackets({})));
+    // Big moves are written into the world's history.
+    final b = engine.newLife(seed: 1305)..age = 50;
+    b.flags['crew_boss'] = Memory(50, 'x');
+    engine.checkDeeds(b);
+    expect(
+      engine.world.ledger.any((s) => s.headline.contains('crime family')),
+      isTrue,
+    );
+  });
 }

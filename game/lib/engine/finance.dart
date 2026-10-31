@@ -928,9 +928,27 @@ int businessYear(Life l, Random rng, [Business? which]) {
   final crowd = b.staff > ind.maxStaff ? ind.maxStaff / b.staff : 1.0;
   final econ = _econDemand[l.economy] ?? 1.0;
   final (perkDemand, perkSavings) = perkEffects(b);
+  // The world outside: tourists fill cafés; a pandemic empties them and
+  // sends everyone online.
+  final tourism = (l.worldMods['tourism'] ?? 0) / 100;
+  final lockdown = (l.worldMods['lockdown'] ?? 0) > 0;
+  final world =
+      switch (b.industry) {
+        'cafe' || 'restaurant' || 'food_truck' || 'bakery' => 1 + tourism,
+        'clothing' || 'salon' => 1 + tourism / 2,
+        _ => 1.0,
+      } *
+      (lockdown
+          ? switch (b.industry) {
+              'app' || 'games' || 'podcast' => 1.15,
+              'cleaning' || 'construction' => 0.9,
+              _ => 0.7,
+            }
+          : 1.0);
   final demand =
       (0.45 + appeal / 100) *
       (1 + perkDemand + b.boost / 100) *
+      world *
       econ *
       tierFit *
       crowd *
@@ -959,6 +977,16 @@ int businessYear(Life l, Random rng, [Business? which]) {
       if (tax > 0) ('Tax on profit', -tax),
     ];
   final reasons = <(int, String)>[
+    if ((l.worldMods['lockdown'] ?? 0) > 0)
+      (50, 'The pandemic changed how people spend'),
+    if ((l.worldMods['tourism'] ?? 0) > 0 &&
+        const {
+          'cafe',
+          'restaurant',
+          'food_truck',
+          'bakery',
+        }.contains(b.industry))
+      (30, 'A busy tourist season'),
     (
       (b.quality - 50).abs(),
       'Customers rate your ${ind.product} ${b.quality}%',

@@ -137,3 +137,9 @@ Named updates since the game was created (26 October 2026). Newest last.
 - Funerals while you are in prison: ask for day release, write a letter, or grieve alone.
 - Businesses slip while their owner is in prison; crews can lean on business owners for protection money.
 - The big-news pop-up now catches deportations, amnesties, asylum, crew promotions, billionaire news and grandchildren.
+
+## 2.14 "Living History" (31 Oct)
+- New world news that changes play: border crackdowns, amnesties, police crackdowns on organised crime, tourist booms and market frenzies.
+- The world reaches the newer systems: amnesties give papers; crackdowns make crossings and checks riskier; policing raises suspicion of dirty money; crew rackets follow the economy; tourists fill cafés; a pandemic empties restaurants, cancels tours and favours apps; market frenzies boost insider trading and crypto.
+- An infamous family name gets you noticed by crews.
+- Your biggest moves go into the world's history and your family's reputation: billionaires, the super-rich, foundations, space flights, crime bosses, secret witnesses, business empires, local music stars and deportations.

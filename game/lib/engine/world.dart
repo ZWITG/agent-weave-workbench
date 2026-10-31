@@ -105,7 +105,7 @@ const worldEffects = <String, WorldEffect>{
     you: 'Shorter working weeks: Happiness +4',
   ),
   'pandemic': (
-    mods: {'health': -2, 'happiness': -5, 'hiring': -8},
+    mods: {'health': -2, 'happiness': -5, 'hiring': -8, 'lockdown': 20},
     you: 'A pandemic: Health −2, Happiness −5, fewer jobs',
   ),
   'inflation': (
@@ -120,6 +120,26 @@ const worldEffects = <String, WorldEffect>{
   'housing_crash': (mods: {'happiness': -2}, you: 'Home values down 20%'),
   'tax_cut': (mods: {'happiness': 2}, you: 'A tax rebate for workers'),
   'tax_rise': (mods: {'happiness': -2}, you: 'Workers pay more tax this year'),
+  'border_crackdown': (
+    mods: {'immigration': 20},
+    you: 'Tougher immigration checks: living or crossing without papers is riskier',
+  ),
+  'amnesty': (
+    mods: {'amnesty': 20},
+    you: 'An amnesty: people living here without papers can apply to stay',
+  ),
+  'gang_crackdown': (
+    mods: {'policing': 10, 'gangs': 20},
+    you: 'Police are going after crews: rackets pay less and detectives are busy',
+  ),
+  'tourism_boom': (
+    mods: {'tourism': 15, 'happiness': 1},
+    you: 'Tourists everywhere: cafés, restaurants and shops are busier',
+  ),
+  'market_mania': (
+    mods: {'markets': 15},
+    you: 'Markets are wild: insider tips and crypto are paying, for now',
+  ),
 };
 
 /// Family-name reputation axes (plan: Fame, Infamy, Wealth, Philanthropy,
@@ -278,6 +298,8 @@ class World {
       }
     }
     final rep = names[surname];
+    // The underworld remembers infamous families.
+    if ((rep?['infamy'] ?? 0) >= 20) out['infamy'] = rep!['infamy']! ~/ 5;
     if (rep != null) {
       final n =
           ((rep['fame'] ?? 0) +
@@ -797,6 +819,26 @@ const _globalTemplates = [
 const _nationalTemplates = [
   _Template(
     'politics',
+    '{country} tightens its borders',
+    'The government promised more checks at airports, ports and workplaces. Campaigners called it "a hunt, not a policy".',
+    effect: 'border_crackdown',
+    years: 2,
+  ),
+  _Template(
+    'politics',
+    '{country} announces an amnesty for undocumented residents',
+    'People who have lived here without papers will be able to apply to stay. Queues formed outside offices before dawn.',
+    effect: 'amnesty',
+    rare: true,
+  ),
+  _Template(
+    'economy',
+    'Trading frenzy grips {country}\'s markets',
+    'Small investors are piling in and prices are rising faster than anyone can explain. Regulators are "watching closely".',
+    effect: 'market_mania',
+  ),
+  _Template(
+    'politics',
     '{person} elected to lead {country}',
     'The new leader promised "fewer speeches and more trains". Turnout was the highest in twenty years.',
   ),
@@ -887,6 +929,19 @@ const _nationalTemplates = [
 ];
 
 const _localTemplates = [
+  _Template(
+    'crime',
+    'Police launch a crackdown on organised crime in {city}',
+    'Dawn raids hit three addresses linked to local crews. The police chief promised "no safe corners".',
+    effect: 'gang_crackdown',
+    years: 2,
+  ),
+  _Template(
+    'local',
+    '{city} has its busiest tourist season on record',
+    'Hotels are full and the old town is packed. Café owners are hiring anyone who can carry a tray.',
+    effect: 'tourism_boom',
+  ),
   _Template(
     'local',
     'New tram line opens in {city}',

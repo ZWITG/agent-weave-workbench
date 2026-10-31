@@ -108,7 +108,10 @@ String migrateIllegally(Life l, String to, String route, Random rng) {
   final from = l.country;
   l.money -= r.cost;
   l.reason = 'Crossing a border without papers';
-  final known = wasDeported(l) ? 10 : 0;
+  // A deportation on file, and a border crackdown in the news, both make
+  // getting caught likelier.
+  final known =
+      (wasDeported(l) ? 10 : 0) + (l.worldMods['immigration'] ?? 0) ~/ 2;
   final roll = rng.nextInt(100);
   switch (route) {
     case 'overstay':
@@ -203,9 +206,23 @@ List<String> migrationYear(Life l, Random rng) {
   if (l.record.any((r) => (r['age'] as int) >= since)) {
     return [deport(l)];
   }
+  // A national amnesty in the news: everyone without papers can apply.
+  if ((l.worldMods['amnesty'] ?? 0) > 0) {
+    _legalise(l, 'the national amnesty');
+    return [
+      'The amnesty in the news covered you. You queued from before dawn and walked out with papers.',
+    ];
+  }
   final queued = l.sceneQueue.any((s) => s == 'immigration_check');
   if (!queued &&
-      _roll(rng, 6 + (convictions(l) > 0 ? 5 : 0) + min(10, l.notoriety))) {
+      _roll(
+        rng,
+        6 +
+            (convictions(l) > 0 ? 5 : 0) +
+            min<int>(10, l.notoriety) +
+            (l.worldMods['immigration'] ?? 0) ~/ 2 +
+            (l.worldMods['policing'] ?? 0) ~/ 4,
+      )) {
     l.sceneQueue.add('immigration_check');
     return const [];
   }

@@ -649,7 +649,9 @@ final musicActions = <GameAction>[
     category: 'Music',
     keywords: ['tour', 'concerts', 'arena', 'world tour', 'road'],
     minAge: 18,
-    extraCheck: (l) => !roadDone(l) && l.fame < 30
+    extraCheck: (l) => (l.worldMods['lockdown'] ?? 0) > 0
+        ? 'Tours are cancelled during the pandemic'
+        : !roadDone(l) && l.fame < 30
         ? 'Finish Road to the Underground first'
         : listenersOf(l) < 50000 && l.fame < 30
         ? 'Needs 50k monthly listeners or some fame'
