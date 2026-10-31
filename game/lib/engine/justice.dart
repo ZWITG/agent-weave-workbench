@@ -1303,7 +1303,12 @@ GameAction _crimeAction(
     if (l.year < c.since) return 'Not possible in ${l.year}';
     return extra?.call(l);
   },
-  hint: (l) => riskHint(caughtOdds(l, c).$1, c.band),
+  hint: (l) =>
+      '${riskHint(caughtOdds(l, c).$1, c.band)}${c.gainMax > 0 ? ' · usually ${_m(c.gainMin)} to ${_m(c.gainMax)}' : switch (c.id) {
+              'embezzlement' || 'tax_evasion' => ' · pays from your salary',
+              'assault' => ' · no money, just trouble',
+              _ => '',
+            }}${plannedCrimes.contains(c.id) ? ' · you plan it step by step' : ''}',
   run: (l, rng) {
     if (!plannedCrimes.contains(c.id)) return commitCrime(l, c, rng);
     l.sceneQueue.add('crime_plan:${c.id}');

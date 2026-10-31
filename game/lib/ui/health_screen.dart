@@ -452,9 +452,25 @@ class JusticeCard extends StatelessWidget {
 
 /// Your criminal profile: heat with what feeds it, street skill, dirty
 /// money and your crew. Shown once you have any criminal life at all.
-class CrimeProfileCard extends StatelessWidget {
-  const CrimeProfileCard({super.key, required this.life});
+class CrimeProfileCard extends StatefulWidget {
+  const CrimeProfileCard({
+    super.key,
+    required this.life,
+    this.startOpen = false,
+  });
   final Life life;
+
+  /// Show everything at once (the Path tab), or a one-line summary that
+  /// opens on tap (the Crime category).
+  final bool startOpen;
+
+  @override
+  State<CrimeProfileCard> createState() => _CrimeProfileCardState();
+}
+
+class _CrimeProfileCardState extends State<CrimeProfileCard> {
+  late bool _open = widget.startOpen;
+  Life get life => widget.life;
 
   Widget _bar(String label, int v) => Padding(
     padding: const EdgeInsets.only(top: 6),
@@ -491,8 +507,10 @@ class CrimeProfileCard extends StatelessWidget {
       padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
-          Text(k, style: NF.sora(13, color: NF.muted)),
-          const Spacer(),
+          Expanded(
+            child: Text(k, style: NF.sora(13, color: NF.muted)),
+          ),
+          const SizedBox(width: 8),
           Flexible(
             child: Text(
               v,
@@ -503,49 +521,73 @@ class CrimeProfileCard extends StatelessWidget {
         ],
       ),
     );
+    final summary = [
+      'Heat: ${heatLabel(h)}',
+      skillName(skill),
+      if (life.dirty > 0) '${money(life.dirty)} dirty',
+      if (crew != null) crewRanks[crewRank(life)],
+    ].join(' · ');
     return NFCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.local_fire_department_rounded,
-                color: NF.orange,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Your criminal profile',
-                style: NF.sora(16, weight: FontWeight.w700),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          _bar('Heat · ${heatLabel(h)}', h),
-          line('Street skill', skillName(skill)),
-          line('Open investigations', '${life.cases.length}'),
-          if (life.dirty > 0) line('Dirty money', money(life.dirty)),
-          if (crew != null) ...[
-            line('Crew', crew.name),
-            line('Rank', crewRanks[crewRank(life)]),
-            _bar('Respect', crewRespect(life)),
-            _bar('Loyalty', crewLoyalty(life)),
-            if (rivalry(life) > 0) _bar('Rival crews', rivalry(life)),
-            if (informant(life))
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  'You are secretly informing for the police.',
-                  style: NF.sora(12, color: NF.danger),
+          InkWell(
+            onTap: () => setState(() => _open = !_open),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.local_fire_department_rounded,
+                  color: h >= 45 ? NF.danger : NF.orange,
+                  size: 20,
                 ),
-              ),
-          ],
-          const SizedBox(height: 8),
-          Text(
-            h == 0 ? 'The police are not looking at you.' : 'Heat comes from being known to police, open cases and money you cannot explain. Lie low, change your look, launder money or let time pass to cool it.',
-            style: NF.sora(12, color: NF.muted),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Your criminal profile',
+                        style: NF.sora(15, weight: FontWeight.w700),
+                      ),
+                      if (!_open)
+                        Text(summary, style: NF.sora(12, color: NF.muted)),
+                    ],
+                  ),
+                ),
+                Icon(
+                  _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                  color: NF.muted,
+                ),
+              ],
+            ),
           ),
+          if (_open) ...[
+            const SizedBox(height: 8),
+            _bar('Heat · ${heatLabel(h)}', h),
+            line('Street skill', skillName(skill)),
+            line('Open investigations', '${life.cases.length}'),
+            if (life.dirty > 0) line('Dirty money', money(life.dirty)),
+            if (crew != null) ...[
+              line('Crew', crew.name),
+              line('Rank', crewRanks[crewRank(life)]),
+              _bar('Respect', crewRespect(life)),
+              _bar('Loyalty', crewLoyalty(life)),
+              if (rivalry(life) > 0) _bar('Rival crews', rivalry(life)),
+              if (informant(life))
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    'You are secretly informing for the police.',
+                    style: NF.sora(12, color: NF.danger),
+                  ),
+                ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              h == 0 ? 'The police are not looking at you.' : 'Heat comes from being known to police, open cases and money you cannot explain. Lie low, change your look, launder money or let time pass to cool it.',
+              style: NF.sora(12, color: NF.muted),
+            ),
+          ],
         ],
       ),
     );

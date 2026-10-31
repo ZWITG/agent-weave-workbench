@@ -212,7 +212,7 @@ class _PathTabState extends State<PathTab> {
     'justice' => [
       JusticeCard(life: life),
       const SizedBox(height: 10),
-      CrimeProfileCard(life: life),
+      CrimeProfileCard(life: life, startOpen: true),
     ],
     _ => [const PathwaysCard()],
   };

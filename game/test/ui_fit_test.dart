@@ -374,6 +374,68 @@ void main() {
     }
   });
 
+  testWidgets('the Crime category is grouped into short sections', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    final l = c.life!;
+    l.notoriety = 10;
+    l.dirty = 40000;
+    l.cases.add({'crime': 'burglary', 'age': 33, 'evidence': 40});
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    await _tapText(t, 'Swipe up for activities');
+    // Pin the Activities list itself: its first heading scrolls away.
+    final list = find.byWidget(
+      t.widget(
+        find
+            .ancestor(
+              of: find.text('Good ideas right now'),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      ),
+    );
+    await t.scrollUntilVisible(
+      find.text('Rules and risks'),
+      200,
+      scrollable: list,
+    );
+    await _pump(t);
+    await _tapText(t, 'Crime');
+    // The page opens at its top: a one-line profile, then sections
+    // instead of one long list.
+    expect(find.text('Your criminal profile'), findsOneWidget);
+    expect(find.text('Cover your tracks'), findsOneWidget);
+    // Under heat, Cover your tracks is already open.
+    expect(find.text('Lie low'), findsOneWidget);
+    expect(find.text('Fraud'), findsNothing);
+    // The profile opens on tap.
+    await _tapText(t, 'Your criminal profile');
+    expect(find.text('Open investigations'), findsOneWidget);
+    final page = find.byWidget(
+      t.widget(
+        find
+            .ancestor(
+              of: find.text('Cover your tracks'),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      ),
+    );
+    await t.scrollUntilVisible(
+      find.text('White-collar'),
+      200,
+      scrollable: page,
+    );
+    await _tapText(t, 'White-collar');
+    expect(find.text('Fraud'), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
+
   testWidgets('moving abroad picks a country from a drop-down list', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);

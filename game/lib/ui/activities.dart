@@ -13,6 +13,7 @@ import '../game_controller.dart';
 import '../sound.dart';
 import '../theme.dart';
 import 'health_screen.dart' show CrimeProfileCard;
+import '../engine/underworld.dart' show heat;
 import 'minigames.dart';
 import 'move_abroad.dart';
 import 'newspaper.dart';
@@ -80,6 +81,62 @@ const activityGroups = <(String, String, List<String>)>[
     ['Travel', 'Pets', 'Identity', 'News'],
   ),
   ('Rules and risks', 'Lawyers, courts and crime', ['Law', 'Crime']),
+];
+
+/// The Crime category, grouped by kind so it reads as short sections.
+const crimeSections = <(String, String, IconData, List<String>)>[
+  (
+    'Cover your tracks',
+    'Cool the heat, clean money, come clean',
+    Icons.shield_moon_rounded,
+    ['lie_low', 'launder', 'turn_in'],
+  ),
+  (
+    'Petty crime',
+    'Small risks, small rewards',
+    Icons.back_hand_rounded,
+    ['shoplift', 'pickpocket', 'graffiti', 'porch_theft', 'street_racing'],
+  ),
+  (
+    'Theft',
+    'Houses, cars and stolen goods',
+    Icons.key_rounded,
+    ['burglary', 'car_theft', 'black_market'],
+  ),
+  (
+    'White-collar',
+    'Brains over muscle: fraud, hacking, paperwork',
+    Icons.business_center_rounded,
+    [
+      'fraud',
+      'identity_theft',
+      'hacking',
+      'counterfeiting',
+      'insurance_fraud',
+      'insider_trading',
+      'embezzlement',
+      'tax_evasion',
+    ],
+  ),
+  (
+    'Organised crime',
+    'Crews, heists, smuggling and rackets',
+    Icons.groups_rounded,
+    [
+      'join_crew',
+      'crew_job',
+      'plan_heist',
+      'smuggling',
+      'extortion',
+      'leave_crew',
+    ],
+  ),
+  (
+    'Violent crime',
+    'The most serious charges there are',
+    Icons.dangerous_rounded,
+    ['assault', 'armed_robbery', 'murder'],
+  ),
 ];
 
 /// One plain sentence at the top of each category.
@@ -156,6 +213,16 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   }
 
   /// Every activity, minus those hidden by the content filters.
+  /// A new page (a category, or back to all) starts at its top.
+  void _toTop() {
+    final sc = widget.scrollController;
+    if (sc.hasClients) sc.jumpTo(0);
+  }
+
+  /// Crime sections the player opened or closed by hand.
+  final Set<String> _crimeOpen = {};
+  final Set<String> _crimeClosed = {};
+
   List<GameAction> get _actions => c.engine!.actions
       .where((a) => !filteredOut(c.profile, a.category, a.id))
       // Music stays out of sight until Road to the Underground opens it.
@@ -447,6 +514,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           borderRadius: BorderRadius.circular(16),
           onTap: () => setState(() {
             _category = cat;
+            _toTop();
             _showLocked = false;
           }),
           child: Padding(
@@ -520,48 +588,157 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       if (cat == 'Crime') ...[
         CrimeProfileCard(life: life),
         const SizedBox(height: 12),
-      ],
-      if (open.isEmpty)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            done.isNotEmpty
-                ? 'You have done everything here this year. More next year.'
-                : 'Nothing here is open yet. See below for when each one unlocks.',
-            style: NF.sora(14, color: NF.muted),
+        ..._crimePage(context, all),
+      ] else ...[
+        if (open.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              done.isNotEmpty
+                  ? 'You have done everything here this year. More next year.'
+                  : 'Nothing here is open yet. See below for when each one unlocks.',
+              style: NF.sora(14, color: NF.muted),
+            ),
           ),
-        ),
-      // Short lists stay as one list; longer ones split by price.
-      if (open.length <= 5 || free.isEmpty || paid.isEmpty)
-        ...rows(open)
-      else ...[
-        _sectionTitle('Free', 'No money needed'),
-        ...rows(free),
-        const SizedBox(height: 10),
-        _sectionTitle('Costs money', 'The price shows on each one'),
-        ...rows(paid),
-      ],
-      if (done.isNotEmpty) ...[
-        const SizedBox(height: 10),
-        _sectionTitle('Done this year', 'Ready again after your birthday'),
-        ...rows(done),
-      ],
-      if (locked.isNotEmpty) ...[
-        const SizedBox(height: 6),
-        TextButton.icon(
-          onPressed: () => setState(() => _showLocked = !_showLocked),
-          icon: Icon(
-            _showLocked ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+        // Short lists stay as one list; longer ones split by price.
+        if (open.length <= 5 || free.isEmpty || paid.isEmpty)
+          ...rows(open)
+        else ...[
+          _sectionTitle('Free', 'No money needed'),
+          ...rows(free),
+          const SizedBox(height: 10),
+          _sectionTitle('Costs money', 'The price shows on each one'),
+          ...rows(paid),
+        ],
+        if (done.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          _sectionTitle('Done this year', 'Ready again after your birthday'),
+          ...rows(done),
+        ],
+        if (locked.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          TextButton.icon(
+            onPressed: () => setState(() => _showLocked = !_showLocked),
+            icon: Icon(
+              _showLocked
+                  ? Icons.expand_less_rounded
+                  : Icons.expand_more_rounded,
+            ),
+            label: Text(
+              _showLocked
+                  ? 'Hide what is not open yet'
+                  : '${locked.length} not open yet',
+            ),
           ),
-          label: Text(
-            _showLocked
-                ? 'Hide what is not open yet'
-                : '${locked.length} not open yet',
-          ),
-        ),
-        if (_showLocked) ...rows(locked),
+          if (_showLocked) ...rows(locked),
+        ],
       ],
     ];
+  }
+
+  /// Crime, grouped: each kind of crime is a short section you can open,
+  /// with how many are open right now. Cover your tracks comes first and
+  /// opens by itself when the police are interested in you.
+  List<Widget> _crimePage(BuildContext context, List<GameAction> all) {
+    final placed = {for (final s in crimeSections) ...s.$4};
+    final sections = [
+      ...crimeSections,
+      (
+        'Other',
+        'Everything else',
+        Icons.more_horiz_rounded,
+        [
+          for (final a in all)
+            if (!placed.contains(a.id)) a.id,
+        ],
+      ),
+    ];
+    final hot = heat(life) > 0 || life.dirty > 0;
+    final out = <Widget>[];
+    for (final (title, sub, icon, ids) in sections) {
+      final list = [for (final id in ids) ...all.where((a) => a.id == id)];
+      if (list.isEmpty) continue;
+      // Hide "cover your tracks" until there is something to cover.
+      if (title == 'Cover your tracks' && !list.any(_open)) continue;
+      final openHere = list.where(_open).toList();
+      final expanded =
+          _crimeOpen.contains(title) ||
+          (title == 'Cover your tracks' &&
+              hot &&
+              !_crimeClosed.contains(title));
+      out.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Material(
+            color: NF.surface2,
+            borderRadius: BorderRadius.circular(14),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => setState(() {
+                if (expanded) {
+                  _crimeOpen.remove(title);
+                  _crimeClosed.add(title);
+                } else {
+                  _crimeOpen.add(title);
+                  _crimeClosed.remove(title);
+                }
+              }),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+                child: Row(
+                  children: [
+                    Icon(
+                      icon,
+                      color: openHere.isEmpty ? NF.muted : NF.orange,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: NF.sora(15, weight: FontWeight.w700),
+                          ),
+                          Text(
+                            openHere.isEmpty
+                                ? 'Nothing open right now · $sub'
+                                : '${openHere.length} open · $sub',
+                            style: NF.sora(12, color: NF.muted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      expanded
+                          ? Icons.expand_less_rounded
+                          : Icons.expand_more_rounded,
+                      color: NF.muted,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      if (expanded) {
+        // Open ones first, then those done this year, then locked ones
+        // with the reason, so nothing is a mystery.
+        final sorted = [...openHere, ...list.where((a) => !_open(a))];
+        for (final a in sorted) {
+          out.add(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
+              child: actionRow(context, c, a, closeSheet: !widget.docked),
+            ),
+          );
+        }
+        out.add(const SizedBox(height: 6));
+      }
+    }
+    return out;
   }
 
   // ---------------- Search ----------------
