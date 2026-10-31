@@ -17,6 +17,8 @@ const _deptIcons = <String, IconData>{
   'home': Icons.chair_rounded,
   'books': Icons.menu_book_rounded,
   'sport': Icons.sports_tennis_rounded,
+  'beauty': Icons.spa_rounded,
+  'food': Icons.restaurant_rounded,
   'luxury': Icons.diamond_rounded,
   'gifts': Icons.card_giftcard_rounded,
   'subs': Icons.autorenew_rounded,
@@ -114,6 +116,8 @@ class OwnedItemCard extends StatelessWidget {
 
 String _stat(String k) => '${k[0].toUpperCase()}${k.substring(1)}';
 
+String _signed(int v) => v >= 0 ? '+$v' : '−${-v}';
+
 /// The shop, laid out like the Activities panel: sale banner, today's
 /// deals, search, departments as tiles, and "Your stuff" for returns,
 /// resale and subscriptions.
@@ -128,6 +132,10 @@ class ShopScreen extends StatefulWidget {
 class _ShopScreenState extends State<ShopScreen> {
   String? _dept;
   String _q = '';
+
+  /// Department view: 'range' (grouped by price), 'low' or 'high'.
+  String _sort = 'range';
+  bool _affordable = false;
   final _search = TextEditingController();
 
   GameController get c => widget.controller;
@@ -142,6 +150,8 @@ class _ShopScreenState extends State<ShopScreen> {
 
   void _open(String? d) => setState(() {
     _dept = d;
+    _sort = 'range';
+    _affordable = false;
     _search.clear();
     _q = '';
   });
@@ -288,10 +298,62 @@ class _ShopScreenState extends State<ShopScreen> {
         else if (d == 'stuff')
           ..._stuff(context)
         else
-          for (final i in catalogue.where((i) => i.dept == d))
-            _ItemCard(item: i, shop: this),
+          ..._items(d),
       ],
     );
+  }
+
+  /// A department's items: sort and filter chips, then the items, grouped
+  /// into price ranges unless sorted.
+  List<Widget> _items(String d) {
+    final items = [
+      for (final i in catalogue.where((i) => i.dept == d))
+        if (!_affordable || priceOf(life, i, _now) <= life.money) i,
+    ];
+    int price(ShopItem i) => priceOf(life, i, _now);
+    items.sort(
+      (a, b) => _sort == 'high'
+          ? price(b).compareTo(price(a))
+          : price(a).compareTo(price(b)),
+    );
+    Widget chip(String label, bool on, VoidCallback tap) => ChoiceChip(
+      label: Text(label),
+      selected: on,
+      onSelected: (_) => setState(tap),
+    );
+    String range(ShopItem i) => price(i) < 100
+        ? 'Budget · under \$100'
+        : price(i) < 1000
+        ? 'Mid-range · \$100 to \$999'
+        : 'Premium · \$1,000 and up';
+    return [
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          chip('By price range', _sort == 'range', () => _sort = 'range'),
+          chip('Cheapest first', _sort == 'low', () => _sort = 'low'),
+          chip('Priciest first', _sort == 'high', () => _sort = 'high'),
+          FilterChip(
+            label: const Text('What I can afford'),
+            selected: _affordable,
+            onSelected: (v) => setState(() => _affordable = v),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      if (items.isEmpty)
+        Text(
+          'Nothing here you can afford right now.',
+          style: NF.sora(14, color: NF.muted),
+        ),
+      for (var k = 0; k < items.length; k++) ...[
+        if (_sort == 'range' &&
+            (k == 0 || range(items[k - 1]) != range(items[k])))
+          HubHeading(range(items[k])),
+        _ItemCard(item: items[k], shop: this),
+      ],
+    ];
   }
 
   Widget _subRow(BuildContext context, Subscription s) {
@@ -525,9 +587,9 @@ class _ItemCard extends StatelessWidget {
     final off = discountOn(i, now);
     final lock = itemLock(life, i);
     final effects = [
-      for (final e in i.now.entries) '${_stat(e.key)} +${e.value}',
+      for (final e in i.now.entries) '${_stat(e.key)} ${_signed(e.value)}',
       for (final e in i.yearly.entries)
-        '${_stat(e.key)} +${e.value}/yr${i.years > 0 ? ' for ${i.years}' : ''}',
+        '${_stat(e.key)} ${_signed(e.value)}/yr${i.years > 0 ? ' for ${i.years}' : ''}',
     ];
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

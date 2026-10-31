@@ -2448,4 +2448,20 @@ void main() {
       }
     }
   });
+
+  test('every shop department has plenty to choose from', () {
+    final ids = catalogue.map((i) => i.id).toList();
+    expect(ids.toSet().length, ids.length);
+    for (final d in departments.keys.where((d) => d != 'subs')) {
+      final n = catalogue.where((i) => i.dept == d).length;
+      expect(n, greaterThanOrEqualTo(10), reason: d);
+    }
+    expect(subscriptions.length, greaterThanOrEqualTo(15));
+    // Something for every budget in the everyday departments.
+    for (final d in ['clothes', 'tech', 'home', 'books', 'sport', 'beauty']) {
+      final prices = catalogue.where((i) => i.dept == d).map((i) => i.price);
+      expect(prices.any((p) => p < 100), isTrue, reason: d);
+      expect(prices.any((p) => p >= 500), isTrue, reason: d);
+    }
+  });
 }
