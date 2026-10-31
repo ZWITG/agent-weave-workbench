@@ -800,6 +800,10 @@ class Life {
   // ---- Fame and social media (social.dart) ----
   int fame = 0;
 
+  /// Public image, −100 (hated) to 100 (adored): how people feel about
+  /// you, separate from how many know you (celebrity.dart).
+  int image = 0;
+
   /// Followers per platform id (vybe, lenso, murmur, hearthcast, inkwell).
   final Map<String, int> followers = {};
   bool verified = false;
@@ -1063,6 +1067,7 @@ class Life {
     'idleYears': idleYears,
     'genderIdentity': genderIdentity,
     'fame': fame,
+    'image': image,
     'followers': followers,
     'verified': verified,
     'posts': posts,
@@ -1223,6 +1228,7 @@ class Life {
       ..idleYears = j['idleYears'] ?? 0
       ..genderIdentity = j['genderIdentity'] ?? ''
       ..fame = j['fame'] ?? 0
+      ..image = j['image'] ?? 0
       ..followers.addAll(Map<String, int>.from(j['followers'] ?? {}))
       ..verified = j['verified'] ?? false
       ..posts.addAll([

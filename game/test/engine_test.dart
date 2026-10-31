@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/actions.dart';
 import 'package:relivable/engine/careers.dart';
+import 'package:relivable/engine/celebrity.dart';
 import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
@@ -173,8 +174,17 @@ void main() {
         s.remembers != null &&
         s.requiresFlags.isNotEmpty &&
         s.maxAge - s.minAge <= 8;
+    // Events that need a life state the random bot rarely reaches (owning
+    // a house, retiring, a job plus an earlier choice) are also checked
+    // directly, with that state built for them.
+    bool rareState(Storylet s) =>
+        s.conditions.keys.any(
+          const {'owns', 'retired', 'money', 'prison'}.contains,
+        ) ||
+        (s.conditions.containsKey('job') && s.requiresFlags.isNotEmpty);
     bool direct(Storylet s) =>
         chain(s) ||
+        rareState(s) ||
         s.minAge >= 95 ||
         s.requiresFlags.contains('married') ||
         s.requiresFlags.any(rare.contains) ||
@@ -191,6 +201,42 @@ void main() {
       setStage(old, p, 'married');
       for (final f in s.requiresFlags) {
         old.flags[f] = Memory(old.age, f);
+      }
+      if (s.conditions['job'] == true) {
+        old.job = 'Accountant';
+        old.salary = 40000;
+      }
+      if (s.conditions['retired'] == true) old.retired = true;
+      final money = '${s.conditions['money'] ?? ''}';
+      if (money.startsWith('>')) {
+        old.money = int.parse(money.replaceAll(RegExp(r'[^0-9]'), '')) + 1;
+      } else if (money.startsWith('<')) {
+        old.money = 0;
+      }
+      if (s.requiresNpcs.contains('@friend') &&
+          !old.npcs.any((n) => n.circle == 'Friends' && n.alive)) {
+        old.npcs.add(
+          Npc(
+            id: 'pal',
+            role: 'Friend',
+            name: 'Sam',
+            birthYear: old.year - old.age,
+            circle: 'Friends',
+            bond: 70,
+          ),
+        );
+      }
+      for (final kind in List<String>.from(s.conditions['owns'] ?? const [])) {
+        old.assets.add(
+          Asset(
+            id: 'own_$kind',
+            kind: kind,
+            name: kind,
+            value: 100000,
+            yearlyCost: 0,
+            since: old.age,
+          ),
+        );
       }
       final range = RegExp(r'^(\d+)')
           .firstMatch('${s.conditions['childAge'] ?? '30'}');
@@ -2556,5 +2602,49 @@ void main() {
     rentFlat(l, places.last, Random(2));
     expect(l.assets.where((a) => a.kind == 'rental').length, 1);
     expect(l.money, isNot(cash));
+  });
+
+  test('fame: tiers, public image, fame activities and celebrity life', () {
+    final l = engine.newLife(seed: 259)..age = 30;
+    expect(fameTierOf(l).name, 'Unknown');
+    final talk = allActions.firstWhere((a) => a.id == 'talk_show');
+    expect(talk.lockReason(l), isNotNull);
+    l.fame = 50;
+    expect(fameTierOf(l).name, 'Celebrity');
+    expect(talk.lockReason(l), isNull);
+    final cash = l.money;
+    engine.runAction(l, talk);
+    expect(l.money, greaterThan(cash));
+    // Image is separate from fame and stays in range.
+    addImage(l, 500);
+    expect(l.image, 100);
+    addImage(l, -500);
+    expect(l.image, -100);
+    // A scandal hurts your image as well as your fame.
+    l.image = 0;
+    l.flags['affair_found'] = Memory(l.age, 'x');
+    l.sceneQueue.add('scandal:affair');
+    final scandal = engine.nextScene(l)!;
+    engine.choose(l, scandal, scandal.choices.first);
+    expect(l.image, lessThan(0));
+    // Feuds raise fame, cost image, and ask what you do next.
+    final feud = allActions.firstWhere((a) => a.id == 'start_feud');
+    final fame = l.fame;
+    engine.runAction(l, feud);
+    expect(l.fame, greaterThan(fame));
+    expect(l.sceneQueue.any((s) => s.startsWith('fame_feud:')), isTrue);
+    // A product line earns more when you are liked.
+    l.marks.add('product_line');
+    l.image = 50;
+    final liked = productIncome(l);
+    l.image = -50;
+    expect(productIncome(l), lessThan(liked));
+    // Years of celebrity life run without errors.
+    l.fame = 80;
+    for (var y = 0; y < 10; y++) {
+      l.age++;
+      celebrityYear(l, Random(y));
+    }
+    expect(fameTierOf(l).name, isNot('Unknown'));
   });
 }

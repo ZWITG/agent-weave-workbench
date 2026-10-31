@@ -6,6 +6,7 @@ import 'family.dart' show childrenOf;
 import 'justice.dart' show crimeById;
 import 'models.dart';
 import 'storylet.dart';
+import 'celebrity.dart' show addImage;
 
 /// Fame and social media (plan Social §5): Fame (how widely known you are)
 /// and Followers (per platform) are separate. Every post shows its reach
@@ -243,6 +244,7 @@ ActionResult post(Life l, String platform, String type, Random rng) {
   switch (type) {
     case 'charity':
       l.stats.add('karma', 2);
+      addImage(l, 2);
     case 'collab':
       final f = _collabFriend(l)!;
       f.addFacets(affection: 4);
@@ -421,7 +423,11 @@ Storylet? socialScene(String id, List<String> args, Life l) {
       final b = _brands[Random(l.seed + l.age).nextInt(_brands.length)];
       final fee = min(
         500000,
-        (maxFollowers(l) * 0.02 + l.fame * 500).round() ~/ 100 * 100,
+        // Brands pay more for people the public likes.
+        ((maxFollowers(l) * 0.02 + l.fame * 500) * (1 + l.image / 200))
+                .round() ~/
+            100 *
+            100,
       );
       final years = 2 + Random(l.seed * 3 + l.age).nextInt(2);
       final conflict = l.stats[b.$3] < 30;
@@ -484,6 +490,7 @@ Storylet? socialScene(String id, List<String> args, Life l) {
       void land(Life l, int fameHit, double followersKept, int cancelYears) {
         l.marks.add('scandal:$key');
         l.fame = max(0, l.fame - fameHit);
+        addImage(l, -(10 + fameHit * 2));
         for (final k in l.followers.keys.toList()) {
           l.followers[k] = (l.followers[k]! * followersKept).round();
         }
@@ -561,6 +568,7 @@ Storylet? socialScene(String id, List<String> args, Life l) {
             outcome: '',
             run: (l, rng) {
               l.fame = min(100, l.fame + 10);
+              addImage(l, 15);
               return 'You talked honestly for an hour. Clips went everywhere, and this time people were kind.';
             },
           ),
@@ -570,6 +578,7 @@ Storylet? socialScene(String id, List<String> args, Life l) {
             run: (l, rng) {
               l.fame = min(100, l.fame + 6);
               l.stats.add('karma', 5);
+              addImage(l, 20);
               return 'You raised money for something that matters and let the work speak for itself.';
             },
           ),

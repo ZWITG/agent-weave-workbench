@@ -15,6 +15,7 @@ import 'crime_jobs.dart';
 import 'pets.dart';
 import 'prison_life.dart';
 import 'social.dart';
+import 'celebrity.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -136,6 +137,10 @@ Storylet? buildScene(String id, Life life) {
     'brand_deal' ||
     'scandal' ||
     'comeback' => socialScene(parts.first, parts.sublist(1), life),
+    'fame_rumour' ||
+    'fame_stalker' ||
+    'fame_award' ||
+    'fame_feud' => celebrityScene(parts.first, parts.sublist(1), life),
     'pet_adopt' ||
     'pet_name' ||
     'stray' => petScene(parts.first, parts.sublist(1), life),

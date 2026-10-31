@@ -11,6 +11,7 @@ import 'homes.dart';
 import 'heists.dart';
 import 'pets.dart';
 import 'social.dart';
+import 'celebrity.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -314,6 +315,7 @@ class GameEngine {
       ...identityYear(life),
       ...lawYear(life, _rngFor(life, 107)),
       ...fameYear(life, _rngFor(life, 101)),
+      ...celebrityYear(life, _rngFor(life, 103)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),

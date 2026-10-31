@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../engine/celebrity.dart';
 import '../engine/social.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -44,7 +45,7 @@ class SocialScreen extends StatelessWidget {
                           style: NF.sora(18, weight: FontWeight.w700),
                         ),
                         const Spacer(),
-                        Pill(tierOf(l)),
+                        Pill(fameTierOf(l).name),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -57,11 +58,60 @@ class SocialScreen extends StatelessWidget {
                         color: NF.orange,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
+                    // Public image: how people feel, not how many know you.
+                    Row(
+                      children: [
+                        Icon(
+                          l.image >= 0
+                              ? Icons.favorite_rounded
+                              : Icons.heart_broken_rounded,
+                          color: l.image >= 0 ? NF.blue : NF.danger,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Public image: ${imageLabel(l.image)}',
+                          style: NF.sora(15, weight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: (l.image + 100) / 200,
+                        minHeight: 6,
+                        backgroundColor: NF.surface2,
+                        color: l.image >= 0 ? NF.blue : NF.danger,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    if (knownFor(l).isNotEmpty)
+                      Text(
+                        'Known for: ${knownFor(l).join(', ')}',
+                        style: NF.sora(13, color: NF.soft),
+                      ),
                     Text(
-                      'Fame is how widely known you are, from any source. Followers are per platform: a famous surgeon can have few, an influencer can have millions.',
+                      '${fameTierOf(l).name}: ${fameTierOf(l).perks} · ${fameTierOf(l).costs}',
                       style: NF.sora(12, color: NF.muted),
                     ),
+                    if (fameTiers.indexOf(fameTierOf(l)) < fameTiers.length - 1)
+                      Text(
+                        'Next: ${fameTiers[fameTiers.indexOf(fameTierOf(l)) + 1].name} at fame ${fameTiers[fameTiers.indexOf(fameTierOf(l)) + 1].from}',
+                        style: NF.sora(12, color: NF.muted),
+                      ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Fame is how many people know you; image is how they feel about you. Fame activities are in the Fame category of Activities.',
+                      style: NF.sora(12, color: NF.muted),
+                    ),
+                    if (l.marks.contains('publicist') ||
+                        l.marks.contains('bodyguard'))
+                      Text(
+                        'Staff: ${[if (l.marks.contains('publicist')) 'publicist', if (l.marks.contains('bodyguard')) 'bodyguard'].join(', ')}',
+                        style: NF.sora(12, color: NF.soft),
+                      ),
                     if ((l.cancelledUntil ?? 0) > l.age)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),

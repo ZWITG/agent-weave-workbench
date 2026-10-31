@@ -5,6 +5,7 @@ import '../engine/actions.dart';
 import '../engine/engine.dart';
 import '../engine/lifespan.dart';
 import '../engine/meta.dart' show achievements, goalsFor, goalDone;
+import '../engine/celebrity.dart';
 import '../engine/models.dart';
 import '../engine/storylet.dart';
 import '../game_controller.dart';
@@ -1205,7 +1206,7 @@ class _MeTabState extends State<_MeTab> {
             ? 'From age 13'
             : life.followers.isEmpty
             ? 'Start posting'
-            : 'Fame ${life.fame}',
+            : '${fameTierOf(life).name} · ${imageLabel(life.image).toLowerCase()}',
         about: 'Posts, followers, fame, deals and scandals',
         alert: false,
         dim: life.age < 13,

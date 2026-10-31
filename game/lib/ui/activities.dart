@@ -25,6 +25,7 @@ const activityCategories = <(String, IconData)>[
   ('Money', Icons.savings_rounded),
   ('Love', Icons.favorite_rounded),
   ('Social', Icons.celebration_rounded),
+  ('Fame', Icons.star_rounded),
   ('Hobbies', Icons.palette_rounded),
   ('Travel', Icons.flight_rounded),
   ('Assets', Icons.home_work_rounded),
