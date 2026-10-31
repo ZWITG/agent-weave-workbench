@@ -558,34 +558,98 @@ class _BottomBar extends StatelessWidget {
                     child: InkWell(
                       onTap: onSearch,
                       borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        height: 52,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          color: NF.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: NF.border),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.search, color: NF.muted, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'What do you want to do?',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: NF.sora(14, color: NF.muted),
-                              ),
+                      // On narrow phones the box shrinks to its icon.
+                      child: LayoutBuilder(
+                        builder: (context, box) {
+                          final narrow = box.maxWidth < 110;
+                          return Container(
+                            height: 52,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: narrow ? 0 : 16,
                             ),
-                          ],
-                        ),
+                            alignment: narrow
+                                ? Alignment.center
+                                : Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                              color: NF.surface,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: NF.border),
+                            ),
+                            child: narrow
+                                ? const Icon(
+                                    Icons.search,
+                                    color: NF.muted,
+                                    size: 20,
+                                  )
+                                : Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.search,
+                                        color: NF.muted,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'What do you want to do?',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: NF.sora(14, color: NF.muted),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          );
+                        },
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                // Rewind: a smaller sibling of Age +1 (not for Ironman lives).
+                if (!controller.life!.ironman) ...[
+                  const SizedBox(width: 8),
+                  Tooltip(
+                    message:
+                        controller.rewindLock ?? 'Rewind to an earlier year',
+                    child: Semantics(
+                      button: true,
+                      label: 'Rewind',
+                      excludeSemantics: true,
+                      child: FilledButton(
+                        style: orangeButton().copyWith(
+                          minimumSize: const WidgetStatePropertyAll(
+                            Size(44, 44),
+                          ),
+                          fixedSize: const WidgetStatePropertyAll(Size(44, 44)),
+                          padding: const WidgetStatePropertyAll(
+                            EdgeInsets.zero,
+                          ),
+                          backgroundColor: WidgetStatePropertyAll(
+                            controller.rewindLock == null
+                                ? NF.orange.withValues(alpha: 0.85)
+                                : NF.surface2,
+                          ),
+                          foregroundColor: WidgetStatePropertyAll(
+                            controller.rewindLock == null ? NF.bg : NF.muted,
+                          ),
+                          shape: WidgetStatePropertyAll(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                        onPressed: blocked
+                            ? null
+                            : () => showRewind(context, controller),
+                        child: const Icon(
+                          Icons.history_toggle_off_rounded,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(width: 8),
                 Tooltip(
                   message: blocked
                       ? 'Choose an option first'
@@ -1287,29 +1351,11 @@ class _MeTabState extends State<_MeTab> {
         dim: false,
       ),
       (
-        id: 'collections',
-        icon: Icons.collections_bookmark_rounded,
-        label: 'Collections',
-        status: '${p.collections.values.fold(0, (a, v) => a + v.length)} found',
-        about: 'Careers, countries, titles, pets and stories across lives',
-        alert: false,
-        dim: false,
-      ),
-      (
         id: 'family',
         icon: Icons.account_tree_rounded,
         label: 'Family tree',
         status: 'Generation ${life.generation}',
         about: 'Your parents, partner, children and the family line',
-        alert: false,
-        dim: false,
-      ),
-      (
-        id: 'identity',
-        icon: Icons.face_rounded,
-        label: 'Identity',
-        status: life.pronouns.isEmpty ? 'Who you are' : life.pronouns,
-        about: 'Name, gender, pronouns and orientation',
         alert: false,
         dim: false,
       ),
@@ -1332,29 +1378,11 @@ class _MeTabState extends State<_MeTab> {
         dim: false,
       ),
       (
-        id: 'memories',
-        icon: Icons.photo_album_rounded,
-        label: 'Memories',
-        status: '${life.flags.length} kept',
-        about: 'The big moments of this life',
-        alert: false,
-        dim: life.flags.isEmpty,
-      ),
-      (
         id: 'traits',
         icon: Icons.psychology_rounded,
         label: 'Hidden stats',
         status: 'Your traits',
         about: 'Karma, willpower, discipline and the rest',
-        alert: false,
-        dim: false,
-      ),
-      (
-        id: 'rewind',
-        icon: Icons.history_toggle_off_rounded,
-        label: 'Rewind',
-        status: 'Undo a year',
-        about: 'Go back to an earlier birthday',
         alert: false,
         dim: false,
       ),

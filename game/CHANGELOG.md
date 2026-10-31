@@ -118,3 +118,8 @@ Named updates since the game was created (26 October 2026). Newest last.
 - An opening animation when the game starts or is opened again: the ZWITG mark (letters settle, the red line draws across), then the Relivable logo, then into the game.
 - Tap to skip; shorter and calmer with Reduce motion on.
 - Shareable intro videos in `media/` (square 1080×1080 and vertical 1080×1920), rebuilt with `tool/make_intro_video.sh`.
+
+## 2.11 "Tidy Up" (31 Oct)
+- The Identity, Memories and Collections tiles are hidden from the Me tab.
+- Rewind is now a small button beside Age +1 (orange when a rewind is available, grey when not; hidden for Ironman lives) instead of a Me tab tile.
+- On very narrow phones the search box shrinks to its icon so everything fits.
