@@ -2480,6 +2480,12 @@ void main() {
     expect(lettingsOf(l).length, 3);
     final a = lettingsOf(l).first;
     expect(isVacant(a), isTrue);
+    // No pop-up after buying: you find tenants when you choose to.
+    expect(l.sceneQueue.any((k) => k.startsWith('let_pick')), isFalse);
+    // An empty year only leaves a reminder in the feed.
+    final empty = propertyYear(l, Random(9));
+    expect(empty.where((x) => x.contains('still empty')).length, 3);
+    expect(l.sceneQueue.any((k) => k.startsWith('let_pick')), isFalse);
     expect(rentIncome(l, a), 0);
     // Choose a tenant from the applicants.
     l.sceneQueue

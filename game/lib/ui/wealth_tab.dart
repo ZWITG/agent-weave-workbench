@@ -500,7 +500,24 @@ class _WealthTabState extends State<WealthTab> {
         : null,
     renovateLabel: 'Renovate (${money(renovationCost(a))})',
     rent: a.info['let'] == true ? rentIncome(life, a) : null,
+    onTenant: a.info['let'] == true && isVacant(a)
+        ? () => _scene(context, 'let_pick:${a.id}')
+        : null,
+    onManage: a.info['let'] == true
+        ? () => _scene(context, 'let_manage:${a.id}')
+        : null,
   );
+
+  /// Opens a property scene (finding a tenant, managing a rental).
+  void _scene(BuildContext context, String id) {
+    final busy = c.busyReason;
+    if (busy != null) {
+      showBusyNotice(context, c, busy);
+      return;
+    }
+    c.openScene(id);
+    showEvent(context, c);
+  }
 
   void _homeWork(
     BuildContext context,
@@ -1155,9 +1172,17 @@ class _AssetCard extends StatelessWidget {
     this.repairLabel = 'Repair',
     this.renovateLabel = 'Renovate',
     this.rent,
+    this.onTenant,
+    this.onManage,
   });
   final Asset asset;
   final VoidCallback onSell;
+
+  /// For an empty rental: choose from applicants.
+  final VoidCallback? onTenant;
+
+  /// For a rental: tenant, rent level, letting agent.
+  final VoidCallback? onManage;
   final VoidCallback? onRepair;
   final VoidCallback? onRenovate;
   final String repairLabel;
@@ -1264,6 +1289,15 @@ class _AssetCard extends StatelessWidget {
               if (a.kind == 'house' && a.condition < 80)
                 _small(repairLabel, onRepair),
               if (a.kind == 'house') _small(renovateLabel, onRenovate),
+              if (onManage != null) _small('Manage', onManage),
+              if (onTenant != null)
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  onPressed: onTenant,
+                  child: const Text('Find a tenant'),
+                ),
               _small(rental ? 'Move out' : 'Sell', onSell),
             ],
           ),

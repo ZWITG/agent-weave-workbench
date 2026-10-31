@@ -315,9 +315,8 @@ String buyListing(Life l, Listing h, int price) {
       },
     ),
   );
-  if (asLet) l.sceneQueue.insert(0, 'let_pick:${l.assets.last.id}');
   l.stats.add('happiness', asLet ? 3 : 8);
-  return '${asLet ? 'You bought a ${h.type.toLowerCase()} in ${h.area} to let out.' : 'You got the keys to a ${h.type.toLowerCase()} in ${h.area}.'} ${cash ? 'You paid ${_m(price)} in cash.' : 'You put down ${_m(deposit)} and took a ${_m(loan)} ${debt.toLowerCase()} at ${(l.rates[debt]! * 100).toStringAsFixed(1)}% over 25 years.'} Fees: ${_m(fees)}.$find${asLet ? ' Tenants will pay about ${_m(rentFor(l.assets.last))} a year.' : ''}';
+  return '${asLet ? 'You bought a ${h.type.toLowerCase()} in ${h.area} to let out.' : 'You got the keys to a ${h.type.toLowerCase()} in ${h.area}.'} ${cash ? 'You paid ${_m(price)} in cash.' : 'You put down ${_m(deposit)} and took a ${_m(loan)} ${debt.toLowerCase()} at ${(l.rates[debt]! * 100).toStringAsFixed(1)}% over 25 years.'} Fees: ${_m(fees)}.$find${asLet ? ' It is empty for now. When you are ready, find a tenant from Wealth › What you own (about ${_m(rentFor(l.assets.last))} a year in rent).' : ''}';
 }
 
 /// Yearly rent from tenants: about 5% of the home's value.

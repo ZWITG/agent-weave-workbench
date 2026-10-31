@@ -160,9 +160,11 @@ List<String> propertyYear(Life l, Random rng) {
         feed.add(
           'Your letting agent found a tenant for the ${a.name.toLowerCase()} in ${a.info['area']}: ${pick['name']} (${tenantKinds[pick['kind']]!.label.toLowerCase()}).',
         );
-      } else if (!asked) {
-        l.sceneQueue.add('let_pick:${a.id}');
-        asked = true;
+      } else {
+        // A reminder, not a pop-up: you choose when to look for tenants.
+        feed.add(
+          'Your ${a.name.toLowerCase()} in ${a.info['area']} is still empty, so no rent came in. Find a tenant from Wealth › What you own.',
+        );
       }
       continue;
     }
@@ -434,8 +436,7 @@ Storylet? propertyScene(String id, List<String> args, Life l) {
                 ? 'You own $maxLets rentals already'
                 : null,
             run: (l, rng) {
-              l.sceneQueue.insert(0, 'let_pick:${old.id}');
-              return 'You are a landlord now. Time to find a tenant.';
+              return 'You are a landlord now. Find a tenant from Wealth › What you own when you are ready.';
             },
           ),
         ],
