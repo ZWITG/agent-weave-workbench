@@ -188,7 +188,16 @@ String? postLock(Life l, String platform, String type) {
     p -= 5;
     parts.add('cancelled −5%');
   }
-  return (p.clamp(0.5, 25), parts);
+  // Famous people get seen; liked people get shared (celebrity.dart).
+  if (l.fame >= 10) {
+    p += l.fame / 10;
+    parts.add('your fame');
+  }
+  if (l.image.abs() >= 25) {
+    p += l.image / 25;
+    parts.add(l.image > 0 ? 'people like you' : 'people dislike you');
+  }
+  return (p.clamp(0.5, 30), parts);
 }
 
 String reachBand(double viral) => viral >= 15
@@ -224,7 +233,17 @@ ActionResult post(Life l, String platform, String type, Random rng) {
   if (viral) {
     gain += (5000 + rng.nextInt(55000) + before * 0.5).round();
     l.fame = min(100, l.fame + 3 + rng.nextInt(6));
+    // What goes viral changes how people see you.
+    addImage(l, switch (type) {
+      'charity' => 6,
+      'talent' || 'collab' => 3,
+      'opinion' => -4,
+      'family' => -2,
+      _ => 1,
+    });
   }
+  // Fame brings an audience; public image decides if they stay.
+  gain = (gain * (1 + l.fame / 50) * (1 + l.image / 200)).round();
   final notes = <String>[];
   var text = viral
       ? 'It went viral. Your phone would not stop buzzing for three days.'
@@ -232,11 +251,12 @@ ActionResult post(Life l, String platform, String type, Random rng) {
       ? 'Solid numbers. People shared it and new followers trickled in.'
       : 'A few likes, mostly from people who already love you.';
   if (type == 'opinion' &&
-      rng.nextInt(100) < (platform == 'murmur' ? 35 : 22)) {
+      rng.nextInt(100) < (platform == 'murmur' ? 35 : 22) - l.image ~/ 10) {
     final lost = (before * (0.05 + rng.nextDouble() * 0.1)).round();
     gain = -lost;
     text = 'Your hot take started a pile-on. You lost followers and gained a few dedicated haters.';
     l.stats.add('happiness', -3);
+    addImage(l, -5);
     l.posts.add({'platform': platform, 'age': l.age, 'hot': true});
   } else if (type == 'opinion') {
     l.posts.add({'platform': platform, 'age': l.age, 'hot': true});
@@ -601,7 +621,7 @@ final socialActions = <GameAction>[
   GameAction(
     id: 'post_online',
     label: 'Post on social media',
-    category: 'Social',
+    category: 'Social media',
     keywords: [
       'post',
       'social media',
@@ -616,7 +636,22 @@ final socialActions = <GameAction>[
     minAge: 13,
     screen: 'social',
     repeatable: true,
-    priceNote: 'Opens your Social screen',
+    priceNote: 'Your accounts and the post composer',
     run: (l, rng) => ActionResult('You open your apps.'),
+  ),
+  GameAction(
+    id: 'get_verified',
+    label: 'Apply to get verified',
+    category: 'Social media',
+    keywords: ['verified', 'blue tick', 'verification', 'social media'],
+    minAge: 13,
+    extraCheck: (l) => l.verified
+        ? 'You are already verified'
+        : verifyRequirements(l)
+              .where((r) => !r.$2)
+              .map((r) => r.$1)
+              .firstOrNull,
+    priceNote: '100k followers on one platform and some fame',
+    run: (l, rng) => applyVerification(l),
   ),
 ];

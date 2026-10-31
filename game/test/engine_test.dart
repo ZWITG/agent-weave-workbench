@@ -2735,4 +2735,25 @@ void main() {
       );
     }
   });
+
+  test('social media and fame feed each other', () {
+    final l = engine.newLife(seed: 262)..age = 25;
+    // Fame and a good image make posts likelier to spread.
+    final (plain, _) = viralChance(l, 'vybe', 'talent');
+    l.fame = 60;
+    l.image = 60;
+    final (famous, why) = viralChance(l, 'vybe', 'talent');
+    expect(famous, greaterThan(plain));
+    expect(why, contains('your fame'));
+    // Fame moments off-screen bring followers.
+    expect(l.followers, isEmpty);
+    final talk = allActions.firstWhere((a) => a.id == 'talk_show');
+    engine.runAction(l, talk);
+    expect(maxFollowers(l), greaterThan(0));
+    // Social media actions live in their own Activities category.
+    final post = allActions.firstWhere((a) => a.id == 'post_online');
+    expect(post.category, 'Social media');
+    final verify = allActions.firstWhere((a) => a.id == 'get_verified');
+    expect(verify.category, 'Social media');
+  });
 }

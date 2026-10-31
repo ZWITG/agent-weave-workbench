@@ -32,6 +32,21 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
 void addImage(Life l, int d) => l.image = (l.image + d).clamp(-100, 100);
 void addFame(Life l, int d) => l.fame = (l.fame + d).clamp(0, 100);
 
+/// Fame moments off-screen bring followers on-screen: they land on your
+/// biggest platform (or a new one), more when people like you.
+int gainFollowers(Life l, int base) {
+  if (l.age < 13) return 0;
+  final top = l.followers.entries.isEmpty
+      ? 'lenso'
+      : (l.followers.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .first
+            .key;
+  final n = max(0, (base * (1 + l.image / 100)).round());
+  l.followers[top] = (l.followers[top] ?? 0) + n;
+  return n;
+}
+
 // ---------------- Tiers ----------------
 
 typedef FameTier = ({String name, int from, String perks, String costs});
@@ -296,6 +311,7 @@ Storylet? celebrityScene(String id, List<String> args, Life l) {
                 addImage(l, 6);
                 l.stats.add('happiness', 8);
                 l.flags['award_winner'] = Memory(l.age, 'winning $what');
+                gainFollowers(l, l.fame * 2500);
                 return 'They read your name. You forgot your speech and thanked your dentist. It went viral for the right reasons.';
               }
               addFame(l, 2);
@@ -366,10 +382,16 @@ final celebrityActions = <GameAction>[
       if (l.stats['charisma'] >= 50 || rng.nextInt(100) < 50) {
         addFame(l, 3);
         addImage(l, 4);
+        final f = gainFollowers(l, l.fame * 800);
         return _did(
           l,
           'You were charming, a little self-deprecating, and told a story about your mum that made the host cry laughing.',
-          ['Fee +${_m(fee)}', 'Fame up', 'Image up'],
+          [
+            'Fee +${_m(fee)}',
+            'Fame up',
+            'Image up',
+            '+${followersLabel(f)} followers',
+          ],
         );
       }
       addFame(l, 1);
@@ -394,12 +416,17 @@ final celebrityActions = <GameAction>[
       final hit = l.stats['looks'] + rng.nextInt(40) >= 75;
       addFame(l, hit ? 4 : 1);
       addImage(l, hit ? 3 : -2);
+      final f = gainFollowers(l, (hit ? 1500 : 300) * l.fame);
       return _did(
         l,
         hit
             ? 'Your outfit made every best-dressed list. Designers are already calling.'
             : 'A fashion critic called your outfit "a cry for help". You thought it was nice.',
-        ['Money −${_m(3000)}', hit ? 'Best dressed' : 'Worst dressed'],
+        [
+          'Money −${_m(3000)}',
+          hit ? 'Best dressed' : 'Worst dressed',
+          '+${followersLabel(f)} followers',
+        ],
       );
     },
   ),
@@ -511,6 +538,7 @@ final celebrityActions = <GameAction>[
       final r = rivals[rng.nextInt(rivals.length)];
       l.marks.add('feud:$r');
       addFame(l, 4);
+      gainFollowers(l, l.fame * 600);
       addImage(l, -6);
       l.sceneQueue.add('fame_feud:$r');
       return _did(

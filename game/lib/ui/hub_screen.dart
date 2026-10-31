@@ -99,7 +99,7 @@ class _HubScreenState extends State<HubScreen> {
               () => _tab = _destinations.indexWhere((d) => d.$3 == 'Wealth'),
             ),
             onFame: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => SocialScreen(controller: c)),
+              MaterialPageRoute(builder: (_) => FameScreen(controller: c)),
             ),
           ),
           Expanded(
@@ -1220,7 +1220,7 @@ class _MeTabState extends State<_MeTab> {
   void _go(BuildContext context, String id) {
     Widget? screen = switch (id) {
       'health' => HealthScreen(controller: controller),
-      'social' => SocialScreen(controller: controller),
+      'fame' => FameScreen(controller: controller),
       'goals' => GoalsScreen(controller: controller),
       'achievements' => AchievementsScreen(controller: controller),
       'collections' => CollectionsScreen(controller: controller),
@@ -1258,17 +1258,15 @@ class _MeTabState extends State<_MeTab> {
         dim: false,
       ),
       (
-        id: 'social',
-        icon: Icons.campaign_rounded,
-        label: 'Social',
-        status: life.age < 13
-            ? 'From age 13'
-            : life.followers.isEmpty
-            ? 'Start posting'
+        id: 'fame',
+        icon: Icons.star_rounded,
+        label: 'Fame',
+        status: life.fame == 0
+            ? 'Not famous yet'
             : '${fameTierOf(life).name} · ${imageLabel(life.image).toLowerCase()}',
-        about: 'Posts, followers, fame, deals and scandals',
+        about: 'Fame, public image and what you are known for',
         alert: false,
-        dim: life.age < 13,
+        dim: life.fame == 0,
       ),
       (
         id: 'goals',

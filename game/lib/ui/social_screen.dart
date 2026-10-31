@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../engine/celebrity.dart';
+import '../engine/models.dart';
 import '../engine/social.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
 
-/// The Social screen (plan Social §5): Fame and Followers as separate
-/// meters, platform cards, a post composer that shows reach and risk
-/// before you post, the verification card and your brand deal.
+/// The Social media screen (opened from Activities): your accounts, platform
+/// cards, a post composer, the verification card and your brand deal.
+/// Fame and public image have their own screen (FameScreen).
 class SocialScreen extends StatelessWidget {
   const SocialScreen({super.key, required this.controller});
   final GameController controller;
@@ -27,93 +28,34 @@ class SocialScreen extends StatelessWidget {
           backgroundColor: NF.bg,
           appBar: AppBar(
             backgroundColor: NF.bg,
-            title: Text('Social', style: NF.sora(18, weight: FontWeight.w700)),
+            title: Text(
+              'Social media',
+              style: NF.sora(18, weight: FontWeight.w700),
+            ),
           ),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
             children: [
+              // Your accounts at a glance; fame has its own screen.
               NFCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, color: NF.orange),
+                        const Icon(
+                          Icons.phone_iphone_rounded,
+                          color: NF.orange,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          'Fame ${l.fame}',
+                          '${followersLabel(l.followers.values.fold(0, (a, b) => a + b))} followers',
                           style: NF.sora(18, weight: FontWeight.w700),
                         ),
                         const Spacer(),
-                        Pill(fameTierOf(l).name),
+                        Pill(tierOf(l)),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: l.fame / 100,
-                        minHeight: 8,
-                        backgroundColor: NF.surface2,
-                        color: NF.orange,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Public image: how people feel, not how many know you.
-                    Row(
-                      children: [
-                        Icon(
-                          l.image >= 0
-                              ? Icons.favorite_rounded
-                              : Icons.heart_broken_rounded,
-                          color: l.image >= 0 ? NF.blue : NF.danger,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            'Public image: ${imageLabel(l.image)}',
-                            style: NF.sora(15, weight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: (l.image + 100) / 200,
-                        minHeight: 6,
-                        backgroundColor: NF.surface2,
-                        color: l.image >= 0 ? NF.blue : NF.danger,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (knownFor(l).isNotEmpty)
-                      Text(
-                        'Known for: ${knownFor(l).join(', ')}',
-                        style: NF.sora(13, color: NF.soft),
-                      ),
-                    Text(
-                      '${fameTierOf(l).name}: ${fameTierOf(l).perks} · ${fameTierOf(l).costs}',
-                      style: NF.sora(12, color: NF.muted),
-                    ),
-                    if (fameTiers.indexOf(fameTierOf(l)) < fameTiers.length - 1)
-                      Text(
-                        'Next: ${fameTiers[fameTiers.indexOf(fameTierOf(l)) + 1].name} at fame ${fameTiers[fameTiers.indexOf(fameTierOf(l)) + 1].from}',
-                        style: NF.sora(12, color: NF.muted),
-                      ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Fame is how many people know you; image is how they feel about you. Fame activities are in the Fame category of Activities.',
-                      style: NF.sora(12, color: NF.muted),
-                    ),
-                    if (l.marks.contains('publicist') ||
-                        l.marks.contains('bodyguard'))
-                      Text(
-                        'Staff: ${[if (l.marks.contains('publicist')) 'publicist', if (l.marks.contains('bodyguard')) 'bodyguard'].join(', ')}',
-                        style: NF.sora(12, color: NF.soft),
-                      ),
                     if ((l.cancelledUntil ?? 0) > l.age)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
@@ -138,6 +80,41 @@ class SocialScreen extends StatelessWidget {
                           style: NF.sora(13, color: const Color(0xFF5EE6A8)),
                         ),
                       ),
+                    const SizedBox(height: 8),
+                    // How fame and image shape every post.
+                    InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => FameScreen(controller: controller),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              color: NF.orange,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                l.fame == 0
+                                    ? 'Not famous yet: go viral to get noticed'
+                                    : 'Fame: ${fameTierOf(l).name} · image ${imageLabel(l.image).toLowerCase()}. Fame gets your posts seen; a good image gets them shared.',
+                                style: NF.sora(12, color: NF.soft),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.chevron_right_rounded,
+                              color: NF.muted,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -359,4 +336,158 @@ class SocialScreen extends StatelessWidget {
       },
     );
   }
+}
+
+/// Fame and public image, on their own: tier, image, what you are known
+/// for, and the perks and costs of being famous (Me tab, fame badge).
+class FameScreen extends StatelessWidget {
+  const FameScreen({super.key, required this.controller});
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final l = controller.life;
+        if (l == null) return const SizedBox.shrink();
+        return Scaffold(
+          backgroundColor: NF.bg,
+          appBar: AppBar(
+            backgroundColor: NF.bg,
+            title: Text('Fame', style: NF.sora(18, weight: FontWeight.w700)),
+          ),
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
+            children: [
+              _fameCard(l),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.phone_iphone_rounded),
+                label: Text(
+                  l.followers.isEmpty
+                      ? 'Start on social media'
+                      : 'Your social media: ${followersLabel(l.followers.values.fold(0, (a, b) => a + b))} followers',
+                ),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SocialScreen(controller: controller),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+Widget _fameCard(Life l) {
+  final income = socialIncome(l).fold(0, (a, b) => a + b.$2);
+  return NFCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.star_rounded, color: NF.orange),
+            const SizedBox(width: 8),
+            Text('Fame ${l.fame}', style: NF.sora(18, weight: FontWeight.w700)),
+            const Spacer(),
+            Pill(fameTierOf(l).name),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: l.fame / 100,
+            minHeight: 8,
+            backgroundColor: NF.surface2,
+            color: NF.orange,
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Public image: how people feel, not how many know you.
+        Row(
+          children: [
+            Icon(
+              l.image >= 0
+                  ? Icons.favorite_rounded
+                  : Icons.heart_broken_rounded,
+              color: l.image >= 0 ? NF.blue : NF.danger,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                'Public image: ${imageLabel(l.image)}',
+                style: NF.sora(15, weight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: (l.image + 100) / 200,
+            minHeight: 6,
+            backgroundColor: NF.surface2,
+            color: l.image >= 0 ? NF.blue : NF.danger,
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (knownFor(l).isNotEmpty)
+          Text(
+            'Known for: ${knownFor(l).join(', ')}',
+            style: NF.sora(13, color: NF.soft),
+          ),
+        Text(
+          '${fameTierOf(l).name}: ${fameTierOf(l).perks} · ${fameTierOf(l).costs}',
+          style: NF.sora(12, color: NF.muted),
+        ),
+        if (fameTiers.indexOf(fameTierOf(l)) < fameTiers.length - 1)
+          Text(
+            'Next: ${fameTiers[fameTiers.indexOf(fameTierOf(l)) + 1].name} at fame ${fameTiers[fameTiers.indexOf(fameTierOf(l)) + 1].from}',
+            style: NF.sora(12, color: NF.muted),
+          ),
+        const SizedBox(height: 6),
+        Text(
+          'Fame is how many people know you; image is how they feel about you. Fame activities are in the Fame category of Activities.',
+          style: NF.sora(12, color: NF.muted),
+        ),
+        if (l.marks.contains('publicist') || l.marks.contains('bodyguard'))
+          Text(
+            'Staff: ${[if (l.marks.contains('publicist')) 'publicist', if (l.marks.contains('bodyguard')) 'bodyguard'].join(', ')}',
+            style: NF.sora(12, color: NF.soft),
+          ),
+        if ((l.cancelledUntil ?? 0) > l.age)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Cancelled: a comeback opens at ${l.cancelledUntil}.',
+              style: NF.sora(13, color: NF.danger),
+            ),
+          ),
+        if (l.deal != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Brand deal: ${l.deal!['brand']} · ${money(l.deal!['fee'] as int)} a year until ${l.deal!['until']} · morality clause',
+              style: NF.sora(13, color: NF.soft),
+            ),
+          ),
+        if (income > 0)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              'Income from social media: about ${money(income)} a year',
+              style: NF.sora(13, color: const Color(0xFF5EE6A8)),
+            ),
+          ),
+      ],
+    ),
+  );
 }

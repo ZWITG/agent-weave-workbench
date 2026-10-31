@@ -343,7 +343,7 @@ void main() {
     // Tapping it opens the Social screen.
     await t.tap(find.text('Celebrity'));
     await _pump(t);
-    expect(find.text('Social'), findsWidgets);
+    expect(find.text('Fame'), findsWidgets);
     expect(find.textContaining('Public image'), findsOneWidget);
   });
 
