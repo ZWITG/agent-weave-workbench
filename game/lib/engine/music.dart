@@ -61,9 +61,11 @@ List<Map<String, dynamic>> unreleased(Life l) =>
 List<Map<String, dynamic>> released(Life l) =>
     l.songs.where((s) => s['out'] == true).toList();
 
-/// Monthly listeners, from what your songs are streaming now.
-int listenersOf(Life l) =>
-    released(l).fold<int>(0, (a, s) => a + ((s['rate'] as int?) ?? 0)) ~/ 40;
+/// Monthly listeners: your fanbase, built up by good releases.
+int listenersOf(Life l) => (l.music['fans'] as int?) ?? 0;
+
+/// Fans stop growing as you near the biggest stars' audiences.
+const fanCeiling = 60000000;
 
 bool playsInstrument(Life l) =>
     l.flags.containsKey('instrument') ||
@@ -109,13 +111,26 @@ ActionResult writeSong(Life l, Random rng, String genre, double? score) {
       'Your notebook is full of unreleased songs. Release some first.',
     );
   }
+  // Quality comes from you: songwriting skill most of all, then how well
+  // you played the mini-game, your creativity and an instrument. Luck only
+  // nudges it.
+  final skill = songwritingOf(l);
+  final played = score ?? 0.6;
   final q =
-      (l.stats['creativity'] * 0.55 +
-              (playsInstrument(l) ? 10 : 0) +
-              (score ?? 0.6) * 25 +
-              rng.nextInt(15))
+      (skill * 0.55 +
+              l.stats['creativity'] * 0.2 +
+              played * 25 +
+              (playsInstrument(l) ? 5 : 0) +
+              rng.nextInt(9) -
+              4)
           .round()
-          .clamp(5, 100);
+          .clamp(1, 100);
+  // Every song makes you better; a well-played session teaches more.
+  final gain = max(
+    1,
+    1 + (played * 3).round() + (skill < 30 ? 1 : 0) - (skill >= 70 ? 2 : 0),
+  );
+  l.music['skill'] = min(100, skill + gain);
   final title =
       '${_first[rng.nextInt(_first.length)]} ${_second[rng.nextInt(_second.length)]}';
   l.songs.add({
@@ -141,6 +156,7 @@ ActionResult writeSong(Life l, Random rng, String genre, double? score) {
   return ActionResult(
     'You wrote "$title", a ${genres[genre]!.toLowerCase()} song. $verdict',
     [
+      'Songwriting ${songwritingOf(l)} (+$gain)',
       '${unreleased(l).length} unreleased song${unreleased(l).length == 1 ? '' : 's'}',
       if (genre == trendingGenre(l.year))
         '${genres[genre]} is what everyone wants this year',
@@ -148,6 +164,25 @@ ActionResult writeSong(Life l, Random rng, String genre, double? score) {
     ],
   );
 }
+
+/// Songwriting skill, 0 to 100: it grows with every song you write.
+int songwritingOf(Life l) => (l.music['skill'] as int?) ?? 0;
+
+/// An established artist (a top-40 hit, or 100k monthly listeners) is
+/// boosted by fame, followers and public image; before that, songs stand
+/// on their own.
+bool establishedArtist(Life l) =>
+    l.flags.containsKey('charted') || listenersOf(l) >= 100000;
+
+String qualityLabel(int q) => q >= 85
+    ? 'a potential hit'
+    : q >= 65
+    ? 'strong'
+    : q >= 45
+    ? 'decent'
+    : q >= 25
+    ? 'rough'
+    : 'weak';
 
 /// Gives a song your own title. Returns the title it ended up with: the
 /// trimmed name, or the old one if the name is blank.
@@ -282,8 +317,14 @@ ActionResult releaseSongs(
   final signed = l.music['label'] != null;
   final cost = how == 'studio' ? 2000 * songs.length : 0;
   l.money -= cost;
+  // Until you are established, only people who already know your music
+  // listen; after that, your fame and followers bring everyone else.
+  final established = establishedArtist(l);
   final followers = l.followers.values.fold<int>(0, (a, b) => a + b);
-  final audience = 2000 + listenersOf(l) * 2 + followers * 0.3 + l.fame * 4000;
+  final audience =
+      1500 +
+      listenersOf(l) +
+      (established ? followers * 0.2 + l.fame * 3000 : 0);
   final promo = how == 'label' ? 3.0 : 1.0;
   var total = 0;
   for (final s in songs) {
@@ -293,10 +334,17 @@ ActionResult releaseSongs(
     final hit =
         pow(q / 50, 3) *
         (s['genre'] == trendingGenre(l.year) ? 1.8 : 1) *
-        (1 + l.image / 200) *
+        (established ? 1 + l.image / 200 : 1) *
         (album ? 1.2 : 1);
-    final streams = (audience * hit * promo * (0.4 + rng.nextDouble()) * 25)
-        .round();
+    // A little luck either way; the song itself decides.
+    final streams =
+        (audience * hit * promo * (0.85 + rng.nextDouble() * 0.3) * 5)
+            .round();
+    // Good songs turn listeners into fans; weak ones barely do.
+    final fans = listenersOf(l);
+    final newFans =
+        (streams * 0.05 * q / 100 * (1 - fans / fanCeiling)).round();
+    l.music['fans'] = (fans + max(0, newFans)).clamp(0, fanCeiling);
     s['out'] = true;
     s['released'] = l.age;
     s['streams'] = streams;
@@ -379,6 +427,8 @@ int musicRoyalties(Life l) {
     // Old songs fade, but a hit keeps a long tail.
     s['rate'] = (rate * ((s['best'] as int? ?? 0) == 1 ? 0.7 : 0.55)).round();
   }
+  // Some fans drift away every year unless you keep releasing.
+  l.music['fans'] = (listenersOf(l) * 0.85).round();
   final advance = (l.music['recoup'] as int?) ?? 0;
   if (advance > 0 && pay > 0) {
     // The label keeps your royalties until the advance is paid back.
@@ -405,11 +455,7 @@ Storylet? musicScene(String id, List<String> args, Life l) {
             Choice(
               label: '"${s['title']}" · ${genres[s['genre']]}',
               outcome: '',
-              risk: (s['q'] as int) >= 70
-                  ? 'Your strongest work'
-                  : (s['q'] as int) >= 45
-                  ? 'Solid'
-                  : 'Rough around the edges',
+              risk: 'Sounds ${qualityLabel(s['q'] as int)}',
               run: (l, rng) {
                 l.sceneQueue.insert(0, 'release_how:${l.songs.indexOf(s)}');
                 return 'You listen to "${s['title']}" one more time. Yes. This one.';
@@ -533,7 +579,7 @@ final musicActions = <GameAction>[
     minAge: 10,
     repeatable: true,
     hint: (l) =>
-        '${unreleased(l).length} unreleased · Creativity${playsInstrument(l) ? ' and your instrument' : ''} help',
+        'Songwriting ${songwritingOf(l)} · ${unreleased(l).length} unreleased · play the mini-game well for better songs',
     // The genre is picked as an option (variants.dart).
     run: (l, rng) => writeSong(l, rng, 'pop', null),
   ),
@@ -541,6 +587,7 @@ final musicActions = <GameAction>[
     id: 'release_single',
     label: 'Release a song online',
     category: 'Hobbies',
+    repeatable: true,
     keywords: ['release', 'single', 'song', 'stream', 'chart'],
     minAge: 13,
     extraCheck: (l) => unreleased(l).isEmpty ? 'Write a song first' : null,
@@ -721,6 +768,10 @@ final musicActions = <GameAction>[
             ? 'Signed to ${l.music['label']}. ${streamsLabel(listenersOf(l))} monthly listeners.'
             : 'Independent. ${streamsLabel(listenersOf(l))} monthly listeners.',
         [
+          'Songwriting skill ${songwritingOf(l)}',
+          establishedArtist(l)
+              ? 'Established artist: your fame and followers boost every release'
+              : 'Your songs stand on their own until your first top-40 hit',
           for (final s in out.take(6))
             '"${s['title']}" (${s['released']}): ${streamsLabel(s['streams'] as int)} streams${(s['best'] as int) > 0 ? ', ${chartLabel(s['best'] as int)}' : ''}',
           '${unreleased(l).length} unreleased',

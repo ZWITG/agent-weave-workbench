@@ -2801,7 +2801,7 @@ void main() {
         engine.runAction(l, allActions.firstWhere((a) => a.id == id));
       }
       expect(roadProgress(l), containsAll(['open_mic', 'jam', 'merch']));
-      l.songs.first['streams'] = 30000;
+      released(l).first['streams'] = 30000;
       roadCheck(l, Random(1));
       expect(roadDone(l), isTrue);
       expect(l.flags.containsKey('underground'), isTrue);
@@ -2818,6 +2818,9 @@ void main() {
       for (var i = 0; i < 3; i++) {
         engine.runAction(l, write, score: 1, variant: pop);
       }
+      // A seasoned songwriter with a real fanbase.
+      l.music['skill'] = 95;
+      l.music['fans'] = 3000000;
       l.fame = 60;
       l.followers['vybe'] = 2000000;
       engine.runAction(
@@ -2848,4 +2851,43 @@ void main() {
     expect(renameSong(l, song, '  Late   Bus Home '), 'Late Bus Home');
     expect(renameSong(l, song, 'x' * 60).length, 40);
   });
+
+  test(
+    'music: skill grows, quality decides hits, fame counts once established',
+    () {
+      final l = engine.newLife(seed: 265)..age = 20;
+      // Songwriting improves with every song, faster when played well.
+      writeSong(l, Random(1), 'pop', 1);
+      final afterGood = songwritingOf(l);
+      final m = engine.newLife(seed: 265)..age = 20;
+      writeSong(m, Random(1), 'pop', 0);
+      expect(afterGood, greaterThan(songwritingOf(m)));
+      // Same artist, same luck: a strong song beats a weak one by far.
+      int streamsFor(int q, {int fame = 0}) {
+        final a = engine.newLife(seed: 266)..age = 25;
+        a.fame = fame;
+        a.followers['vybe'] = fame * 100000;
+        final song = {
+          'title': 'T',
+          'genre': 'folk',
+          'q': q,
+          'age': 25,
+          'out': false,
+          'streams': 0,
+          'rate': 0,
+          'best': 0,
+        };
+        a.songs.add(song);
+        releaseSongs(a, [song], 'home', Random(7));
+        return song['streams'] as int;
+      }
+
+      expect(streamsFor(90), greaterThan(streamsFor(40) * 5));
+      // Before you are established, fame does not lift a song.
+      expect(streamsFor(60, fame: 80), streamsFor(60));
+      // Several releases a year.
+      final single = allActions.firstWhere((a) => a.id == 'release_single');
+      expect(single.repeatable, isTrue);
+    },
+  );
 }
