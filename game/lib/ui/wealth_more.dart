@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../engine/actions.dart' show ActionResult;
+import '../engine/business_kinds.dart';
+import '../engine/currency.dart' show localizeMoney;
 import '../engine/finance.dart';
 import '../engine/models.dart';
 import '../game_controller.dart';
@@ -407,6 +409,13 @@ class BusinessCard extends StatelessWidget {
       return actionRow(context, c, start, closeSheet: false);
     }
     final ind = industryById(b.industry);
+    final kind = kindOf(b);
+    void show(ActionResult r, String title) => showResultPopup(
+      context,
+      r,
+      title: title,
+      icon: Icons.storefront_rounded,
+    );
     Widget meter(String label, int v) => Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,7 +440,8 @@ class BusinessCard extends StatelessWidget {
         ],
       ),
     );
-    return NFCard(
+    final start = c.engine!.actions.firstWhere((a) => a.id == 'start_business');
+    final card = NFCard(
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -449,6 +459,11 @@ class BusinessCard extends StatelessWidget {
                       '${ind.name} · ${bizTiers[b.tier]!.label} · ${b.staff} staff · since age ${b.since}',
                       style: NF.sora(12, color: NF.muted),
                     ),
+                    if (kind != null)
+                      Text(
+                        'You: ${kind.role}',
+                        style: NF.sora(12, color: NF.soft),
+                      ),
                   ],
                 ),
               ),
@@ -456,7 +471,7 @@ class BusinessCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    money(life.businessValue),
+                    money(life.valueOfBusiness(b)),
                     style: NF.sora(15, weight: FontWeight.w700),
                   ),
                   Text('value', style: NF.sora(11, color: NF.muted)),
@@ -566,19 +581,105 @@ class BusinessCard extends StatelessWidget {
                 ),
             ],
           ),
+          if (kind != null) ...[
+            const SizedBox(height: 12),
+            Builder(
+              builder: (_) {
+                final lock = signatureLock(life);
+                return FilledButton.icon(
+                  style: primaryButton(),
+                  icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+                  onPressed: lock != null
+                      ? null
+                      : () => show(
+                          c.wealth((l) => runSignature(l, c.engine!.rngFor(l))),
+                          kind.signature.label,
+                        ),
+                  label: Text(
+                    lock == null
+                        ? '${kind.signature.label} · ${localizeMoney(kind.signature.detail)}'
+                        : '${kind.signature.label} · $lock',
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Upgrades for your ${ind.name.toLowerCase()}',
+              style: NF.sora(12, color: NF.muted),
+            ),
+            for (final p in kind.perks)
+              Builder(
+                builder: (_) {
+                  final owned = b.perks.contains(p.id);
+                  final lock = perkLock(life, p);
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Row(
+                      children: [
+                        Icon(
+                          owned
+                              ? Icons.check_circle_rounded
+                              : Icons.add_circle_outline_rounded,
+                          size: 18,
+                          color: owned ? const Color(0xFF5EE6A8) : NF.muted,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.label,
+                                style: NF.sora(13, weight: FontWeight.w600),
+                              ),
+                              Text(
+                                owned
+                                    ? p.blurb
+                                    : '${money(p.cost)} · ${p.blurb}',
+                                style: NF.sora(11, color: NF.muted),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!owned)
+                          TextButton(
+                            onPressed: lock != null
+                                ? null
+                                : () => show(
+                                    c.wealth((l) => buyPerk(l, p)),
+                                    p.label,
+                                  ),
+                            child: Text(lock ?? 'Buy'),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+          ],
           const SizedBox(height: 10),
           Text('Business model', style: NF.sora(12, color: NF.muted)),
           const SizedBox(height: 6),
-          Wrap(
-            spacing: 8,
-            children: [
+          DropdownButtonFormField<String>(
+            key: ValueKey('tier:${b.name}'),
+            initialValue: b.tier,
+            isExpanded: true,
+            dropdownColor: NF.surface,
+            decoration: dropdownDecoration(),
+            items: [
               for (final e in bizTiers.entries)
-                ChoiceChip(
-                  label: Text(e.value.label),
-                  selected: b.tier == e.key,
-                  onSelected: (_) => c.wealth((l) => setTier(l, e.key)),
+                DropdownMenuItem(
+                  value: e.key,
+                  child: Text(
+                    '${e.value.label} · ${e.value.blurb}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
             ],
+            onChanged: (v) {
+              if (v != null && v != b.tier) c.wealth((l) => setTier(l, v));
+            },
           ),
           const SizedBox(height: 10),
           Row(
@@ -589,7 +690,7 @@ class BusinessCard extends StatelessWidget {
                   onPressed: () => _confirm(
                     context,
                     'Sell ${b.name}?',
-                    'A buyer will pay about ${money(life.businessValue)} (three years of profit plus staff and brand).',
+                    'A buyer will pay about ${money(life.valueOfBusiness(b))} (three years of profit plus staff and brand).',
                     'Sell',
                     () => c.wealth(sellBusiness),
                   ),
@@ -614,6 +715,40 @@ class BusinessCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+    final many = life.businesses.length > 1;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (many) ...[
+          DropdownButtonFormField<int>(
+            key: ValueKey('biz:${life.businesses.length}'),
+            initialValue: life.businesses.indexOf(b),
+            isExpanded: true,
+            dropdownColor: NF.surface,
+            decoration: dropdownDecoration(
+              label: 'Managing (${life.businesses.length} businesses)',
+            ),
+            items: [
+              for (var i = 0; i < life.businesses.length; i++)
+                DropdownMenuItem(
+                  value: i,
+                  child: Text(
+                    '${life.businesses[i].name} · ${money(life.businesses[i].profit)} last year',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
+            onChanged: (i) {
+              if (i != null) c.wealth((l) => focusBusiness(l, i));
+            },
+          ),
+          const SizedBox(height: 10),
+        ],
+        card,
+        const SizedBox(height: 10),
+        actionRow(context, c, start, closeSheet: false),
+      ],
     );
   }
 

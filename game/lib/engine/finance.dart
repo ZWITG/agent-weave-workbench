@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'business_kinds.dart';
+
 import 'actions.dart';
 import 'careers.dart' show studying;
 import 'economy.dart';
@@ -374,10 +376,11 @@ String bankruptcy(Life l) {
     seized.add('your ${cars.first.name.toLowerCase()}');
     l.assets.removeWhere((a) => a.kind == 'car' && a.value > 5000);
   }
-  if (l.business != null) {
-    seized.add(l.business!.name);
-    l.business = null;
+  for (final b in l.businesses) {
+    seized.add(b.name);
   }
+  l.businesses.clear();
+  l.bizFocus = 0;
   l.credit = 320;
   l.bankruptAge = l.age;
   l.flags['bankrupt'] = Memory(l.age, 'declaring bankruptcy');
@@ -909,8 +912,8 @@ String _cap(String s) => s[0].toUpperCase() + s.substring(1);
 /// One year of trading (plan: revenue from demand, quality, brand, price
 /// and the economy; profit after wages, materials, rent and tax). Returns
 /// the profit (or loss) that reaches your cash.
-int businessYear(Life l, Random rng) {
-  final b = l.business!;
+int businessYear(Life l, Random rng, [Business? which]) {
+  final b = which ?? l.business!;
   final ind = industryById(b.industry);
   final tier = bizTiers[b.tier]!;
   final appeal = b.quality * 0.45 + b.brand * 0.3 + b.satisfaction * 0.25;
@@ -921,16 +924,22 @@ int businessYear(Life l, Random rng) {
       : 1.0;
   final crowd = b.staff > ind.maxStaff ? ind.maxStaff / b.staff : 1.0;
   final econ = _econDemand[l.economy] ?? 1.0;
+  final (perkDemand, perkSavings) = perkEffects(b);
   final demand =
       (0.45 + appeal / 100) *
+      (1 + perkDemand + b.boost / 100) *
       econ *
       tierFit *
       crowd *
       (0.9 + rng.nextDouble() * 0.2);
   final revenue = (ind.perStaff * b.staff * demand * tier.price).round();
   final wages = (ind.wage * b.staff * tier.wages).round();
-  final materials = (revenue * ind.materials * (b.tier == 'premium' ? 1.1 : 1))
-      .round();
+  final materials =
+      (revenue *
+              ind.materials *
+              (b.tier == 'premium' ? 1.1 : 1) *
+              (1 - perkSavings))
+          .round();
   final rent = (ind.rent * (b.tier == 'premium' ? 1.3 : 1)).round();
   final before = revenue - wages - materials - rent;
   final tax = before > 0 ? (before * 0.2).round() : 0;
@@ -959,6 +968,8 @@ int businessYear(Life l, Random rng) {
       (35, 'Premium prices without premium quality'),
   ]..sort((a, b) => b.$1.compareTo(a.$1));
   b.reasons = [for (final r in reasons.take(3)) r.$2];
+  b.boost = 0; // festivals, contracts and the like last one year
+  maybeTradeEvent(l, b, rng);
   // The year changes the business too.
   b.brand = max(0, b.brand - 4);
   b.morale = (b.morale + (60 - b.morale) ~/ 4).clamp(0, 100);
@@ -969,7 +980,7 @@ int businessYear(Life l, Random rng) {
           .clamp(0, 100);
   if (b.lossYears >= 2 && !l.marks.contains('insolvency:${l.age}')) {
     l.marks.add('insolvency:${l.age}');
-    l.sceneQueue.add('insolvency');
+    l.sceneQueue.add('insolvency:${b.name}');
   }
   return profit;
 }
@@ -977,9 +988,20 @@ int businessYear(Life l, Random rng) {
 String businessSummary(Business b) =>
     '${b.name}: revenue ${_m(b.revenue)}, ${b.profit >= 0 ? 'profit ${_m(b.profit)}' : 'a loss of ${_m(-b.profit)}'}. ${b.reasons.isEmpty ? '' : '${b.reasons.first}.'}';
 
+/// The most businesses one person can run at once.
+const maxBusinesses = 5;
+
+/// Business moves are once a year for each business.
+String _moveKey(Life l, String id) => '$id@${l.business?.name}';
+
+/// Switches which business the manager screen works on.
+void focusBusiness(Life l, int i) {
+  if (i >= 0 && i < l.businesses.length) l.bizFocus = i;
+}
+
 String? _bizLock(Life l, String id, int cost) {
   if (l.business == null) return 'No business';
-  if (l.usedActions.contains(id)) return 'Done this year';
+  if (l.usedActions.contains(_moveKey(l, id))) return 'Done this year';
   if (cost > 0 && l.money < cost) return 'Needs ${_m(cost)}';
   return null;
 }
@@ -1085,7 +1107,7 @@ final bizMoves = <BizMove>[
 String? bizMoveLock(Life l, BizMove m) => _bizLock(l, m.id, m.cost(l));
 
 ActionResult runBizMove(Life l, BizMove m, Random rng) {
-  l.usedActions.add(m.id);
+  l.usedActions.add(_moveKey(l, m.id));
   return m.run(l, rng);
 }
 
@@ -1099,7 +1121,7 @@ ActionResult setTier(Life l, String tier) {
 
 ActionResult sellBusiness(Life l) {
   final b = l.business!;
-  final value = l.businessValue;
+  final value = l.valueOfBusiness(b);
   l.money += value;
   l.business = null;
   l.flags['sold_business'] = Memory(l.age, 'selling ${b.name}');
@@ -1132,7 +1154,7 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
 Storylet? businessScene(String id, List<String> args, Life l) {
   switch (id) {
     case 'biz_found':
-      if (l.business != null) return null;
+      if (l.businesses.length >= maxBusinesses) return null;
       return _scene(
         id,
         'You have been sketching business ideas on napkins for years. Which one is it going to be? Each kind of business leans on a different skill.',
@@ -1141,7 +1163,8 @@ Storylet? businessScene(String id, List<String> args, Life l) {
             Choice(
               label: '${ind.name} · from ${_m(startupCost(ind, 'budget'))}',
               outcome: '',
-              risk: 'Key skill: ${_cap(ind.stat)} (yours ${l.stats[ind.stat]})',
+              risk:
+                  '${bizKinds[ind.id]?.blurb ?? ''} Key skill: ${_cap(ind.stat)} (yours ${l.stats[ind.stat]})',
               run: (l, rng) {
                 l.sceneQueue.add('biz_tier:${ind.id}');
                 return 'A ${ind.name.toLowerCase()} it is. Now: what kind?';
@@ -1182,8 +1205,13 @@ Storylet? businessScene(String id, List<String> args, Life l) {
       final rate = 0.06 + _risk(l) * 0.08;
       final lender = lenderOf(l);
       String open(Life l, String how) {
-        final name =
+        final base =
             '${l.surname} ${ind.name == 'Tech app' ? 'Apps' : ind.name}';
+        // A second shop of the same kind gets a number.
+        var name = base;
+        for (var n = 2; l.businesses.any((b) => b.name == name); n++) {
+          name = '$base $n';
+        }
         l.business =
             Business(name: name, industry: ind.id, tier: tier, since: l.age)
               ..staff = ind.maxStaff <= 3 ? 1 : 2
@@ -1266,8 +1294,11 @@ Storylet? businessScene(String id, List<String> args, Life l) {
         ],
       );
     case 'insolvency':
-      final b = l.business;
-      if (b == null) return null;
+      final i = args.isEmpty
+          ? l.bizFocus
+          : l.businesses.indexWhere((x) => x.name == args.join(':'));
+      if (i < 0 || i >= l.businesses.length) return null;
+      final b = l.businesses[i];
       return _scene(
         id,
         'Two years of losses. ${b.name} owes suppliers, the bank is calling and you have stopped opening the post. Main reasons: ${b.reasons.join('; ').toLowerCase()}.',
@@ -1287,9 +1318,10 @@ Storylet? businessScene(String id, List<String> args, Life l) {
             label: 'Sell for whatever you can get',
             outcome: '',
             run: (l, rng) {
-              final value = (l.businessValue * 0.5).round();
+              final value = (l.valueOfBusiness(b) * 0.5).round();
               l.money += value;
-              l.business = null;
+              l.businesses.remove(b);
+              l.bizFocus = 0;
               l.flags['sold_business'] = Memory(l.age, 'selling ${b.name}');
               return 'A competitor bought ${b.name} for ${_m(value)}. It stung, but it is over.';
             },
@@ -1297,7 +1329,10 @@ Storylet? businessScene(String id, List<String> args, Life l) {
           Choice(
             label: 'Close the doors',
             outcome: '',
-            run: (l, rng) => closeBusiness(l).text,
+            run: (l, rng) {
+              focusBusiness(l, l.businesses.indexOf(b));
+              return closeBusiness(l).text;
+            },
           ),
           Choice(
             label: 'Declare bankruptcy',
@@ -1319,8 +1354,8 @@ final financeActions = <GameAction>[
     priceNote: 'From \$8,000 · step-by-step planner',
     keywords: ['business', 'start', 'company', 'shop', 'startup', 'found'],
     minAge: 18,
-    extraCheck: (l) => l.business != null
-        ? 'You already run ${l.business!.name}'
+    extraCheck: (l) => l.businesses.length >= maxBusinesses
+        ? 'You already run $maxBusinesses businesses'
         : studying(l)
         ? 'Finish your course first'
         : null,

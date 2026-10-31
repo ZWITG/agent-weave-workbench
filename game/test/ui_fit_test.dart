@@ -36,6 +36,17 @@ Future<GameController> _game() async {
       since: 30,
     ),
   );
+  // Two businesses, so the business picker and trade upgrades show.
+  l.businesses.addAll([
+    Business(name: 'Carter Café', industry: 'cafe', tier: 'mid', since: 30)
+      ..perks.add('terrace'),
+    Business(
+      name: 'Carter Construction firm',
+      industry: 'construction',
+      tier: 'premium',
+      since: 32,
+    ),
+  ]);
   return c;
 }
 
@@ -126,6 +137,7 @@ void main() {
           ('People', 'Family'),
           ('Path', 'Job board'),
           ('Wealth', 'Bank and loans'),
+          ('Wealth', 'Business'),
           ('Me', 'Family tree'),
         ]) {
           await t.tap(find.text(tab).last);

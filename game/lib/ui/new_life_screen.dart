@@ -41,31 +41,15 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
     String Function(String)? label,
   }) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: NF.sora(13, color: NF.muted)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final o in options)
-              ChoiceChip(
-                label: Text(
-                  label?.call(o) ?? '${o[0].toUpperCase()}${o.substring(1)}',
-                ),
-                selected: value == o,
-                onSelected: (v) => setState(() => set(v ? o : null)),
-              ),
-            ChoiceChip(
-              label: const Text('Random'),
-              selected: value == null,
-              onSelected: (_) => setState(() => set(null)),
-            ),
-          ],
-        ),
+    child: PickList<String?>(
+      label: title,
+      value: value,
+      options: [
+        (null, 'Random'),
+        for (final o in options)
+          (o, label?.call(o) ?? '${o[0].toUpperCase()}${o.substring(1)}'),
       ],
+      onPick: (v) => setState(() => set(v)),
     ),
   );
 
@@ -125,23 +109,24 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                       children: [
                         const SectionLabel('How hard?', color: NF.blue),
                         const SizedBox(height: 10),
+                        PickList<String>(
+                          label: 'Difficulty',
+                          value: widget.controller.profile.difficulty,
+                          options: [
+                            for (final e in difficulties.entries)
+                              (e.key, '${e.value.label} · ${e.value.blurb}'),
+                          ],
+                          onPick: (v) => setState(
+                            () => widget.controller.updateProfile(
+                              (p) => p.difficulty = v,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            for (final e in difficulties.entries)
-                              ChoiceChip(
-                                label: Text(e.value.label),
-                                tooltip: e.value.blurb,
-                                selected:
-                                    widget.controller.profile.difficulty ==
-                                    e.key,
-                                onSelected: (_) => setState(
-                                  () => widget.controller.updateProfile(
-                                    (p) => p.difficulty = e.key,
-                                  ),
-                                ),
-                              ),
                             FilterChip(
                               label: const Text('Ironman (no Rewind)'),
                               selected: widget.controller.profile.ironman,
@@ -197,27 +182,17 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Text('Country', style: NF.sora(13, color: NF.muted)),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            ChoiceChip(
-                              label: const Text('Random'),
-                              selected: _country == null,
-                              onSelected: (_) =>
-                                  setState(() => _country = null),
-                            ),
-                            for (final c in countries)
-                              ChoiceChip(
-                                label: Text(c.name),
-                                selected: _country == c.name,
-                                onSelected: (v) => setState(
-                                  () => _country = v ? c.name : null,
-                                ),
-                              ),
+                        PickList<String?>(
+                          label: 'Country',
+                          value: _country,
+                          options: [
+                            (null, 'Random'),
+                            for (final n in [
+                              for (final c in countries) c.name,
+                            ]..sort())
+                              (n, n),
                           ],
+                          onPick: (v) => setState(() => _country = v),
                         ),
                         const SizedBox(height: 16),
                         _chips(

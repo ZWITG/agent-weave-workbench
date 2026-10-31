@@ -30,6 +30,7 @@ class _PathTabState extends State<PathTab> {
 
   /// Job board filter: all, open or special (plan CA-007).
   String _jobFilter = 'all';
+  String _jobField = 'all';
 
   GameController get c => widget.controller;
   Life get life => c.life!;
@@ -190,6 +191,7 @@ class _PathTabState extends State<PathTab> {
         'Jobs',
         'jobs',
         careers
+            .where((j) => _jobField == 'all' || j.field == _jobField)
             .where(
               (j) => switch (_jobFilter) {
                 'open' => j.lockReason(life) == null,
@@ -480,22 +482,48 @@ class _PathTabState extends State<PathTab> {
     );
   }
 
-  Widget _jobFilters() => Wrap(
-    spacing: 8,
-    children: [
-      for (final (k, label) in const [
-        ('all', 'All jobs'),
-        ('open', 'Open to me'),
-        ('special', 'Special careers'),
-        ('second', 'Second chance'),
-      ])
-        ChoiceChip(
-          label: Text(label),
-          selected: _jobFilter == k,
-          onSelected: (_) => setState(() => _jobFilter = k),
-        ),
-    ],
-  );
+  /// Two drop-downs: which jobs to show, and the type of work.
+  Widget _jobFilters() {
+    final fields = {for (final j in careers) j.field}.toList()..sort();
+    Widget box<T>(
+      String label,
+      T value,
+      List<(T, String)> options,
+      void Function(T) pick,
+    ) => Expanded(
+      child: DropdownButtonFormField<T>(
+        initialValue: value,
+        isExpanded: true,
+        dropdownColor: NF.surface,
+        decoration: dropdownDecoration(label: label),
+        items: [
+          for (final (v, text) in options)
+            DropdownMenuItem(
+              value: v,
+              child: Text(text, overflow: TextOverflow.ellipsis),
+            ),
+        ],
+        onChanged: (v) {
+          if (v != null) setState(() => pick(v));
+        },
+      ),
+    );
+    return Row(
+      children: [
+        box('Show', _jobFilter, const [
+          ('all', 'All jobs'),
+          ('open', 'Open to me'),
+          ('special', 'Special careers'),
+          ('second', 'Second chance'),
+        ], (v) => _jobFilter = v),
+        const SizedBox(width: 10),
+        box('Type of work', _jobField, [
+          ('all', 'All types'),
+          for (final f in fields) (f, f),
+        ], (v) => _jobField = v),
+      ],
+    );
+  }
 
   /// Open options first; locked ones fold under "Show n locked".
   Widget _section<T>(

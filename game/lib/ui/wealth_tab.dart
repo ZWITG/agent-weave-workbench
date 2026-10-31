@@ -187,7 +187,11 @@ class _WealthTabState extends State<WealthTab> {
         life.portfolioValue + life.invested > 0
             ? money(life.portfolioValue + life.invested)
             : (life.age < 18 ? 'From age 18' : 'Start investing'),
-      'business' => life.business?.name ?? 'None yet',
+      'business' => switch (life.businesses.length) {
+        0 => 'None yet',
+        1 => life.businesses.first.name,
+        final n => '$n businesses',
+      },
       'assets' =>
         life.assets.length + life.items.length == 0
             ? (life.age < 18 ? 'From age 18' : 'Nothing owned')

@@ -253,18 +253,18 @@ class SettingsScreen extends StatelessWidget {
                   'Difficulty for new lives',
                   style: NF.sora(15, weight: FontWeight.w600),
                 ),
-                subtitle: Wrap(
-                  spacing: 8,
-                  children: [
-                    for (final e in difficulties.entries)
-                      ChoiceChip(
-                        label: Text(e.value.label),
-                        selected: p.difficulty == e.key,
-                        onSelected: (_) => controller.updateProfile(
-                          (p) => p.difficulty = e.key,
-                        ),
-                      ),
-                  ],
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: PickList<String>(
+                    label: 'Difficulty',
+                    value: p.difficulty,
+                    options: [
+                      for (final e in difficulties.entries)
+                        (e.key, e.value.label),
+                    ],
+                    onPick: (v) =>
+                        controller.updateProfile((p) => p.difficulty = v),
+                  ),
                 ),
               ),
               sw(
@@ -308,23 +308,21 @@ class SettingsScreen extends StatelessWidget {
                   'Colour vision',
                   style: NF.sora(15, weight: FontWeight.w600),
                 ),
-                subtitle: Wrap(
-                  spacing: 8,
-                  children: [
-                    for (final (k, label) in const [
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: PickList<String>(
+                    label: 'Colours',
+                    value: p.colourMode,
+                    options: const [
                       ('default', 'Default'),
                       ('protan', 'Protan'),
                       ('deutan', 'Deutan'),
                       ('tritan', 'Tritan'),
                       ('mono', 'Monochrome'),
-                    ])
-                      ChoiceChip(
-                        label: Text(label),
-                        selected: p.colourMode == k,
-                        onSelected: (_) =>
-                            controller.updateProfile((p) => p.colourMode = k),
-                      ),
-                  ],
+                    ],
+                    onPick: (v) =>
+                        controller.updateProfile((p) => p.colourMode = v),
+                  ),
                 ),
               ),
               sw(
@@ -356,22 +354,20 @@ class SettingsScreen extends StatelessWidget {
                   'Text size',
                   style: NF.sora(15, weight: FontWeight.w600),
                 ),
-                subtitle: Wrap(
-                  spacing: 8,
-                  children: [
-                    for (final (label, v) in const [
-                      ('Normal', 1.0),
-                      ('Large', 1.15),
-                      ('Larger', 1.3),
-                      ('Largest', 1.5),
-                    ])
-                      ChoiceChip(
-                        label: Text(label),
-                        selected: p.textScale == v,
-                        onSelected: (_) =>
-                            controller.updateProfile((p) => p.textScale = v),
-                      ),
-                  ],
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: PickList<double>(
+                    label: 'Text size',
+                    value: p.textScale,
+                    options: const [
+                      (1.0, 'Normal'),
+                      (1.15, 'Large'),
+                      (1.3, 'Larger'),
+                      (1.5, 'Largest'),
+                    ],
+                    onPick: (v) =>
+                        controller.updateProfile((p) => p.textScale = v),
+                  ),
                 ),
               ),
               const _Head('Relivable Plus (test switch)'),
@@ -653,24 +649,14 @@ class IdentityCard extends StatelessWidget {
             void Function(String) pick,
           ) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: NF.sora(13, color: NF.muted)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final o in options)
-                      ChoiceChip(
-                        label: Text(_cap(o)),
-                        selected: value == o,
-                        onSelected: (_) => pick(o),
-                      ),
-                  ],
-                ),
+            child: PickList<String>(
+              label: title,
+              value: value,
+              options: [
+                if (!options.contains(value)) (value, _cap(value)),
+                for (final o in options) (o, _cap(o)),
               ],
+              onPick: pick,
             ),
           );
           return Padding(

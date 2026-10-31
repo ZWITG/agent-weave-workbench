@@ -228,7 +228,7 @@ final achievements = <Achievement>[
     'Rare',
     'Money',
     'A business making \$100,000 in a year',
-    (l, p) => (l.business?.profit ?? 0) >= 100000,
+    (l, p) => l.businesses.any((b) => b.profit >= 100000),
   ),
   _a(
     'millionaire',
@@ -891,7 +891,7 @@ final challengeTasks = <ChallengeTask>[
   (
     id: 'business',
     text: 'Run a profitable business',
-    test: (l) => (l.business?.profit ?? 0) > 0,
+    test: (l) => l.businesses.any((b) => b.profit > 0),
   ),
   (
     id: 'verified',

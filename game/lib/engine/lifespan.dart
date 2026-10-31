@@ -269,7 +269,9 @@ final lifeTitles = <LifeTitle>[
     'The Founder',
     'Rare',
     'A business making \$100,000 a year, or sold one',
-    (l) => _flag(l, 'sold_business') ? 1 : _p(l.business?.profit ?? 0, 100000),
+    (l) => _flag(l, 'sold_business')
+        ? 1
+        : _p(l.businesses.fold(0, (s, b) => s + b.profit), 100000),
     'Started with a napkin sketch.',
   ),
   LifeTitle(
@@ -304,7 +306,7 @@ final lifeTitles = <LifeTitle>[
     (l) => _b(
       l.job == 'Restaurant owner' ||
           _flag(l, 'owned_restaurant') ||
-          l.business?.industry == 'restaurant',
+          l.businesses.any((b) => b.industry == 'restaurant'),
     ),
     'Fed a city, one plate at a time.',
   ),

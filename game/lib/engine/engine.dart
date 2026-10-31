@@ -289,10 +289,8 @@ class GameEngine {
     )) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
-    if (life.business != null && life.business!.revenue > 0) {
-      life.feed.add(
-        FeedEntry(life.age, businessSummary(life.business!), kind: 'nudge'),
-      );
+    for (final b in life.businesses.where((b) => b.revenue > 0)) {
+      life.feed.add(FeedEntry(life.age, businessSummary(b), kind: 'nudge'));
     }
     for (final line in workYear(
       life,

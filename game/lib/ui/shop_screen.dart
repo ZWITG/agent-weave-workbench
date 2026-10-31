@@ -338,24 +338,27 @@ class _ShopScreenState extends State<ShopScreen> {
           ? price(b).compareTo(price(a))
           : price(a).compareTo(price(b)),
     );
-    Widget chip(String label, bool on, VoidCallback tap) => ChoiceChip(
-      label: Text(label),
-      selected: on,
-      onSelected: (_) => setState(tap),
-    );
     String range(ShopItem i) => price(i) < 100
         ? 'Budget · under \$100'
         : price(i) < 1000
         ? 'Mid-range · \$100 to \$999'
         : 'Premium · \$1,000 and up';
     return [
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
+      Row(
         children: [
-          chip('By price range', _sort == 'range', () => _sort = 'range'),
-          chip('Cheapest first', _sort == 'low', () => _sort = 'low'),
-          chip('Priciest first', _sort == 'high', () => _sort = 'high'),
+          Expanded(
+            child: PickList<String>(
+              label: 'Sort',
+              value: _sort,
+              options: const [
+                ('range', 'By price range'),
+                ('low', 'Cheapest first'),
+                ('high', 'Priciest first'),
+              ],
+              onPick: (v) => setState(() => _sort = v),
+            ),
+          ),
+          const SizedBox(width: 8),
           FilterChip(
             label: const Text('What I can afford'),
             selected: _affordable,

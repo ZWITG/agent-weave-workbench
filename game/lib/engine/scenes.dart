@@ -18,6 +18,7 @@ import 'social.dart';
 import 'celebrity.dart';
 import 'country_life.dart';
 import 'music.dart';
+import 'business_kinds.dart' show tradeEventScene;
 import 'elite.dart';
 import 'community.dart';
 import 'identity.dart';
@@ -79,6 +80,7 @@ Storylet? buildScene(String id, Life life) {
     'biz_tier' ||
     'biz_fund' ||
     'insolvency' => businessScene(parts.first, parts.sublist(1), life),
+    'biz_event' => tradeEventScene(parts.sublist(1), life),
     'hunt_purpose' ||
     'old_home' ||
     'let_pick' ||

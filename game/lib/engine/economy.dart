@@ -154,7 +154,9 @@ int forecastNextYear(Life life) {
   for (final c in healthCosts(life)) {
     total += c.$2;
   }
-  if (life.business != null) total += life.business!.profit;
+  for (final b in life.businesses) {
+    total += b.profit;
+  }
   if (life.age + 1 >= 18) total -= homeInsuranceCost(life);
   total += fostersOf(life).length * fosterAllowance;
   total -= subscriptionCost(life);
@@ -255,8 +257,8 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash('Unemployment benefit', 6000);
   }
 
-  if (life.business != null) {
-    cash('Business: ${life.business!.name}', businessYear(life, rng));
+  for (final b in [...life.businesses]) {
+    cash('Business: ${b.name}', businessYear(life, rng, b));
   }
   cash('Dividends and interest', dividends(life));
   for (final (label, amount) in socialIncome(life)) {

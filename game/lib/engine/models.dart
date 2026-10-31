@@ -434,6 +434,12 @@ class Business {
   int profit = 0;
   int lossYears = 0;
 
+  /// Upgrades bought for this kind of business (business_kinds.dart).
+  final Set<String> perks = {};
+
+  /// Extra demand this year only, in percent (festivals, contracts...).
+  int boost = 0;
+
   /// Last year's breakdown and the main reasons behind it.
   List<(String, int)> lines = [];
   List<String> reasons = [];
@@ -451,6 +457,8 @@ class Business {
     'revenue': revenue,
     'profit': profit,
     'lossYears': lossYears,
+    'perks': perks.toList(),
+    'boost': boost,
     'lines': [
       for (final l in lines) [l.$1, l.$2],
     ],
@@ -472,6 +480,8 @@ class Business {
         ..revenue = j['revenue'] ?? 0
         ..profit = j['profit'] ?? 0
         ..lossYears = j['lossYears'] ?? 0
+        ..perks.addAll(List<String>.from(j['perks'] ?? []))
+        ..boost = j['boost'] ?? 0
         ..lines = _lines(j['lines'])
         ..reasons = List<String>.from(j['reasons'] ?? []);
 }
@@ -765,7 +775,27 @@ class Life {
   final Map<String, double> shares = {};
   final Map<String, int> paid = {};
   Map<String, double> quotes = {};
-  Business? business;
+
+  /// Every business you run, and which one you are managing right now.
+  final List<Business> businesses = [];
+  int bizFocus = 0;
+
+  /// The business you are managing. Setting a new one opens it (and
+  /// switches to it); setting null closes the one you are managing.
+  Business? get business => businesses.isEmpty
+      ? null
+      : businesses[bizFocus.clamp(0, businesses.length - 1)];
+  set business(Business? b) {
+    if (b == null) {
+      if (businesses.isNotEmpty) {
+        businesses.removeAt(bizFocus.clamp(0, businesses.length - 1));
+      }
+      bizFocus = 0;
+    } else {
+      businesses.add(b);
+      bizFocus = businesses.length - 1;
+    }
+  }
 
   /// Small per-life markers ("view:34:2" for a house viewing...).
   final Set<String> marks = {};
@@ -907,12 +937,12 @@ class Life {
   );
 
   /// A rough sale value: three years of profit plus the brand and staff.
-  int get businessValue => business == null
-      ? 0
-      : max(
-          0,
-          business!.profit * 3 + business!.staff * 4000 + business!.brand * 600,
-        );
+  int get businessValue =>
+      businesses.fold(0, (sum, b) => sum + valueOfBusiness(b));
+
+  /// What one business would sell for.
+  int valueOfBusiness(Business b) =>
+      max(0, b.profit * 3 + b.staff * 4000 + b.brand * 600);
   int get netWorth =>
       money +
       savings +
@@ -1058,7 +1088,8 @@ class Life {
     'shares': shares,
     'paid': paid,
     'quotes': quotes,
-    if (business != null) 'business': business!.toJson(),
+    'businesses': [for (final b in businesses) b.toJson()],
+    'bizFocus': bizFocus,
     'marks': marks.toList(),
     'cases': cases,
     'record': record,
@@ -1208,9 +1239,13 @@ class Life {
         for (final e in Map<String, dynamic>.from(j['quotes'] ?? {}).entries)
           e.key: (e.value as num).toDouble(),
       }
-      ..business = j['business'] == null
-          ? null
-          : Business.fromJson(Map<String, dynamic>.from(j['business']))
+      ..businesses.addAll([
+        for (final b
+            in (j['businesses'] as List?) ??
+                [if (j['business'] != null) j['business']])
+          Business.fromJson(Map<String, dynamic>.from(b)),
+      ])
+      ..bizFocus = j['bizFocus'] ?? 0
       ..marks.addAll(List<String>.from(j['marks'] ?? []))
       ..cases.addAll([
         for (final c in (j['cases'] as List?) ?? const [])

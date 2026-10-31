@@ -173,21 +173,20 @@ class HealthScreen extends StatelessWidget {
                     if (healthSystem(life) != 'universal' &&
                         life.age >= 18) ...[
                       const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        children: [
+                      PickList<String>(
+                        label: 'Health insurance',
+                        value: life.insurance,
+                        options: [
                           for (final e in insurancePlans.entries)
-                            ChoiceChip(
-                              label: Text(
-                                e.key == 'none'
-                                    ? 'None'
-                                    : '${e.value.label} ${money(life.insurance == e.key ? insurancePremium(life) : (healthSystem(life) == 'out of pocket' ? (e.value.premium * 0.3).round() : e.value.premium))}/yr',
-                              ),
-                              selected: life.insurance == e.key,
-                              onSelected: (_) =>
-                                  controller.wealth((l) => l.insurance = e.key),
+                            (
+                              e.key,
+                              e.key == 'none'
+                                  ? 'None'
+                                  : '${e.value.label} · ${money(life.insurance == e.key ? insurancePremium(life) : (healthSystem(life) == 'out of pocket' ? (e.value.premium * 0.3).round() : e.value.premium))}/yr',
                             ),
                         ],
+                        onPick: (v) =>
+                            controller.wealth((l) => l.insurance = v),
                       ),
                       const SizedBox(height: 6),
                       Text(

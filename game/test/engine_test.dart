@@ -20,6 +20,7 @@ import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
+import 'package:relivable/engine/business_kinds.dart';
 import 'package:relivable/engine/elite.dart';
 import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
@@ -984,7 +985,8 @@ void main() {
       life.age++;
       businessYear(life, Random(y));
     }
-    expect(life.sceneQueue, contains('insolvency'));
+    expect(life.sceneQueue, contains('insolvency:${b.name}'));
+    expect(buildScene(life.sceneQueue.first, life)!.text, contains(b.name));
   });
 
   test('house hunting: viewings reveal traits, surveys reveal all', () {
@@ -3020,5 +3022,79 @@ void main() {
   test('moving abroad names the new currency', () {
     expect(currencyLabel('Japan'), 'Japanese yen (¥)');
     expect(currencyLabel('France'), 'euro (€)');
+  });
+
+  test('businesses: run several at once, each its own trade', () {
+    final life = engine.newLife(seed: 331)..age = 30;
+    life.money = 1000000;
+    void found(int industry) {
+      life.sceneQueue.add('biz_found');
+      var scene = engine.nextScene(life)!;
+      engine.choose(life, scene, scene.choices[industry]);
+      scene = engine.nextScene(life)!;
+      engine.choose(life, scene, scene.choices.first);
+      scene = engine.nextScene(life)!;
+      engine.choose(life, scene, scene.choices.first);
+      while (engine.nextScene(life) != null) {}
+    }
+
+    found(0);
+    found(0);
+    found(4);
+    expect(life.businesses.length, 3);
+    expect(life.businesses[1].name, endsWith(' 2'));
+    // The newest is the one being managed; switching works.
+    expect(life.business, life.businesses.last);
+    focusBusiness(life, 0);
+    expect(life.business, life.businesses.first);
+    // Every trade has its own role, upgrades, signature and events.
+    for (final ind in industries) {
+      final k = bizKinds[ind.id];
+      expect(k, isNotNull, reason: ind.id);
+      expect(k!.perks.length, 3);
+      for (final e in k.events) {
+        final b = life.businesses.first;
+        expect(
+          tradeEventScene([e, b.name], life),
+          isNotNull,
+          reason: e,
+        );
+      }
+    }
+    // Upgrades raise sales; moves are once a year per business.
+    final cafe = life.business!;
+    final perk = bizKinds['cafe']!.perks[1];
+    buyPerk(life, perk);
+    expect(perkEffects(cafe).$1, greaterThan(0));
+    expect(perkLock(life, perk), 'Done');
+    runSignature(life, Random(1));
+    expect(signatureLock(life), 'Done this year');
+    focusBusiness(life, 1);
+    expect(signatureLock(life), isNull);
+    // Each business trades every birthday.
+    final names = life.businesses.map((b) => b.name).toSet();
+    final before = life.businesses.map((b) => b.revenue).toList();
+    engine.ageUp(life);
+    expect(before.every((r) => r == 0), isTrue);
+    expect(
+      life.businesses.where((b) => names.contains(b.name)).every(
+        (b) => b.revenue > 0,
+      ),
+      isTrue,
+    );
+    // Saved and loaded together.
+    final copy = Life.fromJson(
+      jsonDecode(jsonEncode(life.toJson())) as Map<String, dynamic>,
+    );
+    expect(copy.businesses.length, life.businesses.length);
+    expect(copy.businesses.first.perks, contains(perk.id));
+    // An old save with one business still loads.
+    final old = life.toJson()
+      ..remove('businesses')
+      ..['business'] = life.businesses.first.toJson();
+    expect(Life.fromJson(old).businesses.length, 1);
+    // Bankruptcy takes them all.
+    bankruptcy(life);
+    expect(life.businesses, isEmpty);
   });
 }

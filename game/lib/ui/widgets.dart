@@ -437,3 +437,52 @@ String money(int amount) => moneyIn(amount, activeCountry);
 /// Animation length that honours Reduce motion (Settings or the OS).
 Duration motion(BuildContext context, Duration d) =>
     MediaQuery.disableAnimationsOf(context) ? Duration.zero : d;
+
+/// The look shared by every drop-down list in the game.
+InputDecoration dropdownDecoration({String? label}) => InputDecoration(
+  labelText: label,
+  filled: true,
+  fillColor: NF.surface2,
+  isDense: true,
+  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(14),
+    borderSide: BorderSide.none,
+  ),
+);
+
+/// A labelled drop-down list for picking one option. It follows [value]
+/// when the game changes it from elsewhere.
+class PickList<T> extends StatelessWidget {
+  const PickList({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onPick,
+  });
+
+  final String label;
+  final T value;
+  final List<(T, String)> options;
+  final void Function(T value) onPick;
+
+  @override
+  Widget build(BuildContext context) => DropdownButtonFormField<T>(
+    key: ValueKey(value),
+    initialValue: value,
+    isExpanded: true,
+    dropdownColor: NF.surface,
+    decoration: dropdownDecoration(label: label),
+    items: [
+      for (final (v, text) in options)
+        DropdownMenuItem<T>(
+          value: v,
+          child: Text(text, overflow: TextOverflow.ellipsis),
+        ),
+    ],
+    onChanged: (v) {
+      if (v is T) onPick(v);
+    },
+  );
+}
