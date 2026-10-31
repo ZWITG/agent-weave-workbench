@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 
 import '../engine/actions.dart';
 import '../engine/odds.dart';
@@ -23,6 +24,7 @@ import 'people.dart';
 import 'result_popup.dart';
 import 'shop_screen.dart';
 import 'widgets.dart';
+import 'yard_map.dart';
 
 /// Category order and icons for the Activities panel.
 const activityCategories = <(String, IconData)>[
@@ -296,6 +298,11 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       ),
       child: ListView(
         controller: widget.scrollController,
+        // The Yard is short: build all of it, so the map can jump to any
+        // place on it.
+        scrollCacheExtent: life.prison != null
+            ? const ScrollCacheExtent.pixels(6000)
+            : null,
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
         children: [
           _header(),
@@ -424,49 +431,109 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
 
   // ---------------- The Yard (in prison) ----------------
 
-  /// Inside, the home page is the prison day laid out by place: the yard,
-  /// work and classes, contact, your crew, the ways out and quiet time.
+  /// The places on the yard map, in the order they are listed below it.
+  static const _places = [
+    (
+      'cell',
+      'Your cell',
+      'Your bunk, your shelf, your cellmate',
+      Icons.bed_rounded,
+      ['cell_shop', 'cell_exercise', 'talk_cellmate', 'read', 'meditate'],
+    ),
+    (
+      'weights',
+      'Weights',
+      'The whole yard is watching',
+      Icons.fitness_center_rounded,
+      ['prison_gym'],
+    ),
+    (
+      'workshop',
+      'Workshop',
+      'Work and classes count at parole',
+      Icons.handyman_rounded,
+      ['prison_job', 'prison_study'],
+    ),
+    (
+      'court',
+      'The court',
+      'Deals and crews',
+      Icons.sports_basketball_rounded,
+      ['prison_trade', 'join_gang', 'gang_time', 'gang_truce', 'leave_gang'],
+    ),
+    (
+      'visiting',
+      'Visiting',
+      'The outside, through glass and paper',
+      Icons.meeting_room_rounded,
+      ['prison_visit', 'write_letters'],
+    ),
+    (
+      'gate',
+      'The gate',
+      'Some ways out are legal',
+      Icons.door_sliding_rounded,
+      ['appeal', 'bribe_guard', 'escape_prison'],
+    ),
+  ];
+
+  final _placeKeys = <String, GlobalKey>{};
+
+  /// Inside, the home page is a map of the prison, then what you can do in
+  /// each place on it.
   List<Widget> _yard(BuildContext context) {
     final byId = {for (final a in _actions) a.id: a};
-    const places = [
-      (
-        'Yard',
-        'Fresh air, push-ups and deals',
-        ['prison_gym', 'prison_trade', 'cell_exercise'],
-      ),
-      (
-        'Work and classes',
-        'Count in your favour at parole',
-        ['prison_job', 'prison_study'],
-      ),
-      (
-        'Contact',
-        'The outside, through glass and paper',
-        ['prison_visit', 'write_letters', 'talk_cellmate'],
-      ),
-      (
-        'Crew',
-        'Protection has a price',
-        ['join_gang', 'gang_time', 'gang_truce', 'leave_gang'],
-      ),
-      (
-        'Ways out',
-        'Some legal, some not',
-        ['appeal', 'bribe_guard', 'escape_prison'],
-      ),
-      ('Quiet time', 'On your bunk', ['read', 'meditate']),
+    // Always listed, locked or not, so you can see what they take.
+    const always = {'join_gang', 'escape_prison', 'cell_shop'};
+    final sections = [
+      for (final (id, title, sub, icon, ids) in _places)
+        (
+          id,
+          title,
+          sub,
+          icon,
+          [
+            for (final aid in ids)
+              if (byId[aid] case final a?)
+                if (_open(a) || always.contains(aid)) a,
+          ],
+          ids.where((aid) => byId[aid] != null && _open(byId[aid]!)).length,
+        ),
     ];
-    final shown = <String>{};
-    final out = <Widget>[];
-    for (final (title, sub, ids) in places) {
-      final rows = [
-        for (final id in ids)
-          if (byId[id] case final a?)
-            if (_open(a) || id == 'join_gang' || id == 'escape_prison') a,
-      ];
+    final shown = {for (final p in _places) ...p.$5};
+    final out = <Widget>[
+      YardMap(
+        zones: [
+          for (final (id, title, _, icon, _, open) in sections)
+            YardZone(
+              id: id,
+              label: title.toUpperCase(),
+              icon: icon,
+              open: open,
+            ),
+        ],
+        onTap: (id) {
+          final ctx = _placeKeys[id]?.currentContext;
+          if (ctx != null) {
+            Scrollable.ensureVisible(
+              ctx,
+              duration: const Duration(milliseconds: 450),
+              curve: Curves.easeOutCubic,
+            );
+          }
+        },
+      ),
+      const SizedBox(height: 18),
+    ];
+    for (final (id, title, sub, icon, rows, _) in sections) {
       if (rows.isEmpty) continue;
       out
-        ..add(_yardTitle(title, sub))
+        ..add(
+          KeyedSubtree(
+            key: _placeKeys.putIfAbsent(id, GlobalKey.new),
+            child: _yardTitle(title, sub, icon),
+          ),
+        )
         ..addAll([
           for (final a in rows) ...[
             actionRow(context, c, a, closeSheet: !widget.docked),
@@ -474,7 +541,6 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           ],
         ])
         ..add(const SizedBox(height: 12));
-      shown.addAll(ids);
     }
     // Anything prison-only added later still turns up.
     final rest = [
@@ -482,7 +548,13 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         if (!shown.contains(a.id) && _open(a)) a,
     ];
     if (rest.isNotEmpty) {
-      out.add(_yardTitle('Also', 'Whatever else the block allows'));
+      out.add(
+        _yardTitle(
+          'Also',
+          'Whatever else the block allows',
+          Icons.more_horiz_rounded,
+        ),
+      );
       for (final a in rest) {
         out
           ..add(actionRow(context, c, a, closeSheet: !widget.docked))
@@ -501,11 +573,13 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
     return out;
   }
 
-  Widget _yardTitle(String title, String sub) => Padding(
+  Widget _yardTitle(String title, String sub, IconData icon) => Padding(
     padding: const EdgeInsets.only(bottom: 10),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        Icon(icon, size: 18, color: NF.orange),
+        const SizedBox(width: 8),
         Flexible(
           flex: 3,
           child: Text(
@@ -1112,8 +1186,16 @@ Future<ActionVariant?> pickVariant(
       shrinkWrap: true,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       children: [
-        Text(a.label, style: NF.sora(18, weight: FontWeight.w700)),
-        Text('How do you want to do it?', style: NF.sora(13, color: NF.muted)),
+        if (life.prison != null) ...[
+          Text(a.label.toUpperCase(), style: NF.stencil(16, color: NF.orange)),
+          Text('Pick your move.', style: NF.chalk(20, color: NF.muted)),
+        ] else ...[
+          Text(a.label, style: NF.sora(18, weight: FontWeight.w700)),
+          Text(
+            'How do you want to do it?',
+            style: NF.sora(13, color: NF.muted),
+          ),
+        ],
         const SizedBox(height: 12),
         for (final v in options.where((v) => life.age <= v.maxAge)) ...[
           OptionRow(

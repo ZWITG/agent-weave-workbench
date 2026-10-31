@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
+import '../engine/cell.dart';
 import '../engine/currency.dart' show localizeMoney;
 import '../engine/gangs.dart';
 import '../engine/justice.dart' show crimeById;
@@ -606,7 +607,28 @@ class CanteenTab extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 12),
-        ..._rows(context, c, ['prison_trade'], always: {'prison_trade'}),
+        ..._rows(
+          context,
+          c,
+          ['prison_trade', 'cell_shop'],
+          always: {'prison_trade', 'cell_shop'},
+        ),
+        // What is on your shelf, and what a search would find.
+        _Form(
+          label: 'YOUR SHELF',
+          child: p.items.isEmpty
+              ? Text(
+                  'Bare. A toothbrush and a plastic cup.',
+                  style: NF.chalk(20, color: NF.muted),
+                )
+              : Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final id in p.items) _ShelfItem(cellItem(id)),
+                  ],
+                ),
+        ),
         // Outside money waits at reception.
         _Form(
           label: 'PROPERTY · HELD AT RECEPTION',
@@ -633,6 +655,61 @@ class CanteenTab extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ShelfItem extends StatelessWidget {
+  const _ShelfItem(this.item);
+  final CellItem item;
+
+  static const _icons = {
+    'radio': Icons.radio_rounded,
+    'books': Icons.menu_book_rounded,
+    'photos': Icons.photo_rounded,
+    'hotplate': Icons.soup_kitchen_rounded,
+    'phone': Icons.phone_android_rounded,
+    'shank': Icons.hardware_rounded,
+    'brew': Icons.local_drink_rounded,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final hot = item.contraband;
+    return Semantics(
+      label: '${item.name}${hot ? ', contraband' : ''}. ${item.effect}',
+      excludeSemantics: true,
+      child: Container(
+        width: 96,
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+        decoration: BoxDecoration(
+          color: NF.surface2,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: hot ? NF.danger.withValues(alpha: 0.7) : NF.border,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              _icons[item.id] ?? Icons.inventory_2_rounded,
+              color: hot ? NF.danger : NF.orange,
+              size: 22,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.name,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: NF.sora(11, weight: FontWeight.w600),
+            ),
+            if (hot) ...[
+              const SizedBox(height: 3),
+              Text('HIDDEN', style: NF.stencil(9, color: NF.danger)),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
@@ -664,7 +741,7 @@ class InmateIdTab extends StatelessWidget {
         const SizedBox(height: 12),
         Semantics(
           label:
-              'Inmate ${inmateNumber(l)}, ${l.fullName}, age ${l.age}, ${crimeById(p.crime).label}',
+              'Inmate ${inmateNumber(l)}, ${l.fullName}${p.nickname == null ? '' : ', known as ${p.nickname}'}, age ${l.age}, ${crimeById(p.crime).label}',
           excludeSemantics: true,
           child: Container(
             padding: const EdgeInsets.all(14),
@@ -693,6 +770,11 @@ class InmateIdTab extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      if (p.nickname != null)
+                        Text(
+                          'a.k.a. "${p.nickname}"',
+                          style: NF.chalk(22, color: NF.orange),
+                        ),
                       Text(
                         'Age ${l.age} · in since ${l.year - p.served}',
                         style: NF.sora(12, color: NF.muted),

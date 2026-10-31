@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'cell.dart' show cellShopVariants;
 import 'models.dart';
 import 'more_variants.dart';
 import 'music.dart';
@@ -825,6 +826,7 @@ final actionVariants = <String, List<ActionVariant>>{
       },
     ),
   ],
+  'cell_shop': cellShopVariants,
   'prison_trade': [
     ActionVariant(
       id: 'protection',

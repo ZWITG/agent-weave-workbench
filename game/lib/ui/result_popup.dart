@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../engine/actions.dart';
 import '../sound.dart';
 import '../theme.dart';
+import 'yard_time.dart';
 import 'outcome_card.dart';
 import 'widgets.dart';
 
@@ -109,6 +110,9 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = toneColor(tone);
+    // Inside, results come back as a stamped report on the block's paper.
+    final inside = NF.prison;
+    final stamp = inside ? (prisonStamp(text) ?? 'LOGGED') : null;
     return SafeArea(
       child: Center(
         child: Padding(
@@ -122,7 +126,7 @@ class _ResultCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(26),
+                    borderRadius: BorderRadius.circular(inside ? 8 : 26),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -147,6 +151,22 @@ class _ResultCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (inside) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'BLOCK REPORT',
+                                style: NF.stencil(11, color: NF.muted),
+                              ),
+                            ),
+                            PrisonStamp(stamp!),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        const FenceStrip(),
+                        const SizedBox(height: 12),
+                      ],
                       Row(
                         children: [
                           Container(
@@ -161,12 +181,14 @@ class _ResultCard extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              title,
-                              style: NF.sora(
-                                20,
-                                weight: FontWeight.w700,
-                                color: color,
-                              ),
+                              inside ? title.toUpperCase() : title,
+                              style: inside
+                                  ? NF.stencil(17, color: color)
+                                  : NF.sora(
+                                      20,
+                                      weight: FontWeight.w700,
+                                      color: color,
+                                    ),
                             ),
                           ),
                         ],

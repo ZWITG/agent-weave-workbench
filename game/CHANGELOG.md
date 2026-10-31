@@ -169,3 +169,9 @@ Named updates since the game was created (26 October 2026). Newest last.
 - Every tab becomes a prison place while you are inside, with stencilled tab names: Cell (Life), Visits (your cellmate, your crew and its rivals, the visiting list and who is banned), File (your sentence, parole, prison job, courses and the ways out), Canteen (your stash, the yard's going rates on a chalkboard, and your outside money held at reception) and ID (an inmate card with a mugshot, height chart and number).
 - Activities becomes The Yard: prison activities laid out by place (yard, work and classes, contact, crew, ways out, quiet time), with outside activities out of sight until release.
 - Working out in the yard and exercising in your cell are now mini-games (pull-ups, the punch bag, push-ups, the plank), played against a chain-link yard or behind cell bars. A strong set in the yard earns respect.
+
+## 2.19 "The Yard" (31 Oct)
+- Activities inside is a map of the prison: the cell block, workshop, weights pit, basketball court, visiting room and gate, drawn from above with a guard tower sweeping its searchlight across the yard. Tap a place to jump to what you can do there; places with nothing open are greyed out (in solitary, everything but your cell).
+- Results inside come back as a stamped block report, and option menus are stencilled ("Pick your move").
+- Your cell: buy things for your shelf with your stash. A radio, paperbacks, photos and a hot plate help a little every year. A smuggled phone, a shank and a bag of brew are contraband: they do more (calls home, winning yard fights, a happier year), but cell searches can find them, and a shank found costs a year and solitary. Your shelf is on the Canteen tab.
+- The yard gives you a nickname once people know you, from what you are known for: Bench, Professor, Chef, Books, Keys, Iron, Owl, Accountant, DJ, Boss, or Canary if you snitched. It goes on your inmate ID.

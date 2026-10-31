@@ -1519,6 +1519,7 @@ final justiceActions = <GameAction>[
       // The yard is watching: a strong set earns respect, a weak one
       // gets noticed too.
       final p = l.prison!;
+      p.yardSets++;
       final gain = (2 + score * 8).round();
       p.respect = min(100, p.respect + gain);
       l.fitness = min(100, l.fitness + (4 + score * 6).round());
@@ -1537,6 +1538,7 @@ final justiceActions = <GameAction>[
     extraCheck: _prisonOnly,
     run: (l, rng) {
       final p = l.prison!;
+      p.yardSets++;
       p.respect = min(100, p.respect + 6);
       l.fitness = min(100, l.fitness + 8);
       final r = statChange(
@@ -1671,11 +1673,19 @@ List<String> prisonYear(Life l, Random rng) {
   l.reason = 'Prison';
   l.stats.add('happiness', -3);
   if (p.respect < 40 && !p.gang && rng.nextInt(100) < 20) {
-    l.stats.add('health', -5);
-    p.behaviour = max(0, p.behaviour - 5);
-    feed.add(
-      'Someone picked a fight with you in the yard. You lost. (Respect ${p.respect}%: working out or friends inside would help.)',
-    );
+    if (p.items.contains('shank')) {
+      // The shank on your shelf (cell.dart) ends it before it starts.
+      p.respect = min(100, p.respect + 5);
+      feed.add(
+        'Someone squared up to you in the yard. You showed them what was in your sleeve, and they walked away. Respect up.',
+      );
+    } else {
+      l.stats.add('health', -5);
+      p.behaviour = max(0, p.behaviour - 5);
+      feed.add(
+        'Someone picked a fight with you in the yard. You lost. (Respect ${p.respect}%: working out or friends inside would help.)',
+      );
+    }
   }
   if (p.solitary == 0) feed.addAll(gangYear(l, rng));
   feed.addAll(prisonLifeYear(l, rng));

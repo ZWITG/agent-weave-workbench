@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'cell.dart';
 import 'justice.dart' show onParole;
 import 'jobs.dart' show leaveJob;
 import 'love.dart' show endRelationship;
@@ -478,6 +479,7 @@ List<String> prisonLifeYear(Life l, Random rng) {
         'A cell search turned up your whole stash. ${p.solitary > 0 ? 'A year in solitary.' : 'Behaviour down.'}',
       );
     }
+    feed.addAll(cellYear(l, rng, search));
     for (final n in visitors(l).where((n) => n.circle == 'Partner')) {
       if (n.bond < 35 &&
           p.left >= 3 &&
@@ -572,6 +574,19 @@ final prisonLifeActions = <GameAction>[
     extraCheck: _inPrison,
     run: (l, rng) =>
         ActionResult('You wander the yard with your pockets full.'),
+  ),
+  GameAction(
+    id: 'cell_shop',
+    label: 'Buy for your cell',
+    category: 'Prison',
+    keywords: ['cell', 'buy', 'radio', 'books', 'phone', 'commissary', 'shelf'],
+    hint: (l) => l.prison == null
+        ? 'Only in prison'
+        : l.prison!.items.isEmpty
+        ? 'Radio, books, a hot plate… or contraband'
+        : '${l.prison!.items.length} on your shelf · stash ${l.prison!.stash}',
+    extraCheck: _inPrison,
+    run: (l, rng) => ActionResult('You look over the commissary list.'),
   ),
   GameAction(
     id: 'cell_exercise',

@@ -15,6 +15,8 @@ import 'package:relivable/engine/health.dart';
 import 'package:relivable/engine/crime_jobs.dart';
 import 'package:relivable/engine/gangs.dart';
 import 'package:relivable/engine/prison_life.dart';
+import 'package:relivable/engine/cell.dart';
+import 'package:relivable/engine/variants.dart' show variantsFor;
 import 'package:relivable/engine/heists.dart';
 import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
@@ -3564,6 +3566,63 @@ void main() {
       isTrue,
     );
   });
+
+  test(
+    'your cell: shelf items work, searches find contraband, the yard names you',
+    () {
+      final l = engine.newLife(seed: 991)..age = 30;
+      enterPrison(l, crimeById('burglary'), 6);
+      final p = l.prison!;
+      p.stash = 30;
+      // Buying from the shelf list costs stash and adds the item once.
+      final shop = variantsFor('cell_shop');
+      expect(shop.length, cellItems.length);
+      final radio = shop.firstWhere((v) => v.id == 'radio');
+      expect(radio.check!(l), isNull);
+      radio.run(l, Random(1), null, null);
+      expect(p.items, ['radio']);
+      expect(p.stash, 26);
+      expect(radio.check!(l), 'Already on your shelf');
+      p.stash = 1;
+      expect(
+        shop.firstWhere((v) => v.id == 'phone').check!(l),
+        'Needs 8 in your stash',
+      );
+      // A radio lifts your mood every year; a hot plate earns a little.
+      p.items.add('hotplate');
+      l.stats.values['happiness'] = 40;
+      cellYear(l, Random(3), 0);
+      expect(l.stats['happiness'], 42);
+      expect(p.stash, 2);
+      // Searches confiscate contraband; a shank costs a year and solitary.
+      p.items.add('shank');
+      final years = p.years;
+      cellYear(l, Random(3), 100);
+      expect(p.items, isNot(contains('shank')));
+      expect(p.years, years + 1);
+      expect(p.solitary, greaterThan(0));
+      // Allowed things are never taken.
+      expect(p.items, containsAll(['radio', 'hotplate']));
+      // The yard names you after what you are known for.
+      final m = engine.newLife(seed: 992)..age = 30;
+      enterPrison(m, crimeById('burglary'), 4);
+      m.prison!
+        ..respect = 60
+        ..yardSets = 5;
+      expect(earnNickname(m), 'Bench');
+      expect(earnNickname(m), isNull); // once only
+      // Saved and loaded.
+      final back = Prison.fromJson(
+        jsonDecode(jsonEncode(m.prison!.toJson())) as Map<String, dynamic>,
+      );
+      expect(back.nickname, 'Bench');
+      expect(back.yardSets, 5);
+      final withItems = Prison.fromJson(
+        jsonDecode(jsonEncode(p.toJson())) as Map<String, dynamic>,
+      );
+      expect(withItems.items, p.items);
+    },
+  );
 
   test('prison: whole sentences stay inside, and release connects back', () {
     const crimes = ['burglary', 'fraud', 'assault', 'smuggling', 'car_theft'];

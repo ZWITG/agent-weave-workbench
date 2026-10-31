@@ -137,6 +137,8 @@ void main() {
       ..gangStanding = 55;
     l.prison!.rivalry['owls'] = 40;
     l.prison!.courses.add('trade');
+    l.prison!.items.addAll(['radio', 'books', 'phone']);
+    l.prison!.nickname = 'Professor';
     final key = GlobalKey();
     await t.pumpWidget(
       RepaintBoundary(
@@ -169,5 +171,15 @@ void main() {
       await t.pump(const Duration(milliseconds: 150));
     }
     await shot('yard');
+    await t.drag(find.text('THE YARD'), const Offset(0, -500));
+    for (var i = 0; i < 4; i++) {
+      await t.pump(const Duration(milliseconds: 150));
+    }
+    await shot('yard_scrolled');
+    await t.tap(find.text('Work out in the yard'));
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(milliseconds: 150));
+    }
+    await shot('yard_game');
   });
 }

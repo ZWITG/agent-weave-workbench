@@ -538,6 +538,12 @@ class Prison {
   /// People no longer allowed to visit.
   final List<String> banned = [];
 
+  /// Things on your cell shelf (cell.dart), the yard's name for you, and
+  /// sets done in the yard (it counts towards that name).
+  final List<String> items = [];
+  String? nickname;
+  int yardSets = 0;
+
   bool get gang => gangId != null;
   bool appealed = false;
 
@@ -571,6 +577,9 @@ class Prison {
     'banned': banned,
     'appealed': appealed,
     'lastHearing': lastHearing,
+    'items': items,
+    'nickname': nickname,
+    'yardSets': yardSets,
   };
 
   factory Prison.fromJson(Map<String, dynamic> j) =>
@@ -599,7 +608,10 @@ class Prison {
         ..degreeYears = j['degreeYears'] ?? 0
         ..banned.addAll(List<String>.from(j['banned'] ?? const []))
         ..appealed = j['appealed'] ?? false
-        ..lastHearing = j['lastHearing'];
+        ..lastHearing = j['lastHearing']
+        ..items.addAll(List<String>.from(j['items'] ?? const []))
+        ..nickname = j['nickname']
+        ..yardSets = j['yardSets'] ?? 0;
 }
 
 /// A health condition (health.dart, plan Module 9).

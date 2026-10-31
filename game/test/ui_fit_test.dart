@@ -526,6 +526,10 @@ void main() {
     await t.tap(find.text('Swipe up for the yard'));
     await _pump(t);
     expect(find.text('THE YARD'), findsOneWidget);
+    // The map: tapping a place jumps to what you can do there.
+    expect(find.text('THE COURT'), findsOneWidget);
+    await t.tap(find.text('WEIGHTS').first);
+    await _pump(t);
     expect(find.text('Work out in the yard'), findsOneWidget);
     expect(find.text('Go to the gym'), findsNothing);
     await _scrollAll(t);
