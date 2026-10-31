@@ -62,11 +62,15 @@ String richRank(Life l) {
 List<String> eliteYear(Life l, Random rng) {
   final feed = <String>[];
   if (!upperEchelon(l)) {
-    if (l.netWorth >= eliteThreshold && l.age >= 16) {
+    if (l.netWorth >= eliteThreshold && l.age >= 18) {
       l.flags['upper_echelon'] = Memory(l.age, 'joining the upper echelon');
       l.sceneQueue.add('elite_intro');
     }
     return feed;
+  }
+  // Selling the newspaper ends the protection it gave.
+  if (l.marks.contains('paper_publicist') && !l.has('media')) {
+    l.marks.removeAll(['publicist', 'paper_publicist']);
   }
   // Sports teams: a season every year.
   for (final t in l.assets.where((a) => a.kind == 'team')) {
@@ -174,7 +178,7 @@ List<(String, int)> eliteCosts(Life l) => [
     ('${i.name} resort', i.value * 6 ~/ 100),
   if (l.marks.contains('offshore'))
     ('Offshore structures (tax saved, net of fees)', offshoreNet(l)),
-  if (l.marks.contains('bunker')) ('Bunker caretakers', -200000),
+  if (l.has('bunker')) ('Bunker caretakers', -200000),
 ];
 
 /// Offshore money earns about 0.8% a year more after fees, before any
@@ -226,6 +230,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
         [
           Choice(
             label: 'Throw a party worthy of it',
+            needsMoney: 2000000,
             outcome: 'Fireworks over the water, a famous band, and four hundred guests you half knew. Your name trended for two days.',
             run: (l, rng) {
               l.money -= 2000000;
@@ -264,6 +269,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
           Choice(
             label: 'Settle with the tax office',
             outcome: '',
+            needsMoney: (l.netWorth * 0.02).round(),
             risk: 'Costs about 2% of your net worth',
             run: (l, rng) {
               final bill = (l.netWorth * 0.02).round();
@@ -322,6 +328,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
           Choice(
             label: 'Have your office look into it',
             outcome: '',
+            needsMoney: ask,
             risk: 'Might be real, might not',
             run: (l, rng) {
               if (rng.nextInt(100) < 50) {
@@ -361,6 +368,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
           Choice(
             label: 'Pay quietly',
             outcome: '',
+            needsMoney: ransom,
             run: (l, rng) {
               l.money -= ransom;
               l.stats.add('happiness', -5);
@@ -669,7 +677,9 @@ final eliteActions = <GameAction>[
         ),
       );
       // Your own paper does not print rumours about you.
-      l.marks.add('publicist');
+      if (!l.marks.contains('publicist')) {
+        l.marks.addAll(['publicist', 'paper_publicist']);
+      }
       addImage(l, -5);
       return ActionResult(
         'You bought a 150-year-old newspaper. The editor resigned on the first day. The rumours about you stopped on the second.',
@@ -969,7 +979,6 @@ final eliteActions = <GameAction>[
     '\$15,000,000 · caretakers \$200,000 a year',
     (l, rng) {
       l.money -= 15000000;
-      l.marks.add('bunker');
       l.assets.add(
         Asset(
           id: 'bunker${l.age}',
@@ -988,7 +997,7 @@ final eliteActions = <GameAction>[
       );
     },
     cost: 15000000,
-    extra: (l) => l.marks.contains('bunker') ? 'You have one' : null,
+    extra: (l) => l.has('bunker') ? 'You have one' : null,
   ),
   _buy(
     'foundation_gala',

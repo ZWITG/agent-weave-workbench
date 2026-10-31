@@ -236,7 +236,8 @@ class GameController extends ChangeNotifier {
   /// the next step of one, has to be finished first.
   String? get busyReason {
     final l = life;
-    if (l == null || !l.alive) return null;
+    if (l == null) return null;
+    if (!l.alive) return 'This life is over.';
     if (pendingEvent != null) return 'Finish the event on the Life tab first.';
     if (l.sceneQueue.isNotEmpty) {
       return lastOutcome != null

@@ -89,7 +89,17 @@ String seeking(Life l) => switch (l.attractedTo) {
 // ---------------- Compatibility (plan: bands, not one opaque number) ----------------
 
 /// A possible partner, generated with their own values and wishes.
-Npc candidate(Life l, Random rng, {String id = 'partner'}) {
+/// An id no one in this life has yet ("partner_7"), so an ex and a new
+/// partner, or a partner and a lover, are never mixed up.
+String freshNpcId(Life l, String base) {
+  var i = l.npcs.length;
+  while (l.npcs.any((n) => n.id == '${base}_$i')) {
+    i++;
+  }
+  return '${base}_$i';
+}
+
+Npc candidate(Life l, Random rng, {String? id}) {
   final c = countryNamed(l.country);
   final want = seeking(l);
   final g = want == 'any' ? (rng.nextBool() ? 'female' : 'male') : want;
@@ -108,7 +118,7 @@ Npc candidate(Life l, Random rng, {String id = 'partner'}) {
     'artist',
   ];
   final n = Npc(
-    id: id,
+    id: id ?? freshNpcId(l, 'partner'),
     role: 'Partner',
     name:
         '${pool[rng.nextInt(pool.length)]} ${c.surnames[rng.nextInt(c.surnames.length)]}',
@@ -221,7 +231,6 @@ Storylet? kindlingScene(Life l) {
                           (life.stats['looks'] - 50) ~/ 4)
                       .clamp(5, 95);
               if (rng.nextInt(100) < odds) {
-                life.npcs.removeWhere((n) => n.id == 'partner');
                 life.npcs.add(p);
                 life.flags['partner'] = Memory(
                   life.age,
@@ -248,7 +257,6 @@ ActionResult goingOut(Life l, Random rng) {
   if (partnerOf(l) == null &&
       rng.nextInt(100) < 25 + l.stats['charisma'] ~/ 5) {
     final p = candidate(l, rng);
-    l.npcs.removeWhere((n) => n.id == 'partner');
     l.npcs.add(p);
     l.flags['partner'] = Memory(l.age, 'meeting ${p.name} on a night out');
     return ActionResult(
@@ -979,9 +987,9 @@ final loveActions = <GameAction>[
         ? 'You are single'
         : (loverOf(l) != null ? 'You already have one' : null),
     run: (l, rng) {
-      final lover = candidate(l, rng, id: 'lover');
+      final lover = candidate(l, rng);
       final n = Npc(
-        id: 'lover',
+        id: freshNpcId(l, 'lover'),
         role: 'Secret lover',
         name: lover.name,
         birthYear: lover.birthYear,

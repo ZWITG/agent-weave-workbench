@@ -3054,11 +3054,7 @@ void main() {
       expect(k!.perks.length, 3);
       for (final e in k.events) {
         final b = life.businesses.first;
-        expect(
-          tradeEventScene([e, b.name], life),
-          isNotNull,
-          reason: e,
-        );
+        expect(tradeEventScene([e, b.name], life), isNotNull, reason: e);
       }
     }
     // Upgrades raise sales; moves are once a year per business.
@@ -3077,9 +3073,9 @@ void main() {
     engine.ageUp(life);
     expect(before.every((r) => r == 0), isTrue);
     expect(
-      life.businesses.where((b) => names.contains(b.name)).every(
-        (b) => b.revenue > 0,
-      ),
+      life.businesses
+          .where((b) => names.contains(b.name))
+          .every((b) => b.revenue > 0),
       isTrue,
     );
     // Saved and loaded together.
@@ -3096,5 +3092,59 @@ void main() {
     // Bankruptcy takes them all.
     bankruptcy(life);
     expect(life.businesses, isEmpty);
+  });
+
+  test('logic fixes: people, prison, trophies and businesses', () {
+    final l = engine.newLife(seed: 401)..age = 30;
+    l.money = 100000;
+    // An ex stays in your life when you meet someone new.
+    final first = candidate(l, Random(1));
+    l.npcs.add(first);
+    endRelationship(l, first, 'breaking up');
+    final second = candidate(l, Random(2));
+    l.npcs.add(second);
+    expect(l.npcs.where((n) => n.circle == 'Exes'), isNotEmpty);
+    expect(second.id, isNot(first.id));
+    // An affair partner never shares an id with anyone.
+    engine.runAction(l, allActions.firstWhere((a) => a.id == 'affair'));
+    final ids = l.npcs.map((n) => n.id).toList();
+    expect(ids.toSet().length, ids.length);
+    // Going back inside costs the job, like any sentence.
+    l.job = 'Accountant';
+    l.salary = 40000;
+    l.marks.add('parole_until:${l.age + 3}');
+    recapture(l, Random(1));
+    expect(l.job, isNull);
+    // Selling a bunker stops the caretakers' bill; selling the newspaper
+    // ends its protection.
+    final r = engine.newLife(seed: 402)..age = 50;
+    r.flags['upper_echelon'] = Memory(50, 'x');
+    r.money = 500000000;
+    engine.runAction(r, allActions.firstWhere((a) => a.id == 'bunker'));
+    expect(eliteCosts(r).any((c) => c.$1 == 'Bunker caretakers'), isTrue);
+    r.assets.removeWhere((a) => a.kind == 'bunker');
+    expect(eliteCosts(r).any((c) => c.$1 == 'Bunker caretakers'), isFalse);
+    r.usedActions.clear();
+    engine.runAction(r, allActions.firstWhere((a) => a.id == 'buy_newspaper'));
+    expect(r.marks, contains('publicist'));
+    r.assets.removeWhere((a) => a.kind == 'media');
+    eliteYear(r, Random(1));
+    expect(r.marks, isNot(contains('publicist')));
+    // Two failing businesses each get their own crisis.
+    final b = engine.newLife(seed: 403)..age = 40;
+    for (final name in ['A Café', 'B Café']) {
+      b.businesses.add(
+        Business(name: name, industry: 'cafe', tier: 'mid', since: 30)
+          ..quality = 5
+          ..brand = 0
+          ..satisfaction = 0
+          ..staff = 30
+          ..lossYears = 1,
+      );
+    }
+    for (final x in [...b.businesses]) {
+      businessYear(b, Random(1), x);
+    }
+    expect(b.sceneQueue.where((q) => q.startsWith('insolvency:')).length, 2);
   });
 }

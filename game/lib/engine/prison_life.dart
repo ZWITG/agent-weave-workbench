@@ -2,7 +2,8 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'justice.dart' show onParole;
-import 'love.dart' show recircle;
+import 'jobs.dart' show leaveJob;
+import 'love.dart' show endRelationship;
 import 'models.dart';
 import 'storylet.dart';
 
@@ -119,7 +120,7 @@ Storylet? visitScene(List<String> args, Life l) {
               n.addFacets(affection: 5, trust: 5);
               return '$name squeezed your hand. "I am not going anywhere." You believe them.';
             }
-            recircle(l, n, circle: 'Exes', role: 'Ex-partner');
+            endRelationship(l, n, 'leaving you while you were in prison');
             l.stats.add('happiness', -8);
             return '$name looked at the table for a long time. "I can\'t do ${p.left} more years." It was the last visit.';
           },
@@ -275,6 +276,13 @@ Storylet? trusteeScene(Life l) {
   );
 }
 
+/// Going back inside costs what any sentence does: the job and a rented
+/// home.
+void _loseOutsideLife(Life l) {
+  if (l.job != null) leaveJob(l, fired: true);
+  l.assets.removeWhere((a) => a.kind == 'rental');
+}
+
 // ---------------- Life on the run ----------------
 
 bool isFugitive(Life l) => l.marks.contains('fugitive');
@@ -282,6 +290,7 @@ bool isFugitive(Life l) => l.marks.contains('fugitive');
 void recapture(Life l, Random rng) {
   l.marks.remove('fugitive');
   l.cases.removeWhere((c) => c['crime'] == 'escape');
+  _loseOutsideLife(l);
   l.prison = Prison(
     crime: 'escape',
     years: 3 + rng.nextInt(3),
@@ -358,6 +367,7 @@ Storylet? checkinScene(Life l) {
               (int.tryParse(m.substring(13)) ?? l.age) - l.age,
             );
             l.marks.removeWhere((m) => m.startsWith('parole_until:'));
+            _loseOutsideLife(l);
             l.prison = Prison(
               crime: 'parole violation',
               years: left,
@@ -473,7 +483,7 @@ List<String> prisonLifeYear(Life l, Random rng) {
           p.left >= 3 &&
           !l.marks.contains('waiting:${n.id}') &&
           rng.nextInt(100) < 40) {
-        recircle(l, n, circle: 'Exes', role: 'Ex-partner');
+        endRelationship(l, n, 'leaving you while you were in prison');
         l.stats.add('happiness', -8);
         feed.add(
           'A letter from ${_first(n)}: they cannot wait any longer. It is over.',

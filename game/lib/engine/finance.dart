@@ -978,8 +978,10 @@ int businessYear(Life l, Random rng, [Business? which]) {
       (b.satisfaction +
               ((b.quality + (b.morale - 50) ~/ 3) - b.satisfaction) * 3 ~/ 10)
           .clamp(0, 100);
-  if (b.lossYears >= 2 && !l.marks.contains('insolvency:${l.age}')) {
-    l.marks.add('insolvency:${l.age}');
+  // Each business can hit its own crisis, even in the same year.
+  final crisis = 'insolvency:${l.age}:${b.name}';
+  if (b.lossYears >= 2 && !l.marks.contains(crisis)) {
+    l.marks.add(crisis);
     l.sceneQueue.add('insolvency:${b.name}');
   }
   return profit;
