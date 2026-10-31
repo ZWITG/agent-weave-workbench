@@ -254,6 +254,9 @@ Storylet? kindlingScene(Life l) {
 /// The everyday ways to meet someone (plan routes table), as one activity.
 ActionResult goingOut(Life l, Random rng) {
   l.money -= 60;
+  l.marks
+    ..removeWhere((m) => m.startsWith('went_out:'))
+    ..add('went_out:${l.age}');
   if (partnerOf(l) == null &&
       rng.nextInt(100) < 25 + l.stats['charisma'] ~/ 5) {
     final p = candidate(l, rng);

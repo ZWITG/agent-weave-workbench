@@ -21,6 +21,7 @@ import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/business_kinds.dart';
+import 'package:relivable/engine/births.dart';
 import 'package:relivable/engine/elite.dart';
 import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
@@ -3146,5 +3147,75 @@ void main() {
       businessYear(b, Random(1), x);
     }
     expect(b.sceneQueue.where((q) => q.startsWith('insolvency:')).length, 2);
+  });
+
+  test('babies arrive in many more ways', () {
+    Life adult(int seed, String gender) {
+      final l = engine.newLife(seed: seed, gender: gender)..age = 28;
+      l.money = 50000;
+      return l;
+    }
+
+    void pick(Life l, String id, int choice) {
+      final s = buildScene(id, l)!;
+      engine.choose(l, s, s.choices[choice]);
+    }
+
+    // Every new scene builds in its situation.
+    final l = adult(501, 'female');
+    final p = candidate(l, Random(1))..info['gender'] = 'male';
+    l.npcs.add(p);
+    for (final id in ['baby_surprise', 'baby_fling']) {
+      if (id == 'baby_fling') l.npcs.remove(p);
+      expect(buildScene(id, l), isNotNull, reason: id);
+    }
+    l.npcs.add(p);
+    // A surprise kept: a birth plan, then a baby with a birth story.
+    pick(l, 'baby_surprise', 0);
+    expect(l.flags.containsKey('expecting'), isTrue);
+    expect(l.sceneQueue, contains('birth_plan'));
+    l.sceneQueue.clear();
+    pick(l, 'birth_plan', 1);
+    expect(l.marks, contains('birth_plan:home'));
+    l.flags.remove('expecting');
+    final birth = buildScene('birth', l)!;
+    expect(birth.text, isNotEmpty);
+    engine.choose(l, birth, birth.choices.first);
+    expect(childrenOf(l), isNotEmpty);
+    expect(l.marks.any((m) => m.startsWith('birth_plan:')), isFalse);
+    // Placing a baby for adoption, and the letter 18 years later.
+    final m = adult(502, 'female');
+    final q = candidate(m, Random(3))..info['gender'] = 'male';
+    m.npcs.add(q);
+    pick(m, 'baby_surprise', 1);
+    m.flags.remove('expecting');
+    final placed = buildScene('birth', m)!;
+    engine.choose(m, placed, placed.choices.first);
+    expect(childrenOf(m), isEmpty);
+    final mark = m.marks.firstWhere((x) => x.startsWith('placed:'));
+    final name = mark.split(':')[1];
+    m.age += 18;
+    for (var i = 0; i < 40 && m.marks.contains(mark); i++) {
+      reunionYear(m, Random(i));
+    }
+    final q2 = m.sceneQueue.firstWhere((x) => x.startsWith('adopted_reunion'));
+    pick(m, q2, 0);
+    expect(childrenOf(m).single.name, name);
+    // A fling: the other parent is recorded even without dating.
+    final f = adult(503, 'male');
+    pick(f, 'baby_fling', 1);
+    f.flags.remove('expecting');
+    final fb = buildScene('birth', f)!;
+    engine.choose(f, fb, fb.choices.first);
+    expect(childrenOf(f).single.info['otherParent'], isNotNull);
+    // Surprises happen over the years for a couple not trying.
+    var surprises = 0;
+    for (var seed = 1; seed <= 200; seed++) {
+      final c = adult(600 + seed, 'female');
+      c.npcs.add(candidate(c, Random(seed))..info['gender'] = 'male');
+      surpriseBabyYear(c, Random(seed));
+      if (c.sceneQueue.contains('baby_surprise')) surprises++;
+    }
+    expect(surprises, inInclusiveRange(1, 20));
   });
 }

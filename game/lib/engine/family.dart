@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'births.dart';
 import 'love.dart';
 import 'models.dart';
 import 'relationships.dart';
@@ -99,6 +100,7 @@ Npc newChild(
   String? gender,
   int ageNow = 0,
   bool adopted = false,
+  String? otherParent,
 }) {
   final g = gender ?? (rng.nextBool() ? 'female' : 'male');
   final p = partnerOf(l);
@@ -107,7 +109,7 @@ Npc newChild(
       ? 30 + rng.nextInt(60)
       : ((l.stats[s] + fromPartner) ~/ 2 + rng.nextInt(31) - 15).clamp(5, 100);
   final n = Npc(
-    id: 'child_${childrenOf(l).length + 1}_${l.age}',
+    id: freshNpcId(l, 'child'),
     role: g == 'female' ? 'Daughter' : 'Son',
     name: name ?? pool[rng.nextInt(pool.length)],
     birthYear: l.year - ageNow,
@@ -117,7 +119,7 @@ Npc newChild(
   n.info.addAll({
     'gender': g,
     'adopted': adopted,
-    'otherParent': p?.name,
+    'otherParent': otherParent ?? p?.name,
     'stats': {
       'smarts': inherit('smarts', 60),
       'looks': inherit('looks', (p?.info['looks'] as int?) ?? 60),
@@ -141,8 +143,12 @@ void familyYear(Life l, Random rng) {
     l.sceneQueue.add('birth');
     return;
   }
+  reunionYear(l, rng);
   final p = partnerOf(l);
-  if (!l.tryingForBaby || p == null || sameSexCouple(l)) return;
+  if (!l.tryingForBaby || p == null || sameSexCouple(l)) {
+    surpriseBabyYear(l, rng);
+    return;
+  }
   final myFert = l.stats['fertility'];
   final theirFert = (p.info['fertility'] as int?) ?? 60;
   final age = l.gender == 'female' ? l.age : p.ageIn(l.year);
@@ -153,6 +159,7 @@ void familyYear(Life l, Random rng) {
   );
   if (rng.nextInt(100) < odds) {
     l.flags['expecting'] = Memory(l.age, 'finding out you were expecting');
+    maybeBirthPlan(l);
     l.feed.add(
       FeedEntry(
         l.age,
@@ -483,7 +490,12 @@ Storylet? familyScene(String kind, Life l) {
         ],
       );
     case 'birth':
-      final twins = Random(l.seed + l.age).nextInt(100) < 3;
+      final roll = Random(l.seed + l.age).nextInt(1000);
+      final babies = roll < 3
+          ? 3
+          : roll < 33
+          ? 2
+          : 1;
       final g = Random(l.seed * 3 + l.age).nextBool() ? 'female' : 'male';
       final names = _babyNames[g]!;
       final picks = [
@@ -491,24 +503,66 @@ Storylet? familyScene(String kind, Life l) {
         names[(l.age + 3) % names.length],
         names[(l.age + 7) % names.length],
       ];
+      final other = l.marks
+          .where((m) => m.startsWith('baby_other:'))
+          .map((m) => m.substring(11))
+          .firstOrNull;
+      final placing = l.marks.contains('baby_place');
+      final secret = l.marks.contains('baby_secret');
+      final where = birthSituation(l, Random(l.seed + l.age * 5));
+      final many = babies == 3
+          ? ' And then another, and another: triplets!'
+          : babies == 2
+          ? ' And then, to everyone\'s surprise, a twin.'
+          : '';
+      void tidy(Life life) => life.marks.removeWhere(
+        (m) =>
+            m.startsWith('baby_other:') ||
+            m.startsWith('birth_plan:') ||
+            m == 'baby_place' ||
+            m == 'baby_secret',
+      );
       return scene(
-        'After a long night at the hospital, a tiny, furious, perfect ${g == 'female' ? 'girl' : 'boy'}${twins ? ' and a twin sibling' : ''} arrived. Everyone is looking at you: what is ${g == 'female' ? 'her' : 'his'} name?',
+        '$where It\'s a ${g == 'female' ? 'girl' : 'boy'}.$many ${placing ? 'You have a little time together before the new family arrives. What name will you give ${g == 'female' ? 'her' : 'him'} to carry?' : 'Everyone is looking at you: what is ${g == 'female' ? 'her' : 'his'} name?'}',
         [
           for (final name in picks)
             Choice(
               label: name,
               outcome: '',
               run: (life, rng) {
-                final child = newChild(life, rng, name: name, gender: g);
-                life.npcs.add(child);
-                if (twins) {
-                  final g2 = rng.nextBool() ? 'female' : 'male';
-                  life.npcs.add(newChild(life, rng, gender: g2));
+                tidy(life);
+                if (placing) {
+                  life.marks.add('placed:$name:${life.year}');
+                  life.flags['placed_child'] = Memory(
+                    life.age,
+                    'placing $name with a new family',
+                  );
+                  life.stats.add('happiness', -6);
+                  return 'You held $name for an hour and whispered everything you wanted them to know. Then you let them go to a family who will love them.';
+                }
+                // Added one at a time so twins get their own ids.
+                final born = <Npc>[];
+                for (var i = 0; i < babies; i++) {
+                  final gi = i == 0 ? g : (rng.nextBool() ? 'female' : 'male');
+                  final free = _babyNames[gi]!
+                      .where((n) => !born.any((b) => b.name == n) && n != name)
+                      .toList();
+                  final c = newChild(
+                    life,
+                    rng,
+                    name: i == 0 ? name : free[rng.nextInt(free.length)],
+                    gender: gi,
+                    otherParent: other,
+                  );
+                  if (secret) c.info['secret'] = true;
+                  life.npcs.add(c);
+                  born.add(c);
                 }
                 life.flags['parent'] = Memory(life.age, 'the birth of $name');
                 life.stats.add('happiness', 10);
-                life.stress = life.stress + 15;
-                return 'Welcome to the world, $name${twins ? ' (and sibling)' : ''}. You have never been so tired or so happy.';
+                life.stress = life.stress + 15 * babies;
+                final rest = born.skip(1).map((c) => c.name).join(' and ');
+                return 'Welcome to the world, $name${rest.isEmpty ? '' : ' and $rest'}. You have never been so tired or so happy.${secret ? ' Only a handful of people know who the other parent is.' : ''}';
               },
             ),
         ],
@@ -566,6 +620,7 @@ final familyActions = <GameAction>[
           .clamp(5, 60);
       if (rng.nextInt(100) < odds) {
         l.flags['expecting'] = Memory(l.age, 'a successful round of IVF');
+        maybeBirthPlan(l);
         return ActionResult(
           'After months of appointments and injections, the call came: it worked. A baby is on the way!',
           ['Money −\$12,000', 'Odds were about $odds%'],
