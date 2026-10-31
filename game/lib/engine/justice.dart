@@ -268,6 +268,142 @@ const crimes = <Crime>[
     caught: '',
   ),
   (
+    id: 'extortion',
+    label: "Extortion",
+    minAge: 18,
+    risk: 30,
+    evidence: 45,
+    band: 'serious',
+    gainMin: 2000,
+    gainMax: 15000,
+    karma: -12,
+    violent: false,
+    since: 0,
+    done: "You explained to a shop owner how unlucky their windows might be. They paid {gain} and will keep paying.",
+    caught: "The shop owner had a panic button and a cousin in the police.",
+  ),
+  (
+    id: 'counterfeiting',
+    label: "Counterfeiting",
+    minAge: 18,
+    risk: 25,
+    evidence: 45,
+    band: 'moderate',
+    gainMin: 1000,
+    gainMax: 12000,
+    karma: -6,
+    violent: false,
+    since: 0,
+    done: "A back-room printer, good paper and nerves of steel. You passed {gain} of fakes before anyone looked closely.",
+    caught:
+        "A cashier held your note up to the light, then picked up the phone.",
+  ),
+  (
+    id: 'smuggling',
+    label: "Smuggling",
+    minAge: 18,
+    risk: 30,
+    evidence: 50,
+    band: 'serious',
+    gainMin: 5000,
+    gainMax: 40000,
+    karma: -8,
+    violent: false,
+    since: 0,
+    done: "Crates that were not what the paperwork said, through a port that asked no questions. Your cut: {gain}.",
+    caught: "A sniffer dog sat down next to your crate and would not move.",
+  ),
+  (
+    id: 'identity_theft',
+    label: "Identity theft",
+    minAge: 16,
+    risk: 25,
+    evidence: 35,
+    band: 'moderate',
+    gainMin: 1000,
+    gainMax: 10000,
+    karma: -8,
+    violent: false,
+    since: 1995,
+    done: "A stolen identity, three new credit cards and a shopping spree. {gain} in goods, in someone else's name.",
+    caught: "The real owner of the name reported the cards the same afternoon.",
+  ),
+  (
+    id: 'insider_trading',
+    label: "Insider trading",
+    minAge: 21,
+    risk: 15,
+    evidence: 40,
+    band: 'moderate',
+    gainMin: 3000,
+    gainMax: 60000,
+    karma: -6,
+    violent: false,
+    since: 1934,
+    done: "A friend at a company mentioned a takeover, and you bought shares the day before. Profit: {gain}.",
+    caught: "The regulator's computer noticed your perfect timing.",
+  ),
+  (
+    id: 'insurance_fraud',
+    label: "Insurance fraud",
+    minAge: 18,
+    risk: 25,
+    evidence: 45,
+    band: 'moderate',
+    gainMin: 2000,
+    gainMax: 20000,
+    karma: -8,
+    violent: false,
+    since: 0,
+    done: "A convenient 'accident', a dramatic claim and a sympathetic adjuster. The insurer paid {gain}.",
+    caught: "The adjuster had seen your exact 'accident' before. Twice.",
+  ),
+  (
+    id: 'street_racing',
+    label: "Street racing",
+    minAge: 17,
+    risk: 30,
+    evidence: 25,
+    band: 'minor',
+    gainMin: 300,
+    gainMax: 3000,
+    karma: -2,
+    violent: false,
+    since: 1950,
+    done: "Engines screaming down an empty industrial road at 2am. You won the race and {gain} in bets.",
+    caught: "A police car was parked at the finish line with its lights off.",
+  ),
+  (
+    id: 'money_laundering',
+    label: "Money laundering",
+    minAge: 18,
+    risk: 0,
+    evidence: 50,
+    band: 'serious',
+    gainMin: 0,
+    gainMax: 0,
+    karma: -6,
+    violent: false,
+    since: 0,
+    done: "",
+    caught: "",
+  ),
+  (
+    id: 'racketeering',
+    label: "Racketeering",
+    minAge: 18,
+    risk: 0,
+    evidence: 60,
+    band: 'serious',
+    gainMin: 0,
+    gainMax: 0,
+    karma: -10,
+    violent: false,
+    since: 0,
+    done: "",
+    caught: "",
+  ),
+  (
     id: 'escape',
     label: 'Escaping custody',
     minAge: 10,
@@ -366,8 +502,16 @@ int _gain(Life l, Crime c, Random rng) => switch (c.id) {
 
 /// Commits [c]: caught now (arrest scene), or away with it and a case the
 /// police may solve later.
-ActionResult commitCrime(Life l, Crime c, Random rng) {
-  final (odds, why) = caughtOdds(l, c);
+ActionResult commitCrime(
+  Life l,
+  Crime c,
+  Random rng, {
+  int riskAdj = 0,
+  double gainMul = 1,
+  String? text,
+}) {
+  final (base, why) = caughtOdds(l, c);
+  final odds = (base + riskAdj).clamp(3, 90);
   l.reason = c.label;
   l.stats.add('karma', c.karma);
   if (rng.nextInt(100) < odds) {
@@ -375,8 +519,9 @@ ActionResult commitCrime(Life l, Crime c, Random rng) {
     l.sceneQueue.add('arrest:${c.id}:${min(95, c.evidence + 25)}');
     return ActionResult(c.caught, ['Caught (risk was $odds%)', ...why.take(3)]);
   }
-  final gain = _gain(l, c, rng);
+  final gain = (_gain(l, c, rng) * gainMul).round();
   l.money += gain;
+  addDirty(l, gain);
   l.notoriety += c.band == 'minor' ? 0 : 2;
   final ev = c.evidence + rng.nextInt(15) - 5;
   final open = l.cases.where((x) => x['crime'] == c.id).firstOrNull;
@@ -385,11 +530,17 @@ ActionResult commitCrime(Life l, Crime c, Random rng) {
   } else {
     l.cases.add({'crime': c.id, 'age': l.age, 'evidence': ev});
   }
-  return ActionResult(c.done.replaceAll('{gain}', _m(gain)), [
+  return ActionResult((text ?? c.done).replaceAll('{gain}', _m(gain)), [
     if (gain > 0) 'Money +${_m(gain)}',
     'Evidence left behind: $ev/100',
     'Risk was $odds%',
   ]);
+}
+
+/// Big takes are dirty money: until it is laundered, unexplained wealth
+/// draws attention (underworld.dart). Small change does not count.
+void addDirty(Life l, int gain) {
+  if (gain >= 1000) l.dirty += gain;
 }
 
 /// The older crime actions (shoplifting, pickpocketing, graffiti) call this
@@ -1192,6 +1343,51 @@ final justiceActions = <GameAction>[
     'hide income',
   ], extra: (l) => l.salary < 30000 ? 'Needs a salary of \$30,000+' : null),
   _crimeAction(crimeById('assault'), ['assault', 'fight', 'attack', 'punch']),
+  _crimeAction(
+    crimeById('extortion'),
+    ['extort', 'extortion', 'protection money', 'shakedown'],
+    extra: (l) => l.stats['athleticism'] < 40 && l.stats['charisma'] < 50
+        ? 'Needs Fitness 40+ or Charisma 50+'
+        : null,
+  ),
+  _crimeAction(crimeById('counterfeiting'), [
+    'counterfeit',
+    'fake money',
+    'forgery',
+    'print money',
+  ], extra: (l) => l.stats['creativity'] < 50 ? 'Needs Creativity 50+' : null),
+  _crimeAction(crimeById('smuggling'), [
+    'smuggle',
+    'smuggling',
+    'contraband',
+    'border',
+  ]),
+  _crimeAction(crimeById('identity_theft'), [
+    'identity theft',
+    'steal identity',
+    'credit card fraud',
+  ], extra: (l) => l.stats['smarts'] < 45 ? 'Needs Smarts 45+' : null),
+  _crimeAction(
+    crimeById('insider_trading'),
+    ['insider trading', 'tip', 'stocks', 'shares'],
+    extra: (l) => l.job == null && l.businesses.isEmpty
+        ? 'Needs a job or business to hear tips'
+        : l.money < 10000
+        ? 'Needs \$10,000 to invest'
+        : null,
+  ),
+  _crimeAction(
+    crimeById('insurance_fraud'),
+    ['insurance fraud', 'fake claim', 'arson', 'staged accident'],
+    extra: (l) => l.has('car') || l.has('house') || l.businesses.isNotEmpty
+        ? null
+        : 'Needs a car, home or business to claim on',
+  ),
+  _crimeAction(crimeById('street_racing'), [
+    'street race',
+    'racing',
+    'drag race',
+  ], extra: (l) => l.has('car') ? null : 'Needs a car'),
   GameAction(
     id: 'murder',
     label: 'Murder',

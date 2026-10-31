@@ -4,6 +4,7 @@ import 'actions.dart';
 import 'models.dart';
 import 'more_variants.dart';
 import 'music.dart';
+import 'underworld.dart' show launderVariants, crewJobVariants;
 import 'social.dart';
 
 // Ways to do an activity: how hard, how much to spend, and who to bring.
@@ -898,6 +899,9 @@ final actionVariants = <String, List<ActionVariant>>{
   ],
   // Options for everyday activities (more_variants.dart).
   ...moreVariants,
+  // The underworld (underworld.dart).
+  'launder': launderVariants,
+  'crew_job': crewJobVariants,
 };
 
 List<ActionVariant> variantsFor(String actionId) =>

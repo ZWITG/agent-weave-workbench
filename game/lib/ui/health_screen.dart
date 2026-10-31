@@ -4,7 +4,9 @@ import '../engine/life_events.dart' show activeAftermaths, aftermaths;
 
 import '../engine/health.dart';
 import '../engine/gangs.dart';
+import '../engine/crime_jobs.dart' show crimeSkill, skillName;
 import '../engine/justice.dart';
+import '../engine/underworld.dart';
 import '../engine/models.dart';
 import '../engine/prison_life.dart';
 import '../game_controller.dart';
@@ -446,4 +448,106 @@ class JusticeCard extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Your criminal profile: heat with what feeds it, street skill, dirty
+/// money and your crew. Shown once you have any criminal life at all.
+class CrimeProfileCard extends StatelessWidget {
+  const CrimeProfileCard({super.key, required this.life});
+  final Life life;
+
+  Widget _bar(String label, int v) => Padding(
+    padding: const EdgeInsets.only(top: 6),
+    child: Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(label, style: NF.sora(12, color: NF.muted)),
+        ),
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: v / 100,
+              minHeight: 6,
+              backgroundColor: NF.surface2,
+              color: NF.orange,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final h = heat(life);
+    final crew = crewOf(life);
+    final skill = crimeSkill(life);
+    if (h == 0 && crew == null && life.dirty <= 0 && skill == 0) {
+      return const SizedBox.shrink();
+    }
+    Widget line(String k, String v) => Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Text(k, style: NF.sora(13, color: NF.muted)),
+          const Spacer(),
+          Flexible(
+            child: Text(
+              v,
+              textAlign: TextAlign.right,
+              style: NF.sora(13, weight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+    return NFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.local_fire_department_rounded,
+                color: NF.orange,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Your criminal profile',
+                style: NF.sora(16, weight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _bar('Heat · ${heatLabel(h)}', h),
+          line('Street skill', skillName(skill)),
+          line('Open investigations', '${life.cases.length}'),
+          if (life.dirty > 0) line('Dirty money', money(life.dirty)),
+          if (crew != null) ...[
+            line('Crew', crew.name),
+            line('Rank', crewRanks[crewRank(life)]),
+            _bar('Respect', crewRespect(life)),
+            _bar('Loyalty', crewLoyalty(life)),
+            if (rivalry(life) > 0) _bar('Rival crews', rivalry(life)),
+            if (informant(life))
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  'You are secretly informing for the police.',
+                  style: NF.sora(12, color: NF.danger),
+                ),
+              ),
+          ],
+          const SizedBox(height: 8),
+          Text(
+            h == 0 ? 'The police are not looking at you.' : 'Heat comes from being known to police, open cases and money you cannot explain. Lie low, change your look, launder money or let time pass to cool it.',
+            style: NF.sora(12, color: NF.muted),
+          ),
+        ],
+      ),
+    );
+  }
 }

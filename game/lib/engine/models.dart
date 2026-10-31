@@ -853,6 +853,13 @@ class Life {
   /// Your music career: label, advance, albums, tours (music.dart).
   final Map<String, dynamic> music = {};
 
+  /// Your life in organised crime: crew, rank, loyalty, informant
+  /// (underworld.dart).
+  final Map<String, dynamic> crew = {};
+
+  /// Crime money you have not explained or laundered yet.
+  int dirty = 0;
+
   /// Active subscription ids, renewed each birthday.
   final List<String> subs = [];
 
@@ -1113,6 +1120,8 @@ class Life {
     'items': items,
     'songs': songs,
     'music': music,
+    'crew': crew,
+    'dirty': dirty,
     'subs': subs,
     'deal': deal,
     'cancelledUntil': cancelledUntil,
@@ -1289,6 +1298,8 @@ class Life {
           Map<String, dynamic>.from(s),
       ])
       ..music.addAll(Map<String, dynamic>.from(j['music'] ?? const {}))
+      ..crew.addAll(Map<String, dynamic>.from(j['crew'] ?? const {}))
+      ..dirty = j['dirty'] ?? 0
       ..subs.addAll(List<String>.from(j['subs'] ?? const []))
       ..deal = j['deal'] == null ? null : Map<String, dynamic>.from(j['deal'])
       ..cancelledUntil = j['cancelledUntil']

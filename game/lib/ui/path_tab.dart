@@ -10,7 +10,7 @@ import '../theme.dart';
 import 'activities.dart';
 import 'hub_kit.dart';
 import 'result_popup.dart';
-import 'health_screen.dart' show JusticeCard;
+import 'health_screen.dart' show CrimeProfileCard, JusticeCard;
 import 'school_card.dart';
 import 'widgets.dart';
 
@@ -209,7 +209,11 @@ class _PathTabState extends State<PathTab> {
             : null,
       ),
     ],
-    'justice' => [JusticeCard(life: life)],
+    'justice' => [
+      JusticeCard(life: life),
+      const SizedBox(height: 10),
+      CrimeProfileCard(life: life),
+    ],
     _ => [const PathwaysCard()],
   };
 

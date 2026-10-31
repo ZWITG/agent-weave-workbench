@@ -24,6 +24,7 @@ import 'package:relivable/engine/business_kinds.dart';
 import 'package:relivable/engine/births.dart';
 import 'package:relivable/engine/life_events.dart';
 import 'package:relivable/engine/more_variants.dart';
+import 'package:relivable/engine/underworld.dart';
 import 'package:relivable/engine/elite.dart';
 import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
@@ -3329,5 +3330,91 @@ void main() {
     final adult = engine.newLife(seed: 802)..age = 30;
     final gigs = variantsFor('freelance').where((v) => adult.age <= v.maxAge);
     expect(gigs.map((v) => v.id), isNot(contains('lawns')));
+  });
+
+  test('the underworld: dirty money, laundering, crews and heat', () {
+    final l = engine.newLife(seed: 901)..age = 25;
+    l.money = 20000;
+    // Big takes are dirty; small change is not.
+    addDirty(l, 500);
+    expect(l.dirty, 0);
+    addDirty(l, 30000);
+    l.money += 30000;
+    expect(l.dirty, 30000);
+    expect(heat(l), greaterThan(0));
+    // Laundering costs a cut and cleans the money.
+    final deposits = variantsFor('launder')
+        .firstWhere((v) => v.id == 'deposits');
+    final before = l.money;
+    deposits.run(l, Random(1), null, null);
+    expect(l.dirty, 15000);
+    expect(l.money, lessThan(before));
+    // An unexplained-wealth letter offers real choices.
+    final letter = buildScene('unexplained_wealth', l)!;
+    expect(letter.choices.length, 3);
+    engine.choose(l, letter, letter.choices[1]);
+    expect(l.dirty, 0);
+    // Crews: nobody wants an unknown; a reputation gets you in.
+    final join = allActions.firstWhere((a) => a.id == 'join_crew');
+    expect(join.lockReason(l), isNotNull);
+    l.notoriety = 20;
+    expect(join.lockReason(l), isNull);
+    l.crew.addAll({'id': 'southside', 'rank': 0, 'respect': 10, 'loyalty': 60});
+    expect(crewOf(l)!.name, 'The Southside Crew');
+    expect(crewCut(l), 0.5);
+    for (final id in [
+      'crew_test',
+      'crew_rival',
+      'crew_cops',
+      'crew_found_out',
+      'crew_leave',
+      'crew_initiation',
+    ]) {
+      expect(buildScene(id, l), isNotNull, reason: id);
+    }
+    // Promotion with respect; lieutenants earn dirty racket money.
+    l.crew['respect'] = 70;
+    crewYear(l, Random(2));
+    expect(crewRank(l), 1);
+    l.crew['rank'] = 2;
+    l.crew['respect'] = 10;
+    final dirty0 = l.dirty;
+    crewYear(l, Random(3));
+    expect(l.dirty, greaterThan(dirty0));
+    // Every crew job works.
+    for (final v in variantsFor('crew_job')) {
+      l.usedActions.clear();
+      l.energy = 10;
+      if (v.lockReason(l) != null) continue;
+      final r = engine.runAction(
+        l,
+        allActions.firstWhere((a) => a.id == 'crew_job'),
+        variant: v,
+      );
+      expect(r.text, isNotEmpty, reason: v.id);
+      l.sceneQueue.clear();
+    }
+    // Leaving: testifying clears your cases.
+    l.cases.add({'crime': 'smuggling', 'age': 25, 'evidence': 50});
+    final leave = buildScene('crew_leave', l)!;
+    engine.choose(
+      l,
+      leave,
+      leave.choices.firstWhere((c) => c.label.startsWith('Testify')),
+    );
+    expect(inCrew(l), isFalse);
+    expect(l.cases, isEmpty);
+    // The new crimes exist and run.
+    for (final id in [
+      'extortion',
+      'counterfeiting',
+      'smuggling',
+      'identity_theft',
+      'insider_trading',
+      'insurance_fraud',
+      'street_racing',
+    ]) {
+      expect(allActions.any((a) => a.id == id), isTrue, reason: id);
+    }
   });
 }

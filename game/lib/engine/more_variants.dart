@@ -416,7 +416,17 @@ final moreVariants = <String, List<ActionVariant>>{
           if (id == 'tattoo') {
             l.marks.add('tattoo:${l.age}');
           }
-          return _stats(l, text, stats, cost: cost);
+          final r = _stats(l, text, stats, cost: cost);
+          // A new look makes you harder for witnesses to recognise (a
+          // tattoo, the opposite).
+          if (l.notoriety > 0 && (id == 'wardrobe' || id == 'hair')) {
+            l.notoriety = max(0, l.notoriety - 2);
+            return ActionResult(r.text, [
+              ...r.notes,
+              'Harder to recognise: heat down',
+            ]);
+          }
+          return r;
         },
       ),
   ],

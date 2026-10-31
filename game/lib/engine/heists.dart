@@ -329,6 +329,7 @@ Storylet? heistScene(String id, List<String> args, Life l) {
           default:
             final mine = (take * (1 - cut)).round();
             l.money += mine;
+            addDirty(l, mine);
             l.cases.add({'crime': crimeId, 'age': l.age, 'evidence': ev});
             l.flags['heist'] = Memory(l.age, 'the ${t.name.toLowerCase()} job');
             remember(2, 'pulling off the ${t.name.toLowerCase()} job together');

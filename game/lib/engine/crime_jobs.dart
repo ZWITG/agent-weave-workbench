@@ -344,6 +344,7 @@ String finishCrime(Life l, Crime c, Random rng, int odds, int gainPct) {
     return 'You got the car away clean. You left evidence behind: $ev/100. Street skill is now ${skillName(crimeSkill(l)).toLowerCase()}.';
   }
   l.money += gain;
+  addDirty(l, gain);
   final text = c.done.replaceAll('{gain}', _m(gain));
   return '$text${gain > 0 ? ' (Money +${_m(gain)}.)' : ''} You left evidence behind: $ev/100. Street skill is now ${skillName(crimeSkill(l)).toLowerCase()}.';
 }
@@ -367,6 +368,7 @@ Storylet? stolenCarScene(List<String> args, Life l) {
       risk: 'Money +${_m(gain)} today',
       run: (l, rng) {
         l.money += gain;
+        addDirty(l, gain);
         return '${c.done.replaceAll('{gain}', _m(gain))} (Money +${_m(gain)}.)';
       },
     ),

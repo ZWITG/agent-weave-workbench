@@ -20,6 +20,7 @@ import 'country_life.dart';
 import 'music.dart';
 import 'births.dart' show birthScene;
 import 'life_events.dart' show lifeEventScene;
+import 'underworld.dart' show underworldScene;
 import 'business_kinds.dart' show tradeEventScene;
 import 'elite.dart';
 import 'community.dart';
@@ -82,6 +83,20 @@ Storylet? buildScene(String id, Life life) {
     'child_wedding' ||
     'grandchild' ||
     'step_parent' => lifeEventScene(parts.first, parts.sublist(1), life),
+    'crew_pick' ||
+    'crew_invite' ||
+    'crew_initiation' ||
+    'crew_test' ||
+    'crew_rival' ||
+    'crew_cops' ||
+    'crew_found_out' ||
+    'crew_coup' ||
+    'crew_leave' ||
+    'unexplained_wealth' => underworldScene(
+      parts.first,
+      parts.sublist(1),
+      life,
+    ),
     'will' => willScene(),
     'burnout' ||
     'audition' ||

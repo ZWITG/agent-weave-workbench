@@ -12,6 +12,7 @@ import '../engine/variants.dart';
 import '../game_controller.dart';
 import '../sound.dart';
 import '../theme.dart';
+import 'health_screen.dart' show CrimeProfileCard;
 import 'minigames.dart';
 import 'move_abroad.dart';
 import 'newspaper.dart';
@@ -516,6 +517,10 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           padding: const EdgeInsets.only(bottom: 14),
           child: Text(categoryBlurbs[cat]!, style: NF.sora(14, color: NF.soft)),
         ),
+      if (cat == 'Crime') ...[
+        CrimeProfileCard(life: life),
+        const SizedBox(height: 12),
+      ],
       if (open.isEmpty)
         Padding(
           padding: const EdgeInsets.only(bottom: 12),

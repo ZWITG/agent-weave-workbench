@@ -16,6 +16,7 @@ import 'celebrity.dart';
 import 'country_life.dart';
 import 'music.dart';
 import 'life_events.dart' show aftermathYear;
+import 'underworld.dart' show crewYear, crewInviteYear;
 import 'elite.dart';
 import 'community.dart';
 import 'identity.dart';
@@ -305,6 +306,7 @@ class GameEngine {
     life.feed.addAll(childUpdates(life, _rngFor(life, 29)));
     parentsYear(life, _rngFor(life, 43));
     familyYear(life, _rngFor(life, 47));
+    crewInviteYear(life, _rngFor(life, 137));
     for (final line in aftermathYear(life, _rngFor(life, 127))) {
       life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
     }
@@ -325,6 +327,7 @@ class GameEngine {
       ...countryYear(life, _rngFor(life, 107)),
       ...musicYear(life, _rngFor(life, 109)),
       ...eliteYear(life, _rngFor(life, 113)),
+      ...crewYear(life, _rngFor(life, 131)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),

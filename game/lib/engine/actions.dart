@@ -25,6 +25,7 @@ import 'social.dart';
 import 'celebrity.dart';
 import 'music.dart';
 import 'elite.dart';
+import 'underworld.dart';
 import 'jobs.dart';
 import 'justice.dart';
 import 'love.dart';
@@ -464,6 +465,7 @@ final allActions = <GameAction>[
   ...celebrityActions,
   ...musicActions,
   ...eliteActions,
+  ...underworldActions,
   ...petActions,
   ...heistActions,
   ...recapActions,
