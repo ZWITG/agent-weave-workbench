@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'life_events.dart' show onBreakUp, onWedding;
 import 'models.dart';
 import 'relationships.dart';
 import 'storylet.dart';
@@ -538,6 +539,7 @@ void endRelationship(Life l, Npc p, String memory) {
   l.flags.remove('engaged');
   l.flags.remove('married');
   l.tryingForBaby = false;
+  onBreakUp(l, ex);
 }
 
 // ---------------- Scenes ----------------
@@ -666,6 +668,7 @@ Storylet? loveScene(String kind, Life l) {
             role: p.gender == 'female' ? 'Wife' : 'Husband',
           );
           spouse.addFacets(affection: 10, familiarity: 5);
+          onWedding(life, spouse);
           life.stats.add('happiness', joy);
           for (final g in life.npcs.where(
             (n) => n.circle == 'Family' || n.circle == 'Friends',

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'births.dart';
 import 'love.dart';
+import 'life_events.dart' show onBirth;
 import 'models.dart';
 import 'relationships.dart';
 import 'storylet.dart';
@@ -41,6 +42,7 @@ void parentsYear(Life l, Random rng) {
           bond: 40 + rng.nextInt(20),
         )..lastContactAge = l.age;
         l.npcs.add(n);
+        l.sceneQueue.add('step_parent:${n.id}');
         l.feed.add(
           FeedEntry(
             l.age,
@@ -202,7 +204,8 @@ List<FeedEntry> childUpdates(Life l, Random rng) {
         !c.done.contains('married') &&
         rng.nextInt(100) < 15) {
       c.done.add('married');
-      line = '$first got married. You cried through the whole ceremony.';
+      line = '$first is getting married.';
+      l.sceneQueue.add('child_wedding:${c.id}');
     }
     if (a >= 28 &&
         a <= 40 &&
@@ -559,6 +562,7 @@ Storylet? familyScene(String kind, Life l) {
                   born.add(c);
                 }
                 life.flags['parent'] = Memory(life.age, 'the birth of $name');
+                onBirth(life, name);
                 life.stats.add('happiness', 10);
                 life.stress = life.stress + 15 * babies;
                 final rest = born.skip(1).map((c) => c.name).join(' and ');

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'life_events.dart' show onCloseDeath;
 import 'models.dart';
 import 'storylet.dart';
 import 'world_data.dart' show countryProfile;
@@ -460,6 +461,7 @@ List<String> npcAging(Life l, Random rng) {
     if (n.circle == 'Partner') {
       l.flags['widowed'] = Memory(l.age, 'losing ${n.name}');
     }
+    if (n.bond >= 40 || n.circle != 'Friends') onCloseDeath(l, n);
     if (n.bond >= 60 && conditionOf(l, 'grief') == null) {
       _mindOnset(l, 'grief');
     }

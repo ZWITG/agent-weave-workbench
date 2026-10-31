@@ -5,8 +5,8 @@ import 'models.dart';
 import 'storylet.dart';
 
 /// Babies that arrive without a plan: a surprise with your partner, a
-/// secret lover, a fling from a night out, a recent ex, as a teenager or
-/// later in life. Also the birth plan, and placing a baby for adoption
+/// secret lover, a fling from a night out, a recent ex, or later in life.
+/// Only adults (18+) can become parents this way. Also the birth plan, and placing a baby for adoption
 /// (with a chance they find you when they are grown).
 ///
 /// Marks used while expecting:
@@ -28,7 +28,7 @@ bool _canConceive(Life l, Npc? other) {
 int _carrierAge(Life l, Npc? other) =>
     l.gender == 'female' || other == null ? l.age : other.ageIn(l.year);
 
-bool _fertileAge(int age) => age >= 15 && age <= 48;
+bool _fertileAge(int age) => age >= 18 && age <= 48;
 
 String _first(String name) => name.split(' ').first;
 
@@ -41,7 +41,7 @@ void _expect(Life l, String memory) {
 /// Yearly: the chance of a baby nobody planned. Runs before deliberate
 /// "trying" and only when nobody is expecting already.
 void surpriseBabyYear(Life l, Random rng) {
-  if (_expecting(l) || l.prison != null || l.age < 15) return;
+  if (_expecting(l) || l.prison != null || l.age < 18) return;
   final p = partnerOf(l);
   final lover = loverOf(l);
   final roll = rng.nextInt(1000);
@@ -52,15 +52,13 @@ void surpriseBabyYear(Life l, Random rng) {
       _canConceive(l, p) &&
       _fertileAge(_carrierAge(l, p))) {
     final age = _carrierAge(l, p);
-    final chance = l.age < 18
-        ? 25
-        : age >= 40
+    final chance = age >= 40
         ? 12
         : l.flags.containsKey('no_kids')
         ? 8
         : 25;
     if (roll < chance) {
-      l.sceneQueue.add(l.age < 18 ? 'baby_teen' : 'baby_surprise');
+      l.sceneQueue.add('baby_surprise');
       return;
     }
   }
@@ -178,25 +176,6 @@ Storylet? birthScene(String id, List<String> args, Life l) {
           keepText: 'You held hands at the kitchen table and laughed, a little hysterically. You are going to be parents.',
           onKeep: (l) => partnerOf(l)?.addFacets(affection: 6),
         ),
-      );
-    case 'baby_teen':
-      if (p == null || _expecting(l)) return null;
-      final mum = l.npc('mother');
-      final dad = l.npc('father');
-      return _scene(
-        id,
-        'You are ${l.age} and the test is positive. You and ${_first(p.name)} sit on the bathroom floor trying to work out how to tell ${mum != null ? '{mother}' : 'your family'}.',
-        [
-          ..._keepOrPlace(
-            'a teenage pregnancy',
-            keepText: 'Your family shouted, cried, and then started clearing out the spare room. School will be harder now.',
-            onKeep: (l) {
-              l.stats.add('smarts', -2);
-              mum?.addFacets(affection: -4, trust: -6);
-              dad?.addFacets(affection: -4, trust: -6);
-            },
-          ),
-        ],
       );
     case 'baby_lover':
       final lover = loverOf(l);

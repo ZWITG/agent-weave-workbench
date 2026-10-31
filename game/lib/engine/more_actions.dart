@@ -8,6 +8,7 @@ import 'minigame_rules.dart';
 import 'health.dart' show careCost, conditionInfo;
 import 'justice.dart' show caughtInTheAct, riskHint;
 import 'friends.dart';
+import 'life_events.dart' show easeAftermath;
 import 'models.dart';
 import 'world_data.dart';
 
@@ -82,6 +83,7 @@ final moreActions = <GameAction>[
         mind.treated = true;
         life.marks.add('therapy:${mind.id}');
       }
+      final eased = easeAftermath(life);
       final r = statChange(
         life,
         mind == null
@@ -89,7 +91,11 @@ final moreActions = <GameAction>[
             : 'You started regular sessions for your ${conditionInfo[mind.id]!.name.toLowerCase()}. Your therapist said, "This is very treatable." You believed her a little.',
         {'happiness': 4 + rng.nextInt(4), 'willpower': 2},
       );
-      return ActionResult(r.text, [if (cost > 0) 'Money −\$$cost', ...r.notes]);
+      return ActionResult(r.text, [
+        if (cost > 0) 'Money −\$$cost',
+        ?eased,
+        ...r.notes,
+      ]);
     },
   ),
   GameAction(

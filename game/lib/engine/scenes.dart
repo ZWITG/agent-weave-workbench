@@ -19,6 +19,7 @@ import 'celebrity.dart';
 import 'country_life.dart';
 import 'music.dart';
 import 'births.dart' show birthScene;
+import 'life_events.dart' show lifeEventScene;
 import 'business_kinds.dart' show tradeEventScene;
 import 'elite.dart';
 import 'community.dart';
@@ -69,12 +70,18 @@ Storylet? buildScene(String id, Life life) {
     'birth' ||
     'adopt' => familyScene(parts.first, life),
     'baby_surprise' ||
-    'baby_teen' ||
     'baby_lover' ||
     'baby_fling' ||
     'baby_ex' ||
     'birth_plan' ||
     'adopted_reunion' => birthScene(parts.first, parts.sublist(1), life),
+    'loss' ||
+    'estate' ||
+    'honeymoon' ||
+    'fired_now' ||
+    'child_wedding' ||
+    'grandchild' ||
+    'step_parent' => lifeEventScene(parts.first, parts.sublist(1), life),
     'will' => willScene(),
     'burnout' ||
     'audition' ||

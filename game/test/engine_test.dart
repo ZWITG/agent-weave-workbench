@@ -22,6 +22,7 @@ import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/business_kinds.dart';
 import 'package:relivable/engine/births.dart';
+import 'package:relivable/engine/life_events.dart';
 import 'package:relivable/engine/elite.dart';
 import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
@@ -2929,6 +2930,7 @@ void main() {
     expect(yacht.lockReason(l), isNotNull);
     // Islands come as a choice of three.
     l.money = 200000000;
+    l.sceneQueue.clear(); // world news can be waiting from the birthday
     engine.runAction(l, allActions.firstWhere((a) => a.id == 'buy_island'));
     final islands = engine.nextScene(l)!;
     expect(islands.id, 'scene:elite_island');
@@ -3217,5 +3219,77 @@ void main() {
       if (c.sceneQueue.contains('baby_surprise')) surprises++;
     }
     expect(surprises, inInclusiveRange(1, 20));
+  });
+
+  test('big moments ask for input and leave lasting effects', () {
+    final l = engine.newLife(seed: 701)..age = 40;
+    l.money = 100000;
+    // A parent dies: the funeral, then the will.
+    final mum = l.npc('mother')!..alive = false;
+    onCloseDeath(l, mum);
+    expect(l.sceneQueue, ['loss:mother', 'estate:mother']);
+    for (final id in [...l.sceneQueue]) {
+      final s = buildScene(id, l)!;
+      expect(s.choices.length, greaterThanOrEqualTo(2), reason: id);
+    }
+    final funeral = buildScene('loss:mother', l)!;
+    engine.choose(l, funeral, funeral.choices[2]);
+    final will = buildScene('estate:mother', l)!;
+    final before = l.money;
+    engine.choose(l, will, will.choices.first);
+    expect(l.money, greaterThan(before));
+    l.sceneQueue.clear();
+    // Grief lasts for years, and therapy helps it pass sooner.
+    expect(activeAftermaths(l).map((a) => a.$1), contains('grief'));
+    final happy = l.stats['happiness'];
+    final lines = aftermathYear(l, Random(1));
+    expect(lines, isNotEmpty);
+    expect(l.stats['happiness'], lessThan(happy));
+    final left = activeAftermaths(l).first.$2;
+    expect(easeAftermath(l), isNotNull);
+    expect(activeAftermaths(l).first.$2, left - 1);
+    // Children grieve without being asked to plan a funeral.
+    final kid = engine.newLife(seed: 702)..age = 9;
+    final dad = kid.npc('father')!..alive = false;
+    onCloseDeath(kid, dad);
+    expect(kid.sceneQueue, isEmpty);
+    expect(activeAftermaths(kid), isNotEmpty);
+    // Weddings bring a honeymoon; firing brings a decision.
+    final w = engine.newLife(seed: 703)..age = 30;
+    w.money = 20000;
+    final p = candidate(w, Random(1));
+    w.npcs.add(p);
+    onWedding(w, p);
+    final honeymoon = buildScene('honeymoon', w)!;
+    engine.choose(w, honeymoon, honeymoon.choices.first);
+    expect(w.flags.containsKey('honeymoon'), isTrue);
+    onFired(w, 50000);
+    expect(buildScene('fired_now', w), isNotNull);
+    // A child's wedding, a grandchild and a step-parent all ask you.
+    final g = engine.newLife(seed: 704)..age = 60;
+    g.money = 50000;
+    final c = newChild(g, Random(1), ageNow: 30);
+    g.npcs.add(c);
+    expect(buildScene('child_wedding:${c.id}', g), isNotNull);
+    final gc = Npc(
+      id: 'gc_test',
+      role: 'Granddaughter',
+      name: 'Ivy',
+      birthYear: g.year,
+      circle: 'Grandchildren',
+    )..info['parent'] = c.id;
+    g.npcs.add(gc);
+    final first = buildScene('grandchild:gc_test', g)!;
+    engine.choose(g, first, first.choices[1]);
+    expect(gc.info['fund'], 10000);
+    final step = Npc(
+      id: 'stepmother',
+      role: 'Stepmother',
+      name: 'Ruth',
+      birthYear: g.year - 70,
+      circle: 'Family',
+    );
+    g.npcs.add(step);
+    expect(buildScene('step_parent:stepmother', g), isNotNull);
   });
 }

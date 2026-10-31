@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../engine/life_events.dart' show activeAftermaths, aftermaths;
+
 import '../engine/health.dart';
 import '../engine/gangs.dart';
 import '../engine/justice.dart';
@@ -133,7 +135,21 @@ class HealthScreen extends StatelessWidget {
               const SizedBox(height: 18),
               const SectionLabel('Mind', color: NF.blue),
               const SizedBox(height: 10),
-              if (mind.isEmpty && life.addictions.isEmpty)
+              // What recent big moments are still doing to you.
+              for (final (kind, left, who) in activeAftermaths(life))
+                if (aftermaths[kind] case final a?)
+                  _row(
+                    context,
+                    icon: a.heavy
+                        ? Icons.cloud_rounded
+                        : Icons.wb_sunny_rounded,
+                    title: '${a.label}${who.isEmpty ? '' : ': $who'}',
+                    sub:
+                        '${left <= 1 ? 'Fading by your next birthday' : 'About $left more years'}${a.heavy ? ' · therapy helps it pass sooner' : ''}',
+                  ),
+              if (mind.isEmpty &&
+                  life.addictions.isEmpty &&
+                  activeAftermaths(life).isEmpty)
                 Text(
                   'Nothing weighing on you right now. Stress ${life.stress}%.',
                   style: NF.sora(14, color: NF.muted),

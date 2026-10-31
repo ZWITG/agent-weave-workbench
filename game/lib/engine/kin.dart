@@ -298,6 +298,7 @@ List<FeedEntry> grandchildrenYear(Life l, Random rng) {
       )..lastContactAge = l.age;
       g.info.addAll({'parent': c.id, 'gender': girl ? 'female' : 'male'});
       l.npcs.add(g);
+      l.sceneQueue.add('grandchild:${g.id}');
       c.info['kids'] = kids + 1;
       l.flags['grandparent'] ??= Memory(l.age, 'becoming a grandparent');
       out.add(

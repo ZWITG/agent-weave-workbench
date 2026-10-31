@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart';
+import 'life_events.dart' show onFired;
 import 'models.dart';
 import 'storylet.dart';
 import 'justice.dart' show convictions;
@@ -119,7 +120,9 @@ List<String> workYear(
       l.lowPerfYears++;
       if (l.lowPerfYears >= 2) {
         final old = l.job;
+        final pay = l.salary;
         leaveJob(l, fired: true);
+        onFired(l, pay);
         l.stats.add('happiness', -8);
         lines.add(
           'You were let go from your job as $old. Why: performance below 25% for two years (effort, ${c.keyStat}, your boss and stress all count).',

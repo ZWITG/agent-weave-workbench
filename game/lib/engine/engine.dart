@@ -15,6 +15,7 @@ import 'social.dart';
 import 'celebrity.dart';
 import 'country_life.dart';
 import 'music.dart';
+import 'life_events.dart' show aftermathYear;
 import 'elite.dart';
 import 'community.dart';
 import 'identity.dart';
@@ -304,6 +305,9 @@ class GameEngine {
     life.feed.addAll(childUpdates(life, _rngFor(life, 29)));
     parentsYear(life, _rngFor(life, 43));
     familyYear(life, _rngFor(life, 47));
+    for (final line in aftermathYear(life, _rngFor(life, 127))) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+    }
     life.feed.addAll(kinYear(life, _rngFor(life, 79)));
     loveYear(life, _rngFor(life, 53));
     final trust = releaseTrust(life);
