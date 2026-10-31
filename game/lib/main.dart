@@ -8,6 +8,7 @@ import 'ui/new_life_screen.dart';
 import 'ui/recap_screen.dart';
 import 'ui/update_prompt.dart';
 import 'ui/colour_modes.dart';
+import 'ui/lockdown.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,16 +45,27 @@ class RelivableApp extends StatelessWidget {
         ),
         // Colour-vision mode applies to the whole app (plan UX §8.3), and
         // the ZWITG / Relivable opening plays over it.
+        // Going in or coming out of prison plays Lockdown (lockdown.dart):
+        // one look consuming the other.
         child: IntroGate(
           reduceMotion: p.reduceMotion,
-          child: colourMatrices[p.colourMode] == null
-              ? child!
-              : ColorFiltered(
-                  colorFilter: ColorFilter.matrix(
-                    colourMatrices[p.colourMode]!,
-                  ),
-                  child: child!,
-                ),
+          child: Builder(
+            builder: (context) {
+              final game = Lockdown(
+                controller: controller,
+                reduceMotion: p.reduceMotion,
+                child: child!,
+              );
+              return colourMatrices[p.colourMode] == null
+                  ? game
+                  : ColorFiltered(
+                      colorFilter: ColorFilter.matrix(
+                        colourMatrices[p.colourMode]!,
+                      ),
+                      child: game,
+                    );
+            },
+          ),
         ),
       ),
       home: UpdateGate(

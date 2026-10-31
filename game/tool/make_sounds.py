@@ -170,6 +170,21 @@ sounds = {
     'heartbeat': seq([tone(60, 0.18, decay=0.06), tone(55, 0.18, decay=0.06),
                       np.zeros(int(RATE * 0.1)),
                       tone(60, 0.18, decay=0.06), tone(55, 0.18, decay=0.06)], 0.14),
+    # Going to prison: a heavy cell door slamming shut, ringing in the
+    # concrete.
+    'clang': mix(
+        lowpass(noise(0.12, decay=0.03), 0.35) * 1.4,
+        tone(92, 1.6, 'bell', decay=0.55) * 1.2,
+        tone(147, 1.2, 'bell', decay=0.35) * 0.7,
+        tone(611, 0.9, 'bell', decay=0.22) * 0.35,
+        tone(1290, 0.5, 'bell', decay=0.1) * 0.2),
+    # Release: the gate rattles along its rail, then opens.
+    'gate': mix(
+        lowpass(noise(0.9, attack=0.05, decay=0.6), 0.25)
+        * (0.6 + 0.4 * np.sign(np.sin(2 * np.pi * 14 * t(0.9)))),
+        np.concatenate([np.zeros(int(RATE * 0.8)),
+                        seq([tone(note(n), 0.7, 'bell', decay=0.35)
+                             for n in ['C5', 'G5', 'C6']], 0.11)])),
 }
 
 if __name__ == '__main__':

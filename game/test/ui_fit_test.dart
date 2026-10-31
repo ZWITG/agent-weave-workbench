@@ -475,6 +475,73 @@ void main() {
     expect(find.text('Smarts'), findsOneWidget);
   });
 
+  testWidgets('inside, every tab is a prison place and fits a small phone', (
+    t,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.updateProfile((p) => p.textScale = 1.3);
+    final l = c.life!;
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    // Going in plays Lockdown over the game, then the tabs change.
+    l.prison = Prison(crime: 'burglary', years: 5, since: 34)
+      ..gangId = 'iron'
+      ..stash = 4;
+    c.notifyListeners();
+    await t.pump(const Duration(milliseconds: 1500));
+    expect(find.byType(CustomPaint), findsWidgets);
+    await t.pump(const Duration(seconds: 4));
+    await _pump(t);
+    for (final (tab, sign) in const [
+      ('Visits', 'VISITING ROOM'),
+      ('File', 'CASE FILE'),
+      ('Canteen', 'COMMISSARY'),
+      ('ID', 'INMATE ID'),
+    ]) {
+      await t.tap(find.text(tab).last);
+      await _pump(t);
+      expect(find.text(sign), findsOneWidget, reason: tab);
+      await _scrollAll(t);
+    }
+    expect(find.text('People'), findsNothing);
+    expect(find.text('Wealth'), findsNothing);
+    // The Yard: prison activities only, outside ones out of sight.
+    await t.tap(find.text('Cell').last);
+    await _pump(t);
+    await t.tap(find.text('Swipe up for the yard'));
+    await _pump(t);
+    expect(find.text('THE YARD'), findsOneWidget);
+    expect(find.text('Work out in the yard'), findsOneWidget);
+    expect(find.text('Go to the gym'), findsNothing);
+    await _scrollAll(t);
+    Navigator.of(t.element(find.text('THE YARD'))).pop();
+    await _pump(t);
+    // Out again: the gate opens and the everyday tabs come back.
+    l.prison = null;
+    c.notifyListeners();
+    await t.pump(const Duration(seconds: 4));
+    await _pump(t);
+    expect(find.text('People'), findsOneWidget);
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+    expect(t.takeException(), isNull);
+  });
+
   testWidgets('moving abroad picks a country from a drop-down list', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);

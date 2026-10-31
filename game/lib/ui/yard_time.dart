@@ -327,3 +327,13 @@ class PrisonStamp extends StatelessWidget {
     );
   }
 }
+
+/// Your inmate number: five digits that stay the same for one sentence.
+String inmateNumber(Life l) {
+  var h = 17;
+  final key = '${l.fullName}|${l.year - l.age}|${l.prison?.since ?? 0}';
+  for (final c in key.codeUnits) {
+    h = (h * 31 + c) & 0x7fffffff;
+  }
+  return '${10000 + h % 90000}';
+}

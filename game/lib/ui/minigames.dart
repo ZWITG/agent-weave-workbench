@@ -59,6 +59,8 @@ const miniPools = <String, List<String>>{
   'write_story': ['words', 'memory'],
   'video_games': ['whack', 'lanes', 'reaction'],
   'driving_lessons': ['lanes', 'reaction'],
+  'prison_gym': ['reps', 'whack'],
+  'cell_exercise': ['reps', 'balance'],
 };
 
 final _lastGame = <String, String>{};
@@ -88,6 +90,12 @@ const _intros = <String, Map<String, String>>{
         'Unscramble three words from today\'s lessons before time runs out.',
   },
   'gym': {'whack': 'Hit the pads as they light up. Leave the grey ones alone.'},
+  'prison_gym': {
+    'whack': 'Hit the bag when it lights up. If a guard walks past, keep your hands down.',
+  },
+  'cell_exercise': {
+    'balance': 'Hold the plank on the cell floor: nudge the marker back into the zone.',
+  },
   'shoplift': {
     'sneak': 'Hold to edge closer, but only while the guard looks away.',
     'timing': 'The guard keeps glancing over. Grab it while the marker is in the blind spot. Three tries, each faster.',
@@ -215,6 +223,16 @@ final miniThemes = <String, MiniTheme>{
   'gym': _t(
     'Tap LIFT as many times as you can in 6 seconds. The fitter you are, the fewer reps a top score needs.',
     button: 'LIFT',
+    stat: 'athleticism',
+  ),
+  'prison_gym': _t(
+    'Pull-ups on the yard bar. Tap PULL as many times as you can in 6 seconds; the whole yard is counting.',
+    button: 'PULL',
+    stat: 'athleticism',
+  ),
+  'cell_exercise': _t(
+    'Push-ups between the bunk and the door. Tap PUSH as many times as you can in 6 seconds.',
+    button: 'PUSH',
     stat: 'athleticism',
   ),
   'study': _t('Three questions from today\'s lessons.'),

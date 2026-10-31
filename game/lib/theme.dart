@@ -133,14 +133,20 @@ class NF {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: nav,
         indicatorColor: surface2,
+        // Inside, the tab names are stencilled like cell-block signs.
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (s) => sora(
-            12,
-            weight: s.contains(WidgetState.selected)
-                ? FontWeight.w700
-                : FontWeight.w400,
-            color: s.contains(WidgetState.selected) ? orange : muted,
-          ),
+          (s) => prison
+              ? stencil(
+                  10.5,
+                  color: s.contains(WidgetState.selected) ? orange : muted,
+                )
+              : sora(
+                  12,
+                  weight: s.contains(WidgetState.selected)
+                      ? FontWeight.w700
+                      : FontWeight.w400,
+                  color: s.contains(WidgetState.selected) ? orange : muted,
+                ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (s) => IconThemeData(

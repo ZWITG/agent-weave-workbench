@@ -215,8 +215,38 @@ const _skins = <String, MiniSkin>{
   ),
 };
 
-MiniSkin skinFor(String? activity) =>
-    _skins[activity == 'write_song' ? 'instrument' : activity] ?? _plainSkin;
+/// Inside, every game is played in prison: the yard for working out,
+/// otherwise your cell.
+const _yardSkin = MiniSkin(
+  top: Color(0xFF34403B),
+  bottom: Color(0xFF151C19),
+  panel: Color(0xFF3E4C46),
+  accent: Color(0xFF9FE0C1),
+  zone: Color(0xFFE3CF7A),
+  scene: 'yard',
+  target: Icons.sports_mma_rounded,
+  decoy: Icons.local_police_rounded,
+  watcher: Icons.local_police_rounded,
+);
+const _cellSkin = MiniSkin(
+  top: Color(0xFF2A3430),
+  bottom: Color(0xFF101614),
+  panel: Color(0xFF34413C),
+  accent: Color(0xFFE5EFEA),
+  zone: Color(0xFF9FE0C1),
+  scene: 'cell',
+  watcher: Icons.local_police_rounded,
+  pads: [
+    Color(0xFF9FE0C1),
+    Color(0xFFE3CF7A),
+    Color(0xFF8DB4E8),
+    Color(0xFFE5EFEA),
+  ],
+);
+
+MiniSkin skinFor(String? activity) => NF.prison
+    ? (activity == 'prison_gym' ? _yardSkin : _cellSkin)
+    : _skins[activity == 'write_song' ? 'instrument' : activity] ?? _plainSkin;
 
 class _SkinScope extends InheritedWidget {
   const _SkinScope({required this.skin, required super.child});
@@ -436,8 +466,73 @@ class _ScenePainter extends CustomPainter {
         for (var y = 0.0; y < h; y += 50) {
           canvas.drawLine(Offset(w / 2, y), Offset(w / 2, y + 26), dash);
         }
+      case 'yard':
+        // Chain-link fence along the top, razor wire, a floodlight and
+        // chalked tallies on the wall.
+        final wire = Paint()
+          ..color = Colors.white.withValues(alpha: 0.07)
+          ..strokeWidth = 1.4;
+        final fenceH = h * 0.32;
+        for (var x = -fenceH; x < w + fenceH; x += 22) {
+          canvas.drawLine(Offset(x, 0), Offset(x + fenceH, fenceH), wire);
+          canvas.drawLine(Offset(x + fenceH, 0), Offset(x, fenceH), wire);
+        }
+        canvas.drawLine(Offset(0, fenceH), Offset(w, fenceH), line);
+        for (var x = 6.0; x < w; x += 18) {
+          canvas.drawCircle(Offset(x, 10), 5, line);
+        }
+        canvas.drawCircle(
+          Offset(w * 0.82, h * 0.06),
+          90,
+          Paint()
+            ..shader =
+                RadialGradient(
+                  colors: [
+                    skin.zone.withValues(alpha: 0.16),
+                    skin.zone.withValues(alpha: 0),
+                  ],
+                ).createShader(
+                  Rect.fromCircle(
+                    center: Offset(w * 0.82, h * 0.06),
+                    radius: 90,
+                  ),
+                ),
+        );
+        _tallies(canvas, Offset(18, h * 0.78), 12, skin.accent);
+      case 'cell':
+        // Bars across the whole scene, a bunk and the days on the wall.
+        final bar = Paint()..color = Colors.black.withValues(alpha: 0.22);
+        for (var x = 24.0; x < w; x += 56) {
+          canvas.drawRect(Rect.fromLTWH(x, 0, 9, h), bar);
+        }
+        canvas.drawRect(Rect.fromLTWH(0, h * 0.2, w, 8), bar);
+        canvas.drawRect(Rect.fromLTWH(0, h * 0.8, w, 8), bar);
+        canvas.drawRect(Rect.fromLTWH(0, h * 0.66, w * 0.45, 14), fill);
+        _tallies(canvas, Offset(w - 120, h * 0.3), 17, skin.accent);
       default:
         break;
+    }
+  }
+
+  /// Chalk tally marks in fives.
+  void _tallies(Canvas canvas, Offset at, int n, Color chalk) {
+    final p = Paint()
+      ..color = chalk.withValues(alpha: 0.16)
+      ..strokeWidth = 2.4
+      ..strokeCap = StrokeCap.round;
+    var x = at.dx;
+    for (var i = 0; i < n; i++) {
+      if (i % 5 == 4) {
+        canvas.drawLine(
+          Offset(x - 26, at.dy + 18),
+          Offset(x + 2, at.dy + 4),
+          p,
+        );
+        x += 14;
+      } else {
+        canvas.drawLine(Offset(x, at.dy), Offset(x, at.dy + 22), p);
+        x += 7;
+      }
     }
   }
 

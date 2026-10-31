@@ -1514,6 +1514,25 @@ final justiceActions = <GameAction>[
     id: 'prison_gym',
     label: 'Work out in the yard',
     category: 'Prison',
+    miniGame: 'reps',
+    scored: (l, rng, score) {
+      // The yard is watching: a strong set earns respect, a weak one
+      // gets noticed too.
+      final p = l.prison!;
+      final gain = (2 + score * 8).round();
+      p.respect = min(100, p.respect + gain);
+      l.fitness = min(100, l.fitness + (4 + score * 6).round());
+      final r = statChange(
+        l,
+        score >= 0.8
+            ? 'You did pull-ups until the bar squeaked. The whole yard stopped talking to count.'
+            : score >= 0.4
+            ? 'A solid set by the fence. A couple of people nodded.'
+            : 'You gassed out early, and someone laughed. You will be back tomorrow.',
+        {'health': 1 + (score * 3).round(), 'athleticism': (score * 3).round()},
+      );
+      return ActionResult(r.text, [...r.notes, 'Respect ${p.respect}%']);
+    },
     keywords: ['gym', 'yard', 'workout', 'exercise'],
     extraCheck: _prisonOnly,
     run: (l, rng) {

@@ -162,3 +162,10 @@ Named updates since the game was created (26 October 2026). Newest last.
 - Illness, check-ups and mental health have prison versions: the medical list, a guarded hospital transfer, resting in your cell, the prison phone, the counsellor and programme groups (which count towards parole). Care is free inside.
 - Deaths reach you through the prison chaplain; heirlooms are kept for you; grandchildren's milestones and your children's news come by letter; nudges say "Write to them?"
 - Celebrity life (parties, paparazzi, brand gifts, rumours, stalkers), restaurant reactions to your family name and outside-world quiet years pause or change inside.
+
+## 2.18 "Lockdown" (31 Oct)
+- Going to prison is a moment: the screen freezes, a siren washes over it, cell bars slam down with a clang and a shake, and Yard Time green creeps out of every bar and eats the old look away until it is gone. "BOOKED", your inmate number and your sentence are stamped across it, and the bars lift into the fence. Tap to skip; Reduce motion makes it a short fade.
+- Release plays it in reverse: the gate rattles open and the night colours come back through the gap, stamped "RELEASED" (or "ESCAPED").
+- Every tab becomes a prison place while you are inside, with stencilled tab names: Cell (Life), Visits (your cellmate, your crew and its rivals, the visiting list and who is banned), File (your sentence, parole, prison job, courses and the ways out), Canteen (your stash, the yard's going rates on a chalkboard, and your outside money held at reception) and ID (an inmate card with a mugshot, height chart and number).
+- Activities becomes The Yard: prison activities laid out by place (yard, work and classes, contact, crew, ways out, quiet time), with outside activities out of sight until release.
+- Working out in the yard and exercising in your cell are now mini-games (pull-ups, the punch bag, push-ups, the plank), played against a chain-link yard or behind cell bars. A strong set in the yard earns respect.

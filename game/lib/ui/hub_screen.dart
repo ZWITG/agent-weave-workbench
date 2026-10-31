@@ -17,6 +17,7 @@ import 'outcome_card.dart';
 import 'result_popup.dart';
 import 'path_tab.dart';
 import 'health_screen.dart';
+import 'inside_tabs.dart';
 import 'meta_screens.dart';
 import 'social_screen.dart';
 import 'me_screens.dart';
@@ -42,7 +43,12 @@ class _HubScreenState extends State<HubScreen> {
   String? _lastEvent;
   final _dockScroll = ScrollController();
 
-  static const _destinations = [
+  // Outside the five tabs are Life, People, Path, Wealth and Me; inside
+  // prison they become Cell, Visits, File, Canteen and ID (inside_tabs.dart).
+  static List<(IconData, IconData, String)> get _destinations =>
+      NF.prison ? insideDestinations : _outside;
+
+  static const _outside = [
     (Icons.auto_stories_outlined, Icons.auto_stories, 'Life'),
     (Icons.people_outline, Icons.people, 'People'),
     (Icons.school_outlined, Icons.school, 'Path'),
@@ -79,12 +85,20 @@ class _HubScreenState extends State<HubScreen> {
     if (c.toasts.isNotEmpty && _toast == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _nextToast());
     }
+    final inside = NF.prison && life.prison != null;
     final tabs = [
       _LifeTab(controller: c),
-      PeopleTab(controller: c),
-      PathTab(controller: c),
-      WealthTab(controller: c),
-      _MeTab(controller: c),
+      if (inside) ...[
+        VisitsTab(controller: c),
+        CaseFileTab(controller: c),
+        CanteenTab(controller: c),
+        InmateIdTab(controller: c),
+      ] else ...[
+        PeopleTab(controller: c),
+        PathTab(controller: c),
+        WealthTab(controller: c),
+        _MeTab(controller: c),
+      ],
     ];
     // Desktop and other wide windows: tabs down the left, the game in the
     // middle and Activities always open on the right.
@@ -97,9 +111,7 @@ class _HubScreenState extends State<HubScreen> {
           _Header(
             life: life,
             // Tapping your money opens the Wealth tab.
-            onMoney: () => setState(
-              () => _tab = _destinations.indexWhere((d) => d.$3 == 'Wealth'),
-            ),
+            onMoney: () => setState(() => _tab = 3),
             onFame: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => FameScreen(controller: c)),
             ),
@@ -566,7 +578,9 @@ class _BottomBar extends StatelessWidget {
                             const SizedBox(width: 2),
                             Flexible(
                               child: Text(
-                                'Swipe up for activities',
+                                NF.prison
+                                    ? 'Swipe up for the yard'
+                                    : 'Swipe up for activities',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: NF.sora(12, color: NF.muted),

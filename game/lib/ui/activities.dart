@@ -13,6 +13,7 @@ import '../game_controller.dart';
 import '../sound.dart';
 import '../theme.dart';
 import 'health_screen.dart' show CrimeProfileCard;
+import '../engine/justice.dart' show prisonAllowed;
 import '../engine/underworld.dart' show heat;
 import 'minigames.dart';
 import 'move_abroad.dart';
@@ -229,6 +230,13 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       .where((a) => a.category != 'Music' || musicUnlocked(life))
       // The upper echelon stays secret until the fortune passes the line.
       .where((a) => a.category != 'Upper echelon' || upperEchelon(life))
+      // Inside, outside life is out of sight, not just locked.
+      .where(
+        (a) =>
+            life.prison == null ||
+            a.category == 'Prison' ||
+            prisonAllowed.contains(a.id),
+      )
       .toList();
 
   List<GameAction> _in(String cat) =>
@@ -294,7 +302,11 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           if (_category == null && !searching) ...[
             const SizedBox(height: 4),
             Text(
-              life.classic
+              life.prison != null
+                  ? (life.prison!.solitary > 0
+                        ? 'Solitary: four walls and a slot in the door. Not much to do but this.'
+                        : 'A year inside is long. Pick how to spend it.')
+                  : life.classic
                   ? 'Pick anything to do this year. Tap a group to see what is in it.'
                   : 'Pick what to do this year. Most activities use 1 energy, and it refills on your birthday.',
               style: NF.sora(13, color: NF.muted),
@@ -305,6 +317,8 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           const SizedBox(height: 18),
           if (searching)
             ..._searchResults(context)
+          else if (_category == null && life.prison != null)
+            ..._yard(context)
           else if (_category == null)
             ..._home(context)
           else
@@ -343,10 +357,12 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       children: [
         Expanded(
           child: Text(
-            'Activities',
+            life.prison != null ? 'THE YARD' : 'Activities',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: NF.sora(22, weight: FontWeight.w700),
+            style: life.prison != null
+                ? NF.stencil(22, color: NF.orange)
+                : NF.sora(22, weight: FontWeight.w700),
           ),
         ),
         if (!life.classic)
@@ -403,6 +419,113 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
       ),
+    ),
+  );
+
+  // ---------------- The Yard (in prison) ----------------
+
+  /// Inside, the home page is the prison day laid out by place: the yard,
+  /// work and classes, contact, your crew, the ways out and quiet time.
+  List<Widget> _yard(BuildContext context) {
+    final byId = {for (final a in _actions) a.id: a};
+    const places = [
+      (
+        'Yard',
+        'Fresh air, push-ups and deals',
+        ['prison_gym', 'prison_trade', 'cell_exercise'],
+      ),
+      (
+        'Work and classes',
+        'Count in your favour at parole',
+        ['prison_job', 'prison_study'],
+      ),
+      (
+        'Contact',
+        'The outside, through glass and paper',
+        ['prison_visit', 'write_letters', 'talk_cellmate'],
+      ),
+      (
+        'Crew',
+        'Protection has a price',
+        ['join_gang', 'gang_time', 'gang_truce', 'leave_gang'],
+      ),
+      (
+        'Ways out',
+        'Some legal, some not',
+        ['appeal', 'bribe_guard', 'escape_prison'],
+      ),
+      ('Quiet time', 'On your bunk', ['read', 'meditate']),
+    ];
+    final shown = <String>{};
+    final out = <Widget>[];
+    for (final (title, sub, ids) in places) {
+      final rows = [
+        for (final id in ids)
+          if (byId[id] case final a?)
+            if (_open(a) || id == 'join_gang' || id == 'escape_prison') a,
+      ];
+      if (rows.isEmpty) continue;
+      out
+        ..add(_yardTitle(title, sub))
+        ..addAll([
+          for (final a in rows) ...[
+            actionRow(context, c, a, closeSheet: !widget.docked),
+            const SizedBox(height: 8),
+          ],
+        ])
+        ..add(const SizedBox(height: 12));
+      shown.addAll(ids);
+    }
+    // Anything prison-only added later still turns up.
+    final rest = [
+      for (final a in _actions)
+        if (!shown.contains(a.id) && _open(a)) a,
+    ];
+    if (rest.isNotEmpty) {
+      out.add(_yardTitle('Also', 'Whatever else the block allows'));
+      for (final a in rest) {
+        out
+          ..add(actionRow(context, c, a, closeSheet: !widget.docked))
+          ..add(const SizedBox(height: 8));
+      }
+    }
+    out.add(
+      Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Text(
+          'Everything else waits until you are out.',
+          style: NF.chalk(20, color: NF.muted),
+        ),
+      ),
+    );
+    return out;
+  }
+
+  Widget _yardTitle(String title, String sub) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Flexible(
+          flex: 3,
+          child: Text(
+            title.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: NF.stencil(14, color: NF.orange),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 2,
+          child: Text(
+            sub,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: NF.chalk(18, color: NF.muted),
+          ),
+        ),
+      ],
     ),
   );
 

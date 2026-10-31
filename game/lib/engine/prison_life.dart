@@ -577,6 +577,19 @@ final prisonLifeActions = <GameAction>[
     id: 'cell_exercise',
     label: 'Exercise in your cell',
     category: 'Prison',
+    miniGame: 'reps',
+    scored: (l, rng, score) {
+      l.fitness = min(100, l.fitness + (2 + score * 4).round());
+      return statChange(
+        l,
+        score >= 0.8
+            ? 'Two hundred push-ups between the bunk and the door. You stopped counting the bricks.'
+            : score >= 0.4
+            ? 'Push-ups, sit-ups, counting the bricks. It keeps you sane.'
+            : 'A few half-hearted push-ups, then the ceiling for an hour.',
+        {'health': 1 + (score * 2).round(), 'willpower': score >= 0.5 ? 2 : 1},
+      );
+    },
     keywords: ['exercise', 'cell', 'push-ups', 'solitary'],
     extraCheck: _inPrison,
     run: (l, rng) {
