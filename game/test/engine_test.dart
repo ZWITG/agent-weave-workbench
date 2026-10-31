@@ -23,6 +23,7 @@ import 'package:relivable/engine/economy.dart';
 import 'package:relivable/engine/business_kinds.dart';
 import 'package:relivable/engine/births.dart';
 import 'package:relivable/engine/life_events.dart';
+import 'package:relivable/engine/more_variants.dart';
 import 'package:relivable/engine/elite.dart';
 import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
@@ -3291,5 +3292,42 @@ void main() {
     );
     g.npcs.add(step);
     expect(buildScene('step_parent:stepmother', g), isNotNull);
+  });
+
+  test('everyday activities offer real options, and every option works', () {
+    var ran = 0;
+    for (final e in moreVariants.entries) {
+      final a = allActions.firstWhere((x) => x.id == e.key);
+      expect(e.value.length, greaterThanOrEqualTo(3), reason: e.key);
+      for (final v in e.value) {
+        expect(v.detail.contains('%'), isFalse, reason: '${e.key}/${v.id}');
+        final age = max(max(v.minAge, a.minAge), 1);
+        final l = engine.newLife(seed: 801)
+          ..age = min(
+            age < 18 && v.maxAge > 17 ? 25 : age,
+            min(v.maxAge, a.maxAge),
+          );
+        l.money = 100000;
+        l.stats.values['smarts'] = 80;
+        if (e.key == 'ask_raise') {
+          l.job = 'Accountant';
+          l.salary = 40000;
+        }
+        if (e.key == 'talk_show' || e.key == 'go_on_tour') {
+          l.fame = 70;
+          l.music['fans'] = 2000000;
+          l.marks.add('underground');
+        }
+        if (a.lockReason(l) != null || v.lockReason(l) != null) continue;
+        final r = engine.runAction(l, a, variant: v);
+        expect(r.text, isNotEmpty, reason: '${e.key}/${v.id}');
+        ran++;
+      }
+    }
+    expect(ran, greaterThan(40));
+    // Adults are not offered children's gigs at all.
+    final adult = engine.newLife(seed: 802)..age = 30;
+    final gigs = variantsFor('freelance').where((v) => adult.age <= v.maxAge);
+    expect(gigs.map((v) => v.id), isNot(contains('lawns')));
   });
 }

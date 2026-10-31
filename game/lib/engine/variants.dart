@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'more_variants.dart';
 import 'music.dart';
 import 'social.dart';
 
@@ -26,6 +27,7 @@ class ActionVariant {
     this.cost = 0,
     this.withPerson = false,
     this.minAge = 0,
+    this.maxAge = 200,
     this.check,
   });
 
@@ -40,6 +42,9 @@ class ActionVariant {
   final bool withPerson;
   final int minAge;
 
+  /// Past this age the option is not offered at all (children's gigs...).
+  final int maxAge;
+
   /// Any other reason this way is not possible right now.
   final String? Function(Life l)? check;
 
@@ -48,6 +53,7 @@ class ActionVariant {
 
   String? lockReason(Life l) {
     if (l.age < minAge) return 'From age $minAge';
+    if (l.age > maxAge) return 'For younger people';
     if (cost > 0 && l.money < cost) return 'Needs ${_m(cost)}';
     if (withPerson && companions(l).isEmpty) return 'Nobody to bring yet';
     return check?.call(l);
@@ -890,6 +896,8 @@ final actionVariants = <String, List<ActionVariant>>{
       },
     ),
   ],
+  // Options for everyday activities (more_variants.dart).
+  ...moreVariants,
 };
 
 List<ActionVariant> variantsFor(String actionId) =>

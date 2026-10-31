@@ -104,7 +104,7 @@ final moreActions = <GameAction>[
     category: 'Wellbeing',
     keywords: ['salon', 'spa', 'haircut', 'hair', 'massage', 'nails'],
     minAge: 12,
-    cost: 90,
+    cost: 40,
     run: (life, rng) => _pay(
       life,
       90,
@@ -150,7 +150,7 @@ final moreActions = <GameAction>[
     category: 'Health',
     keywords: ['surgery', 'plastic', 'cosmetic', 'botox', 'nose', 'looks'],
     minAge: 18,
-    cost: 2500,
+    cost: 500,
     run: (life, rng) {
       life.money -= 2500;
       if (_roll(rng, 85)) {
@@ -448,10 +448,10 @@ final moreActions = <GameAction>[
     category: 'Money',
     keywords: ['lottery', 'ticket', 'jackpot', 'gamble', 'luck'],
     minAge: 18,
-    cost: 5,
+    cost: 2,
     run: (life, rng) {
       life.money -= 5;
-      final r = rng.nextInt(10000);
+      final r = rng.nextInt(100000);
       if (r == 0) {
         life.money += 250000;
         life.flags['jackpot'] = Memory(life.age, 'winning the lottery');
@@ -461,13 +461,14 @@ final moreActions = <GameAction>[
           {'happiness': 15},
         );
       }
-      if (r < 120) {
+      if (r < 1200) {
         life.money += 50;
         return ActionResult('Three numbers! You won \$50.', ['Money +\$45']);
       }
-      return ActionResult('Not a single number. The odds are 1 in 10,000.', [
-        'Money −\$5',
-      ]);
+      return ActionResult(
+        'Not a single number. Lotteries are designed to win in the end.',
+        ['Money −\$5'],
+      );
     },
   ),
   GameAction(
@@ -688,7 +689,7 @@ final moreActions = <GameAction>[
     category: 'Identity',
     keywords: ['style', 'clothes', 'fashion', 'look', 'tattoo', 'piercing'],
     minAge: 13,
-    cost: 80,
+    cost: 50,
     run: (life, rng) => _pay(
       life,
       80,

@@ -810,7 +810,7 @@ Future<ActionVariant?> pickVariant(
         Text(a.label, style: NF.sora(18, weight: FontWeight.w700)),
         Text('How do you want to do it?', style: NF.sora(13, color: NF.muted)),
         const SizedBox(height: 12),
-        for (final v in options) ...[
+        for (final v in options.where((v) => life.age <= v.maxAge)) ...[
           OptionRow(
             icon: v.withPerson
                 ? Icons.group_add_rounded
