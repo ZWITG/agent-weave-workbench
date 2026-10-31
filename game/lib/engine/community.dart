@@ -105,6 +105,7 @@ Storylet _scene(
     add(-20, 'Criminal record');
   }
   if (l.cases.isNotEmpty) add(-10, 'Police interest');
+  if (l.flags.containsKey('deported')) add(-25, 'A deportation on file');
   if (l.flags.containsKey('second_passport')) add(35, 'A second passport');
   return (p.clamp(5, 95), why);
 }

@@ -471,6 +471,15 @@ void main() {
     await _pump(t);
     expect(find.text('Visa'), findsOneWidget);
     expect(find.textContaining('Apply for a visa'), findsOneWidget);
+    // The illegal way offers three routes, each with its price and risk.
+    expect(find.text('Cross without a visa'), findsOneWidget);
+    await t.tap(find.text('Cross without a visa'));
+    await _pump(t);
+    expect(find.textContaining('Visit as a tourist and stay'), findsOneWidget);
+    expect(find.textContaining('Pay a smuggler'), findsOneWidget);
+    expect(find.textContaining('Hide in a lorry or a boat'), findsOneWidget);
+    await t.tapAt(const Offset(10, 10));
+    await _pump(t);
     final cash = c.life!.money;
     await t.tap(find.textContaining('Apply for a visa'));
     await _pump(t);

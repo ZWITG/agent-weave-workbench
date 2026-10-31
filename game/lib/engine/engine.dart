@@ -17,6 +17,7 @@ import 'country_life.dart';
 import 'music.dart';
 import 'life_events.dart' show aftermathYear;
 import 'underworld.dart' show crewYear, crewInviteYear;
+import 'migration.dart' show migrationYear;
 import 'elite.dart';
 import 'community.dart';
 import 'identity.dart';
@@ -328,6 +329,7 @@ class GameEngine {
       ...musicYear(life, _rngFor(life, 109)),
       ...eliteYear(life, _rngFor(life, 113)),
       ...crewYear(life, _rngFor(life, 131)),
+      ...migrationYear(life, _rngFor(life, 139)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),

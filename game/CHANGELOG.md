@@ -123,3 +123,9 @@ Named updates since the game was created (26 October 2026). Newest last.
 - The Identity, Memories and Collections tiles are hidden from the Me tab.
 - Rewind is now a small button beside Age +1 (orange when a rewind is available, grey when not; hidden for Ironman lives) instead of a Me tab tile.
 - On very narrow phones the search box shrinks to its icon so everything fits.
+
+## 2.12 "No Papers" (31 Oct)
+- Cross into another country without a visa: overstay as a tourist (safest), pay a smuggler (could be a scam) or hide in a lorry or boat (cheap and dangerous).
+- Life without papers: only cash-in-hand jobs at lower pay, no bank loans, and immigration checks where you can run, claim asylum or go home.
+- A criminal conviction means deportation; a deportation on file makes future visas harder.
+- Get legal: apply for papers (strong through marriage, fair after years of work) or wait for an amnesty after five years.

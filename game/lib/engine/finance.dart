@@ -45,8 +45,11 @@ void creditChange(Life l, int delta) =>
     l.credit = (creditOf(l) + delta).clamp(300, 850);
 
 /// Loans are blocked for 7 years after bankruptcy.
+/// After bankruptcy (seven years), and while living without papers (no
+/// bank will lend).
 bool loansBlocked(Life l) =>
-    l.bankruptAge != null && l.age - l.bankruptAge! < 7;
+    (l.bankruptAge != null && l.age - l.bankruptAge! < 7) ||
+    l.marks.contains('undocumented');
 
 /// Credit card limit by band; going over it is a default.
 int cardLimit(Life l) => switch (creditBand(l.credit)) {

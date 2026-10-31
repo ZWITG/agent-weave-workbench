@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'jobs.dart';
 import 'justice.dart' show convictions, hasSeriousRecord;
+import 'migration.dart' show cashFields, undocumented, undocumentedPay;
 import 'models.dart';
 import 'world_data.dart';
 
@@ -292,6 +293,10 @@ class Career {
     if (life.age < minAge) return 'Unlocks at $minAge';
     if (life.careerId == id) return 'Your current job';
     if (life.retired) return 'You are retired';
+    // Without papers, only cash-in-hand work (migration.dart).
+    if (undocumented(life) && !cashFields.contains(field)) {
+      return 'Needs legal work papers';
+    }
     if (life.usedActions.contains('apply:$id')) return 'Applied this year';
     if (studying(life) && needs != 'any') return 'Finish your course first';
     if (!_meetsEducation(life)) return 'Needs: $needsLabel';
@@ -685,6 +690,10 @@ void startCareer(Life life, Career c) {
   life.jobSince = life.age;
   life.job = c.title;
   life.salary = c.payIn(life, 0);
+  // Cash in hand pays less.
+  if (undocumented(life)) {
+    life.salary = (life.salary * undocumentedPay).round();
+  }
   life.retired = false;
   life.performance = 55;
   life.lowPerfYears = 0;

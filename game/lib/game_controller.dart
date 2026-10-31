@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'engine/migration.dart' as migration;
 import 'engine/actions.dart';
 import 'engine/careers.dart';
 import 'engine/dynasty.dart';
@@ -482,6 +483,24 @@ class GameController extends ChangeNotifier {
         minAge: a.minAge,
         extraCheck: a.extraCheck,
         run: (l, rng) => ActionResult(emigrateTo(l, country, rng)),
+      ),
+    );
+  }
+
+  /// Crossing to [country] without a visa by [route] (migration.dart),
+  /// from the Move abroad screen: counts as this year's move.
+  ActionResult migrateIllegally(String country, String route) {
+    final a = engine!.actions.firstWhere((x) => x.id == 'emigrate');
+    return runAction(
+      GameAction(
+        id: a.id,
+        label: 'Cross without a visa',
+        category: a.category,
+        keywords: a.keywords,
+        minAge: 16,
+        extraCheck: (l) => migration.migrateLock(l, route),
+        run: (l, rng) =>
+            ActionResult(migration.migrateIllegally(l, country, route, rng)),
       ),
     );
   }

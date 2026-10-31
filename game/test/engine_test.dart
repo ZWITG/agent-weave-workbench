@@ -25,6 +25,7 @@ import 'package:relivable/engine/births.dart';
 import 'package:relivable/engine/life_events.dart';
 import 'package:relivable/engine/more_variants.dart';
 import 'package:relivable/engine/underworld.dart';
+import 'package:relivable/engine/migration.dart';
 import 'package:relivable/engine/elite.dart';
 import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
@@ -3416,5 +3417,50 @@ void main() {
     ]) {
       expect(allActions.any((a) => a.id == id), isTrue, reason: id);
     }
+  });
+
+  test('migrating illegally: the crossing, life without papers, and after', () {
+    // Every route can succeed and can fail.
+    final outcomes = <String, Set<bool>>{};
+    for (final r in routes) {
+      for (var seed = 1; seed <= 60; seed++) {
+        final l = engine.newLife(seed: 1000 + seed, countryName: 'Mexico')
+          ..age = 25;
+        l.money = 20000;
+        migrateIllegally(l, 'United States', r.id, Random(seed));
+        outcomes.putIfAbsent(r.id, () => {}).add(undocumented(l));
+        expect(l.money, 20000 - r.cost);
+      }
+    }
+    for (final r in routes) {
+      expect(outcomes[r.id], {true, false}, reason: r.id);
+    }
+    // Without papers: cash jobs only, at lower pay, and no bank loans.
+    final l = engine.newLife(seed: 1100, countryName: 'Mexico')..age = 25;
+    l.money = 20000;
+    var seed = 1;
+    while (!undocumented(l)) {
+      l.country = 'Mexico';
+      l.money = 20000;
+      migrateIllegally(l, 'United States', 'overstay', Random(seed++));
+    }
+    expect(l.country, 'United States');
+    l.stats.values['smarts'] = 90;
+    final office = careers.firstWhere((c) => !cashFields.contains(c.field));
+    expect(office.lockReason(l), 'Needs legal work papers');
+    expect(loansBlocked(l), isTrue);
+    // Papers through marriage are likely; refusals can bring a check.
+    l.flags['married'] = Memory(25, 'x');
+    final apply = allActions.firstWhere((a) => a.id == 'apply_papers');
+    expect(apply.lockReason(l), isNull);
+    expect(buildScene('immigration_check', l), isNotNull);
+    // A conviction means deportation home, and visas remember it.
+    final before = visaOdds(l, 'Canada').$1;
+    l.record.add({'crime': 'shoplifting', 'age': l.age, 'band': 'minor'});
+    final lines = migrationYear(l, Random(1));
+    expect(lines.single, contains('plane back to Mexico'));
+    expect(l.country, 'Mexico');
+    expect(undocumented(l), isFalse);
+    expect(visaOdds(l, 'Canada').$1, lessThan(before));
   });
 }

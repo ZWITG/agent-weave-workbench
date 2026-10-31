@@ -21,6 +21,7 @@ import 'music.dart';
 import 'births.dart' show birthScene;
 import 'life_events.dart' show lifeEventScene;
 import 'underworld.dart' show underworldScene;
+import 'migration.dart' show migrationScene;
 import 'business_kinds.dart' show tradeEventScene;
 import 'elite.dart';
 import 'community.dart';
@@ -97,6 +98,7 @@ Storylet? buildScene(String id, Life life) {
       parts.sublist(1),
       life,
     ),
+    'immigration_check' => migrationScene(parts.first, parts.sublist(1), life),
     'will' => willScene(),
     'burnout' ||
     'audition' ||

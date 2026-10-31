@@ -15,21 +15,22 @@ void main() {
   }
 
   for (final size in const [Size(320, 568), Size(1280, 800)]) {
-    testWidgets('ZWITG, then Relivable, then the game (${size.width.toInt()})', (
-      t,
-    ) async {
-      final done = await show(t, size);
-      await t.pump(const Duration(milliseconds: 900));
-      expect(find.text('ZWITG'), findsOneWidget);
-      expect(find.text('Relivable'), findsNothing);
-      await t.pump(const Duration(milliseconds: 1500));
-      expect(find.text('ZWITG'), findsNothing);
-      expect(find.text('Relivable'), findsOneWidget);
-      expect(done(), isFalse);
-      await t.pump(const Duration(milliseconds: 1400));
-      expect(done(), isTrue);
-      expect(t.takeException(), isNull);
-    });
+    testWidgets(
+      'ZWITG, then Relivable, then the game (${size.width.toInt()})',
+      (t) async {
+        final done = await show(t, size);
+        await t.pump(const Duration(milliseconds: 900));
+        expect(find.text('ZWITG'), findsOneWidget);
+        expect(find.text('Relivable'), findsNothing);
+        await t.pump(const Duration(milliseconds: 1500));
+        expect(find.text('ZWITG'), findsNothing);
+        expect(find.text('Relivable'), findsOneWidget);
+        expect(done(), isFalse);
+        await t.pump(const Duration(milliseconds: 1400));
+        expect(done(), isTrue);
+        expect(t.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets('a tap skips the intro', (t) async {
