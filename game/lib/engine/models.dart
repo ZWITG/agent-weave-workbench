@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'currency.dart';
 import 'odds.dart';
 
 /// Visible and hidden stats. All values are clamped to 0–100.
@@ -330,7 +331,7 @@ class Npc {
 /// One line of the life feed (a chat bubble in the Night Feed design).
 class FeedEntry {
   FeedEntry(this.age, String text, {this.kind = 'event', this.who})
-    : text = hideOdds(text);
+    : text = localizeMoney(hideOdds(text));
   final int age;
   final String text;
 

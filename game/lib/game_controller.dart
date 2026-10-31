@@ -11,6 +11,7 @@ import 'engine/engine.dart';
 import 'engine/health.dart' show endThisLifeRules;
 import 'engine/meta.dart';
 import 'engine/community.dart' show emigrateTo;
+import 'engine/currency.dart';
 import 'engine/models.dart';
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
@@ -23,6 +24,13 @@ import 'sound.dart';
 /// Holds the current life, talks to the engine and saves on the device
 /// after every change (offline-first; cloud sync comes in Phase 3).
 class GameController extends ChangeNotifier {
+  /// Money everywhere is shown in the currency of where you live.
+  @override
+  void notifyListeners() {
+    if (life != null) activeCountry = life!.country;
+    super.notifyListeners();
+  }
+
   static const _saveKey = 'relivable.life.v1';
 
   /// The player's one world, saved apart from the current life so it

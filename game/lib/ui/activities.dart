@@ -5,6 +5,8 @@ import '../engine/odds.dart';
 import '../engine/profile.dart';
 import '../engine/models.dart';
 import '../engine/music.dart';
+import '../engine/currency.dart';
+import '../engine/elite.dart';
 import '../engine/relationships.dart';
 import '../engine/variants.dart';
 import '../game_controller.dart';
@@ -28,6 +30,7 @@ const activityCategories = <(String, IconData)>[
   ('Money', Icons.savings_rounded),
   ('Love', Icons.favorite_rounded),
   ('Social', Icons.celebration_rounded),
+  ('Upper echelon', Icons.diamond_rounded),
   ('Music', Icons.music_note_rounded),
   ('Social media', Icons.phone_iphone_rounded),
   ('Fame', Icons.star_rounded),
@@ -49,6 +52,11 @@ const activityCategories = <(String, IconData)>[
 /// The categories in a few friendly groups, so the home view reads as a
 /// handful of short sections instead of one big grid.
 const activityGroups = <(String, String, List<String>)>[
+  (
+    'The upper echelon',
+    'Life among the richest people alive',
+    ['Upper echelon'],
+  ),
   (
     'Look after yourself',
     'Body, mind and the things you love',
@@ -82,6 +90,7 @@ const categoryBlurbs = <String, String>{
   'Money': 'Banking, saving, borrowing and investing.',
   'Love': 'Dating, romance and your partner.',
   'Social': 'Going out, friends and being seen.',
+  'Upper echelon': 'Islands, superyachts, teams, art, space and legacy. Few people alive have this much money.',
   'Music': 'Write songs, release them, and earn from streams for years. A hit makes you famous.',
   'Social media': 'Post on each platform. Fame gets your posts seen; a good image gets them shared.',
   'Fame': 'Talk shows, red carpets, fans and feuds. Needs some fame first.',
@@ -150,6 +159,8 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       .where((a) => !filteredOut(c.profile, a.category, a.id))
       // Music stays out of sight until Road to the Underground opens it.
       .where((a) => a.category != 'Music' || musicUnlocked(life))
+      // The upper echelon stays secret until the fortune passes the line.
+      .where((a) => a.category != 'Upper echelon' || upperEchelon(life))
       .toList();
 
   List<GameAction> _in(String cat) =>
@@ -766,7 +777,9 @@ Widget actionRow(
   return OptionRow(
     icon: categoryIconFor(a.category),
     title: a.label,
-    detail: lock ?? (a.miniGame != null ? '$price · Mini-game' : price),
+    detail: localizeMoney(
+      lock ?? (a.miniGame != null ? '$price · Mini-game' : price),
+    ),
     locked: lock != null,
     trailing: a.miniGame != null ? Icons.sports_esports_rounded : null,
     onTap: () => runActionFlow(context, c, a, closeSheet: closeSheet),
@@ -1024,11 +1037,13 @@ Future<void> runActionFlow(
         backgroundColor: NF.surface,
         title: Text('${a.label}?', style: NF.sora(18, weight: FontWeight.w700)),
         content: Text(
-          a.hintFor(c.life!) ??
-              a.priceNote ??
-              (a.cost > 0
-                  ? 'Costs ${money(a.cost)}'
-                  : 'This is a big decision.'),
+          localizeMoney(
+            a.hintFor(c.life!) ??
+                a.priceNote ??
+                (a.cost > 0
+                    ? 'Costs ${money(a.cost)}'
+                    : 'This is a big decision.'),
+          ),
           style: NF.sora(14, color: NF.soft),
         ),
         actions: [

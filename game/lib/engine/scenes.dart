@@ -18,6 +18,7 @@ import 'social.dart';
 import 'celebrity.dart';
 import 'country_life.dart';
 import 'music.dart';
+import 'elite.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -144,6 +145,10 @@ Storylet? buildScene(String id, Life life) {
     'album_how' ||
     'label_offer' ||
     'underground_intro' => musicScene(parts.first, parts.sublist(1), life),
+    'elite_intro' ||
+    'elite_threat' ||
+    'elite_island' ||
+    'elite_team' => eliteScene(parts.first, parts.sublist(1), life),
     'draft' => countryScene(parts.first, parts.sublist(1), life),
     'fame_rumour' ||
     'fame_stalker' ||

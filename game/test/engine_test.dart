@@ -20,6 +20,8 @@ import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
 import 'package:relivable/engine/economy.dart';
+import 'package:relivable/engine/elite.dart';
+import 'package:relivable/engine/currency.dart';
 import 'package:relivable/engine/lifespan.dart';
 import 'package:relivable/engine/pets.dart';
 import 'package:relivable/engine/social.dart';
@@ -2890,4 +2892,59 @@ void main() {
       expect(single.repeatable, isTrue);
     },
   );
+
+  test('upper echelon: hidden below \$100M, opens above it', () {
+    final l = engine.newLife(seed: 311)..age = 40;
+    final elite = allActions.where((a) => a.category == 'Upper echelon');
+    expect(elite.length, greaterThanOrEqualTo(12));
+    l.money = 90000000;
+    engine.ageUp(l);
+    expect(upperEchelon(l), isFalse);
+    for (final a in elite) {
+      expect(a.lockReason(l), isNotNull);
+    }
+    l.money = 150000000;
+    l.sceneQueue.clear();
+    final first = engine.ageUp(l);
+    expect(upperEchelon(l), isTrue);
+    final intro = first?.id == 'scene:elite_intro'
+        ? first!
+        : buildScene('elite_intro', l)!;
+    expect(
+      first?.id == 'scene:elite_intro' || l.sceneQueue.contains('elite_intro'),
+      isTrue,
+    );
+    expect(intro.id, 'scene:elite_intro');
+    engine.choose(l, intro, intro.choices.first);
+    l.usedActions.clear();
+    l.energy = 10;
+    final rich = allActions.firstWhere((a) => a.id == 'rich_list');
+    expect(rich.lockReason(l), isNull);
+    final yacht = allActions.firstWhere((a) => a.id == 'superyacht');
+    engine.runAction(l, yacht);
+    expect(l.assets.any((a) => a.name == 'Superyacht'), isTrue);
+    expect(yacht.lockReason(l), isNotNull);
+    // Islands come as a choice of three.
+    l.money = 200000000;
+    engine.runAction(l, allActions.firstWhere((a) => a.id == 'buy_island'));
+    final islands = engine.nextScene(l)!;
+    expect(islands.id, 'scene:elite_island');
+    engine.choose(l, islands, islands.choices.first);
+    expect(l.assets.any((a) => a.kind == 'island'), isTrue);
+    // The ranking makes sense.
+    expect(richerThan(100000000), inInclusiveRange(100000, 130000));
+    expect(richerThan(1000000000), inInclusiveRange(3700, 3800));
+    l.marks.add('security');
+    expect(eliteCosts(l).any((c) => c.$1 == 'Security detail'), isTrue);
+  });
+
+  test('money shows in the local currency', () {
+    expect(moneyIn(1000, 'United States'), '\$1,000');
+    expect(moneyIn(1000, 'Japan'), '¥150,000');
+    expect(moneyIn(-1000, 'United Kingdom'), '−£790');
+    expect(localizeMoney('Costs \$2,000', 'Nigeria'), 'Costs ₦3,100,000');
+    // Already-local amounts are not converted twice.
+    expect(localizeMoney('MX\$500', 'Mexico'), 'MX\$500');
+    expect(localizeMoney('-\$10', 'Germany'), '−€9');
+  });
 }

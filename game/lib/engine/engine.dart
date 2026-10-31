@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'actions.dart';
+import 'currency.dart';
 import 'odds.dart';
 import 'careers.dart';
 import 'dynasty.dart';
@@ -14,6 +15,7 @@ import 'social.dart';
 import 'celebrity.dart';
 import 'country_life.dart';
 import 'music.dart';
+import 'elite.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -51,10 +53,10 @@ class Outcome {
     this.bondDeltas = const {},
     this.moneyDelta = 0,
     this.echoes = const [],
-  }) : text = hideOdds(text),
+  }) : text = localizeMoney(hideOdds(text)),
        notes = [
          for (final n in notes)
-           if (hideOdds(n) case final h when h.isNotEmpty) h,
+           if (localizeMoney(hideOdds(n)) case final h when h.isNotEmpty) h,
        ];
 
   final String text;
@@ -320,6 +322,7 @@ class GameEngine {
       ...celebrityYear(life, _rngFor(life, 103)),
       ...countryYear(life, _rngFor(life, 107)),
       ...musicYear(life, _rngFor(life, 109)),
+      ...eliteYear(life, _rngFor(life, 113)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),
@@ -543,7 +546,11 @@ class GameEngine {
   static String _first(Npc? n, String fallback) =>
       n == null ? fallback : n.name.split(' ').first;
 
-  String fill(String text, Life life) => text
+  /// Names, places and money in the player's own currency.
+  String fill(String text, Life life) =>
+      localizeMoney(_fillNames(text, life), life.country);
+
+  String _fillNames(String text, Life life) => text
       .replaceAll('{name}', life.firstName)
       .replaceAll('{surname}', life.surname)
       .replaceAll('{city}', life.city)

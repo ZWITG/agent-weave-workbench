@@ -7,7 +7,7 @@ import 'outcome_card.dart';
 import 'widgets.dart';
 
 /// "Health +4", "Money −$400", "Salary +$2,100/year", "Bond with Ana +3".
-final _deltaNote = RegExp(r'^(.+?) ([+−-])(\$?[\d,]+)(.*)$');
+final _deltaNote = RegExp(r'^(.+?) ([+−-])([^\d\s]{0,4} ?[\d,]+)(.*)$');
 
 /// The result of an activity, interaction or job application, shown as a
 /// pop-up card in the middle of the screen (same look as event outcomes).
@@ -49,7 +49,7 @@ Future<void> showResultPopup(
   } else {
     var money = 0;
     for (final n in r.notes) {
-      final m = RegExp(r'^Money ([+−-])\$([\d,]+)').firstMatch(n);
+      final m = RegExp(r'^Money ([+−-])[^\d\s]{0,4} ?([\d,]+)').firstMatch(n);
       if (m != null) {
         final v = int.parse(m.group(2)!.replaceAll(',', ''));
         money += m.group(1) == '+' ? v : -v;

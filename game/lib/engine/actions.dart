@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'currency.dart';
 import 'odds.dart';
 
 import 'careers.dart';
@@ -23,6 +24,7 @@ import 'pets.dart';
 import 'social.dart';
 import 'celebrity.dart';
 import 'music.dart';
+import 'elite.dart';
 import 'jobs.dart';
 import 'justice.dart';
 import 'love.dart';
@@ -35,10 +37,10 @@ import 'more_actions.dart';
 
 class ActionResult {
   ActionResult(String text, [List<String> notes = const []])
-    : text = hideOdds(text),
+    : text = localizeMoney(hideOdds(text)),
       notes = [
         for (final n in notes)
-          if (hideOdds(n) case final h when h.isNotEmpty) h,
+          if (localizeMoney(hideOdds(n)) case final h when h.isNotEmpty) h,
       ];
   final String text;
   final List<String> notes;
@@ -461,6 +463,7 @@ final allActions = <GameAction>[
   ...socialActions,
   ...celebrityActions,
   ...musicActions,
+  ...eliteActions,
   ...petActions,
   ...heistActions,
   ...recapActions,

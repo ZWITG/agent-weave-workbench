@@ -3,6 +3,7 @@ import 'dart:math';
 import 'careers.dart' show careers, startCareer;
 import 'friends.dart';
 import 'models.dart';
+import 'currency.dart';
 import 'odds.dart';
 
 /// Every storylet file in assets/storylets, in load order.
@@ -168,6 +169,9 @@ class Storylet {
   }
 }
 
+/// Hints in the local currency.
+String? _local(String? s) => s == null ? null : localizeMoney(s);
+
 class Choice {
   Choice({
     required this.label,
@@ -179,7 +183,7 @@ class Choice {
     this.lock,
     String? risk,
   }) : effects = effects ?? Effects(),
-       risk = hideOddsOrNull(risk);
+       risk = _local(hideOddsOrNull(risk));
 
   final String label;
   final String outcome;

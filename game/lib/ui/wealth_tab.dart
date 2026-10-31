@@ -609,6 +609,9 @@ IconData _assetIcon(Asset a) => switch (a.kind) {
   'plane' => Icons.flight_rounded,
   'collectible' => Icons.style_rounded,
   'heirloom' => Icons.auto_awesome_rounded,
+  'island' => Icons.beach_access_rounded,
+  'team' => Icons.sports_soccer_rounded,
+  'media' => Icons.newspaper_rounded,
   _ => Icons.directions_car_rounded,
 };
 

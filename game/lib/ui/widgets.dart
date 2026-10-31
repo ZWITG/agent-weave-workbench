@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../engine/currency.dart';
+
 import '../theme.dart';
 
 /// A labelled 0–100 bar. Screen readers hear "Happiness 78 percent".
@@ -429,15 +431,8 @@ IconData categoryIcon(String category) => switch (category) {
 };
 
 /// "$12,400", "−$80".
-String money(int amount) {
-  final digits = amount.abs().toString();
-  final buf = StringBuffer();
-  for (var i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
-    buf.write(digits[i]);
-  }
-  return '${amount < 0 ? '−' : ''}\$$buf';
-}
+/// An amount in the currency of the country you live in.
+String money(int amount) => moneyIn(amount, activeCountry);
 
 /// Animation length that honours Reduce motion (Settings or the OS).
 Duration motion(BuildContext context, Duration d) =>

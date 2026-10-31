@@ -16,6 +16,7 @@ import 'pets.dart' show petCosts;
 import 'social.dart' show socialIncome;
 import 'celebrity.dart' show celebrityCosts;
 import 'music.dart' show musicRoyalties;
+import 'elite.dart' show eliteCosts;
 
 /// Money as a system (plan Module 6/7, prototype scope): every birthday runs
 /// income → taxes → living costs → debt payments → interest → fund returns →
@@ -265,6 +266,9 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash(label, amount);
   }
   if (life.songs.isNotEmpty) cash('Music royalties', musicRoyalties(life));
+  for (final (label, amount) in eliteCosts(life)) {
+    cash(label, amount);
+  }
   if (life.age >= 18) cash('Pet care', -petCosts(life));
   final lets = lettingsOf(life);
   if (lets.isNotEmpty) {
