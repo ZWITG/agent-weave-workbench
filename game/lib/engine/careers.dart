@@ -4,6 +4,7 @@ import 'actions.dart';
 import 'jobs.dart';
 import 'justice.dart' show convictions, hasSeriousRecord;
 import 'models.dart';
+import 'world_data.dart';
 
 /// The Path tab: education routes, the job board and career ladders.
 /// Every option stays visible with the reason it is locked (plan pillar 2,
@@ -264,6 +265,10 @@ class Career {
 
   String get title => ladder.first;
   int salaryAt(int rank) => (baseSalary * _rankPay[rank]).round();
+
+  /// What this rank pays where you live (country wage level).
+  int payIn(Life l, int rank) =>
+      (salaryAt(rank) * countryProfile(l.country).wage / 100).round() * 100;
 
   String get needsLabel => switch (needs) {
     'school' => 'School diploma',
@@ -679,7 +684,7 @@ void startCareer(Life life, Career c) {
   life.careerRank = 0;
   life.jobSince = life.age;
   life.job = c.title;
-  life.salary = c.salaryAt(0);
+  life.salary = c.payIn(life, 0);
   life.retired = false;
   life.performance = 55;
   life.lowPerfYears = 0;
@@ -738,8 +743,8 @@ final careerActions = <GameAction>[
         life.careerRank++;
         life.jobSince = life.age;
         life.job = c.ladder[life.careerRank];
-        final raise = c.salaryAt(life.careerRank) - life.salary;
-        life.salary = c.salaryAt(life.careerRank);
+        final raise = c.payIn(life, life.careerRank) - life.salary;
+        life.salary = c.payIn(life, life.careerRank);
         if (life.careerRank == c.ladder.length - 1) {
           life.flags['top_of_career'] = Memory(
             life.age,

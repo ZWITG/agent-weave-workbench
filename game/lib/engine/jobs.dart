@@ -158,7 +158,7 @@ void _promote(Life l, Career c, List<String> lines, String why) {
   l.careerRank++;
   l.jobSince = l.age;
   l.job = c.ladder[l.careerRank];
-  l.salary = c.salaryAt(l.careerRank);
+  l.salary = c.payIn(l, l.careerRank);
   if (l.careerRank == c.ladder.length - 1) {
     l.flags['top_of_career'] = Memory(l.age, 'becoming ${l.job}');
   }
@@ -241,13 +241,13 @@ List<String> _specialYear(Life l, Career c, Random rng) {
       if (rng.nextInt(100) < 25) l.sceneQueue.add('police_case');
     case 'hustler':
       final take =
-          (c.salaryAt(l.careerRank) *
+          (c.payIn(l, l.careerRank) *
                   (0.5 + rng.nextDouble()) *
                   (0.7 + l.stats['charisma'] / 166))
               .round();
       l.salary = take;
       lines.add(
-        'A ${take > c.salaryAt(l.careerRank) ? 'good' : 'lean'} year on the street: you made about ${_m(take)}.',
+        'A ${take > c.payIn(l, l.careerRank) ? 'good' : 'lean'} year on the street: you made about ${_m(take)}.',
       );
   }
   return lines;

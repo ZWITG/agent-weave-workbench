@@ -431,10 +431,10 @@ class _PathTabState extends State<PathTab> {
                         ),
                         Text(
                           i == life.careerRank
-                              ? 'You · ${money(career.salaryAt(i))}/year'
+                              ? 'You · ${money(career.payIn(life, i))}/year'
                               : i == life.careerRank + 1
-                              ? '${money(career.salaryAt(i))}/year · ${next ?? 'Ready: ask for a promotion'}'
-                              : '${money(career.salaryAt(i))}/year',
+                              ? '${money(career.payIn(life, i))}/year · ${next ?? 'Ready: ask for a promotion'}'
+                              : '${money(career.payIn(life, i))}/year',
                           style: NF.sora(
                             12,
                             color: i == life.careerRank + 1 && next != null
@@ -460,7 +460,7 @@ class _PathTabState extends State<PathTab> {
       title: j.title,
       detail:
           lock ??
-          '${j.field} · ${money(j.salaryAt(0))}/year${j.special ? ' · ${j.blurb ?? 'Special career'}' : ''}',
+          '${j.field} · ${money(j.payIn(life, 0))}/year${j.special ? ' · ${j.blurb ?? 'Special career'}' : ''}',
       locked: lock != null,
       trailing: Icons.send_rounded,
       // Applying opens a 3-question interview on the Life tab.

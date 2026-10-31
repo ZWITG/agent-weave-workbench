@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'finance.dart';
 import 'models.dart';
+import 'world_data.dart';
 import 'property.dart';
 import 'storylet.dart';
 
@@ -167,6 +168,7 @@ List<Listing> listings(Life l) {
     final pool = rng.nextInt(100) < t.poolChance;
     final price =
         (200000 *
+                countryProfile(l.country).cost *
                 t.price *
                 areas[area]!.$1 *
                 (0.75 + shown / 400) *

@@ -121,10 +121,14 @@ Storylet? communityScene(String id, List<String> args, Life l) {
               final (odds, why) = visaOdds(l, c.name);
               final prof = countryProfile(c.name);
               return Choice(
-                label: '${c.name} · $odds% visa chance',
+                label: c.name,
                 outcome: '',
                 risk:
-                    '${prof.blurb}${prof.climate == 'hostile' ? ' Warning: LGBTQ+ people face legal risk here.' : ''}',
+                    '${prof.blurb} Pay ${prof.payLabel.toLowerCase()}, prices ${prof.costLabel.toLowerCase()}.${odds >= 60
+                        ? ' A visa looks likely.'
+                        : odds < 30
+                        ? ' A visa will be hard to get.'
+                        : ''}${prof.climate == 'hostile' ? ' Warning: LGBTQ+ people face legal risk here.' : ''}',
                 needsMoney: 3000,
                 run: (l, rng) {
                   l.money -= 3000;

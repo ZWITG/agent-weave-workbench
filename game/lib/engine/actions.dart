@@ -29,6 +29,7 @@ import 'lifespan.dart';
 import 'school.dart';
 import 'minigame_rules.dart';
 import 'models.dart';
+import 'world_data.dart';
 import 'more_actions.dart';
 
 class ActionResult {
@@ -317,7 +318,9 @@ final _baseActions = <GameAction>[
       ];
       final job = jobs[rng.nextInt(jobs.length)];
       life.job = 'Part-time $job';
-      life.salary = 1500 + rng.nextInt(1500);
+      life.salary =
+          ((1500 + rng.nextInt(1500)) * countryProfile(life.country).wage)
+              .round();
       return ActionResult('You got a job as a $job.', [
         'Income +\$${life.salary}/year',
       ]);

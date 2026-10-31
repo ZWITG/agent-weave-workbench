@@ -10,6 +10,7 @@ import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
+import 'package:relivable/engine/country_life.dart';
 import 'package:relivable/engine/health.dart';
 import 'package:relivable/engine/crime_jobs.dart';
 import 'package:relivable/engine/gangs.dart';
@@ -413,7 +414,7 @@ void main() {
     }
     expect(life.careerRank, 1);
     expect(life.job, 'Shift supervisor');
-    expect(life.salary, careerById('retail')!.salaryAt(1));
+    expect(life.salary, careerById('retail')!.payIn(life, 1));
   });
 
   test('every job on the board is reachable by some education path', () {
@@ -2647,4 +2648,48 @@ void main() {
     }
     expect(fameTierOf(l).name, isNot('Unknown'));
   });
+
+  test(
+    'countries: researched profiles shape pay, prices, school and service',
+    () {
+      // Every country has a full profile, not the fallback.
+      for (final c in countries) {
+        final p = countryProfile(c.name);
+        expect(p.everyday, isNotEmpty, reason: c.name);
+        expect(p.local, isNotEmpty, reason: c.name);
+        expect(p.culture, isNotEmpty, reason: c.name);
+      }
+      expect(countries.length, greaterThanOrEqualTo(24));
+      final l = engine.newLife(seed: 260)..age = 25;
+      final retail = careerById('retail')!;
+      l.country = 'United States';
+      final us = retail.payIn(l, 0);
+      final usCost = livingCost(l);
+      l.country = 'Kenya';
+      expect(retail.payIn(l, 0), lessThan(us));
+      expect(livingCost(l), lessThan(usCost));
+      // Gambling is banned for citizens in Egypt; the casino says so.
+      final casino = allActions.firstWhere((a) => a.id == 'casino');
+    l.money = 10000;
+      l.country = 'Egypt';
+      expect(casino.lockReason(l), contains('illegal'));
+      l.country = 'United States';
+      l.age = 19;
+      expect(casino.lockReason(l), contains('21'));
+      // Military service: every 18-year-old man in South Korea is called up.
+      final k = engine.newLife(seed: 261);
+      k.country = 'South Korea';
+      k.age = 18;
+      if (k.gender == 'male') {
+        countryYear(k, Random(1));
+        expect(k.sceneQueue, contains('draft'));
+        final scene = engine.nextScene(k)!;
+        engine.choose(k, scene, scene.choices.first);
+        expect(k.flags.containsKey('served'), isTrue);
+      }
+      // Retirement follows the country.
+      expect(countryProfile('France').retireAge, lessThan(65));
+      expect(countryProfile('Germany').tuition, 0);
+    },
+  );
 }

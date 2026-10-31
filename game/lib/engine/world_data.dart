@@ -139,6 +139,178 @@ const countries = <CountryData>[
     surnames: ['Hernández', 'García', 'Martínez', 'López', 'González', 'Pérez'],
     currency: '\$',
   ),
+  CountryData(
+    name: 'South Korea',
+    cities: ['Seoul', 'Busan', 'Incheon', 'Daegu'],
+    male: [
+      'Min-jun',
+      'Seo-jun',
+      'Ha-joon',
+      'Do-yun',
+      'Ji-ho',
+      'Joon-woo',
+      'Eun-woo',
+    ],
+    female: [
+      'Seo-yeon',
+      'Ha-eun',
+      'Ji-woo',
+      'Seo-yun',
+      'Min-seo',
+      'Ha-rin',
+      'Ji-a',
+    ],
+    surnames: ['Kim', 'Lee', 'Park', 'Choi', 'Jung', 'Kang'],
+    currency: '₩',
+  ),
+  CountryData(
+    name: 'France',
+    cities: ['Paris', 'Lyon', 'Marseille', 'Bordeaux'],
+    male: ['Gabriel', 'Léo', 'Raphaël', 'Louis', 'Arthur', 'Jules', 'Hugo'],
+    female: ['Louise', 'Jade', 'Ambre', 'Alice', 'Emma', 'Rose', 'Chloé'],
+    surnames: ['Martin', 'Bernard', 'Dubois', 'Thomas', 'Robert', 'Petit'],
+    currency: '€',
+  ),
+  CountryData(
+    name: 'Spain',
+    cities: ['Madrid', 'Barcelona', 'Valencia', 'Seville'],
+    male: ['Hugo', 'Martín', 'Lucas', 'Mateo', 'Leo', 'Daniel', 'Pablo'],
+    female: ['Lucía', 'Sofía', 'Martina', 'María', 'Julia', 'Paula', 'Valeria'],
+    surnames: [
+      'García',
+      'Rodríguez',
+      'González',
+      'Fernández',
+      'López',
+      'Martínez',
+    ],
+    currency: '€',
+  ),
+  CountryData(
+    name: 'Italy',
+    cities: ['Rome', 'Milan', 'Naples', 'Turin'],
+    male: [
+      'Leonardo',
+      'Francesco',
+      'Alessandro',
+      'Lorenzo',
+      'Mattia',
+      'Tommaso',
+      'Gabriele',
+    ],
+    female: [
+      'Sofia',
+      'Giulia',
+      'Aurora',
+      'Alice',
+      'Ginevra',
+      'Emma',
+      'Giorgia',
+    ],
+    surnames: ['Rossi', 'Russo', 'Ferrari', 'Esposito', 'Bianchi', 'Romano'],
+    currency: '€',
+  ),
+  CountryData(
+    name: 'China',
+    cities: ['Beijing', 'Shanghai', 'Shenzhen', 'Chengdu'],
+    male: ['Wei', 'Hao', 'Jun', 'Lei', 'Yang', 'Ming', 'Chen'],
+    female: ['Li', 'Mei', 'Xin', 'Yan', 'Jing', 'Hui', 'Lan'],
+    surnames: ['Wang', 'Li', 'Zhang', 'Liu', 'Chen', 'Yang'],
+    currency: '¥',
+  ),
+  CountryData(
+    name: 'South Africa',
+    cities: ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria'],
+    male: ['Thabo', 'Sipho', 'Liam', 'Bandile', 'Lwazi', 'Ethan', 'Kagiso'],
+    female: [
+      'Lerato',
+      'Naledi',
+      'Ayanda',
+      'Zanele',
+      'Amahle',
+      'Mia',
+      'Thandiwe',
+    ],
+    surnames: [
+      'Nkosi',
+      'Dlamini',
+      'Botha',
+      'Naidoo',
+      'Mokoena',
+      'van der Merwe',
+    ],
+    currency: 'R',
+  ),
+  CountryData(
+    name: 'Egypt',
+    cities: ['Cairo', 'Alexandria', 'Giza', 'Luxor'],
+    male: ['Mohamed', 'Ahmed', 'Omar', 'Youssef', 'Ali', 'Mostafa', 'Karim'],
+    female: ['Nour', 'Mariam', 'Salma', 'Farida', 'Malak', 'Hana', 'Yasmin'],
+    surnames: [
+      'Hassan',
+      'Ibrahim',
+      'Mahmoud',
+      'Mostafa',
+      'Abdelrahman',
+      'Saeed',
+    ],
+    currency: 'E£',
+  ),
+  CountryData(
+    name: 'Sweden',
+    cities: ['Stockholm', 'Gothenburg', 'Malmö', 'Uppsala'],
+    male: ['William', 'Noah', 'Hugo', 'Lucas', 'Liam', 'Oscar', 'Elias'],
+    female: ['Alice', 'Maja', 'Vera', 'Elsa', 'Astrid', 'Selma', 'Wilma'],
+    surnames: [
+      'Andersson',
+      'Johansson',
+      'Karlsson',
+      'Nilsson',
+      'Eriksson',
+      'Larsson',
+    ],
+    currency: 'kr',
+  ),
+  CountryData(
+    name: 'Argentina',
+    cities: ['Buenos Aires', 'Córdoba', 'Rosario', 'Mendoza'],
+    male: [
+      'Mateo',
+      'Bautista',
+      'Felipe',
+      'Benjamín',
+      'Thiago',
+      'Santino',
+      'Joaquín',
+    ],
+    female: [
+      'Isabella',
+      'Olivia',
+      'Emma',
+      'Catalina',
+      'Martina',
+      'Delfina',
+      'Sofía',
+    ],
+    surnames: ['González', 'Rodríguez', 'Gómez', 'Fernández', 'López', 'Díaz'],
+    currency: '\$',
+  ),
+  CountryData(
+    name: 'Kenya',
+    cities: ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru'],
+    male: ['Brian', 'Kevin', 'Ian', 'Otieno', 'Kamau', 'Kiprono', 'Mwangi'],
+    female: [
+      'Faith',
+      'Mercy',
+      'Wanjiru',
+      'Akinyi',
+      'Njeri',
+      'Chebet',
+      'Achieng',
+    ],
+    surnames: ['Otieno', 'Kamau', 'Mwangi', 'Wanjiku', 'Kiprop', 'Ochieng'],
+    currency: 'KSh',
+  ),
 ];
 
 CountryData countryNamed(String name) =>
@@ -158,6 +330,16 @@ class CountryProfile {
     required this.climate,
     required this.languages,
     required this.blurb,
+    this.wage = 1.0,
+    this.cost = 1.0,
+    this.tuition = 1.0,
+    this.draft = 'none',
+    this.draftMonths = 0,
+    this.retireAge = 65,
+    this.safety = 'medium',
+    this.culture = '',
+    this.everyday = const [],
+    this.local = const [],
   });
 
   final int lifeExpectancy;
@@ -175,6 +357,63 @@ class CountryProfile {
   final String climate;
   final List<String> languages;
   final String blurb;
+
+  // ---- Living there (docs/country-research.md) ----
+
+  /// Pay and prices as multipliers of the game's base (United States = 1).
+  /// Compressed so every country is playable; the order and gaps follow
+  /// average wages and cost-of-living indices.
+  final double wage;
+  final double cost;
+
+  /// Public university fees as a multiple of the base (0 = free).
+  final double tuition;
+
+  /// Military service: none, universal (men), selective (some are called,
+  /// any gender) or lottery (men, chosen by lot).
+  final String draft;
+  final int draftMonths;
+  final int retireAge;
+
+  /// high, medium or low: how often crime touches everyday life.
+  final String safety;
+  final String culture;
+
+  /// What living here is like, shown on the country card.
+  final List<String> everyday;
+
+  /// Yearly local moments: text, stat, change.
+  final List<(String, String, int)> local;
+
+  /// Plain words for the pay and price levels.
+  String get payLabel => wage >= 0.8
+      ? 'High'
+      : wage >= 0.55
+      ? 'Medium'
+      : wage >= 0.3
+      ? 'Low'
+      : 'Very low';
+  String get costLabel => cost >= 0.85
+      ? 'High'
+      : cost >= 0.65
+      ? 'Medium'
+      : 'Low';
+  String get tuitionLabel => tuition == 0
+      ? 'Free'
+      : tuition < 0.3
+      ? 'Low fees'
+      : tuition < 0.7
+      ? 'Moderate fees'
+      : 'High fees';
+  String get draftLabel => switch (draft) {
+    'universal' => '$draftMonths months for men',
+    'lottery' => 'By lottery for men',
+    'selective' => 'Some are called up',
+    _ => 'None',
+  };
+
+  /// Gambling is not legal for citizens when the age is 0.
+  bool get gamblingBanned => gamblingAge == 0;
 }
 
 const _profiles = <String, CountryProfile>{
@@ -189,6 +428,32 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['Portuguese'],
     blurb: 'Sunny coasts, custard tarts and a slow, warm pace of life.',
+    wage: 0.48,
+    cost: 0.7,
+    tuition: 0.12,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 66,
+    safety: 'high',
+    culture: 'Family lunches that last all afternoon, fado in the evenings and saudade, a longing with no English word.',
+    everyday: [
+      'Wages are among the lowest in Western Europe, while rents in Lisbon and Porto have soared',
+      'Many young people move abroad for work and send money home',
+      'Universal healthcare through the SNS, with long waits for specialists',
+    ],
+    local: [
+      (
+        'The Santos Populares filled your street with grilled sardines and paper garlands.',
+        'happiness',
+        2,
+      ),
+      (
+        'A cousin emigrated to Luxembourg for better pay. The family dinner felt smaller.',
+        'happiness',
+        -1,
+      ),
+      ('Summer wildfires turned the sky orange for a week.', 'health', -1),
+    ],
   ),
   'Nigeria': CountryProfile(
     lifeExpectancy: 54,
@@ -201,6 +466,28 @@ const _profiles = <String, CountryProfile>{
     climate: 'hostile',
     languages: ['English'],
     blurb: 'Africa\'s most populous country: huge energy, music and hustle.',
+    wage: 0.15,
+    cost: 0.42,
+    tuition: 0.1,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 60,
+    safety: 'low',
+    culture: 'Nollywood films, Afrobeats on every corner, jollof rice rivalries and a fierce entrepreneurial spirit.',
+    everyday: [
+      'Most people pay for healthcare out of pocket',
+      'Power cuts are routine; generators hum through the night',
+      'Prices have risen fast in recent years and many people run a side hustle',
+    ],
+    local: [
+      ('NEPA took the light again. You studied by phone torch.', 'smarts', -1),
+      (
+        'A wedding with a thousand guests, owambe style. You danced till dawn.',
+        'happiness',
+        3,
+      ),
+      ('Fuel queues stretched round the block for days.', 'happiness', -2),
+    ],
   ),
   'United States': CountryProfile(
     lifeExpectancy: 77,
@@ -213,6 +500,36 @@ const _profiles = <String, CountryProfile>{
     climate: 'mixed',
     languages: ['English'],
     blurb: 'Big cities, big dreams and health insurance worth thinking about.',
+    wage: 1.0,
+    cost: 1.0,
+    tuition: 1.0,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 67,
+    safety: 'medium',
+    culture: 'Fourth of July barbecues, road trips, football Fridays and a belief that anyone can make it.',
+    everyday: [
+      'High salaries, but health insurance is usually tied to your job',
+      'College is expensive and student debt is common',
+      'You can drive at 16, but cannot drink until 21',
+    ],
+    local: [
+      (
+        'Thanksgiving with the whole family, and one argument about politics.',
+        'happiness',
+        1,
+      ),
+      (
+        'A surprise medical bill arrived for an ambulance ride.',
+        'happiness',
+        -2,
+      ),
+      (
+        'A school shooting drill made everyone quiet for the day.',
+        'happiness',
+        -1,
+      ),
+    ],
   ),
   'Philippines': CountryProfile(
     lifeExpectancy: 70,
@@ -225,6 +542,36 @@ const _profiles = <String, CountryProfile>{
     climate: 'mixed',
     languages: ['Filipino', 'English'],
     blurb: 'Seven thousand islands and family at the centre of everything.',
+    wage: 0.2,
+    cost: 0.48,
+    tuition: 0.0,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 60,
+    safety: 'medium',
+    culture: 'Karaoke at every party, Christmas carols from September and a big, close family.',
+    everyday: [
+      'Millions work abroad as overseas workers and send money home',
+      'State university tuition is free since 2017',
+      'Typhoon season shapes the year',
+    ],
+    local: [
+      (
+        'The Christmas season started in September, as it should.',
+        'happiness',
+        2,
+      ),
+      (
+        'A typhoon flooded the street; neighbours shared food for a week.',
+        'health',
+        -1,
+      ),
+      (
+        'A relative working abroad sent balikbayan boxes full of chocolate.',
+        'happiness',
+        2,
+      ),
+    ],
   ),
   'Ireland': CountryProfile(
     lifeExpectancy: 82,
@@ -237,6 +584,36 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['English', 'Irish'],
     blurb: 'Green hills, good talk and rain that never quite stops.',
+    wage: 0.9,
+    cost: 0.95,
+    tuition: 0.25,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 66,
+    safety: 'high',
+    culture: 'Pubs with live trad music, GAA on Sunday, rain, and talk that never runs out.',
+    everyday: [
+      'Good wages, but one of the tightest housing markets in Europe',
+      'University has a student contribution of a few thousand euro a year',
+      'Many young adults still live with their parents',
+    ],
+    local: [
+      (
+        'St Patrick\'s Day: a parade, green everything and a sore head.',
+        'happiness',
+        2,
+      ),
+      (
+        'Your landlord raised the rent again. Everyone you know is looking for a flat.',
+        'happiness',
+        -2,
+      ),
+      (
+        'A rare sunny week: the whole country went to the beach.',
+        'happiness',
+        2,
+      ),
+    ],
   ),
   'Netherlands': CountryProfile(
     lifeExpectancy: 82,
@@ -249,6 +626,32 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['Dutch'],
     blurb: 'Bicycles, canals and very direct opinions.',
+    wage: 0.88,
+    cost: 0.92,
+    tuition: 0.25,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 67,
+    safety: 'high',
+    culture: 'Bikes everywhere, gezellig evenings, direct conversations and King\'s Day in orange.',
+    everyday: [
+      'Short working weeks are normal; part-time work is common',
+      'Basic health insurance is compulsory and private',
+      'Housing is scarce and waiting lists for social homes are long',
+    ],
+    local: [
+      (
+        'King\'s Day: the whole city turned orange and sold old toys on the pavement.',
+        'happiness',
+        2,
+      ),
+      ('You cycled through a storm. Headwind both ways, somehow.', 'health', 1),
+      (
+        'Your colleague told you, very directly, what they thought of your presentation.',
+        'charisma',
+        1,
+      ),
+    ],
   ),
   'United Kingdom': CountryProfile(
     lifeExpectancy: 81,
@@ -261,6 +664,32 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['English'],
     blurb: 'Queues, tea, history on every corner and opinions about weather.',
+    wage: 0.85,
+    cost: 0.9,
+    tuition: 0.8,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 66,
+    safety: 'medium',
+    culture: 'Tea, queuing, pub quizzes, football on Saturdays and talking about the weather.',
+    everyday: [
+      'The NHS is free at the point of use, but waiting lists are long',
+      'University fees are capped at around £9,500 a year in England',
+      'Housing costs in London are among the highest in Europe',
+    ],
+    local: [
+      (
+        'Bonfire Night: fireworks, a damp field and a sparkler.',
+        'happiness',
+        1,
+      ),
+      ('A heatwave hit 32°C and the trains stopped working.', 'happiness', -1),
+      (
+        'Your team got relegated. The whole town is in mourning.',
+        'happiness',
+        -2,
+      ),
+    ],
   ),
   'Canada': CountryProfile(
     lifeExpectancy: 82,
@@ -273,6 +702,24 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['English', 'French'],
     blurb: 'Huge, cold, kind and very good at apologising.',
+    wage: 0.85,
+    cost: 0.9,
+    tuition: 0.6,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 65,
+    safety: 'high',
+    culture: 'Hockey, maple syrup, long winters, multicultural cities and saying sorry a lot.',
+    everyday: [
+      'Healthcare is public and free at the point of care, but waits can be long',
+      'Housing in Toronto and Vancouver is very expensive',
+      'Two official languages: English and French',
+    ],
+    local: [
+      ('A snowstorm closed everything. You built a snow fort.', 'happiness', 1),
+      ('Canada Day fireworks over the water.', 'happiness', 2),
+      ('Wildfire smoke turned the sky hazy for a week.', 'health', -1),
+    ],
   ),
   'India': CountryProfile(
     lifeExpectancy: 70,
@@ -285,6 +732,28 @@ const _profiles = <String, CountryProfile>{
     climate: 'mixed',
     languages: ['Hindi', 'English'],
     blurb: 'A billion stories, a hundred languages and the best street food.',
+    wage: 0.22,
+    cost: 0.38,
+    tuition: 0.1,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 60,
+    safety: 'medium',
+    culture: 'Cricket, Bollywood, festivals for every season and three generations under one roof.',
+    everyday: [
+      'Competitive entrance exams decide university places',
+      'Public healthcare is cheap but stretched; many pay for private care',
+      'Arranged marriages are still common',
+    ],
+    local: [
+      (
+        'Diwali: lamps on every window and far too many sweets.',
+        'happiness',
+        3,
+      ),
+      ('Holi: you came home pink, green and blue.', 'happiness', 2),
+      ('The monsoon flooded the road to work again.', 'happiness', -1),
+    ],
   ),
   'Japan': CountryProfile(
     lifeExpectancy: 84,
@@ -297,6 +766,36 @@ const _profiles = <String, CountryProfile>{
     climate: 'mixed',
     languages: ['Japanese'],
     blurb: 'Trains on time to the second, quiet temples and neon nights.',
+    wage: 0.72,
+    cost: 0.72,
+    tuition: 0.4,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 65,
+    safety: 'high',
+    culture: 'Cherry blossom picnics, punctual trains, convenience-store dinners and long working hours.',
+    everyday: [
+      'Very safe, with some of the longest lives in the world',
+      'Overtime culture is real; karoshi (death from overwork) has a word',
+      'Universal health insurance; you pay about 30% of costs',
+    ],
+    local: [
+      (
+        'Hanami: a picnic under the cherry blossom with your colleagues.',
+        'happiness',
+        3,
+      ),
+      (
+        'A small earthquake rattled the cups. Nobody looked up.',
+        'happiness',
+        0,
+      ),
+      (
+        'Your boss kept everyone late again. The last train home was packed.',
+        'health',
+        -1,
+      ),
+    ],
   ),
   'Brazil': CountryProfile(
     lifeExpectancy: 76,
@@ -309,6 +808,24 @@ const _profiles = <String, CountryProfile>{
     climate: 'mixed',
     languages: ['Portuguese'],
     blurb: 'Football, beaches, carnival and family lunches that last all day.',
+    wage: 0.3,
+    cost: 0.5,
+    tuition: 0.0,
+    draft: 'lottery',
+    draftMonths: 12,
+    retireAge: 65,
+    safety: 'low',
+    culture: 'Carnival, football on the beach, feijoada on Saturdays and samba at any hour.',
+    everyday: [
+      'Public universities are free and very competitive to get into',
+      'The SUS gives free healthcare to all, though many pay for private plans',
+      'Military service is compulsory in law for men, but most are not called up',
+    ],
+    local: [
+      ('Carnival: five days of samba and no sleep.', 'happiness', 4),
+      ('Your phone was snatched at a bus stop.', 'happiness', -2),
+      ('The World Cup was on. Work stopped for every match.', 'happiness', 2),
+    ],
   ),
   'Germany': CountryProfile(
     lifeExpectancy: 81,
@@ -321,6 +838,32 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['German'],
     blurb: 'Efficient, green and serious about bread.',
+    wage: 0.85,
+    cost: 0.88,
+    tuition: 0.0,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 67,
+    safety: 'high',
+    culture: 'Bread with a crust, beer gardens, punctuality, recycling rules and quiet Sundays.',
+    everyday: [
+      'Public universities charge no tuition, just a small semester fee',
+      'Health insurance is compulsory; most people are in the public scheme',
+      'Apprenticeships are a respected route into work',
+    ],
+    local: [
+      (
+        'Christmas markets: mulled wine and gingerbread in the snow.',
+        'happiness',
+        2,
+      ),
+      (
+        'Your neighbour complained that you sorted the recycling wrong.',
+        'happiness',
+        -1,
+      ),
+      ('Oktoberfest: a stein the size of your head.', 'happiness', 2),
+    ],
   ),
   'Australia': CountryProfile(
     lifeExpectancy: 83,
@@ -333,6 +876,25 @@ const _profiles = <String, CountryProfile>{
     climate: 'supportive',
     languages: ['English'],
     blurb: 'Beaches, barbecues and wildlife with opinions.',
+    wage: 0.92,
+    cost: 0.95,
+    tuition: 0.6,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 67,
+    safety: 'high',
+    culture:
+        'Beaches, barbecues, footy, sunburn and spiders bigger than your hand.',
+    everyday: [
+      'Medicare covers public healthcare',
+      'University fees are paid back through HECS once you earn enough',
+      'Bushfires and floods shape the seasons',
+    ],
+    local: [
+      ('Christmas on the beach in 35°C heat.', 'happiness', 2),
+      ('A huntsman spider moved into your car.', 'happiness', -1),
+      ('Bushfire smoke kept everyone indoors for days.', 'health', -1),
+    ],
   ),
   'Mexico': CountryProfile(
     lifeExpectancy: 75,
@@ -345,6 +907,362 @@ const _profiles = <String, CountryProfile>{
     climate: 'mixed',
     languages: ['Spanish'],
     blurb: 'Colour, history, family and food that ruins every other cuisine.',
+    wage: 0.32,
+    cost: 0.55,
+    tuition: 0.05,
+    draft: 'lottery',
+    draftMonths: 12,
+    retireAge: 65,
+    safety: 'low',
+    culture: 'Día de Muertos altars, tacos al pastor, mariachi and huge family gatherings.',
+    everyday: [
+      'Public universities like UNAM charge almost nothing',
+      'Many jobs are informal, without contracts or benefits',
+      'Military service is chosen by lottery at 18 and is light for most',
+    ],
+    local: [
+      (
+        'Día de Muertos: you built an altar for your grandparents.',
+        'happiness',
+        2,
+      ),
+      (
+        'An earthquake alarm sent the whole building into the street.',
+        'happiness',
+        -1,
+      ),
+      ('A quinceañera with a live band and three cakes.', 'happiness', 3),
+    ],
+  ),
+  'South Korea': CountryProfile(
+    lifeExpectancy: 84,
+    healthcare: 'universal',
+    drivingAge: 18,
+    drinkingAge: 19,
+    gamblingAge: 19,
+    marriageEquality: false,
+    deathPenalty: false,
+    climate: 'mixed',
+    languages: ['Korean'],
+    blurb: 'Fast internet, faster food and a fierce love of study.',
+    wage: 0.72,
+    cost: 0.83,
+    tuition: 0.5,
+    draft: 'universal',
+    draftMonths: 18,
+    retireAge: 63,
+    safety: 'high',
+    culture: 'K-pop, PC bangs, late-night fried chicken, intense study and fast everything.',
+    everyday: [
+      'Men serve about 18 months in the military',
+      'The Suneung exam can decide your whole future; many students study until midnight',
+      'National health insurance covers everyone',
+    ],
+    local: [
+      (
+        'Chuseok: you travelled home and made songpyeon with your grandmother.',
+        'happiness',
+        2,
+      ),
+      ('Hagwon until 10pm again. Your eyes hurt.', 'health', -1),
+      ('Fine dust days: everyone in masks.', 'health', -1),
+    ],
+  ),
+  'France': CountryProfile(
+    lifeExpectancy: 83,
+    healthcare: 'universal',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: true,
+    deathPenalty: false,
+    climate: 'supportive',
+    languages: ['French'],
+    blurb: 'Bakeries on every corner, long lunches and a strong opinion on everything.',
+    wage: 0.78,
+    cost: 0.9,
+    tuition: 0.05,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 63,
+    safety: 'medium',
+    culture: 'Long lunches, the bakery every morning, summer holidays in August and strikes about everything.',
+    everyday: [
+      'University costs only a few hundred euro a year',
+      'Universal healthcare, topped up by a mutuelle',
+      'The 2023 pension reform raising the age to 64 was suspended in 2025',
+    ],
+    local: [
+      (
+        'A national strike stopped the trains. You walked to work.',
+        'health',
+        1,
+      ),
+      ('Fête de la Musique: bands on every street corner.', 'happiness', 3),
+      (
+        'The whole office went on holiday in August. You did too.',
+        'happiness',
+        2,
+      ),
+    ],
+  ),
+  'Spain': CountryProfile(
+    lifeExpectancy: 84,
+    healthcare: 'universal',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: true,
+    deathPenalty: false,
+    climate: 'supportive',
+    languages: ['Spanish'],
+    blurb: 'Sun, late dinners and fiestas that run until morning.',
+    wage: 0.6,
+    cost: 0.72,
+    tuition: 0.15,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 67,
+    safety: 'high',
+    culture:
+        'Late dinners, siestas, tapas with friends, fiestas in every town.',
+    everyday: [
+      'Unemployment, especially for young people, is higher than most of Europe',
+      'Universal public healthcare',
+      'Dinner at 10pm is normal',
+    ],
+    local: [
+      ('La Tomatina: you were covered in tomato.', 'happiness', 3),
+      ('A summer heatwave hit 44°C.', 'health', -1),
+      ('Your town\'s fiesta lasted a week.', 'happiness', 2),
+    ],
+  ),
+  'Italy': CountryProfile(
+    lifeExpectancy: 84,
+    healthcare: 'universal',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: false,
+    deathPenalty: false,
+    climate: 'mixed',
+    languages: ['Italian'],
+    blurb: 'Art, food and family, in that order or any other.',
+    wage: 0.6,
+    cost: 0.8,
+    tuition: 0.15,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 67,
+    safety: 'medium',
+    culture: 'Family Sunday lunches, espresso at the bar, football passion and centuries of art on every street.',
+    everyday: [
+      'Many young adults live with their parents into their thirties',
+      'Universal healthcare through the SSN',
+      'Same-sex couples can form civil unions, not marry',
+    ],
+    local: [
+      ('Ferragosto: everyone left the city for the sea.', 'happiness', 2),
+      ('Nonna taught you the family ragù recipe.', 'happiness', 2),
+      ('Bureaucracy: three offices, two weeks, one stamp.', 'happiness', -1),
+    ],
+  ),
+  'China': CountryProfile(
+    lifeExpectancy: 78,
+    healthcare: 'insurance',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 0,
+    marriageEquality: false,
+    deathPenalty: true,
+    climate: 'mixed',
+    languages: ['Mandarin'],
+    blurb:
+        'Megacities, high-speed trains and a phone that pays for everything.',
+    wage: 0.45,
+    cost: 0.55,
+    tuition: 0.15,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 63,
+    safety: 'high',
+    culture: 'Lunar New Year reunions, hotpot, mobile payments for everything and the gaokao.',
+    everyday: [
+      'The gaokao exam decides university places',
+      'The retirement age is rising from 60 to 63 for men from 2025',
+      'Basic medical insurance covers most people, with out-of-pocket costs',
+    ],
+    local: [
+      (
+        'Lunar New Year: red envelopes and the longest train journey of the year.',
+        'happiness',
+        3,
+      ),
+      ('996 work culture: nine to nine, six days a week.', 'health', -2),
+      ('Mid-Autumn Festival: mooncakes under the full moon.', 'happiness', 2),
+    ],
+  ),
+  'South Africa': CountryProfile(
+    lifeExpectancy: 66,
+    healthcare: 'universal',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: true,
+    deathPenalty: false,
+    climate: 'supportive',
+    languages: ['English', 'Zulu', 'Afrikaans'],
+    blurb: 'Mountains, oceans, braais and a rainbow of languages.',
+    wage: 0.42,
+    cost: 0.55,
+    tuition: 0.25,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 60,
+    safety: 'low',
+    culture: 'Braai on the weekend, rugby, eleven official languages and a sense of humour about load-shedding.',
+    everyday: [
+      'Inequality is among the highest in the world',
+      'Load-shedding (scheduled blackouts) has been part of life',
+      'Same-sex marriage has been legal since 2006',
+    ],
+    local: [
+      ('Load-shedding stage 4: dinner by candlelight.', 'happiness', -1),
+      ('A braai with the whole street.', 'happiness', 2),
+      ('The Springboks won. Strangers hugged in the street.', 'happiness', 3),
+    ],
+  ),
+  'Egypt': CountryProfile(
+    lifeExpectancy: 70,
+    healthcare: 'out of pocket',
+    drivingAge: 18,
+    drinkingAge: 21,
+    gamblingAge: 0,
+    marriageEquality: false,
+    deathPenalty: true,
+    climate: 'hostile',
+    languages: ['Arabic'],
+    blurb: 'Seven thousand years of history and the busiest streets you will ever cross.',
+    wage: 0.16,
+    cost: 0.35,
+    tuition: 0.05,
+    draft: 'universal',
+    draftMonths: 24,
+    retireAge: 60,
+    safety: 'medium',
+    culture: 'Koshary, tea on the balcony, Ramadan nights, the Nile and the pyramids on the skyline.',
+    everyday: [
+      'Men serve one to three years in the military, depending on education',
+      'Public universities are almost free',
+      'Prices have risen sharply after currency devaluations',
+    ],
+    local: [
+      (
+        'Ramadan: iftar with the whole family every evening for a month.',
+        'happiness',
+        2,
+      ),
+      ('A khamsin sandstorm turned the sky yellow.', 'health', -1),
+      ('The price of bread went up again.', 'happiness', -1),
+    ],
+  ),
+  'Sweden': CountryProfile(
+    lifeExpectancy: 84,
+    healthcare: 'universal',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: true,
+    deathPenalty: false,
+    climate: 'supportive',
+    languages: ['Swedish'],
+    blurb: 'Fika, forests and a deep belief in fairness.',
+    wage: 0.8,
+    cost: 0.85,
+    tuition: 0.0,
+    draft: 'selective',
+    draftMonths: 11,
+    retireAge: 67,
+    safety: 'high',
+    culture: 'Fika, midsummer dancing, long dark winters and lagom: not too much, not too little.',
+    everyday: [
+      'University is free for Swedish and EU students',
+      'Conscription returned in 2018, but only some people are called up',
+      'Parents share 480 days of paid parental leave',
+    ],
+    local: [
+      ('Midsummer: you danced round the maypole like a frog.', 'happiness', 3),
+      ('Winter: the sun set at 3pm for months.', 'happiness', -2),
+      ('Fika with colleagues every afternoon.', 'happiness', 1),
+    ],
+  ),
+  'Argentina': CountryProfile(
+    lifeExpectancy: 77,
+    healthcare: 'universal',
+    drivingAge: 17,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: true,
+    deathPenalty: false,
+    climate: 'supportive',
+    languages: ['Spanish'],
+    blurb: 'Asado, mate and football that is more than a game.',
+    wage: 0.32,
+    cost: 0.5,
+    tuition: 0.0,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 65,
+    safety: 'medium',
+    culture: 'Asado on Sundays, mate shared with friends, tango and football as religion.',
+    everyday: [
+      'Public universities are free',
+      'Inflation has been very high for years; prices change monthly',
+      'Same-sex marriage has been legal since 2010',
+    ],
+    local: [
+      (
+        'Asado at your uncle\'s: four hours, three kinds of meat.',
+        'happiness',
+        2,
+      ),
+      ('Inflation: your rent went up again this month.', 'happiness', -2),
+      ('Argentina won. The whole country was in the street.', 'happiness', 3),
+    ],
+  ),
+  'Kenya': CountryProfile(
+    lifeExpectancy: 64,
+    healthcare: 'out of pocket',
+    drivingAge: 18,
+    drinkingAge: 18,
+    gamblingAge: 18,
+    marriageEquality: false,
+    deathPenalty: true,
+    climate: 'hostile',
+    languages: ['English', 'Swahili'],
+    blurb: 'Savannah, runners, matatus and mobile money for everything.',
+    wage: 0.2,
+    cost: 0.45,
+    tuition: 0.15,
+    draft: 'none',
+    draftMonths: 0,
+    retireAge: 60,
+    safety: 'low',
+    culture: 'Matatus with loud music, M-Pesa for everything, long-distance runners and safaris on the doorstep.',
+    everyday: [
+      'Mobile money (M-Pesa) is used for almost every payment',
+      'Many people pay for healthcare out of pocket',
+      'Kiswahili and English are both official languages',
+    ],
+    local: [
+      ('You sent money home with M-Pesa in seconds.', 'happiness', 1),
+      ('A drought pushed up food prices.', 'happiness', -1),
+      (
+        'You watched a Kenyan win the marathon. The whole village cheered.',
+        'happiness',
+        2,
+      ),
+    ],
   ),
 };
 

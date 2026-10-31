@@ -305,6 +305,7 @@ List<RentalListing> rentalListings(Life l) {
         final area = areas.keys.elementAt(rng.nextInt(areas.length));
         final rent =
             (base *
+                    countryProfile(l.country).cost *
                     areas[area]!.$1 *
                     mod /
                     100 *

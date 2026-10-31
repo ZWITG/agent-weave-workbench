@@ -8,6 +8,7 @@ import 'homes.dart' show homeOf, lettingOf, letDebtShare;
 import 'property.dart' show lettingsOf, rentIncome;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
+import 'world_data.dart';
 import 'shopping.dart' show subscriptionCost;
 import 'kin.dart' show fostersOf, fosterAllowance;
 import 'possessions.dart';
@@ -59,8 +60,12 @@ bool livesWithFamily(Life life) => !life.has('house') && !life.has('rental');
 int livingCost(Life life, [String? tier]) {
   final t = lifestyles[tier ?? life.lifestyle]!;
   final base = livesWithFamily(life) ? t.withFamily : t.alone;
-  // Inflation in the news pushes living costs up.
-  return (base * (100 + (life.worldMods['prices'] ?? 0)) / 100).round();
+  // Prices follow the country, and inflation in the news pushes them up.
+  return (base *
+          countryProfile(life.country).cost *
+          (100 + (life.worldMods['prices'] ?? 0)) /
+          100)
+      .round();
 }
 
 // ---------------- Taxes and debts ----------------

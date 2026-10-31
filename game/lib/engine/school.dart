@@ -604,7 +604,12 @@ Storylet? applyUniScene(Life l) {
           if (rng.nextInt(100) < odds) {
             final sch = scholarshipFor(life, s.score);
             life.school.tier = t.key;
-            life.school.tuition = (t.value.fees * (1 - (sch?.$2 ?? 0))).round();
+            // Fees follow the country: free in some, high in others.
+            life.school.tuition =
+                (t.value.fees *
+                        countryProfile(life.country).tuition *
+                        (1 - (sch?.$2 ?? 0)))
+                    .round();
             life.school.scholarship = sch?.$1;
             life.education = 'university';
             life.eduSince = life.age - (transfer ? 2 : 0);
@@ -766,7 +771,8 @@ Storylet applyGradScene() => Storylet(
           life.eduSince = life.age;
           life.school.gradProgramme = g.degree;
           life.school.gradYears = g.years;
-          life.school.tuition = 15000;
+          life.school.tuition = (15000 * countryProfile(life.country).tuition)
+              .round();
           return 'You were accepted to ${g.name.toLowerCase()}. ${g.years} more years of study, and a new kind of tired.';
         },
       ),
@@ -1077,7 +1083,7 @@ final schoolActions = <GameAction>[
       l.education = 'apprenticeship';
       l.eduSince = l.age;
       l.job = 'Apprentice';
-      l.salary = 12000;
+      l.salary = (12000 * countryProfile(l.country).wage).round();
       l.careerId = null;
       return ActionResult(
         'You signed on as an apprentice: three years of learning on the job, and you get paid.',

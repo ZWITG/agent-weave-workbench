@@ -370,7 +370,7 @@ class Effects {
         startCareer(life, career);
         life.careerRank = career.ladder.indexOf(job!);
         life.job = job;
-        life.salary = salary ?? career.salaryAt(life.careerRank);
+        life.salary = salary ?? career.payIn(life, life.careerRank);
       } else {
         life.job = job == 'none' ? null : job;
         life.salary = salary ?? 0;

@@ -622,13 +622,23 @@ const _hazards = <String, List<String>>{
   'Germany': ['flood', 'storm'],
   'Portugal': ['wildfire', 'storm'],
   'Nigeria': ['flood', 'storm'],
+  'South Korea': ['typhoon', 'flood'],
+  'France': ['flood', 'storm', 'wildfire'],
+  'Spain': ['wildfire', 'flood'],
+  'Italy': ['earthquake', 'flood'],
+  'China': ['flood', 'earthquake', 'typhoon'],
+  'South Africa': ['flood', 'storm'],
+  'Egypt': ['sandstorm', 'flood'],
+  'Sweden': ['storm', 'flood'],
+  'Argentina': ['flood', 'storm'],
+  'Kenya': ['flood', 'drought'],
 };
 
 /// Chance per home per year, in percent.
 int hazardRate(String country) => switch (country) {
   'Philippines' => 5,
   'Japan' => 4,
-  'United States' || 'Mexico' || 'India' || 'Australia' => 3,
+  'United States' || 'Mexico' || 'India' || 'Australia' || 'China' => 3,
   _ => 2,
 };
 

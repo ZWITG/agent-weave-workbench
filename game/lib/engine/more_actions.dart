@@ -9,6 +9,7 @@ import 'health.dart' show careCost, conditionInfo;
 import 'justice.dart' show caughtInTheAct, riskHint;
 import 'friends.dart';
 import 'models.dart';
+import 'world_data.dart';
 
 /// The expanded Activities set: the genre's Activities menu (gym, doctor,
 /// love, nightlife, lottery, casino, travel, licences, pets, identity, crime)
@@ -472,6 +473,13 @@ final moreActions = <GameAction>[
     keywords: ['casino', 'blackjack', 'gamble', 'bet', 'cards'],
     minAge: 18,
     cost: 100,
+    // Gambling ages follow the country; some ban it for citizens.
+    extraCheck: (life) {
+      final p = countryProfile(life.country);
+      if (p.gamblingBanned) return 'Gambling is illegal in ${life.country}';
+      if (life.age < p.gamblingAge) return 'From age ${p.gamblingAge} here';
+      return null;
+    },
     run: (life, rng) {
       final won = _roll(rng, 45);
       life.money += won ? 100 : -100;
@@ -648,8 +656,9 @@ final moreActions = <GameAction>[
     keywords: ['driving', 'licence', 'license', 'drive', 'test', 'car'],
     minAge: 16,
     cost: 400,
-    extraCheck: (life) =>
-        _notFlag(life, 'licence', 'You already have a licence'),
+    extraCheck: (life) => life.age < countryProfile(life.country).drivingAge
+        ? 'From age ${countryProfile(life.country).drivingAge} here'
+        : _notFlag(life, 'licence', 'You already have a licence'),
     run: (life, rng) {
       life.money -= 400;
       if (_roll(rng, 55 + life.stats['discipline'] ~/ 4)) {

@@ -823,15 +823,35 @@ class CountryCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(p.blurb, style: NF.sora(13, color: NF.soft)),
           const SizedBox(height: 6),
+          if (p.culture.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(p.culture, style: NF.sora(13, color: NF.soft)),
+          ],
+          const SizedBox(height: 6),
+          fact('Pay', p.payLabel),
+          fact('Cost of living', p.costLabel),
+          fact('University', p.tuitionLabel),
           fact('Life expectancy', '${p.lifeExpectancy} years'),
           fact('Healthcare', _cap(p.healthcare)),
+          fact('Retirement age', '${p.retireAge}'),
+          fact('Military service', p.draftLabel),
+          fact('Safety', _cap(p.safety)),
           fact('Driving age', '${p.drivingAge}'),
           fact(
             'Drinking and gambling age',
-            '${p.drinkingAge} / ${p.gamblingAge}',
+            '${p.drinkingAge} / ${p.gamblingBanned ? 'banned' : p.gamblingAge}',
           ),
           fact('Same-sex marriage', p.marriageEquality ? 'Legal' : 'Not legal'),
           fact('Languages', p.languages.join(', ')),
+          if (p.everyday.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text('Living here', style: NF.sora(13, weight: FontWeight.w700)),
+            for (final e in p.everyday)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text('• $e', style: NF.sora(12, color: NF.soft)),
+              ),
+          ],
           if (lived.length > 1) fact('Countries lived in', lived.join(', ')),
           const SizedBox(height: 10),
           OutlinedButton.icon(

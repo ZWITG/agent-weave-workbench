@@ -12,6 +12,7 @@ import 'heists.dart';
 import 'pets.dart';
 import 'social.dart';
 import 'celebrity.dart';
+import 'country_life.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -316,6 +317,7 @@ class GameEngine {
       ...lawYear(life, _rngFor(life, 107)),
       ...fameYear(life, _rngFor(life, 101)),
       ...celebrityYear(life, _rngFor(life, 103)),
+      ...countryYear(life, _rngFor(life, 107)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),
@@ -365,7 +367,7 @@ class GameEngine {
     // Scenes (scenes.dart) come before ordinary events.
     if (life.job != null &&
         !life.retired &&
-        life.age >= 65 &&
+        life.age >= countryProfile(life.country).retireAge &&
         !life.lastSeen.containsKey('scene:retire_offer')) {
       life.sceneQueue.add('retire_offer');
     }
