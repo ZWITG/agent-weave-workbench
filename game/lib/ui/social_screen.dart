@@ -70,9 +70,11 @@ class SocialScreen extends StatelessWidget {
                           size: 18,
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          'Public image: ${imageLabel(l.image)}',
-                          style: NF.sora(15, weight: FontWeight.w700),
+                        Flexible(
+                          child: Text(
+                            'Public image: ${imageLabel(l.image)}',
+                            style: NF.sora(15, weight: FontWeight.w700),
+                          ),
                         ),
                       ],
                     ),

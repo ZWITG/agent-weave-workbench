@@ -97,6 +97,9 @@ class _HubScreenState extends State<HubScreen> {
             onMoney: () => setState(
               () => _tab = _destinations.indexWhere((d) => d.$3 == 'Wealth'),
             ),
+            onFame: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => SocialScreen(controller: c)),
+            ),
           ),
           Expanded(
             child: IndexedStack(index: _tab, children: tabs),
@@ -268,9 +271,10 @@ class _HubScreenState extends State<HubScreen> {
 // ---------------- Header ----------------
 
 class _Header extends StatelessWidget {
-  const _Header({required this.life, this.onMoney});
+  const _Header({required this.life, this.onMoney, this.onFame});
   final Life life;
   final VoidCallback? onMoney;
+  final VoidCallback? onFame;
 
   @override
   Widget build(BuildContext context) {
@@ -395,6 +399,58 @@ class _Header extends StatelessWidget {
                   ),
                 ),
               ),
+              // Your fame tier, the star coloured by your public image.
+              if (life.fame > 0) ...[
+                const SizedBox(height: 6),
+                Semantics(
+                  label:
+                      'Fame: ${fameTierOf(life).name}, image ${imageLabel(life.image)}. Open Social',
+                  button: true,
+                  excludeSemantics: true,
+                  child: GestureDetector(
+                    onTap: onFame,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: NF.orange.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: NF.orange.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.star_rounded,
+                            size: 14,
+                            color: life.image >= 25
+                                ? NF.orange
+                                : life.image > -25
+                                ? NF.soft
+                                : NF.danger,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            life.fame < 10
+                                ? 'Fame ${life.fame}'
+                                : fameTierOf(life).name,
+                            style: NF.sora(
+                              13,
+                              weight: FontWeight.w700,
+                              color: NF.orange,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ],

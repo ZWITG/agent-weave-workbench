@@ -324,6 +324,29 @@ void main() {
     expect(score, inInclusiveRange(0, 1));
   });
 
+  testWidgets('a fame badge shows only when you have some fame', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.life!.fame = 0;
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    expect(find.text('Celebrity'), findsNothing);
+    expect(find.textContaining('Fame '), findsNothing);
+    c.life!.fame = 50;
+    c.updateProfile((_) {});
+    await _pump(t);
+    expect(find.text('Celebrity'), findsOneWidget);
+    // Tapping it opens the Social screen.
+    await t.tap(find.text('Celebrity'));
+    await _pump(t);
+    expect(find.text('Social'), findsWidgets);
+    expect(find.textContaining('Public image'), findsOneWidget);
+  });
+
   testWidgets('owned things expand to show their options', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);
