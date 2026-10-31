@@ -2947,4 +2947,78 @@ void main() {
     expect(localizeMoney('MX\$500', 'Mexico'), 'MX\$500');
     expect(localizeMoney('-\$10', 'Germany'), '−€9');
   });
+
+  test('upper echelon: owning things opens more to do with them', () {
+    final l = engine.newLife(seed: 317)..age = 45;
+    l.flags['upper_echelon'] = Memory(45, 'joining');
+    GameAction act(String id) => allActions.firstWhere((a) => a.id == id);
+    void fresh() {
+      l.usedActions.clear();
+      l.energy = 10;
+      l.money = 2000000000;
+    }
+
+    fresh();
+    // Asset-based activities wait for the asset.
+    for (final id in [
+      'island_retreat',
+      'island_resort',
+      'yacht_party',
+      'sign_star',
+      'new_stadium',
+      'paper_campaign',
+      'lend_art',
+      'private_museum',
+      'foundation_gala',
+    ]) {
+      expect(act(id).lockReason(l), isNotNull, reason: id);
+    }
+    engine.runAction(l, act('buy_team'));
+    final teams = engine.nextScene(l)!;
+    engine.choose(l, teams, teams.choices[1]);
+    final team = l.assets.firstWhere((a) => a.kind == 'team');
+    fresh();
+    engine.runAction(l, act('sign_star'));
+    expect(team.info['squad'], 12);
+    fresh();
+    engine.runAction(l, act('new_stadium'));
+    expect(team.info['stadium'], isTrue);
+    expect(act('new_stadium').lockReason(l), isNotNull);
+    // A season pays out and the squad ages.
+    eliteYear(l, Random(3));
+    expect(team.info['squad'], 8);
+    // Foundation, then galas grow it.
+    fresh();
+    engine.runAction(l, act('start_foundation'));
+    final fund = foundationFund(l);
+    expect(fund, greaterThan(0));
+    fresh();
+    expect(act('foundation_gala').lockReason(l), isNull);
+    engine.runAction(l, act('foundation_gala'));
+    expect(foundationFund(l), greaterThan(fund));
+    // A second passport helps visas.
+    final before = visaOdds(l, 'Japan').$1;
+    fresh();
+    engine.runAction(l, act('second_passport'));
+    expect(visaOdds(l, 'Japan').$1, greaterThan(before));
+    // Billionaire milestone and the pledge.
+    expect(act('giving_pledge').lockReason(l), isNull);
+    l.sceneQueue.clear();
+    l.flags.remove('billionaire');
+    eliteYear(l, Random(5));
+    expect(l.flags.containsKey('billionaire'), isTrue);
+    expect(l.sceneQueue, contains('elite_billion'));
+    for (final id in ['elite_billion', 'elite_leak', 'elite_ask']) {
+      expect(buildScene(id, l), isNotNull, reason: id);
+    }
+    // Offshore adds a cash line.
+    fresh();
+    engine.runAction(l, act('offshore'));
+    expect(eliteCosts(l).any((c) => c.$1.startsWith('Offshore')), isTrue);
+  });
+
+  test('moving abroad names the new currency', () {
+    expect(currencyLabel('Japan'), 'Japanese yen (¥)');
+    expect(currencyLabel('France'), 'euro (€)');
+  });
 }

@@ -146,6 +146,9 @@ Storylet? buildScene(String id, Life life) {
     'label_offer' ||
     'underground_intro' => musicScene(parts.first, parts.sublist(1), life),
     'elite_intro' ||
+    'elite_billion' ||
+    'elite_leak' ||
+    'elite_ask' ||
     'elite_threat' ||
     'elite_island' ||
     'elite_team' => eliteScene(parts.first, parts.sublist(1), life),

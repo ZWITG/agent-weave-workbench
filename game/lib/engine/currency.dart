@@ -34,6 +34,31 @@ const currencies = <String, (double, String)>{
   'Sweden': (10.5, 'kr'),
 };
 
+/// The currency's name, for the move-abroad screen and moving day.
+const currencyNames = <String, String>{
+  'United States': 'US dollar',
+  'United Kingdom': 'pound sterling',
+  'Canada': 'Canadian dollar',
+  'Australia': 'Australian dollar',
+  'Mexico': 'Mexican peso',
+  'Argentina': 'Argentine peso',
+  'Brazil': 'Brazilian real',
+  'Japan': 'Japanese yen',
+  'China': 'Chinese yuan',
+  'South Korea': 'South Korean won',
+  'India': 'Indian rupee',
+  'Philippines': 'Philippine peso',
+  'Nigeria': 'Nigerian naira',
+  'South Africa': 'South African rand',
+  'Egypt': 'Egyptian pound',
+  'Kenya': 'Kenyan shilling',
+  'Sweden': 'Swedish krona',
+};
+
+/// "Japanese yen (¥)", or "euro (€)".
+String currencyLabel(String country) =>
+    '${currencyNames[country] ?? 'euro'} (${currencyOf(country).$2})';
+
 /// The country whose currency is shown; set by the game as you play.
 String activeCountry = 'United States';
 

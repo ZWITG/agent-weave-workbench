@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'careers.dart' show studying;
+import 'currency.dart' show currencyLabel;
 import 'health.dart' show exposeTo;
 import 'jobs.dart' show leaveJob;
 import 'justice.dart' show caughtInTheAct, convictions, hasSeriousRecord;
@@ -104,6 +105,7 @@ Storylet _scene(
     add(-20, 'Criminal record');
   }
   if (l.cases.isNotEmpty) add(-10, 'Police interest');
+  if (l.flags.containsKey('second_passport')) add(35, 'A second passport');
   return (p.clamp(5, 95), why);
 }
 
@@ -139,7 +141,7 @@ String emigrateTo(Life l, String to, Random rng) {
     n.addFacets(affection: -3);
   }
   l.stats.add('happiness', 5);
-  return 'You landed in ${l.city} with two suitcases and a head full of plans. ${hadJob == null ? '' : 'You left your job as $hadJob behind. '}Healthcare, laws and prices work differently here: check your country card on the Me tab.';
+  return 'You landed in ${l.city} with two suitcases and a head full of plans. ${hadJob == null ? '' : 'You left your job as $hadJob behind. '}Healthcare, laws and prices work differently here: check your country card on the Me tab. Money is now counted in the ${currencyLabel(c.name)}.';
 }
 
 Storylet? communityScene(String id, List<String> args, Life l) {

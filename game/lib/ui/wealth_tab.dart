@@ -535,7 +535,23 @@ class _WealthTabState extends State<WealthTab> {
       ],
       'rental' => [act('Find somewhere else', 'rent_flat')],
       'collectible' => [act('Get it appraised', 'appraise')],
-      'boat' => [act('Go sailing', 'go_sailing')],
+      'boat' => [
+        act('Go sailing', 'go_sailing'),
+        if (a.name == 'Superyacht') act('Party on board', 'yacht_party'),
+      ],
+      'island' => [
+        act('Host friends', 'island_retreat'),
+        if (a.info['resort'] != true) act('Make it a resort', 'island_resort'),
+      ],
+      'team' => [
+        act('Sign a superstar', 'sign_star'),
+        if (a.info['stadium'] != true) act('New stadium', 'new_stadium'),
+      ],
+      'media' => [act('Front pages for you', 'paper_campaign')],
+      'valuable' when a.name.startsWith('Masterpiece') => [
+        if (a.info['lent'] != true) act('Lend to a museum', 'lend_art'),
+        act('Open a museum', 'private_museum'),
+      ],
       'plane' => [act('Fly somewhere', 'fly_away')],
       'car' => [act('Road trip', 'road_trip')],
       _ => const [],
@@ -612,6 +628,7 @@ IconData _assetIcon(Asset a) => switch (a.kind) {
   'island' => Icons.beach_access_rounded,
   'team' => Icons.sports_soccer_rounded,
   'media' => Icons.newspaper_rounded,
+  'bunker' => Icons.shield_rounded,
   _ => Icons.directions_car_rounded,
 };
 

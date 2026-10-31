@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/community.dart';
+import '../engine/currency.dart';
 import '../engine/world_data.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -90,6 +91,7 @@ class _MoveAbroadScreenState extends State<MoveAbroadScreen> {
                   ],
                   const SizedBox(height: 6),
                   fact('Visa', visaOutlook(odds!)),
+                  fact('Money', currencyLabel(to)),
                   fact('Pay', p.payLabel),
                   fact('Cost of living', p.costLabel),
                   fact('Healthcare', p.healthcare),

@@ -34,6 +34,9 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
 /// The line into the upper echelon, in game dollars (US price level).
 const eliteThreshold = 100000000;
 
+/// The billionaire milestone.
+const billion = 1000000000;
+
 bool upperEchelon(Life l) => l.flags.containsKey('upper_echelon');
 
 /// Roughly how many people in the world are richer than you: a Pareto
@@ -68,7 +71,9 @@ List<String> eliteYear(Life l, Random rng) {
   // Sports teams: a season every year.
   for (final t in l.assets.where((a) => a.kind == 'team')) {
     final big = t.value >= 300000000;
-    final roll = rng.nextInt(100);
+    // Star signings tilt the season; a new stadium lifts the takings.
+    final squad = (t.info['squad'] as int?) ?? 0;
+    final roll = max(0, rng.nextInt(100) - squad);
     final result = roll < 15
         ? 'won the league'
         : roll < 60
@@ -79,7 +84,9 @@ List<String> eliteYear(Life l, Random rng) {
         : roll < 60
         ? (big ? 5000000 : 500000)
         : (big ? -15000000 : -2000000);
-    l.money += income;
+    final gate = t.info['stadium'] == true && income > 0 ? income ~/ 2 : 0;
+    l.money += income + gate;
+    t.info['squad'] = max(0, squad - 4); // stars age and leave
     if (roll < 15) {
       addFame(l, 4);
       l.stats.add('happiness', 5);
@@ -87,7 +94,7 @@ List<String> eliteYear(Life l, Random rng) {
       addImage(l, -4);
     }
     feed.add(
-      'Your ${t.name.toLowerCase()} $result. ${income >= 0 ? 'Profit' : 'Loss'}: ${_m(income.abs())}.',
+      'Your ${t.name.toLowerCase()} $result. ${income + gate >= 0 ? 'Profit' : 'Loss'}: ${_m((income + gate).abs())}.',
     );
   }
   // The longevity clinic and foundation, every year.
@@ -96,7 +103,30 @@ List<String> eliteYear(Life l, Random rng) {
     l.stats.add('karma', 1);
     addImage(l, 2);
   }
+  // Three commas: the billion-dollar milestone.
+  if (l.netWorth >= billion && !l.flags.containsKey('billionaire')) {
+    l.flags['billionaire'] = Memory(l.age, 'becoming a billionaire');
+    l.sceneQueue.add('elite_billion');
+  }
+  // Falling off the list (the stage stays open; the world notices).
+  if (l.netWorth < eliteThreshold ~/ 2 && !l.marks.contains('fallen')) {
+    l.marks.add('fallen');
+    addImage(l, -5);
+    feed.add(
+      'The rich list dropped you. A magazine ran a piece called "Where did it all go?" with your photo.',
+    );
+  } else if (l.netWorth >= eliteThreshold) {
+    l.marks.remove('fallen');
+  }
   final queued = l.sceneQueue.any((s) => s.startsWith('elite_'));
+  if (!queued && l.marks.contains('offshore') && rng.nextInt(100) < 6) {
+    l.sceneQueue.add('elite_leak');
+    return feed;
+  }
+  if (!queued && rng.nextInt(100) < 8) {
+    l.sceneQueue.add('elite_ask');
+    return feed;
+  }
   final roll = rng.nextInt(100);
   if (!queued && !l.marks.contains('security') && roll < 7) {
     l.sceneQueue.add('elite_threat');
@@ -140,15 +170,27 @@ List<(String, int)> eliteCosts(Life l) => [
   if (l.marks.contains('longevity')) ('Longevity clinic', -1000000),
   if (l.marks.contains('foundation'))
     ('Your foundation\'s grants', -foundationGrants(l)),
+  for (final i in l.assets.where((a) => a.info['resort'] == true))
+    ('${i.name} resort', i.value * 6 ~/ 100),
+  if (l.marks.contains('offshore'))
+    ('Offshore structures (tax saved, net of fees)', offshoreNet(l)),
+  if (l.marks.contains('bunker')) ('Bunker caretakers', -200000),
 ];
+
+/// Offshore money earns about 0.8% a year more after fees, before any
+/// leak comes along.
+int offshoreNet(Life l) =>
+    ((l.savings + l.invested + l.portfolioValue) * 0.008).round() - 250000;
+
+/// The foundation's endowment (kept with the music state, which is saved).
+int foundationFund(Life l) => (l.music['foundation'] as int?) ?? 0;
 
 /// A family office costs fees but earns about 1% more on your money.
 int familyOfficeNet(Life l) =>
     ((l.savings + l.invested + l.portfolioValue) * 0.01).round() - 1500000;
 
 /// A foundation gives away 5% of its endowment a year.
-int foundationGrants(Life l) =>
-    (((l.music['foundation'] as int?) ?? 0) * 0.05).round();
+int foundationGrants(Life l) => (foundationFund(l) * 0.05).round();
 
 // ---------------- Scenes ----------------
 
@@ -172,6 +214,130 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
             outcome: 'You lay awake thinking about what all of it could do. The Upper echelon is in Activities now.',
             run: (l, rng) {
               l.stats.add('karma', 3);
+              return null;
+            },
+          ),
+        ],
+      );
+    case 'elite_billion':
+      return _scene(
+        id,
+        'Your family office called before breakfast: on paper, you are now worth more than \$1,000,000,000. Fewer than 4,000 people alive can say that. The business press wants a quote.',
+        [
+          Choice(
+            label: 'Throw a party worthy of it',
+            outcome: 'Fireworks over the water, a famous band, and four hundred guests you half knew. Your name trended for two days.',
+            run: (l, rng) {
+              l.money -= 2000000;
+              addFame(l, 6);
+              l.stats.add('happiness', 10);
+              return null;
+            },
+          ),
+          Choice(
+            label: 'Say nothing and keep working',
+            outcome: 'You declined every interview. That made them write about you more.',
+            run: (l, rng) {
+              l.stats.add('smarts', 2);
+              addImage(l, 4);
+              return null;
+            },
+          ),
+          Choice(
+            label: 'Sign the Giving Pledge',
+            outcome: '',
+            risk: 'Promise to give away at least half your wealth',
+            run: (l, rng) {
+              l.marks.add('pledge');
+              l.stats.add('karma', 10);
+              addImage(l, 15);
+              return 'You signed a public promise to give away most of your fortune. The letter you wrote for it was read on the news.';
+            },
+          ),
+        ],
+      );
+    case 'elite_leak':
+      return _scene(
+        id,
+        'A leak of millions of files from an offshore law firm hit the news this morning. Your name is in them, next to three companies in places you have never visited.',
+        [
+          Choice(
+            label: 'Settle with the tax office',
+            outcome: '',
+            risk: 'Costs about 2% of your net worth',
+            run: (l, rng) {
+              final bill = (l.netWorth * 0.02).round();
+              l.money -= bill;
+              l.marks.remove('offshore');
+              addImage(l, -6);
+              return 'You paid ${_m(bill)} and closed the companies. The story faded within a week.';
+            },
+          ),
+          Choice(
+            label: 'Deny everything',
+            outcome: '',
+            risk: 'Lawyers say it was all legal',
+            run: (l, rng) {
+              if (rng.nextInt(100) < 55) {
+                addImage(l, -4);
+                return 'Your lawyers buried the reporters in letters. It was legal, technically, and the story moved on.';
+              }
+              final fine = (l.netWorth * 0.05).round();
+              l.money -= fine;
+              l.marks.remove('offshore');
+              addImage(l, -20);
+              l.stats.add('happiness', -8);
+              return 'A second leak proved you had lied. The fine was ${_m(fine)}, and the headlines were worse.';
+            },
+          ),
+          Choice(
+            label: 'Bring the money home and apologise',
+            outcome: 'You closed the companies and apologised on camera. Some people respected it.',
+            run: (l, rng) {
+              l.marks.remove('offshore');
+              addImage(l, -2);
+              l.stats.add('karma', 3);
+              return null;
+            },
+          ),
+        ],
+      );
+    case 'elite_ask':
+      final ask = 1000000;
+      return _scene(
+        id,
+        'An old school friend you have not spoken to in twenty years called. Their child is sick, the treatment is abroad, and they asked, ashamed, for ${_m(ask)}.',
+        [
+          Choice(
+            label: 'Pay for everything',
+            outcome: 'The treatment worked. Their child sent you a drawing that you keep on your desk.',
+            needsMoney: ask,
+            run: (l, rng) {
+              l.money -= ask;
+              l.stats.add('karma', 6);
+              l.stats.add('happiness', 5);
+              return null;
+            },
+          ),
+          Choice(
+            label: 'Have your office look into it',
+            outcome: '',
+            risk: 'Might be real, might not',
+            run: (l, rng) {
+              if (rng.nextInt(100) < 50) {
+                l.money -= ask;
+                l.stats.add('karma', 4);
+                return 'It checked out. You paid, quietly, through the foundation.';
+              }
+              l.stats.add('happiness', -3);
+              return 'There was no sick child. It was a scam using your friend\'s name. You trust people a little less now.';
+            },
+          ),
+          Choice(
+            label: 'Say no',
+            outcome: 'You said you could not help. Rich people get these calls every week, you told yourself.',
+            run: (l, rng) {
+              l.stats.add('karma', -3);
               return null;
             },
           ),
@@ -331,6 +497,9 @@ final eliteActions = <GameAction>[
     (l, rng) => ActionResult('You are ${richRank(l)}.', [
       'Net worth ${_m(l.netWorth)}',
       'About 117,000 people in the world are worth over \$100,000,000, and about 3,800 are billionaires',
+      if (foundationFund(l) > 0)
+        'Your foundation holds ${_m(foundationFund(l))}',
+      if (l.marks.contains('pledge')) 'You have signed the Giving Pledge',
     ]),
     repeatable: true,
   ),
@@ -447,7 +616,7 @@ final eliteActions = <GameAction>[
     (l, rng) {
       final gift = (l.netWorth * 0.1).round();
       l.money -= gift;
-      l.music['foundation'] = ((l.music['foundation'] as int?) ?? 0) + gift;
+      l.music['foundation'] = foundationFund(l) + gift;
       l.marks.add('foundation');
       l.stats.add('karma', 10);
       addImage(l, 20);
@@ -600,4 +769,288 @@ final eliteActions = <GameAction>[
         ? 'Needs \$5,000,000 for each child'
         : null,
   ),
+  // ---------------- Using what you own ----------------
+  _buy(
+    'island_retreat',
+    'Host friends on your island',
+    ['island', 'retreat', 'holiday', 'party', 'friends'],
+    'Flights and staff about \$300,000',
+    (l, rng) {
+      final isle = _first(l, 'island')!;
+      l.money -= 300000;
+      l.stats.add('happiness', 8);
+      addFame(l, 1);
+      final guests = l.npcs
+          .where(
+            (p) =>
+                p.alive &&
+                !p.contactCut &&
+                (p.circle == 'Friends' || p.circle == 'Partner'),
+          )
+          .take(4)
+          .toList();
+      for (final g in guests) {
+        g.addFacets(affection: 3);
+      }
+      return ActionResult(
+        'A week on ${isle.name.toLowerCase()}: no phones, long dinners${guests.isEmpty ? '' : ' with ${guests.map((g) => g.name.split(' ').first).join(', ')}'}. The photos leaked anyway.',
+        ['Money −${_m(300000)}', 'Happiness up'],
+      );
+    },
+    cost: 300000,
+    extra: (l) => _first(l, 'island') == null ? 'Needs an island' : null,
+  ),
+  _buy(
+    'island_resort',
+    'Turn your island into a resort',
+    ['island', 'resort', 'hotel', 'tourism'],
+    '\$10,000,000 to build · earns every year',
+    (l, rng) {
+      final isle = _first(l, 'island', (a) => a.info['resort'] != true)!;
+      l.money -= 10000000;
+      isle.info['resort'] = true;
+      isle.value += 8000000;
+      return ActionResult(
+        'Twenty villas on stilts, a spa and a chef poached from Paris. ${isle.name} now takes guests at prices that need no menu.',
+        [
+          'Money −${_m(10000000)}',
+          'Earns about ${_m(isle.value * 6 ~/ 100)} a year',
+        ],
+      );
+    },
+    cost: 10000000,
+    extra: (l) => _first(l, 'island', (a) => a.info['resort'] != true) == null
+        ? 'Needs an island that is not a resort yet'
+        : null,
+  ),
+  _buy(
+    'yacht_party',
+    'Throw a party on your superyacht',
+    ['yacht', 'party', 'cannes', 'monaco', 'celebrities'],
+    'About \$500,000 a night',
+    (l, rng) {
+      l.money -= 500000;
+      addFame(l, 3);
+      l.stats.add('happiness', 6);
+      final where = ['off Monaco', 'off Cannes', 'in St Barts', 'off Capri'];
+      return ActionResult(
+        'Anchored ${where[rng.nextInt(where.length)]}: a DJ on the helipad, film stars on the sundeck and a guest list the gossip pages printed in full.',
+        ['Money −${_m(500000)}', 'Fame up'],
+      );
+    },
+    cost: 500000,
+    extra: (l) => l.assets.any((a) => a.name == 'Superyacht')
+        ? null
+        : 'Needs a superyacht',
+  ),
+  _buy(
+    'sign_star',
+    'Sign a superstar for your team',
+    ['team', 'transfer', 'sign player', 'superstar', 'football'],
+    'From \$20,000,000 · better seasons',
+    (l, rng) {
+      final t = _first(l, 'team')!;
+      final fee = t.value >= 300000000 ? 80000000 : 20000000;
+      l.money -= fee;
+      t.info['squad'] = ((t.info['squad'] as int?) ?? 0) + 12;
+      addFame(l, 2);
+      return ActionResult(
+        'The signing broke the transfer record for the club. Shirts with the new name sold out in an hour.',
+        ['Money −${_m(fee)}', 'Better odds next season'],
+      );
+    },
+    extra: (l) {
+      final t = _first(l, 'team');
+      if (t == null) return 'Needs a sports team';
+      final fee = t.value >= 300000000 ? 80000000 : 20000000;
+      return l.money < fee ? 'Needs ${_m(fee)} in cash' : null;
+    },
+  ),
+  _buy(
+    'new_stadium',
+    'Build your team a new stadium',
+    ['stadium', 'team', 'arena', 'build'],
+    '\$150,000,000 · bigger takings in good years',
+    (l, rng) {
+      final t = _first(l, 'team', (a) => a.info['stadium'] != true)!;
+      l.money -= 150000000;
+      t.info['stadium'] = true;
+      t.value += 120000000;
+      addFame(l, 3);
+      return ActionResult(
+        'Sixty thousand seats, a roof that closes and your name over the gates. The old ground became flats.',
+        ['Money −${_m(150000000)}', 'Team value up'],
+      );
+    },
+    cost: 150000000,
+    extra: (l) => _first(l, 'team', (a) => a.info['stadium'] != true) == null
+        ? 'Needs a team without a new stadium'
+        : null,
+  ),
+  _buy(
+    'paper_campaign',
+    'Have your newspaper back you',
+    ['newspaper', 'editorial', 'media', 'headlines', 'press'],
+    'Free · your editors may resent it',
+    (l, rng) {
+      addImage(l, 8);
+      l.stats.add('karma', -2);
+      return ActionResult(
+        'A week of glowing front pages about your generosity and vision. Two journalists quit and wrote about why.',
+        ['Image up'],
+      );
+    },
+    extra: (l) => l.has('media') ? null : 'Needs a newspaper',
+  ),
+  _buy(
+    'lend_art',
+    'Lend a masterpiece to a museum',
+    ['art', 'museum', 'lend', 'exhibition', 'painting'],
+    'Free · the painting gains prestige',
+    (l, rng) {
+      final art = _masterpieces(l).firstWhere((a) => a.info['lent'] != true);
+      art.info['lent'] = true;
+      art.value = (art.value * 1.1).round();
+      addImage(l, 5);
+      l.stats.add('karma', 2);
+      return ActionResult(
+        'Your ${art.name.toLowerCase()} hung in a national museum with a small card: "Lent by a private collector". Everyone knew.',
+        ['Image up', 'Its value rose'],
+      );
+    },
+    extra: (l) => _masterpieces(l).any((a) => a.info['lent'] != true)
+        ? null
+        : 'Needs a masterpiece you have not lent',
+  ),
+  _buy(
+    'private_museum',
+    'Open your own museum',
+    ['museum', 'art', 'gallery', 'collection', 'legacy'],
+    '\$30,000,000 · needs two masterpieces',
+    (l, rng) {
+      l.money -= 30000000;
+      l.flags['museum'] = Memory(l.age, 'opening a museum');
+      addImage(l, 8);
+      addFame(l, 3);
+      return ActionResult(
+        'A concrete building by a famous architect, free entry on Sundays, and your collection on the walls.',
+        ['Money −${_m(30000000)}', 'Image and fame up'],
+      );
+    },
+    cost: 30000000,
+    extra: (l) => l.flags.containsKey('museum')
+        ? 'Already open'
+        : _masterpieces(l).length < 2
+        ? 'Needs two masterpieces'
+        : null,
+  ),
+  // ---------------- What the ultra-rich buy ----------------
+  _buy(
+    'second_passport',
+    'Buy a second citizenship',
+    ['passport', 'citizenship', 'visa', 'golden visa', 'residency'],
+    '\$2,000,000 · moving abroad gets much easier',
+    (l, rng) {
+      l.money -= 2000000;
+      l.flags['second_passport'] = Memory(l.age, 'a second passport');
+      return ActionResult(
+        'An investment in a small island nation came with a passport. Borders mostly open for you now.',
+        ['Money −${_m(2000000)}', 'Visas far more likely'],
+      );
+    },
+    cost: 2000000,
+    extra: (l) =>
+        l.flags.containsKey('second_passport') ? 'You have one' : null,
+  ),
+  _buy(
+    'bunker',
+    'Build a bunker',
+    ['bunker', 'doomsday', 'shelter', 'new zealand', 'prepper'],
+    '\$15,000,000 · caretakers \$200,000 a year',
+    (l, rng) {
+      l.money -= 15000000;
+      l.marks.add('bunker');
+      l.assets.add(
+        Asset(
+          id: 'bunker${l.age}',
+          kind: 'bunker',
+          name: 'Bunker in New Zealand',
+          value: 12000000,
+          yearlyCost: 0,
+          since: l.age,
+          info: {'dep': 1},
+        ),
+      );
+      l.stats.add('happiness', 2);
+      return ActionResult(
+        'Under a sheep farm: a year of food, filtered air, a cinema and a blast door. You hope never to see it again.',
+        ['Money −${_m(15000000)}'],
+      );
+    },
+    cost: 15000000,
+    extra: (l) => l.marks.contains('bunker') ? 'You have one' : null,
+  ),
+  _buy(
+    'foundation_gala',
+    'Host a charity gala',
+    ['gala', 'charity', 'fundraiser', 'ball', 'foundation'],
+    '\$1,000,000 · raises money for your foundation',
+    (l, rng) {
+      l.money -= 1000000;
+      final raised = (5 + rng.nextInt(16)) * 1000000 + l.fame * 100000;
+      l.music['foundation'] = foundationFund(l) + raised;
+      addFame(l, 2);
+      addImage(l, 3);
+      return ActionResult(
+        'Black tie, a famous auctioneer and a dinner nobody ate. The night raised ${_m(raised)} for your foundation.',
+        ['Money −${_m(1000000)}', 'Foundation +${_m(raised)}'],
+      );
+    },
+    cost: 1000000,
+    extra: (l) =>
+        l.marks.contains('foundation') ? null : 'Needs a foundation first',
+  ),
+  _buy(
+    'offshore',
+    'Move money offshore',
+    ['offshore', 'tax haven', 'shell company', 'tax'],
+    'Saves tax every year · if it leaks, it gets ugly',
+    (l, rng) {
+      l.marks.add('offshore');
+      l.stats.add('karma', -4);
+      return ActionResult(
+        'Your lawyers set up three companies in places with palm trees and no taxes. All legal, they said. Mostly.',
+        ['About 0.8% a year more on savings and investments'],
+      );
+    },
+    extra: (l) => l.marks.contains('offshore') ? 'Already offshore' : null,
+  ),
+  _buy(
+    'giving_pledge',
+    'Sign the Giving Pledge',
+    ['giving pledge', 'philanthropy', 'give away', 'pledge'],
+    'A public promise to give away half your fortune',
+    (l, rng) {
+      l.marks.add('pledge');
+      l.stats.add('karma', 10);
+      addImage(l, 15);
+      return ActionResult(
+        'You joined the list of billionaires who have promised to give most of it away.',
+        ['Image up', 'Karma up'],
+      );
+    },
+    extra: (l) => l.marks.contains('pledge')
+        ? 'You have signed'
+        : l.netWorth < billion
+        ? 'For billionaires'
+        : null,
+  ),
 ];
+
+Asset? _first(Life l, String kind, [bool Function(Asset a)? test]) => l.assets
+    .where((a) => a.kind == kind && (test == null || test(a)))
+    .firstOrNull;
+
+List<Asset> _masterpieces(Life l) => l.assets
+    .where((a) => a.kind == 'valuable' && a.name.startsWith('Masterpiece'))
+    .toList();
