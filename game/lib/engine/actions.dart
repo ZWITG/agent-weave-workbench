@@ -14,6 +14,7 @@ import 'gangs.dart';
 import 'prison_life.dart';
 import 'kin.dart';
 import 'possessions.dart';
+import 'property.dart';
 import 'shopping.dart' show shopAction;
 import 'recap.dart';
 import 'community.dart';
@@ -447,6 +448,7 @@ final allActions = <GameAction>[
   ...careerActions,
   ...financeActions,
   ...homeActions,
+  ...propertyActions,
   ...justiceActions,
   ...healthActions,
   ...identityActions,

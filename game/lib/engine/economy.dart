@@ -4,7 +4,8 @@ import 'actions.dart';
 import 'careers.dart';
 import 'finance.dart';
 import 'health.dart' show healthCosts;
-import 'homes.dart' show homeOf, lettingOf, rentFor;
+import 'homes.dart' show homeOf, lettingOf, letDebtShare;
+import 'property.dart' show lettingsOf, rentIncome;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
 import 'shopping.dart' show subscriptionCost;
@@ -139,8 +140,9 @@ int forecastNextYear(Life life) {
     final b = e.value + (e.value * rateOf(life, e.key)).round();
     total -= _debtPayment(life, e.key, b);
   }
-  final let = lettingOf(life);
-  if (let != null) total += rentFor(let);
+  for (final a in lettingsOf(life)) {
+    total += rentIncome(life, a);
+  }
   for (final c in healthCosts(life)) {
     total += c.$2;
   }
@@ -253,10 +255,12 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash(label, amount);
   }
   if (life.age >= 18) cash('Pet care', -petCosts(life));
-  final let = lettingOf(life);
-  if (let != null) {
-    final late = life.marks.contains('late_rent:${life.age}');
-    cash('Rent from tenants', late ? rentFor(let) ~/ 2 : rentFor(let));
+  final lets = lettingsOf(life);
+  if (lets.isNotEmpty) {
+    cash(
+      lets.length == 1 ? 'Rent from tenants' : 'Rent from ${lets.length} homes',
+      lets.fold(0, (s, a) => s + rentIncome(life, a)),
+    );
   }
   for (final (label, amount) in healthCosts(life)) {
     cash(label, amount);
@@ -417,6 +421,8 @@ ActionResult repay(Life life, String name, int amount) {
 }
 
 ActionResult sellAsset(Life life, Asset a) {
+  // Worked out before the home leaves the list of rentals.
+  final letShare = a.info['let'] == true ? letDebtShare(life, a) : 0;
   life.assets.remove(a);
   switch (a.kind) {
     case 'collectible':
@@ -445,8 +451,15 @@ ActionResult sellAsset(Life life, Asset a) {
       final debt = let ? 'Buy-to-let mortgage' : 'Mortgage';
       if (!let) life.flags.remove('owns_house');
       final fee = (a.value * 0.03).round();
-      final mortgage = life.debts.remove(debt) ?? 0;
-      life.rates.remove(debt);
+      // A rental pays off only its share of the buy-to-let mortgage.
+      final mortgage = let ? letShare : (life.debts[debt] ?? 0);
+      final left = (life.debts[debt] ?? 0) - mortgage;
+      if (left > 0) {
+        life.debts[debt] = left;
+      } else {
+        life.debts.remove(debt);
+        life.rates.remove(debt);
+      }
       final net = a.value - fee - mortgage;
       life.money += net;
       return ActionResult(

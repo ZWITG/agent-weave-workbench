@@ -16,6 +16,7 @@ import '../engine/shopping.dart' show saleOn;
 import 'result_popup.dart';
 import 'wealth_more.dart';
 import '../engine/possessions.dart';
+import '../engine/property.dart';
 import 'widgets.dart';
 
 const _good = Color(0xFF5EE6A8);
@@ -477,7 +478,7 @@ class _WealthTabState extends State<WealthTab> {
         for (final item in List<Map<String, dynamic>>.from(life.items))
           OwnedItemCard(controller: c, item: item),
       ],
-      const HubHeading('Buy'),
+      const HubHeading('Buy and manage'),
       for (final a in shop) ...[
         actionRow(context, c, a, closeSheet: false),
         const SizedBox(height: 8),
@@ -498,7 +499,7 @@ class _WealthTabState extends State<WealthTab> {
         ? () => _homeWork(context, 'Renovation', renovateHome, a)
         : null,
     renovateLabel: 'Renovate (${money(renovationCost(a))})',
-    rent: a.info['let'] == true ? rentFor(a) : null,
+    rent: a.info['let'] == true ? rentIncome(life, a) : null,
   );
 
   void _homeWork(
@@ -518,7 +519,7 @@ class _WealthTabState extends State<WealthTab> {
       'rental' => 'You will move back in with family and stop paying rent.',
       'house' =>
         'It is worth about ${money(a.value)}. A 3% agent fee and any mortgage '
-            '(${money(life.debts[a.info['let'] == true ? 'Buy-to-let mortgage' : 'Mortgage'] ?? 0)}) come out of the sale.',
+            '(${money(a.info['let'] == true ? letDebtShare(life, a) : life.debts['Mortgage'] ?? 0)}) come out of the sale.',
       _ => 'A buyer will pay ${money(a.value)}.',
     };
     final ok = await showDialog<bool>(
@@ -1200,7 +1201,9 @@ class _AssetCard extends StatelessWidget {
                       rental
                           ? 'Renting since age ${a.since}'
                           : rent != null
-                          ? 'Let to tenants · ${money(rent!)} a year'
+                          ? (isVacant(a)
+                                ? 'Empty · no rent coming in'
+                                : 'Let to tenants · ${money(rent!)} a year')
                           : 'Owned since age ${a.since}',
                       style: NF.sora(12, color: NF.muted),
                     ),
@@ -1292,6 +1295,13 @@ String _details(Asset a) {
     if (i['area'] != null) '${i['area']}',
     for (final t in traits) homeTraits[t]?.$1 ?? t,
     if (i['deposit'] != null) 'deposit ${money(i['deposit'] as int)}',
+    if (i['shared'] == true) 'shared with flatmates',
+    if (i['let'] == true) ...[
+      if (tenantOf(a) case final t?)
+        'tenant: ${t['name']} (${tenantKinds[t['kind']]?.label.toLowerCase() ?? 'tenant'})',
+      rentLevels[rentLevelOf(a)]!.$1.toLowerCase(),
+      if (i['agent'] == true) 'letting agent',
+    ],
     if (a.kind == 'car' && (i['dep'] as int? ?? 15) < 0) 'classic: gains value',
     if (a.kind == 'house') ...[
       for (final r in roomsOf(a))

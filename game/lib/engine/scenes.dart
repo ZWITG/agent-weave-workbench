@@ -23,6 +23,7 @@ import 'jobs.dart';
 import 'love.dart';
 import 'models.dart';
 import 'news_impact.dart';
+import 'property.dart';
 import 'school.dart';
 import 'storylet.dart';
 
@@ -74,6 +75,15 @@ Storylet? buildScene(String id, Life life) {
     'biz_tier' ||
     'biz_fund' ||
     'insolvency' => businessScene(parts.first, parts.sublist(1), life),
+    'hunt_purpose' ||
+    'old_home' ||
+    'let_pick' ||
+    'let_trouble' ||
+    'let_list' ||
+    'let_manage' ||
+    'remortgage' ||
+    'landlord_rise' ||
+    'landlord_sells' => propertyScene(parts.first, parts.sublist(1), life),
     'house_hunt' ||
     'house_view' ||
     'bidding' ||

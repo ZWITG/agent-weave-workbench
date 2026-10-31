@@ -26,6 +26,7 @@ import 'package:relivable/engine/meta.dart';
 import 'package:relivable/engine/kin.dart';
 import 'package:relivable/engine/possessions.dart';
 import 'package:relivable/engine/profile.dart';
+import 'package:relivable/engine/property.dart';
 import 'package:relivable/engine/shopping.dart';
 import 'package:relivable/engine/variants.dart';
 import 'package:relivable/engine/recap.dart';
@@ -2463,5 +2464,91 @@ void main() {
       expect(prices.any((p) => p < 100), isTrue, reason: d);
       expect(prices.any((p) => p >= 500), isTrue, reason: d);
     }
+  });
+
+  test('landlords: several rentals, tenants you choose, rent levels', () {
+    final l = engine.newLife(seed: 256)..age = 35;
+    l.money = 5000000;
+    final homes = listings(l);
+    buyListing(l, homes[0], homes[0].price); // a home to live in
+    expect(homeOf(l), isNotNull);
+    // Buy three homes to let.
+    for (var k = 1; k <= 3; k++) {
+      l.marks.add('hunt:${l.age}:let');
+      buyListing(l, homes[k], homes[k].price);
+    }
+    expect(lettingsOf(l).length, 3);
+    final a = lettingsOf(l).first;
+    expect(isVacant(a), isTrue);
+    expect(rentIncome(l, a), 0);
+    // Choose a tenant from the applicants.
+    l.sceneQueue
+      ..clear()
+      ..add('let_pick:${a.id}');
+    var scene = engine.nextScene(l)!;
+    expect(scene.choices.length, 5); // three applicants, an agent, leave empty
+    engine.choose(l, scene, scene.choices.first);
+    expect(isVacant(a), isFalse);
+    expect(rentIncome(l, a), greaterThan(0));
+    // Raising the rent raises the income.
+    final before = rentFor(a);
+    a.info['rentLevel'] = 'high';
+    expect(rentFor(a), greaterThan(before));
+    // A year as a landlord runs without errors and may need decisions.
+    l.age++;
+    propertyYear(l, Random(3));
+    expect(lettingsOf(l).length, 3);
+  });
+
+  test('moving house: sell or let the old one; remortgage', () {
+    final l = engine.newLife(seed: 257)..age = 35;
+    l.job = 'Engineer';
+    l.salary = 60000;
+    final homes = listings(l);
+    l.money = (homes[0].price * 0.4).round();
+    buyListing(l, homes[0], homes[0].price);
+    final first = homeOf(l)!;
+    expect(l.debts['Mortgage'], greaterThan(0));
+    // Equity release: borrow against the home.
+    l.sceneQueue
+      ..clear()
+      ..add('remortgage');
+    final re = engine.nextScene(l);
+    expect(re, isNotNull);
+    // Move to a new home; the old one becomes a rental until you decide.
+    l.money = 5000000;
+    l.marks.add('hunt:${l.age}:move');
+    l.sceneQueue.clear();
+    buyListing(l, homes[1], homes[1].price);
+    expect(homeOf(l), isNot(first));
+    expect(l.sceneQueue.first, 'old_home:${first.id}');
+    final scene = engine.nextScene(l)!;
+    final cash = l.money;
+    engine.choose(l, scene, scene.choices.first); // sell it
+    expect(l.assets.contains(first), isFalse);
+    expect(l.money, greaterThan(cash));
+    expect(l.debts.containsKey('Buy-to-let mortgage'), isFalse);
+  });
+
+  test('renting: six places, flatmates join People, deposits', () {
+    final l = engine.newLife(seed: 258)..age = 22;
+    l.money = 20000;
+    final places = rentalListings(l);
+    expect(places.length, 6);
+    expect(places.any((p) => p.rent <= 8000), isTrue);
+    final shared = places.where((p) => p.shared).firstOrNull;
+    final friends = l.npcs.where((n) => n.role == 'Flatmate').length;
+    if (shared != null) {
+      rentFlat(l, shared, Random(1));
+      expect(l.npcs.where((n) => n.role == 'Flatmate').length, friends + 2);
+    } else {
+      rentFlat(l, places.first, Random(1));
+    }
+    expect(l.has('rental'), isTrue);
+    // Moving to another place returns the deposit (maybe less deductions).
+    final cash = l.money;
+    rentFlat(l, places.last, Random(2));
+    expect(l.assets.where((a) => a.kind == 'rental').length, 1);
+    expect(l.money, isNot(cash));
   });
 }

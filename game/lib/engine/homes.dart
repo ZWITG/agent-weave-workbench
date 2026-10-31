@@ -3,6 +3,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'finance.dart';
 import 'models.dart';
+import 'property.dart';
 import 'storylet.dart';
 
 /// Homes and vehicles (plan Module 7): listings with viewings and surveys
@@ -223,14 +224,47 @@ String? buyLock(Life l, int price) {
   }
   if (loansBlocked(l)) return 'No mortgage for 7 years after bankruptcy';
   if (creditOf(l) < 580) return 'Needs Fair credit (580+) for a mortgage';
-  if (homeOf(l) != null && lettingOf(l) != null) {
-    return 'You already own a home and a rental';
+  if (homeOf(l) != null &&
+      !l.marks.contains('hunt:${l.age}:move') &&
+      lettingsOf(l).length >= maxLets) {
+    return 'You own $maxLets rentals already';
   }
   return null;
 }
 
+/// This rental's part of the buy-to-let mortgage (shared by all lets in
+/// proportion to what each one borrowed).
+int letDebtShare(Life l, Asset a) {
+  final debt = l.debts['Buy-to-let mortgage'] ?? 0;
+  if (debt == 0) return 0;
+  final lets = lettingsOf(l);
+  final total = lets.fold<int>(
+    0,
+    (s, x) => s + ((x.info['loan'] as int?) ?? 0),
+  );
+  if (total == 0) return lets.length <= 1 ? debt : 0;
+  return (debt * ((a.info['loan'] as int?) ?? 0) / total).round();
+}
+
 String buyListing(Life l, Listing h, int price) {
-  final asLet = homeOf(l) != null;
+  final moving = homeOf(l) != null && l.marks.contains('hunt:${l.age}:move');
+  final asLet = homeOf(l) != null && !moving;
+  // Moving: the old home's mortgage becomes a buy-to-let loan until you
+  // decide to sell it or let it out.
+  final old = moving ? homeOf(l) : null;
+  if (old != null) {
+    final owed = l.debts.remove('Mortgage') ?? 0;
+    final rate = l.rates.remove('Mortgage') ?? mortgageRate(l);
+    old.info['let'] = true;
+    old.info['tenant'] = null;
+    old.info['loan'] = owed;
+    if (owed > 0) {
+      l.debts['Buy-to-let mortgage'] =
+          (l.debts['Buy-to-let mortgage'] ?? 0) + owed;
+      l.rates['Buy-to-let mortgage'] = rate + 0.01;
+    }
+    l.sceneQueue.insert(0, 'old_home:${old.id}');
+  }
   final fees = (price * 0.02).round();
   final cash = l.money >= price + fees;
   final deposit = cash
@@ -272,17 +306,29 @@ String buyListing(Life l, Listing h, int price) {
         'pool': h.pool,
         'area': h.area,
         'traits': h.traits,
-        if (asLet) 'let': true,
+        if (asLet) ...{
+          'let': true,
+          'tenant': null,
+          'loan': loan,
+          'rentLevel': 'market',
+        },
       },
     ),
   );
+  if (asLet) l.sceneQueue.insert(0, 'let_pick:${l.assets.last.id}');
   l.stats.add('happiness', asLet ? 3 : 8);
   return '${asLet ? 'You bought a ${h.type.toLowerCase()} in ${h.area} to let out.' : 'You got the keys to a ${h.type.toLowerCase()} in ${h.area}.'} ${cash ? 'You paid ${_m(price)} in cash.' : 'You put down ${_m(deposit)} and took a ${_m(loan)} ${debt.toLowerCase()} at ${(l.rates[debt]! * 100).toStringAsFixed(1)}% over 25 years.'} Fees: ${_m(fees)}.$find${asLet ? ' Tenants will pay about ${_m(rentFor(l.assets.last))} a year.' : ''}';
 }
 
 /// Yearly rent from tenants: about 5% of the home's value.
 int rentFor(Asset a) =>
-    ((a.value * 0.05) * (a.condition < 40 ? 0.7 : 1) / 100).round() * 100;
+    ((a.value *
+                0.05 *
+                (a.condition < 40 ? 0.7 : 1) *
+                rentLevels[rentLevelOf(a)]!.$2) /
+            100)
+        .round() *
+    100;
 
 int repairCost(Asset a) =>
     max(500, ((95 - a.condition) * a.value * 0.0006).round());
@@ -355,24 +401,7 @@ List<String> homeYear(Life l, Random rng) {
       );
     }
   }
-  final let = lettingOf(l);
-  if (let != null && rng.nextInt(100) < 18) {
-    switch (rng.nextInt(3)) {
-      case 0:
-        l.marks.add('late_rent:${l.age}');
-        feed.add('Your tenant paid half the rent late, with a long apology.');
-      case 1:
-        let.condition = max(0, let.condition - 15);
-        l.marks.add('tenant_damage:${l.age}');
-        feed.add(
-          'Your tenant\'s party left a hole in the wall of your ${let.name.toLowerCase()}. Condition ${let.condition}%.',
-        );
-      default:
-        feed.add(
-          'Your tenant sent a photo of the garden they planted. Best tenant ever.',
-        );
-    }
-  }
+  feed.addAll(propertyYear(l, rng));
   return feed;
 }
 
@@ -411,7 +440,8 @@ Storylet? homeScene(String id, List<String> args, Life l) {
   switch (id) {
     case 'house_hunt':
       final list = listings(l);
-      final letting = homeOf(l) != null;
+      final letting =
+          homeOf(l) != null && !l.marks.contains('hunt:${l.age}:move');
       return _scene(
         id,
         '${letting ? 'You are looking for a second home to let out.' : 'You spend a Saturday scrolling listings.'} Six homes are for sale in ${l.city} this year, in a ${l.economy.toLowerCase()} market. Each listing shows what the seller wants you to see; a viewing or a survey shows the rest.',
@@ -536,50 +566,24 @@ Storylet? homeScene(String id, List<String> args, Life l) {
         ],
       );
     case 'flat_hunt':
-      final mod = 100 + (l.worldMods['rent'] ?? 0);
-      final options = [
-        ('Studio in Northgate', 7200, 'Small, cheap, a long bus ride'),
-        ('One-bed flat in the Market Quarter', 9600, 'Close to everything'),
-        ('Two-bed flat in Hillcrest', 14400, 'Leafy, quiet, room for a guest'),
-      ];
+      final renting = l.has('rental');
       return _scene(
         id,
-        'Three flats to rent in ${l.city}. Landlords ask for two months\' rent as a deposit, returned when you move out.',
+        'Six places to rent in ${l.city} this year. Landlords ask for two months\' rent as a deposit${renting ? '; yours comes back when you move out, if they are fair' : ''}.',
         [
-          for (final (name, base, blurb) in options)
-            () {
-              final rent = (base * mod / 100 / 100).round() * 100;
-              final deposit = (rent / 6).round();
-              return Choice(
-                label: '$name · ${_m(rent)} a year',
-                outcome: '',
-                risk: '$blurb · deposit ${_m(deposit)}',
-                needsMoney: deposit,
-                run: (l, rng) {
-                  l.money -= deposit;
-                  l.flags['own_flat'] = Memory(l.age, 'your first flat');
-                  l.assets.add(
-                    Asset(
-                      id: 'flat${l.age}',
-                      kind: 'rental',
-                      name: name.split(' in ').first,
-                      value: 0,
-                      yearlyCost: base,
-                      since: l.age,
-                      info: {
-                        'deposit': deposit,
-                        'area': name.split(' in ').last,
-                      },
-                    ),
-                  );
-                  l.stats.add('happiness', 5);
-                  return 'You signed the lease and moved into the ${name.toLowerCase()}. Deposit ${_m(deposit)}, rent ${_m(rent)} a year.';
-                },
-              );
-            }(),
+          for (final f in rentalListings(l))
+            Choice(
+              label: '${f.name} · ${f.area} · ${_m(f.rent)} a year',
+              outcome: '',
+              risk: '${f.blurb} · deposit ${_m((f.rent / 6).round())}',
+              needsMoney: (f.rent / 6).round(),
+              run: (l, rng) => rentFlat(l, f, rng),
+            ),
           Choice(
-            label: 'Stay where you are',
-            outcome: 'Home sweet (family) home.',
+            label: renting ? 'Stay where you are' : 'Stay at home',
+            outcome: renting
+                ? 'Better the devil you know.'
+                : 'Home sweet (family) home.',
           ),
         ],
       );
@@ -765,27 +769,23 @@ final homeActions = <GameAction>[
     priceNote: 'Six homes for sale this year · deposit from 10%',
     keywords: ['house', 'home', 'mortgage', 'buy', 'property', 'listing'],
     minAge: 21,
-    extraCheck: (l) => homeOf(l) != null && lettingOf(l) != null
-        ? 'You already own a home and a rental'
-        : l.prison != null
-        ? 'Not possible in prison'
-        : null,
+    extraCheck: (l) => l.prison != null ? 'Not possible in prison' : null,
     run: (l, rng) {
-      l.sceneQueue.add('house_hunt');
+      l.sceneQueue.add(homeOf(l) != null ? 'hunt_purpose' : 'house_hunt');
       return ActionResult('You open the property listings.');
     },
   ),
   GameAction(
     id: 'rent_flat',
-    label: 'Rent a flat',
+    label: 'Rent a place',
     category: 'Assets',
-    priceNote: 'Three flats · deposit of two months\' rent',
-    keywords: ['flat', 'apartment', 'rent', 'move out', 'home'],
+    priceNote: 'Six places, from a room in a shared house up',
+    keywords: ['flat', 'apartment', 'rent', 'move out', 'home', 'move'],
     minAge: 18,
-    extraCheck: (l) => l.has('rental')
-        ? 'You already rent a flat'
-        : homeOf(l) != null
+    extraCheck: (l) => homeOf(l) != null
         ? 'You own a home'
+        : l.prison != null
+        ? 'Not possible in prison'
         : null,
     run: (l, rng) {
       l.sceneQueue.add('flat_hunt');
