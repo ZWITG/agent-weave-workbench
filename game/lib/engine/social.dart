@@ -620,7 +620,7 @@ Storylet? socialScene(String id, List<String> args, Life l) {
 final socialActions = <GameAction>[
   GameAction(
     id: 'post_online',
-    label: 'Post on social media',
+    label: 'Your social media',
     category: 'Social media',
     keywords: [
       'post',
@@ -636,9 +636,27 @@ final socialActions = <GameAction>[
     minAge: 13,
     screen: 'social',
     repeatable: true,
-    priceNote: 'Your accounts and the post composer',
+    priceNote: 'Followers, trends, your brand deal and verification',
     run: (l, rng) => ActionResult('You open your apps.'),
   ),
+  for (final p in platforms)
+    GameAction(
+      id: 'post_${p.id}',
+      label: 'Post on ${p.name}',
+      category: 'Social media',
+      keywords: [
+        'post',
+        p.name.toLowerCase(),
+        p.kind.toLowerCase(),
+        'social media',
+      ],
+      minAge: p.minAge,
+      repeatable: true,
+      hint: (l) =>
+          '${p.kind} · ${followersLabel(l.followers[p.id] ?? 0)} followers · best for ${p.best.toLowerCase()}',
+      // The kind of post is picked as an option (variants.dart).
+      run: (l, rng) => post(l, p.id, 'daily', rng),
+    ),
   GameAction(
     id: 'get_verified',
     label: 'Apply to get verified',

@@ -324,6 +324,43 @@ void main() {
     expect(score, inInclusiveRange(0, 1));
   });
 
+  testWidgets('social media and fame are categories in Activities', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    await _tapText(t, 'Swipe up for activities');
+    await t.scrollUntilVisible(
+      find.text('Fame and social media'),
+      200,
+      scrollable: find
+          .ancestor(
+            of: find.text('Look after yourself'),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await _pump(t);
+    expect(find.text('Fame and social media'), findsOneWidget);
+    await _tapText(t, 'Social media');
+    expect(find.text('Post on Vybe'), findsOneWidget);
+    expect(find.text('Post on Hearthcast'), findsOneWidget);
+    // Posting asks what kind of post, right in Activities.
+    await _tapText(t, 'Post on Vybe');
+    expect(find.text('Talent clip'), findsOneWidget);
+    await _tapText(t, 'Talent clip');
+    await _pump(t);
+    expect(c.life!.followers['vybe'], isNotNull);
+    // Let the achievement toasts that the first post unlocks play out.
+    for (var i = 0; i < 12; i++) {
+      await t.pump(const Duration(seconds: 3));
+    }
+  });
+
   testWidgets('a fame badge shows only when you have some fame', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'social.dart';
 
 // Ways to do an activity: how hard, how much to spend, and who to bring.
 // The Activities panel asks before running; a mini-game (if the activity
@@ -106,6 +107,19 @@ String _first(Npc? n) => n?.name.split(' ').first ?? 'them';
 double _s(double? score) => score ?? 0.6;
 
 final actionVariants = <String, List<ActionVariant>>{
+  // Social media: what kind of post, on each platform (social.dart).
+  for (final p in platforms)
+    'post_${p.id}': [
+      for (final t in postTypes)
+        ActionVariant(
+          id: t.id,
+          label: t.label,
+          detail:
+              '${t.blurb}${p.fits.contains(t.id) ? ' · suits ${p.name}' : ''}${t.risk >= 2 ? ' · can backfire' : ''}',
+          check: (l) => postLock(l, p.id, t.id),
+          run: (l, rng, who, score) => post(l, p.id, t.id, rng),
+        ),
+    ],
   'gym': [
     ActionVariant(
       id: 'light',

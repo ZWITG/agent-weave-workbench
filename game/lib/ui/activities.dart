@@ -53,6 +53,11 @@ const activityGroups = <(String, String, List<String>)>[
   ),
   ('People', 'Love, friends and family', ['Love', 'Social', 'Family']),
   (
+    'Fame and social media',
+    'Posts, followers and the spotlight',
+    ['Social media', 'Fame'],
+  ),
+  (
     'Work and money',
     'Learn, earn, save and buy',
     ['School', 'Work', 'Money', 'Assets', 'Licences'],
@@ -74,6 +79,8 @@ const categoryBlurbs = <String, String>{
   'Money': 'Banking, saving, borrowing and investing.',
   'Love': 'Dating, romance and your partner.',
   'Social': 'Going out, friends and being seen.',
+  'Social media': 'Post on each platform. Fame gets your posts seen; a good image gets them shared.',
+  'Fame': 'Talk shows, red carpets, fans and feuds. Needs some fame first.',
   'Hobbies': 'Make things, play and practise.',
   'Travel': 'Holidays, weekends away and moving abroad.',
   'Assets': 'Homes, cars and the things you own.',
