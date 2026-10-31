@@ -35,6 +35,7 @@ import 'package:relivable/engine/recap.dart';
 import 'package:relivable/engine/engine.dart';
 import 'package:relivable/engine/jobs.dart';
 import 'package:relivable/engine/models.dart';
+import 'package:relivable/engine/music.dart';
 import 'package:relivable/engine/news_impact.dart';
 import 'package:relivable/engine/npc_life.dart';
 import 'package:relivable/engine/odds.dart';
@@ -2756,4 +2757,85 @@ void main() {
     final verify = allActions.firstWhere((a) => a.id == 'get_verified');
     expect(verify.category, 'Social media');
   });
+
+  test(
+    'music: a quiet hobby, then Road to the Underground, then the big time',
+    () {
+      final l = engine.newLife(seed: 263)..age = 20;
+      l.stats.values['creativity'] = 95;
+      l.flags['instrument'] = Memory(15, 'guitar');
+      final write = allActions.firstWhere((a) => a.id == 'write_song');
+      final single = allActions.firstWhere((a) => a.id == 'release_single');
+      final pop = variantsFor('write_song').firstWhere((v) => v.id == 'pop');
+      // It starts as a hobby: the Music category is closed.
+      expect(write.category, 'Hobbies');
+      expect(musicUnlocked(l), isFalse);
+      for (var i = 0; i < 3; i++) {
+        engine.runAction(l, write, score: 1, variant: pop);
+      }
+      expect(unreleased(l).length, 3);
+      void releaseOne(int how) {
+        engine.runAction(l, single);
+        var scene = engine.nextScene(l)!;
+        expect(scene.id, 'scene:release_pick');
+        engine.choose(l, scene, scene.choices.first);
+        scene = engine.nextScene(l)!;
+        engine.choose(l, scene, scene.choices[how]);
+      }
+
+      releaseOne(0); // at home
+      expect(musicUnlocked(l), isFalse);
+      l.age++;
+      l.usedActions.clear();
+      l.energy = 10;
+      l.money = 50000;
+      releaseOne(1); // in a studio
+      // Three written, two released: the chapter opens.
+      expect(musicUnlocked(l), isTrue);
+      expect(l.sceneQueue, contains('underground_intro'));
+      final intro = engine.nextScene(l)!;
+      engine.choose(l, intro, intro.choices.first);
+      expect(roadProgress(l), contains('studio'));
+      // The chapter's small tasks.
+      for (final id in ['play_gig', 'jam_session', 'sell_merch']) {
+        engine.runAction(l, allActions.firstWhere((a) => a.id == id));
+      }
+      expect(roadProgress(l), containsAll(['open_mic', 'jam', 'merch']));
+      l.songs.first['streams'] = 30000;
+      roadCheck(l, Random(1));
+      expect(roadDone(l), isTrue);
+      expect(l.flags.containsKey('underground'), isTrue);
+      // Now the big time: an album with an audience charts and labels call.
+      l.age++;
+      l.usedActions.clear();
+      l.energy = 10;
+      for (var i = 0; i < 3; i++) {
+        engine.runAction(l, write, score: 1, variant: pop);
+      }
+      l.age++;
+      l.usedActions.clear();
+      l.energy = 10;
+      for (var i = 0; i < 3; i++) {
+        engine.runAction(l, write, score: 1, variant: pop);
+      }
+      l.fame = 60;
+      l.followers['vybe'] = 2000000;
+      engine.runAction(
+        l,
+        allActions.firstWhere((a) => a.id == 'release_album'),
+      );
+      final album = engine.nextScene(l)!;
+      expect(album.id, 'scene:album_how');
+      engine.choose(l, album, album.choices.first);
+      expect(released(l).any((s) => (s['best'] as int) > 0), isTrue);
+      expect(knownFor(l), contains('your music'));
+      expect(l.sceneQueue, contains('label_offer'));
+      // Royalties each birthday, fading streams, and a tour.
+      final rate = released(l).last['rate'] as int;
+      expect(musicRoyalties(l), greaterThan(0));
+      expect(released(l).last['rate'] as int, lessThan(rate));
+      final tour = allActions.firstWhere((a) => a.id == 'go_on_tour');
+      expect(tour.lockReason(l), isNull);
+    },
+  );
 }

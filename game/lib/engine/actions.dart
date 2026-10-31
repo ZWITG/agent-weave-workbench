@@ -22,6 +22,7 @@ import 'identity.dart';
 import 'pets.dart';
 import 'social.dart';
 import 'celebrity.dart';
+import 'music.dart';
 import 'jobs.dart';
 import 'justice.dart';
 import 'love.dart';
@@ -459,6 +460,7 @@ final allActions = <GameAction>[
   ...communityActions,
   ...socialActions,
   ...celebrityActions,
+  ...musicActions,
   ...petActions,
   ...heistActions,
   ...recapActions,

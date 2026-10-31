@@ -5,6 +5,7 @@ import 'careers.dart' show careerById;
 import 'family.dart' show childrenOf;
 import 'friends.dart';
 import 'models.dart';
+import 'music.dart' show listenersOf;
 import 'social.dart' show maxFollowers, followersLabel;
 import 'storylet.dart';
 
@@ -114,6 +115,7 @@ List<String> knownFor(Life l) {
     if (l.business != null && l.netWorth >= 1000000) 'your business',
     if (l.record.any((r) => r['band'] == 'severe' || r['band'] == 'serious'))
       'your criminal past',
+    if (listenersOf(l) >= 10000 || l.flags.containsKey('charted')) 'your music',
     if (l.marks.contains('memoir')) 'your memoir',
     if (l.marks.any((m) => m.startsWith('feud:'))) 'your feuds',
     if (l.stats['karma'] >= 85 && l.fame >= 20) 'your charity work',
@@ -290,7 +292,9 @@ Storylet? celebrityScene(String id, List<String> args, Life l) {
       );
     case 'fame_award':
       final c = careerById(l.careerId);
-      final what = c != null && c.special
+      final what = l.flags.containsKey('charted')
+          ? 'Best New Artist, for your music'
+          : c != null && c.special
           ? 'Best newcomer for your work as ${l.job ?? 'an artist'}'
           : maxFollowers(l) >= 100000
           ? 'Creator of the Year'

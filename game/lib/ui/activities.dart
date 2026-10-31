@@ -4,6 +4,7 @@ import '../engine/actions.dart';
 import '../engine/odds.dart';
 import '../engine/profile.dart';
 import '../engine/models.dart';
+import '../engine/music.dart';
 import '../engine/relationships.dart';
 import '../engine/variants.dart';
 import '../game_controller.dart';
@@ -26,6 +27,7 @@ const activityCategories = <(String, IconData)>[
   ('Money', Icons.savings_rounded),
   ('Love', Icons.favorite_rounded),
   ('Social', Icons.celebration_rounded),
+  ('Music', Icons.music_note_rounded),
   ('Social media', Icons.phone_iphone_rounded),
   ('Fame', Icons.star_rounded),
   ('Hobbies', Icons.palette_rounded),
@@ -53,9 +55,9 @@ const activityGroups = <(String, String, List<String>)>[
   ),
   ('People', 'Love, friends and family', ['Love', 'Social', 'Family']),
   (
-    'Fame and social media',
-    'Posts, followers and the spotlight',
-    ['Social media', 'Fame'],
+    'Music, fame and social media',
+    'Songs, posts, followers and the spotlight',
+    ['Music', 'Social media', 'Fame'],
   ),
   (
     'Work and money',
@@ -79,6 +81,7 @@ const categoryBlurbs = <String, String>{
   'Money': 'Banking, saving, borrowing and investing.',
   'Love': 'Dating, romance and your partner.',
   'Social': 'Going out, friends and being seen.',
+  'Music': 'Write songs, release them, and earn from streams for years. A hit makes you famous.',
   'Social media': 'Post on each platform. Fame gets your posts seen; a good image gets them shared.',
   'Fame': 'Talk shows, red carpets, fans and feuds. Needs some fame first.',
   'Hobbies': 'Make things, play and practise.',
@@ -144,6 +147,8 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   /// Every activity, minus those hidden by the content filters.
   List<GameAction> get _actions => c.engine!.actions
       .where((a) => !filteredOut(c.profile, a.category, a.id))
+      // Music stays out of sight until Road to the Underground opens it.
+      .where((a) => a.category != 'Music' || musicUnlocked(life))
       .toList();
 
   List<GameAction> _in(String cat) =>
@@ -411,7 +416,13 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   Widget _categoryTile(String cat, IconData icon) {
     final all = _in(cat);
     final open = all.where(_open).length;
-    final label = open == 0 ? _earliestUnlock(all) : '$open to do';
+    // A chapter in progress is flagged on its category.
+    final chapter = cat == 'Music' && musicUnlocked(life) && !roadDone(life);
+    final label = chapter
+        ? 'New chapter'
+        : open == 0
+        ? _earliestUnlock(all)
+        : '$open to do';
     return Semantics(
       button: true,
       label: '$cat, $label',
@@ -445,7 +456,15 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
                 const SizedBox(height: 2),
                 Text(
                   label,
-                  style: NF.sora(11, color: open == 0 ? NF.muted : NF.blue),
+                  style: NF.sora(
+                    11,
+                    weight: chapter ? FontWeight.w700 : FontWeight.w400,
+                    color: chapter
+                        ? NF.orange
+                        : open == 0
+                        ? NF.muted
+                        : NF.blue,
+                  ),
                 ),
               ],
             ),

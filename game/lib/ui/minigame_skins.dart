@@ -215,7 +215,8 @@ const _skins = <String, MiniSkin>{
   ),
 };
 
-MiniSkin skinFor(String? activity) => _skins[activity] ?? _plainSkin;
+MiniSkin skinFor(String? activity) =>
+    _skins[activity == 'write_song' ? 'instrument' : activity] ?? _plainSkin;
 
 class _SkinScope extends InheritedWidget {
   const _SkinScope({required this.skin, required super.child});

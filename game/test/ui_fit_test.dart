@@ -335,7 +335,7 @@ void main() {
     await _pump(t);
     await _tapText(t, 'Swipe up for activities');
     await t.scrollUntilVisible(
-      find.text('Fame and social media'),
+      find.text('Music, fame and social media'),
       200,
       scrollable: find
           .ancestor(
@@ -345,7 +345,7 @@ void main() {
           .first,
     );
     await _pump(t);
-    expect(find.text('Fame and social media'), findsOneWidget);
+    expect(find.text('Music, fame and social media'), findsOneWidget);
     await _tapText(t, 'Social media');
     expect(find.text('Post on Vybe'), findsOneWidget);
     expect(find.text('Post on Hearthcast'), findsOneWidget);

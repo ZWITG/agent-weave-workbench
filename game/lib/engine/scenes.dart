@@ -17,6 +17,7 @@ import 'prison_life.dart';
 import 'social.dart';
 import 'celebrity.dart';
 import 'country_life.dart';
+import 'music.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -138,6 +139,11 @@ Storylet? buildScene(String id, Life life) {
     'brand_deal' ||
     'scandal' ||
     'comeback' => socialScene(parts.first, parts.sublist(1), life),
+    'release_pick' ||
+    'release_how' ||
+    'album_how' ||
+    'label_offer' ||
+    'underground_intro' => musicScene(parts.first, parts.sublist(1), life),
     'draft' => countryScene(parts.first, parts.sublist(1), life),
     'fame_rumour' ||
     'fame_stalker' ||

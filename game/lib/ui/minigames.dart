@@ -55,6 +55,7 @@ const miniPools = <String, List<String>>{
   'yoga': ['balance', 'breath', 'timing'],
   'casino': ['blackjack', 'cards'],
   'instrument': ['rhythm', 'memory'],
+  'write_song': ['rhythm', 'memory'],
   'write_story': ['words', 'memory'],
   'video_games': ['whack', 'lanes', 'reaction'],
   'driving_lessons': ['lanes', 'reaction'],
@@ -108,6 +109,10 @@ const _intros = <String, Map<String, String>>{
   'casino': {
     'blackjack': 'Blackjack: three hands against the dealer. Get closer to 21 without going over.',
     'cards': 'Higher or lower: five cards. A streak pays best.',
+  },
+  'write_song': {
+    'rhythm': 'Find the groove: tap each part as it lights up, on the beat.',
+    'memory': 'Remember the song\'s structure, then play it back. Each round adds a part.',
   },
   'instrument': {
     'rhythm': 'Play along: tap each pad as it lights up, on the beat. The song speeds up.',
@@ -227,6 +232,11 @@ final miniThemes = <String, MiniTheme>{
   'instrument': _t(
     'Listen to the melody, then play the notes back in order.',
     pads: ['C', 'E', 'G', 'B'],
+    stat: 'creativity',
+  ),
+  'write_song': _t(
+    'Find the groove: tap each part as it lights up, on the beat.',
+    pads: ['Verse', 'Chorus', 'Bridge', 'Hook'],
     stat: 'creativity',
   ),
   'driving_lessons': _t(

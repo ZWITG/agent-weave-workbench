@@ -815,6 +815,13 @@ class Life {
   /// years left and how they were paid for.
   final List<Map<String, dynamic>> items = [];
 
+  /// Songs you wrote (music.dart): title, genre, quality, age, released,
+  /// streams so far, best chart place.
+  final List<Map<String, dynamic>> songs = [];
+
+  /// Your music career: label, advance, albums, tours (music.dart).
+  final Map<String, dynamic> music = {};
+
   /// Active subscription ids, renewed each birthday.
   final List<String> subs = [];
 
@@ -1072,6 +1079,8 @@ class Life {
     'verified': verified,
     'posts': posts,
     'items': items,
+    'songs': songs,
+    'music': music,
     'subs': subs,
     'deal': deal,
     'cancelledUntil': cancelledUntil,
@@ -1239,6 +1248,11 @@ class Life {
         for (final i in (j['items'] as List?) ?? const [])
           Map<String, dynamic>.from(i),
       ])
+      ..songs.addAll([
+        for (final s in (j['songs'] as List?) ?? const [])
+          Map<String, dynamic>.from(s),
+      ])
+      ..music.addAll(Map<String, dynamic>.from(j['music'] ?? const {}))
       ..subs.addAll(List<String>.from(j['subs'] ?? const []))
       ..deal = j['deal'] == null ? null : Map<String, dynamic>.from(j['deal'])
       ..cancelledUntil = j['cancelledUntil']

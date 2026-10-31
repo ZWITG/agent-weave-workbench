@@ -13,6 +13,7 @@ import 'pets.dart';
 import 'social.dart';
 import 'celebrity.dart';
 import 'country_life.dart';
+import 'music.dart';
 import 'community.dart';
 import 'identity.dart';
 import 'justice.dart';
@@ -318,6 +319,7 @@ class GameEngine {
       ...fameYear(life, _rngFor(life, 101)),
       ...celebrityYear(life, _rngFor(life, 103)),
       ...countryYear(life, _rngFor(life, 107)),
+      ...musicYear(life, _rngFor(life, 109)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
       ?historyClass(life, world, _rngFor(life, 97)),

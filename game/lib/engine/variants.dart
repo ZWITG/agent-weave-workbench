@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'models.dart';
+import 'music.dart';
 import 'social.dart';
 
 // Ways to do an activity: how hard, how much to spend, and who to bring.
@@ -107,6 +108,26 @@ String _first(Npc? n) => n?.name.split(' ').first ?? 'them';
 double _s(double? score) => score ?? 0.6;
 
 final actionVariants = <String, List<ActionVariant>>{
+  // Music: the genre of the song you write (music.dart).
+  'write_song': [
+    for (final g in genres.entries)
+      ActionVariant(
+        id: g.key,
+        label: g.value,
+        detail: g.key == 'pop'
+            ? 'Catchy, crowded, huge when it hits'
+            : g.key == 'rock'
+            ? 'Guitars and loyal fans'
+            : g.key == 'hiphop'
+            ? 'Words that matter, beats that hit'
+            : g.key == 'ballad'
+            ? 'Slow, sad and unforgettable'
+            : g.key == 'electronic'
+            ? 'Made for festivals and late nights'
+            : 'Honest songs with an acoustic guitar',
+        run: (l, rng, who, score) => writeSong(l, rng, g.key, score),
+      ),
+  ],
   // Social media: what kind of post, on each platform (social.dart).
   for (final p in platforms)
     'post_${p.id}': [
