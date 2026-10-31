@@ -7,6 +7,7 @@ import '../engine/models.dart';
 import '../engine/relationships.dart';
 import '../engine/variants.dart';
 import '../game_controller.dart';
+import '../sound.dart';
 import '../theme.dart';
 import 'minigames.dart';
 import 'newspaper.dart';
@@ -662,7 +663,12 @@ class OptionRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          onTap: locked ? null : onTap,
+          onTap: locked || onTap == null
+              ? null
+              : () {
+                  Sound.instance.tap();
+                  onTap!();
+                },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(

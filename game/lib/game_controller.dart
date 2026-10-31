@@ -392,7 +392,11 @@ class GameController extends ChangeNotifier {
       return;
     }
     lastOutcome = engine!.choose(life!, pendingEvent!, choice);
-    Sound.instance.outcome(lastOutcome!.tone);
+    Sound.instance.outcome(
+      lastOutcome!.tone,
+      text: lastOutcome!.text,
+      money: lastOutcome!.moneyDelta,
+    );
     pendingEvent = null;
     _meta(['choice']);
     _save();

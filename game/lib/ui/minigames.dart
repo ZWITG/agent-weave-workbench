@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../engine/models.dart';
+import '../sound.dart';
 import '../theme.dart';
 
 part 'minigame_skins.dart';
@@ -393,14 +394,28 @@ class _MiniGameScreen extends StatelessWidget {
 }
 
 /// Shows the score and a Continue button once a game ends.
-class _Done extends StatelessWidget {
+class _Done extends StatefulWidget {
   const _Done({required this.score, required this.line, required this.onDone});
   final double score;
   final String line;
   final void Function(double) onDone;
 
   @override
+  State<_Done> createState() => _DoneState();
+}
+
+class _DoneState extends State<_Done> {
+  @override
+  void initState() {
+    super.initState();
+    Sound.instance.gameOver(widget.score);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final score = widget.score;
+    final line = widget.line;
+    final onDone = widget.onDone;
     final pct = (score * 100).round();
     final color = score >= 0.7
         ? _skinOf(context).zone
@@ -461,6 +476,7 @@ class _RepsGameState extends State<_RepsGame> {
         setState(() => _over = true);
       }
     });
+    Sound.instance.tick();
     setState(() => _taps++);
   }
 
@@ -822,6 +838,7 @@ class _TimingGameState extends State<_TimingGame>
     _c.stop();
     final v = _c.value;
     final hit = v >= _zoneStart && v <= _zoneStart + _zone;
+    hit ? Sound.instance.hit() : Sound.instance.miss();
     setState(() {
       if (hit) _hits++;
       _msg = hit ? 'In the window!' : 'Missed.';
@@ -959,6 +976,7 @@ class _CardsGameState extends State<_CardsGame> {
   void _guess(bool higher) {
     final next = 1 + _rng.nextInt(13);
     final win = next == _card || (higher ? next > _card : next < _card);
+    win ? Sound.instance.hit() : Sound.instance.miss();
     setState(() {
       if (win) {
         _wins++;
@@ -1095,9 +1113,11 @@ class _ReactionGameState extends State<_ReactionGame> {
     _t?.cancel();
     double s;
     if (_light != 'green') {
+      Sound.instance.miss();
       s = 0;
       _line = 'False start!';
     } else {
+      Sound.instance.hit();
       final ms = DateTime.now().difference(_greenAt!).inMilliseconds;
       s = ((900 + widget.bonusMs - ms) / 600).clamp(0.0, 1.0);
       _line = '$ms ms';
@@ -1245,9 +1265,11 @@ class _MemoryGameState extends State<_MemoryGame> {
   void _press(int i) {
     if (_showing || _score != null) return;
     if (_seq[_pos] != i) {
+      Sound.instance.miss();
       setState(() => _score = _cleared / (_top - _start + 1));
       return;
     }
+    Sound.instance.tick();
     setState(() => _pos++);
     if (_pos < _seq.length) return;
     _cleared++;

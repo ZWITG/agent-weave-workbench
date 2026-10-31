@@ -454,6 +454,7 @@ class _ShopScreenState extends State<ShopScreen> {
       r,
       title: to == null ? i.name : 'A gift for ${to.name.split(' ').first}',
       icon: _deptIcons[i.dept]!,
+      cue: 'purchase',
     );
   }
 

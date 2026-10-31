@@ -9,6 +9,7 @@ import '../engine/celebrity.dart';
 import '../engine/models.dart';
 import '../engine/storylet.dart';
 import '../game_controller.dart';
+import '../sound.dart';
 import '../theme.dart';
 import 'activities.dart';
 import 'hub_kit.dart';
@@ -248,6 +249,7 @@ class _HubScreenState extends State<HubScreen> {
 
   /// Opens the Activities panel (swipe up on the bottom bar, or tap it).
   void _openSearch(BuildContext context, {bool focusSearch = false}) {
+    Sound.instance.whoosh();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -609,6 +611,7 @@ class _BottomBar extends StatelessWidget {
                               ),
                               title: 'Age ${controller.life!.age}: big news',
                               icon: Icons.campaign_rounded,
+                              cue: 'news',
                             );
                           },
                     child: Text(

@@ -16,6 +16,7 @@ Future<void> showResultPopup(
   ActionResult r, {
   required String title,
   IconData icon = Icons.auto_awesome_rounded,
+  String? cue,
 }) {
   final chips = <(String, bool, Color)>[];
   final info = <String>[];
@@ -43,7 +44,23 @@ Future<void> showResultPopup(
       : downs > 0 || setback
       ? 'bad'
       : 'neutral';
-  Sound.instance.outcome(tone);
+  if (cue != null) {
+    Sound.instance.cue(cue);
+  } else {
+    var money = 0;
+    for (final n in r.notes) {
+      final m = RegExp(r'^Money ([+−-])\$([\d,]+)').firstMatch(n);
+      if (m != null) {
+        final v = int.parse(m.group(2)!.replaceAll(',', ''));
+        money += m.group(1) == '+' ? v : -v;
+      }
+    }
+    Sound.instance.outcome(
+      tone,
+      text: [r.text, ...r.notes].join(' '),
+      money: money,
+    );
+  }
 
   return showGeneralDialog(
     context: context,

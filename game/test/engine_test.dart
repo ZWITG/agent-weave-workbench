@@ -44,6 +44,7 @@ import 'package:relivable/engine/school.dart';
 import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/world.dart';
 import 'package:relivable/engine/world_data.dart';
+import 'package:relivable/sound.dart';
 
 /// Price from a listing label like "Flat · Old Town · $180,000".
 int listingPrice(String label) =>
@@ -2670,7 +2671,7 @@ void main() {
       expect(livingCost(l), lessThan(usCost));
       // Gambling is banned for citizens in Egypt; the casino says so.
       final casino = allActions.firstWhere((a) => a.id == 'casino');
-    l.money = 10000;
+      l.money = 10000;
       l.country = 'Egypt';
       expect(casino.lockReason(l), contains('illegal'));
       l.country = 'United States';
@@ -2692,4 +2693,46 @@ void main() {
       expect(countryProfile('Germany').tuition, 0);
     },
   );
+
+  test('sounds match what happened, and every cue has a file', () {
+    expect(Sound.cueFor('Blue lights fill the street.'), 'siren');
+    expect(Sound.cueFor('Your grandmother died at 91.'), 'sad');
+    expect(Sound.cueFor('A baby girl was born.'), 'celebrate');
+    expect(Sound.cueFor('You were promoted to manager.'), 'promote');
+    expect(Sound.cueFor('You got the keys to a flat.'), 'keys');
+    expect(Sound.cueFor('It went viral.'), 'cheer');
+    expect(Sound.cueFor('Nothing much happened.', money: 5000), 'coin');
+    expect(Sound.cueFor('Nothing much happened.', money: -5000), 'spend');
+    expect(Sound.cueFor('Nothing much happened.'), isNull);
+    for (final name in [
+      'siren',
+      'sad',
+      'celebrate',
+      'promote',
+      'keys',
+      'cheer',
+      'heartbeat',
+      'coin',
+      'spend',
+      'purchase',
+      'news',
+      'whoosh',
+      'hit',
+      'miss',
+      'tick',
+      'win',
+      'lose',
+      'tap',
+      'age_up',
+      'good',
+      'bad',
+      'neutral',
+    ]) {
+      expect(
+        File('assets/sounds/$name.wav').existsSync(),
+        isTrue,
+        reason: name,
+      );
+    }
+  });
 }

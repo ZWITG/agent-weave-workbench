@@ -100,6 +100,7 @@ class _SneakGameState extends State<_SneakGame> with _Ticking {
       if (_watching) _seen += dt;
     }
     if (_seen > 0.25 + widget.ease * 0.15) {
+      Sound.instance.miss();
       _end(_pos * 0.4, 'The guard saw you move.');
     } else if (_pos >= 1) {
       _end((1.6 - elapsed / 12).clamp(0.6, 1.0), 'Clean. Nobody saw a thing.');
@@ -217,7 +218,10 @@ class _BalanceGameState extends State<_BalanceGame> with _Ticking {
     }
   }
 
-  void _nudge(double d) => _push = d * 22;
+  void _nudge(double d) {
+    Sound.instance.tick();
+    _push = d * 22;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -355,6 +359,7 @@ class _BreathGameState extends State<_BreathGame> with _Ticking {
     final miss = (_r - _target).abs();
     final s = (1 - miss / (0.18 + widget.ease * 0.06)).clamp(0.0, 1.0);
     _scores.add(s);
+    s > 0.6 ? Sound.instance.hit() : Sound.instance.miss();
     _msg = s > 0.8
         ? 'Perfect breath.'
         : s > 0.4
@@ -472,6 +477,7 @@ class _BlackjackGameState extends State<_BlackjackGame> {
   }
 
   void _hit() => setState(() {
+    Sound.instance.tick();
     _you.add(_card());
     if (total(_you) > 21) _settle();
   });
@@ -612,6 +618,7 @@ class _LanesGameState extends State<_LanesGame> with _Ticking {
     }
     _things.removeWhere((t) {
       if (t.$2 >= 0.86 && t.$2 < 0.96 && t.$1 == _lane) {
+        Sound.instance.miss();
         _hits++;
         return true;
       }
@@ -782,6 +789,7 @@ class _WhackGameState extends State<_WhackGame> with _Ticking {
   void _tap(int i) {
     final v = _up.remove(i);
     if (v == null) return;
+    v.$1 ? Sound.instance.miss() : Sound.instance.hit();
     setState(() => v.$1 ? _bad++ : _hit++);
   }
 
@@ -888,7 +896,12 @@ class _RhythmGameState extends State<_RhythmGame> with _Ticking {
     if (_beat < 0 || _beat >= _notes || _tapped) return;
     setState(() {
       _tapped = true;
-      if (_song[_beat] == i) _onBeat++;
+      if (_song[_beat] == i) {
+        _onBeat++;
+        Sound.instance.hit();
+      } else {
+        Sound.instance.miss();
+      }
     });
   }
 
@@ -1004,7 +1017,12 @@ class _WordsGameState extends State<_WordsGame> with _Ticking {
       _typed.add(k);
       if (_typed.length == _tiles.length) {
         final word = [for (final t in _typed) _tiles[t].$2].join();
-        if (word == _picks[_i].toUpperCase()) _solved++;
+        if (word == _picks[_i].toUpperCase()) {
+          _solved++;
+          Sound.instance.hit();
+        } else {
+          Sound.instance.miss();
+        }
         _advance();
       }
     });
