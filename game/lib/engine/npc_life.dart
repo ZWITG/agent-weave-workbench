@@ -255,9 +255,14 @@ List<FeedEntry> npcUpdates(Life life, Random rng) {
         .replaceAll('{country}', countries[rng.nextInt(countries.length)].name)
         .replaceAll('{job}', _jobs[rng.nextInt(_jobs.length)]);
     if (u.once) n.done.add(u.id);
-    n.news.add('Age ${life.age}: $text');
+    // Inside, news comes by letter or at visiting time: drop the bits that
+    // have you there in person.
+    final heard = life.prison == null
+        ? text
+        : '${text.split('. ').first.replaceAll(RegExp(r'\.$'), '')}. You heard about it at visiting time.';
+    n.news.add('Age ${life.age}: $heard');
     if (n.news.length > 5) n.news.removeAt(0);
-    out.add(FeedEntry(life.age, text, kind: 'npc', who: n.name));
+    out.add(FeedEntry(life.age, heard, kind: 'npc', who: n.name));
   }
   return out;
 }

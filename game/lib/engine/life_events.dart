@@ -482,6 +482,42 @@ Storylet? lifeEventScene(String id, List<String> args, Life l) {
       final c = l.npc(args.join(':'));
       if (c == null || !c.alive) return null;
       final who = _first(c);
+      // From prison you hear about it, and choose how to be part of it.
+      if (l.prison != null) {
+        return _scene(
+          'child_wedding',
+          'A letter from $who: they are getting married in the spring, and you will be inside.',
+          [
+            Choice(
+              label: 'Write a speech for someone to read',
+              outcome: '',
+              run: (l, rng) {
+                c.addFacets(affection: 8);
+                return 'Your speech was read out after the first dance. $who wrote to say half the room cried.';
+              },
+            ),
+            Choice(
+              label: 'Send money for the wedding (${_m(5000)})',
+              outcome: '',
+              needsMoney: 5000,
+              run: (l, rng) {
+                l.money -= 5000;
+                c.addFacets(affection: 6, trust: 4);
+                return 'You sent what you could. $who sent back a photo of the cake you paid for.';
+              },
+            ),
+            Choice(
+              label: 'Say sorry for not being there',
+              outcome: '',
+              run: (l, rng) {
+                c.addFacets(affection: 3);
+                l.stats.add('happiness', -4);
+                return 'You wrote the hardest letter of your life. $who said they understood. You are not sure they did.';
+              },
+            ),
+          ],
+        );
+      }
       return _scene(
         'child_wedding',
         '$who is getting married! The invitations are out and $who asks, a bit shyly, how involved you want to be.',
@@ -536,6 +572,46 @@ Storylet? lifeEventScene(String id, List<String> args, Life l) {
       if (g == null || !g.alive) return null;
       final parent = l.npc('${g.info['parent'] ?? ''}');
       final who = _first(g);
+      if (l.prison != null) {
+        return _scene(
+          'grandchild',
+          'A photo arrives in the post: $who, your new grandchild, wrapped in a hospital blanket. You pin it to the wall of your cell.',
+          [
+            Choice(
+              label: 'Ask for a family visit',
+              outcome: '',
+              run: (l, rng) {
+                if (rng.nextInt(100) < 60) {
+                  g.addFacets(affection: 6);
+                  parent?.addFacets(affection: 6);
+                  return 'They brought $who to the visiting room. You held a baby across a plastic table, and a guard pretended not to see you cry.';
+                }
+                parent?.addFacets(affection: -2);
+                return '${parent == null ? 'The family' : _first(parent)} said a prison is no place for a baby. Maybe next year.';
+              },
+            ),
+            Choice(
+              label: 'Start a college fund (${_m(10000)})',
+              outcome: '',
+              needsMoney: 10000,
+              run: (l, rng) {
+                l.money -= 10000;
+                g.info['fund'] = ((g.info['fund'] as int?) ?? 0) + 10000;
+                parent?.addFacets(affection: 8, trust: 6);
+                return 'From inside, you set up an account in $who\'s name. Some things you can still do right.';
+              },
+            ),
+            Choice(
+              label: 'Write them a letter for when they are older',
+              outcome: '',
+              run: (l, rng) {
+                g.addFacets(affection: 4);
+                return 'You wrote three pages about the family, and one line about mistakes. It is in a drawer, waiting for them.';
+              },
+            ),
+          ],
+        );
+      }
       return _scene(
         'grandchild',
         'You are holding $who for the first time: your grandchild, an hour old and already gripping your finger. ${parent == null ? '' : '${_first(parent)} looks exhausted and very proud.'}',
@@ -580,6 +656,60 @@ Storylet? lifeEventScene(String id, List<String> args, Life l) {
             run: (l, rng) {
               parent?.addFacets(affection: -6);
               return 'You visited once and sent a card. You have your own life, you told yourself.';
+            },
+          ),
+        ],
+      );
+    case 'release_day':
+      if (l.prison != null) return null;
+      final fam = _family(l);
+      final mate = l.npc('cellmate');
+      return _scene(
+        'release_day',
+        'The gate buzzes, then opens. You are standing on the pavement with a plastic bag of belongings. Where do you go tonight?',
+        [
+          Choice(
+            label: fam.isEmpty
+                ? 'Find somewhere quiet to sleep'
+                : 'Go home to your family',
+            outcome: '',
+            run: (l, rng) {
+              for (final f in fam) {
+                f.addFacets(affection: 6, familiarity: 4);
+                f.lastContactAge = l.age;
+              }
+              l.stats.add('happiness', 6);
+              return fam.isEmpty
+                  ? 'A cheap room, a real mattress and a door you can lock from the inside. You slept for eleven hours.'
+                  : 'Someone had made your favourite dinner. Nobody mentioned prison, and everybody thought about it.';
+            },
+          ),
+          Choice(
+            label: 'Celebrate with old friends',
+            outcome: '',
+            risk: 'Old friends, old habits',
+            run: (l, rng) {
+              l.stats.add('happiness', 8);
+              if (rng.nextInt(100) < 25) {
+                l.notoriety += 3;
+                return 'The party went too far and the police came. Nobody was arrested, but your name is back on a list.';
+              }
+              return 'Music, too much food and people who were glad you were back. It felt like being alive again.';
+            },
+          ),
+          Choice(
+            label: mate != null && mate.bond >= 50
+                ? 'Meet ${_first(mate)}, your old cellmate'
+                : 'Walk until it gets dark',
+            outcome: '',
+            run: (l, rng) {
+              l.stats.add('happiness', 4);
+              l.stress = l.stress - 10;
+              if (mate != null && mate.bond >= 50) {
+                mate.addFacets(affection: 6);
+                return 'You met ${_first(mate)} in a café near the station. Two people who understood each other without saying much.';
+              }
+              return 'You walked for hours just because you could. The sky looked bigger than you remembered.';
             },
           ),
         ],

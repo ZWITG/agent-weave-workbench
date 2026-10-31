@@ -2250,7 +2250,11 @@ void main() {
     final text = release(l, parole: true);
     expect(text, contains('halfway house'));
     expect(l.assets.any((a) => a.name == 'Halfway house'), isTrue);
-    l.sceneQueue.add('parole_checkin');
+    // Release day comes first; then the parole check-in.
+    expect(l.sceneQueue, contains('release_day'));
+    l.sceneQueue
+      ..clear()
+      ..add('parole_checkin');
     final scene = engine.nextScene(l)!;
     final skip = scene.choices.firstWhere((c) => c.label == 'Skip it');
     var seed = 0;
@@ -3559,5 +3563,77 @@ void main() {
       engine.world.ledger.any((s) => s.headline.contains('crime family')),
       isTrue,
     );
+  });
+
+  test('prison: whole sentences stay inside, and release connects back', () {
+    const crimes = ['burglary', 'fraud', 'assault', 'smuggling', 'car_theft'];
+    var releases = 0;
+    for (var seed = 1; seed <= 60; seed++) {
+      final rng = Random(seed);
+      final l = engine.newLife(seed: 1400 + seed)..age = 30;
+      l.money = 20000;
+      l.job = 'Accountant';
+      l.salary = 40000;
+      final p = candidate(l, rng);
+      l.npcs.add(p);
+      if (seed.isEven) {
+        l.businesses.add(
+          Business(name: 'B$seed', industry: 'cafe', tier: 'mid', since: 28),
+        );
+      }
+      enterPrison(l, crimeById(crimes[seed % crimes.length]), 2 + seed % 6);
+      expect(l.job, isNull);
+      var guard = 0;
+      while (l.prison != null && l.alive && guard++ < 20) {
+        var ev = engine.ageUp(l);
+        var g = 0;
+        while (ev != null && g++ < 15) {
+          if (l.prison != null) {
+            final base = ev.id.replaceFirst('scene:', '').split(':').first;
+            expect(outsideOnlyScenes, isNot(contains(base)), reason: ev.id);
+          }
+          final open = ev.choices
+              .where((c) => c.lockReason(l) == null)
+              .toList();
+          engine.choose(l, ev, open[rng.nextInt(open.length)]);
+          ev = engine.nextScene(l);
+        }
+        if (l.prison != null) {
+          for (final a in engine.actions.where(
+            (a) => a.lockReason(l) == null,
+          )) {
+            expect(
+              a.category == 'Prison' ||
+                  const {'meditate', 'read'}.contains(a.id),
+              isTrue,
+              reason: a.id,
+            );
+          }
+        }
+      }
+      if (l.alive && l.flags.containsKey('released')) releases++;
+    }
+    expect(releases, greaterThan(20));
+    // Release day asks how you spend your first night out.
+    final r = engine.newLife(seed: 1500)..age = 30;
+    enterPrison(r, crimeById('burglary'), 2);
+    r.prison!.served = 2;
+    r.prison!.stash = 9;
+    release(r);
+    expect(r.sceneQueue, contains('release_day'));
+    expect(buildScene('release_day', r)!.choices.length, 3);
+    // Family looks after pets inside; children drift without visits.
+    final f = engine.newLife(seed: 1501)..age = 35;
+    final kid = newChild(f, Random(1), ageNow: 8);
+    f.npcs.add(kid);
+    enterPrison(f, crimeById('fraud'), 4);
+    final bond = kid.bond;
+    f.age += 2;
+    prisonYear(f, Random(2));
+    expect(kid.bond, lessThan(bond));
+    // A child's wedding from prison is a letter, not a speech in person.
+    f.prison = Prison(crime: 'fraud', years: 4, since: 35);
+    final wed = buildScene('child_wedding:${kid.id}', f)!;
+    expect(wed.text, contains('inside'));
   });
 }

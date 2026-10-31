@@ -41,6 +41,8 @@ bool _calledUp(Life l, CountryProfile p, Random rng) {
 List<String> countryYear(Life l, Random rng) {
   final feed = <String>[];
   final p = countryProfile(l.country);
+  // Everyday life in the country waits outside the prison walls.
+  if (l.prison != null) return feed;
   if (_calledUp(l, p, rng)) {
     l.sceneQueue.add('draft');
   }

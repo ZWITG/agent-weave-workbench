@@ -395,7 +395,32 @@ int petCosts(Life l) {
 /// with a memorial and gentle grief (plan acceptance: every pet dies).
 List<String> petsYear(Life l, Random rng) {
   final feed = <String>[];
+  // In prison: family looks after your pets, or they go to a new home.
+  if (l.prison != null && petsOf(l).isNotEmpty) {
+    final carer = l.npcs
+        .where((n) => n.alive && n.circle == 'Family' && n.bond >= 30)
+        .firstOrNull;
+    for (final p in petsOf(l)) {
+      if (carer != null) {
+        if (p.info['carer'] != carer.id) {
+          p.info['carer'] = carer.id;
+          feed.add(
+            '${carer.name.split(' ').first} is looking after ${p.name} while you are inside.',
+          );
+        }
+        p.info['lastCare'] = l.age;
+      } else {
+        l.npcs.remove(p);
+        feed.add(
+          'With nobody to look after ${p.name}, a shelter found them a new home. It was the right thing, and it still hurt.',
+        );
+        l.stats.add('happiness', -4);
+      }
+    }
+    return feed;
+  }
   for (final p in petsOf(l)) {
+    p.info.remove('carer');
     final s = speciesOf(p);
     final age = p.ageIn(l.year);
     // Until you are 18, your parents look after the family pet.

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'life_events.dart' show onCloseDeath;
+import 'justice.dart' show release;
 import 'models.dart';
 import 'storylet.dart';
 import 'world_data.dart' show countryProfile;
@@ -748,6 +749,16 @@ Storylet? healthScene(String id, List<String> args, Life l) {
                 run: (l, rng) {
                   l.stats.add('happiness', 5);
                   l.marks.add('palliative');
+                  // Inside, this means asking for compassionate release.
+                  if (l.prison != null) {
+                    final p = l.prison!;
+                    if (rng.nextInt(100) < 30 + p.behaviour ~/ 2) {
+                      p.served = p.years;
+                      release(l);
+                      return 'The parole board granted compassionate release. You will spend the time you have left at home, with the people you love.';
+                    }
+                    return 'Compassionate release was refused. You are cared for in the prison hospital wing, where one nurse always stops to talk.';
+                  }
                   return 'You chose comfort and time with the people you love. The nurses are kind, and the garden is lovely in the mornings.';
                 },
               ),

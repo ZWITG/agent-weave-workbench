@@ -41,8 +41,41 @@ import 'storylet.dart';
 /// A scene is queued by id ("illness:flu") on life.sceneQueue and rebuilt
 /// from that id, so a pending scene survives saving.
 
+/// Moments that only happen outside: they do not open while you are in
+/// prison (the systems that queue them mostly wait for release too).
+const outsideOnlyScenes = {
+  'proposal',
+  'prenup',
+  'wedding',
+  'honeymoon',
+  'ultimatum',
+  'family_planning',
+  'kindling',
+  'season',
+  'foster_offer',
+  'surrogacy',
+  'label_offer',
+  'fame_award',
+  'step_parent',
+  'draft',
+  'biz_event',
+  'stray',
+  'elite_island',
+  'elite_team',
+  'crew_invite',
+  'crew_test',
+  'crew_rival',
+  'crew_cops',
+  'biz_racket',
+  'birth_plan',
+  'immigration_check',
+};
+
 Storylet? buildScene(String id, Life life) {
   final parts = id.split(':');
+  if (life.prison != null && outsideOnlyScenes.contains(parts.first)) {
+    return null;
+  }
   final arg = parts.length > 1 ? parts.sublist(1).join(':') : '';
   return switch (parts.first) {
     'illness' => _illness(id, arg, life),
@@ -83,6 +116,7 @@ Storylet? buildScene(String id, Life life) {
     'fired_now' ||
     'child_wedding' ||
     'grandchild' ||
+    'release_day' ||
     'step_parent' => lifeEventScene(parts.first, parts.sublist(1), life),
     'crew_pick' ||
     'crew_invite' ||

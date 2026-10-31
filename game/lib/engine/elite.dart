@@ -132,6 +132,8 @@ List<String> eliteYear(Life l, Random rng) {
     return feed;
   }
   final roll = rng.nextInt(100);
+  // Galas and invitations do not reach a prison cell.
+  if (l.prison != null) return feed;
   if (!queued && !l.marks.contains('security') && roll < 7) {
     l.sceneQueue.add('elite_threat');
   } else if (roll < 30) {

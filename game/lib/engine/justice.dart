@@ -797,6 +797,9 @@ String release(Life l, {bool parole = false}) {
   if (parole && left > 0) l.marks.add('parole_until:${l.age + left}');
   l.flags['released'] = Memory(l.age, 'walking out of prison');
   l.stats.add('happiness', 10);
+  // Whatever you traded for inside stays inside.
+  p.stash = 0;
+  l.sceneQueue.add('release_day');
   final home = offerHalfwayHouse(l);
   final text = parole
       ? 'You walked out on parole after ${p.served} years. For the next $left years: check-ins, a curfew and no more crime, or you go back.'
@@ -1659,6 +1662,16 @@ List<String> prisonYear(Life l, Random rng) {
   feed.addAll(prisonLifeYear(l, rng));
   if (l.prison == null) return feed;
   p.behaviour = min(100, p.behaviour + (p.job != null ? 3 : 0));
+  // Life outside goes on without you: people you have not seen this year
+  // drift a little, children most of all.
+  for (final n in l.npcs.where(
+    (n) =>
+        n.alive &&
+        const {'Family', 'Partner', 'Children', 'Friends'}.contains(n.circle) &&
+        n.lastContactAge < l.age - 1,
+  )) {
+    n.addFacets(affection: n.circle == 'Children' ? -4 : -2, familiarity: -3);
+  }
   if (rng.nextInt(100) < (p.security == 'maximum' ? 12 : 6)) {
     l.sceneQueue.add('riot');
   }

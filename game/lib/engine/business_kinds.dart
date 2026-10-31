@@ -600,7 +600,7 @@ ActionResult runSignature(Life l, Random rng) {
 /// About one year in four, something that only happens in your trade.
 void maybeTradeEvent(Life l, Business b, Random rng) {
   final k = kindOf(b);
-  if (k == null || rng.nextInt(100) >= 25) return;
+  if (l.prison != null || k == null || rng.nextInt(100) >= 25) return;
   if (l.sceneQueue.any((s) => s.startsWith('biz_event:'))) return;
   l.sceneQueue.add(
     'biz_event:${k.events[rng.nextInt(k.events.length)]}:${b.name}',

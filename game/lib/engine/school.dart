@@ -283,7 +283,8 @@ const lessonOptions = <String, Map<String, int>>{
 /// seasons and stress. Returns feed lines.
 List<String> schoolYear(Life l, Random rng) {
   final lines = <String>[];
-  if (!inSchool(l)) return lines;
+  // Youth detention has lessons, but not school life.
+  if (!inSchool(l) || l.prison != null) return lines;
   final sc = l.school;
   l.reason = 'School life';
   final c = cliqueById(sc.clique);

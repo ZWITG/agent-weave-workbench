@@ -930,7 +930,9 @@ Storylet? loveScene(String kind, Life l) {
 /// strays (hints first), and the wish for children.
 void loveYear(Life l, Random rng) {
   final p = partnerOf(l);
-  if (p == null) return;
+  // A relationship does not move forward through prison glass (prison
+  // life decides whether they wait).
+  if (p == null || l.prison != null) return;
   final lover = loverOf(l);
   if (lover != null) {
     // Plan: discovery = 15% + 10% per risky year, modified by trust.

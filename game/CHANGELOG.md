@@ -148,3 +148,12 @@ Named updates since the game was created (26 October 2026). Newest last.
 - The whole game changes look while you are in prison: institutional green with chalk-mint accents, and back to Night Feed the day you are released.
 - Decals: a chain-link fence along the top, a padlock on the year, a chalk tally card ("2 years down, 3 to go") with your release year, parole countdown and a stencilled block tag, a chalk sun, a barbed-wire divider, and stencil stamps on prison stories (YARD, VISIT, LETTER, COURSE, WORK, FIGHT, GANG, PAROLE, SOLITARY).
 - Prison values replace outside ones: Behaviour and Respect instead of Smarts and Looks, your stash instead of your bank balance, your prison job and prison instead of job and city, and "Serve a year" instead of Age +1.
+
+## 2.16 "Inside Out" (31 Oct)
+- Prison is properly separate from life outside: proposals, weddings, honeymoons, family planning, seasonal outings, fostering, record deals, award shows, the military draft, business events, crew business and island or team purchases wait until you are out. Everyday country life, galas and invitations pause, and relationships do not move forward through the glass.
+- News about people reaches you at visiting time, not at the kitchen table.
+- People you do not see drift while you are inside (children most); visits keep them close.
+- Your child's wedding and a new grandchild have prison versions (a speech read for you, money, a letter, a family visit).
+- A terminal diagnosis inside lets you apply for compassionate release.
+- Family looks after your pets while you are inside, or they are rehomed; youth detention pauses school life.
+- Release day: choose how to spend your first night out (home to family, celebrating with old friends, or with your old cellmate). Your prison stash stays inside.
