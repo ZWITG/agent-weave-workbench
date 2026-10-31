@@ -113,3 +113,7 @@ Named updates since the game was created (26 October 2026). Newest last.
 - Three street crews with ranks, informing and takeovers.
 - 7 new crimes.
 - A friendlier Crime tab grouped into sections.
+
+## 2.10 "Curtain Up" (31 Oct)
+- An opening animation when the game starts or is opened again: the ZWITG mark (letters settle, the red line draws across), then the Relivable logo, then into the game.
+- Tap to skip; shorter and calmer with Reduce motion on.

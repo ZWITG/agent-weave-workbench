@@ -7,6 +7,7 @@ import 'package:relivable/main.dart';
 import 'package:relivable/sound.dart';
 import 'package:relivable/engine/actions.dart';
 import 'package:relivable/ui/activities.dart';
+import 'package:relivable/ui/intro.dart';
 import 'package:relivable/ui/minigames.dart';
 import 'package:relivable/ui/shop_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,6 +92,8 @@ Future<void> _back(WidgetTester t) async {
 }
 
 void main() {
+  // The opening animation would cover the screens under test.
+  IntroSplash.enabled = false;
   TestWidgetsFlutterBinding.ensureInitialized();
   seasonClock = () => DateTime(2026, 8, 1);
 

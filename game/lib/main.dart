@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'game_controller.dart';
 import 'theme.dart';
+import 'ui/intro.dart';
 import 'ui/hub_screen.dart';
 import 'ui/new_life_screen.dart';
 import 'ui/recap_screen.dart';
@@ -38,13 +39,19 @@ class RelivableApp extends StatelessWidget {
           textScaler: TextScaler.linear(p.textScale),
           disableAnimations: p.reduceMotion,
         ),
-        // Colour-vision mode applies to the whole app (plan UX §8.3).
-        child: colourMatrices[p.colourMode] == null
-            ? child!
-            : ColorFiltered(
-                colorFilter: ColorFilter.matrix(colourMatrices[p.colourMode]!),
-                child: child!,
-              ),
+        // Colour-vision mode applies to the whole app (plan UX §8.3), and
+        // the ZWITG / Relivable opening plays over it.
+        child: IntroGate(
+          reduceMotion: p.reduceMotion,
+          child: colourMatrices[p.colourMode] == null
+              ? child!
+              : ColorFiltered(
+                  colorFilter: ColorFilter.matrix(
+                    colourMatrices[p.colourMode]!,
+                  ),
+                  child: child!,
+                ),
+        ),
       ),
       home: UpdateGate(
         child: ListenableBuilder(
