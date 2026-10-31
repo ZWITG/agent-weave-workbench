@@ -215,6 +215,11 @@ List<FeedEntry> childUpdates(Life l, Random rng) {
       line = '$first had a baby. You are a grandparent!';
       l.flags['grandparent'] = Memory(l.age, 'becoming a grandparent');
     }
+    // Inside, your children's news comes by letter.
+    if (line != null && l.prison != null) {
+      line =
+          '${line.split('. ').first.replaceAll(RegExp(r'\.$'), '')}. You found out in a letter.';
+    }
     if (line != null) {
       c.news.add('Age ${l.age}: $line');
       out.add(FeedEntry(l.age, line, kind: 'npc', who: c.name));

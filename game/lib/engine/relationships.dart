@@ -1170,7 +1170,8 @@ List<String> yearlyRelationships(Life life, Random rng) {
       m.intensity = (m.intensity - 0.2).clamp(0, 5);
     }
     n.memories.removeWhere((m) => m.intensity <= 0 && m.valence.abs() < 3);
-    final livesTogether = life.age < 18 && n.circle == 'Family';
+    final livesTogether =
+        life.age < 18 && n.circle == 'Family' && life.prison == null;
     final gap = life.age - n.lastContactAge;
     if (!livesTogether && !n.contactCut && gap >= 1) {
       final drift = switch (n.circle) {
@@ -1180,7 +1181,11 @@ List<String> yearlyRelationships(Life life, Random rng) {
       };
       n.addFacets(affection: -drift, familiarity: -(drift ~/ 2));
       if (gap == 3 && n.bond >= 30) {
-        lines.add('You haven\'t spoken to ${n.name} in 3 years. Reach out?');
+        lines.add(
+          life.prison != null
+              ? 'You haven\'t heard from ${n.name} in 3 years. Write to them?'
+              : 'You haven\'t spoken to ${n.name} in 3 years. Reach out?',
+        );
       }
     }
     if (livesTogether) n.lastContactAge = life.age;

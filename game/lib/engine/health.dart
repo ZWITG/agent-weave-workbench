@@ -168,6 +168,8 @@ int insurancePremium(Life l) {
 /// What a treatment that lists at [base] dollars costs you here.
 int careCost(Life l, int base) {
   if (l.age < 18) return 0;
+  // In prison the state pays for your care.
+  if (l.prison != null) return 0;
   // Without papers there is no public healthcare: you pay as you go.
   final system = l.marks.contains('undocumented')
       ? 'out of pocket'
@@ -460,7 +462,11 @@ List<String> npcAging(Life l, Random rng) {
     const close = {'Family', 'Partner', 'Friends', 'Children'};
     if (!close.contains(n.circle)) continue;
     feed.add(
-      '${n.circle == 'Partner' ? 'Your ${n.role.toLowerCase()}' : n.role} ${n.name} died at $age. ${n.bond >= 60 ? 'You were there at the end, holding their hand.' : 'You had not spoken in a while.'}',
+      '${n.circle == 'Partner' ? 'Your ${n.role.toLowerCase()}' : n.role} ${n.name} died at $age. ${l.prison != null
+          ? 'A prison chaplain brought you the news.'
+          : n.bond >= 60
+          ? 'You were there at the end, holding their hand.'
+          : 'You had not spoken in a while.'}',
     );
     if (n.circle == 'Partner') {
       l.flags['widowed'] = Memory(l.age, 'losing ${n.name}');
@@ -512,6 +518,32 @@ Storylet? healthScene(String id, List<String> args, Life l) {
         return '$how The doctor thinks it is stress. "Come back if it gets worse."';
       }
 
+      // Inside, the prison doctor is the only door.
+      if (l.prison != null) {
+        return _scene(
+          id,
+          c.stage >= 3 && info.late.isNotEmpty ? info.late : info.symptom,
+          [
+            Choice(
+              label: 'See the prison doctor',
+              outcome: '',
+              risk: 'Free · a long wait',
+              run: (l, rng) => diagnose(
+                l,
+                rng,
+                info.kind == 'serious' ? 60 : 80,
+                'After a month on the list, the prison doctor finally ran some tests.',
+              ),
+            ),
+            Choice(
+              label: 'Keep it to yourself',
+              outcome: '',
+              risk: 'Can get worse',
+              run: (l, rng) => 'You told yourself it was nothing. Your body keeps sending the message.',
+            ),
+          ],
+        );
+      }
       return _scene(
         id,
         c.stage >= 3 && info.late.isNotEmpty ? info.late : info.symptom,
@@ -803,6 +835,61 @@ Storylet? healthScene(String id, List<String> args, Life l) {
             ..sort((a, b) => b.bond.compareTo(a.bond));
       final therapy = careCost(l, 1500);
       final psych = careCost(l, 600);
+      // Inside: letters, the prison counsellor and programme groups.
+      if (l.prison != null) {
+        final p = l.prison!;
+        return _scene(
+          id,
+          '${info.symptom} Inside, it is harder to hide and harder to fix. What would help?',
+          category: 'mind',
+          [
+            if (close.isNotEmpty)
+              Choice(
+                label: 'Phone ${close.first.name.split(' ').first}',
+                outcome: '',
+                risk: 'Ten minutes on the prison phone',
+                run: (l, rng) {
+                  final n = close.first;
+                  n.addFacets(affection: 4, trust: 4);
+                  n.lastContactAge = l.age;
+                  l.stats.add('happiness', 3);
+                  if (rng.nextInt(100) < 20 + n.bond ~/ 5) c.treated = true;
+                  return 'Ten minutes, a queue behind you and ${n.name.split(' ').first}\'s voice saying "I am here". It helped more than you expected.';
+                },
+              ),
+            Choice(
+              label: 'See the prison counsellor',
+              outcome: '',
+              risk: 'Free · helps most people',
+              run: (l, rng) {
+                c.treated = true;
+                l.marks.add('therapy:${c.id}');
+                l.stats.add('happiness', 2);
+                return 'A small room, a kind counsellor and an hour a week that belongs to you. It gets a little lighter.';
+              },
+            ),
+            Choice(
+              label: 'Join a programme group',
+              outcome: '',
+              risk: 'Counts towards parole',
+              run: (l, rng) {
+                c.treated = true;
+                p.programmes++;
+                p.behaviour = min(100, p.behaviour + 3);
+                return 'A circle of plastic chairs in the education block. The others had done worse than you and talked about it anyway. By the third week, you did too.';
+              },
+            ),
+            Choice(
+              label: 'Keep it to yourself',
+              outcome: '',
+              run: (l, rng) {
+                l.stats.add('happiness', -3);
+                return 'You kept your head down and your face blank. Nobody inside asks how you are.';
+              },
+            ),
+          ],
+        );
+      }
       return _scene(
         id,
         '${info.symptom} You do not have to fix this alone. What would help right now?',

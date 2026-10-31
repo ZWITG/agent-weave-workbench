@@ -32,6 +32,7 @@ String _m(int v) {
 
 /// Strangers react to a family name with a reputation (plan Module 11).
 String? nameReaction(Life l, World w, Random rng) {
+  if (l.prison != null) return null;
   final rep = w.names[l.surname];
   if (rep == null || l.age < 8 || rng.nextInt(100) >= 12) return null;
   final top = rep.entries.toList()..sort((a, b) => b.value.compareTo(a.value));

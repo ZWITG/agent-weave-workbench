@@ -602,6 +602,15 @@ class GameEngine {
   }
 
   String _quietYear(Life life, Random rng) {
+    if (life.prison != null) {
+      const inside = [
+        'Count, meals, yard, count. Another year inside.',
+        'A quiet year on the block. You kept your head down.',
+        'The days were all the same, and the year went anyway.',
+        'You marked another year on the wall.',
+      ];
+      return inside[rng.nextInt(inside.length)];
+    }
     const lines = [
       'A quiet year. Nothing much happened.',
       'The year went by in a blur.',

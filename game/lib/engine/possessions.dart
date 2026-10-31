@@ -770,7 +770,9 @@ List<String> possessionsYear(Life l, Random rng) {
         'being given the family ${h.name.toLowerCase()}',
       );
       feed.add(
-        '${giver?.name.split(' ').first ?? 'A solicitor'} gave you ${h.about}. "It has been in the family for generations. Now it is yours."',
+        l.prison != null
+            ? '${giver?.name.split(' ').first ?? 'A solicitor'} is keeping ${h.about} for you until you are out. "It has been in the family for generations. Now it is yours."'
+            : '${giver?.name.split(' ').first ?? 'A solicitor'} gave you ${h.about}. "It has been in the family for generations. Now it is yours."',
       );
     }
   }

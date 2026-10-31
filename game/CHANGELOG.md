@@ -157,3 +157,8 @@ Named updates since the game was created (26 October 2026). Newest last.
 - A terminal diagnosis inside lets you apply for compassionate release.
 - Family looks after your pets while you are inside, or they are rehomed; youth detention pauses school life.
 - Release day: choose how to spend your first night out (home to family, celebrating with old friends, or with your old cellmate). Your prison stash stays inside.
+
+## 2.17 "Behind the Walls" (31 Oct)
+- Illness, check-ups and mental health have prison versions: the medical list, a guarded hospital transfer, resting in your cell, the prison phone, the counsellor and programme groups (which count towards parole). Care is free inside.
+- Deaths reach you through the prison chaplain; heirlooms are kept for you; grandchildren's milestones and your children's news come by letter; nudges say "Write to them?"
+- Celebrity life (parties, paparazzi, brand gifts, rumours, stalkers), restaurant reactions to your family name and outside-world quiet years pause or change inside.

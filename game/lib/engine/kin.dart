@@ -322,7 +322,17 @@ List<FeedEntry> grandchildrenYear(Life l, Random rng) {
       18 => '${_first(g)} finished school. You cried more than their parents.',
       _ => null,
     };
-    if (line != null) out.add(FeedEntry(l.age, line, kind: 'npc'));
+    if (line != null) {
+      out.add(
+        FeedEntry(
+          l.age,
+          l.prison == null
+              ? line
+              : '${_first(g)} turned $a. A drawing came with the letter.',
+          kind: 'npc',
+        ),
+      );
+    }
   }
   return out;
 }

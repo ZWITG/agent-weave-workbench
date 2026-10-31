@@ -56,6 +56,8 @@ const outsideOnlyScenes = {
   'surrogacy',
   'label_offer',
   'fame_award',
+  'fame_rumour',
+  'fame_stalker',
   'step_parent',
   'draft',
   'biz_event',
@@ -350,6 +352,62 @@ Storylet? _illness(String id, String key, Life life) {
   final gpCost = careCost(life, 80);
   final erCost = careCost(life, 400);
   final sev = ill.severity;
+  // Inside: the prison medical wing, not a GP or a pharmacy.
+  if (life.prison != null) {
+    final p = life.prison!;
+    return _scene(id, ill.text, category: 'health', [
+      Choice(
+        label: 'Put your name on the medical list',
+        outcome: '',
+        risk: 'Free · there is a wait',
+        run: (l, rng) {
+          l.reason = 'Prison medical wing';
+          l.stats.add('health', sev ~/ 2 + 1);
+          return 'Two weeks on the list, then five minutes with the prison doctor and a strip of tablets. It helped, eventually.';
+        },
+      ),
+      if (sev >= 8)
+        Choice(
+          label: 'Ask for a hospital transfer',
+          outcome: '',
+          risk: 'Good behaviour helps',
+          run: (l, rng) {
+            l.reason = 'Hospital under guard';
+            if (rng.nextInt(100) < 30 + p.behaviour ~/ 2) {
+              l.stats.add('health', sev);
+              return 'Handcuffed to a hospital bed with an officer by the door, you got proper treatment. It worked.';
+            }
+            l.stats.add('health', -2);
+            return 'Request denied: "not urgent enough". You were moved to the medical wing instead.';
+          },
+        ),
+      Choice(
+        label: 'Rest in your cell',
+        outcome: '',
+        risk: 'Usually fine',
+        run: (l, rng) {
+          l.reason = 'Resting off ${ill.name}';
+          if (rng.nextInt(100) < 65) {
+            l.stats.add('health', 1);
+            return 'Your cellmate brought you extra water from the canteen. A week later you were back on your feet.';
+          }
+          l.stats.add('health', -sev ~/ 2);
+          return 'It dragged on for weeks. A thin mattress is a bad place to be ill.';
+        },
+      ),
+      Choice(
+        label: 'Keep quiet about it',
+        outcome: '',
+        risk: 'Weakness gets noticed',
+        run: (l, rng) {
+          l.reason = 'Hid ${ill.name}';
+          l.stats.add('health', -sev);
+          p.respect = min(100, p.respect + 2);
+          return 'You never let anyone see you struggle. Your body paid for it.';
+        },
+      ),
+    ]);
+  }
   return _scene(id, ill.text, category: 'health', [
     Choice(
       label: gpCost > 0 ? 'See a GP (${_m(gpCost)})' : 'Go to the doctor',

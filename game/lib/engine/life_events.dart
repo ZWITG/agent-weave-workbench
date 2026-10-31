@@ -123,7 +123,14 @@ List<String> aftermathYear(Life l, Random rng) {
     l.stats.add('happiness', a.happiness);
     if (a.health != 0) l.stats.add('health', a.health);
     l.stress = l.stress + a.stress;
-    final line = a.lines[rng.nextInt(a.lines.length)].replaceAll(
+    // Inside, the moments that bring it back are different.
+    final pool = l.prison != null && kind == 'grief'
+        ? const [
+            'A song on a radio down the block brought {who} back so suddenly you had to turn to the wall.',
+            'You still reach for the prison phone to call {who}, then remember.',
+          ]
+        : a.lines;
+    final line = pool[rng.nextInt(pool.length)].replaceAll(
       '{who}',
       who.isEmpty ? 'them' : who,
     );
@@ -354,7 +361,7 @@ Storylet? lifeEventScene(String id, List<String> args, Life l) {
               l.money += share - share ~/ 2;
               l.stats.add('karma', 5);
               l.stats.add('happiness', 3);
-              return 'You gave ${_m(share ~/ 2)} in $who\'s name. A small plaque went up, and you visit it more than you expected.';
+              return 'You gave ${_m(share ~/ 2)} in $who\'s name. A small plaque went up${l.prison != null ? '. You will visit it when you are out.' : ', and you visit it more than you expected.'}';
             },
           ),
           if (siblings.isNotEmpty) ...[

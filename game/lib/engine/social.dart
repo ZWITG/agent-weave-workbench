@@ -376,7 +376,7 @@ List<String> fameYear(Life l, Random rng) {
       ? 1
       : 3;
   l.fame = max(floor, l.fame - decay).clamp(0, 100);
-  if (l.fame >= 50 && rng.nextInt(100) < 20) {
+  if (l.fame >= 50 && l.prison == null && rng.nextInt(100) < 20) {
     l.stats.add('happiness', -1);
     feed.add(
       'Paparazzi followed you to the supermarket. A photo of you buying toilet roll made the gossip pages.',

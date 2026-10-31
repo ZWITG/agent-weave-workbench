@@ -57,9 +57,12 @@ String causeOfDeath(Life life, Random rng) {
     'Pneumonia',
     'A fall at home',
   ];
-  return life.age >= 85
+  final cause = life.age >= 85
       ? causes[rng.nextInt(2)]
       : causes[rng.nextInt(causes.length)];
+  return life.prison != null && cause == 'A fall at home'
+      ? 'A fall in the prison'
+      : cause;
 }
 
 /// The body changes with age. Returns a feed line when something notable

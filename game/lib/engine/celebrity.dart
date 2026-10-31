@@ -156,6 +156,8 @@ List<String> celebrityYear(Life l, Random rng) {
         l.stats.add('happiness', 1);
       }
     default:
+      // Inside, celebrity life is on hold.
+      if (l.prison != null) break;
       // Gifts from brands and fans.
       if (rng.nextInt(100) < 30) {
         final gift = 200 + rng.nextInt(1800) * (l.fame ~/ 25);

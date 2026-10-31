@@ -3635,5 +3635,12 @@ void main() {
     f.prison = Prison(crime: 'fraud', years: 4, since: 35);
     final wed = buildScene('child_wedding:${kid.id}', f)!;
     expect(wed.text, contains('inside'));
+    // Inside: the prison medical wing, free care, and news by letter.
+    final sick = buildScene('illness:flu', f)!;
+    expect(sick.choices.first.label, contains('medical list'));
+    expect(careCost(f, 1000), 0);
+    for (final c in sick.choices) {
+      expect(c.label, isNot(contains('pharmacist')));
+    }
   });
 }
