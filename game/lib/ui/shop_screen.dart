@@ -27,7 +27,7 @@ const _deptIcons = <String, IconData>{
 
 /// One thing bought in the shop that lasts, with Return and Sell. Shown in
 /// the shop's "Your stuff" and on the Wealth tab's "What you own".
-class OwnedItemCard extends StatelessWidget {
+class OwnedItemCard extends StatefulWidget {
   const OwnedItemCard({
     super.key,
     required this.controller,
@@ -37,8 +37,17 @@ class OwnedItemCard extends StatelessWidget {
   final Map<String, dynamic> item;
 
   @override
+  State<OwnedItemCard> createState() => _OwnedItemCardState();
+}
+
+/// Tap the card to see when you bought it, what it does and your options.
+class _OwnedItemCardState extends State<OwnedItemCard> {
+  bool _open = false;
+
+  @override
   Widget build(BuildContext context) {
-    final c = controller;
+    final c = widget.controller;
+    final item = widget.item;
     final life = c.life!;
     final i = itemById(item['id'] as String);
     if (i == null) return const SizedBox.shrink();
@@ -49,64 +58,77 @@ class OwnedItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(_deptIcons[i.dept], color: NF.orange),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    i.name,
-                    style: NF.sora(15, weight: FontWeight.w700),
+            InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () => setState(() => _open = !_open),
+              child: Row(
+                children: [
+                  Icon(_deptIcons[i.dept], color: NF.orange),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      i.name,
+                      style: NF.sora(15, weight: FontWeight.w700),
+                    ),
                   ),
-                ),
-                Text(
-                  '${item['left']} yr${item['left'] == 1 ? '' : 's'} left',
-                  style: NF.sora(12, color: NF.muted),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Bought at ${item['age']} for ${money(item['paid'] as int)}${i.yearly.isEmpty ? '' : ' · ${i.yearly.entries.map((e) => '${_stat(e.key)} +${e.value} a year').join(', ')}'}',
-              style: NF.sora(12, color: NF.soft),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              alignment: WrapAlignment.end,
-              children: [
-                OutlinedButton(
-                  onPressed: returnLock(life, item) == null
-                      ? () {
-                          final r = c.wealth((l) => returnItem(l, item));
-                          showResultPopup(
-                            context,
-                            r,
-                            title: 'Returned',
-                            icon: Icons.undo_rounded,
-                          );
-                        }
-                      : null,
-                  child: Text(
-                    returnLock(life, item) == null
-                        ? 'Return'
-                        : 'Return (this year only)',
+                  Text(
+                    '${item['left']} yr${item['left'] == 1 ? '' : 's'} left',
+                    style: NF.sora(12, color: NF.muted),
                   ),
-                ),
-                OutlinedButton(
-                  onPressed: () {
-                    final r = c.wealth((l) => sellItem(l, item));
-                    showResultPopup(
-                      context,
-                      r,
-                      title: 'Sold',
-                      icon: Icons.sell_rounded,
-                    );
-                  },
-                  child: Text('Sell for ${money(resaleOf(item))}'),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Icon(
+                    _open
+                        ? Icons.expand_less_rounded
+                        : Icons.expand_more_rounded,
+                    color: NF.muted,
+                  ),
+                ],
+              ),
             ),
+            if (_open) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Bought at ${item['age']} for ${money(item['paid'] as int)} · ${i.blurb}${i.yearly.isEmpty ? '' : ' · ${i.yearly.entries.map((e) => '${_stat(e.key)} ${_signed(e.value)} a year').join(', ')}'}',
+                style: NF.sora(12, color: NF.soft),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                alignment: WrapAlignment.end,
+                children: [
+                  OutlinedButton(
+                    onPressed: returnLock(life, item) == null
+                        ? () {
+                            final r = c.wealth((l) => returnItem(l, item));
+                            showResultPopup(
+                              context,
+                              r,
+                              title: 'Returned',
+                              icon: Icons.undo_rounded,
+                            );
+                          }
+                        : null,
+                    child: Text(
+                      returnLock(life, item) == null
+                          ? 'Return'
+                          : 'Return (this year only)',
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () {
+                      final r = c.wealth((l) => sellItem(l, item));
+                      showResultPopup(
+                        context,
+                        r,
+                        title: 'Sold',
+                        icon: Icons.sell_rounded,
+                      );
+                    },
+                    child: Text('Sell for ${money(resaleOf(item))}'),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -391,7 +413,7 @@ class _ShopScreenState extends State<ShopScreen> {
           style: NF.sora(14, color: NF.muted),
         ),
       for (final item in List<Map<String, dynamic>>.from(items))
-        OwnedItemCard(controller: c, item: item),
+        OwnedItemCard(key: ObjectKey(item), controller: c, item: item),
       if (life.subs.isNotEmpty) ...[
         const HubHeading('Subscriptions'),
         for (final id in List<String>.from(life.subs))

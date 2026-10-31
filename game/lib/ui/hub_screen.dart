@@ -90,7 +90,13 @@ class _HubScreenState extends State<HubScreen> {
       constraints: BoxConstraints(maxWidth: wide ? 720 : 560),
       child: Column(
         children: [
-          _Header(life: life),
+          _Header(
+            life: life,
+            // Tapping your money opens the Wealth tab.
+            onMoney: () => setState(
+              () => _tab = _destinations.indexWhere((d) => d.$3 == 'Wealth'),
+            ),
+          ),
           Expanded(
             child: IndexedStack(index: _tab, children: tabs),
           ),
@@ -261,8 +267,9 @@ class _HubScreenState extends State<HubScreen> {
 // ---------------- Header ----------------
 
 class _Header extends StatelessWidget {
-  const _Header({required this.life});
+  const _Header({required this.life, this.onMoney});
   final Life life;
+  final VoidCallback? onMoney;
 
   @override
   Widget build(BuildContext context) {
@@ -339,40 +346,51 @@ class _Header extends StatelessWidget {
               Pill('${life.year}'),
               const SizedBox(height: 6),
               Semantics(
-                label: 'Bank balance ${money(life.money)}',
+                label: 'Bank balance ${money(life.money)}. Open Wealth',
+                button: true,
                 excludeSemantics: true,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF5EE6A8).withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: const Color(0xFF5EE6A8).withValues(alpha: 0.35),
+                child: GestureDetector(
+                  onTap: onMoney,
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.account_balance_wallet_rounded,
-                        size: 14,
-                        color: Color(0xFF5EE6A8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5EE6A8).withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: const Color(0xFF5EE6A8).withValues(alpha: 0.35),
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        money(life.money),
-                        style: NF.sora(
-                          13,
-                          weight: FontWeight.w700,
-                          color: life.money < 0
-                              ? NF.danger
-                              : const Color(0xFF5EE6A8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.account_balance_wallet_rounded,
+                          size: 14,
+                          color: Color(0xFF5EE6A8),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 5),
+                        Text(
+                          money(life.money),
+                          style: NF.sora(
+                            13,
+                            weight: FontWeight.w700,
+                            color: life.money < 0
+                                ? NF.danger
+                                : const Color(0xFF5EE6A8),
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          size: 14,
+                          color: Color(0xFF5EE6A8),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

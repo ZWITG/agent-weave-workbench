@@ -324,6 +324,57 @@ void main() {
     expect(score, inInclusiveRange(0, 1));
   });
 
+  testWidgets('owned things expand to show their options', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    final l = c.life!;
+    l.assets.add(
+      Asset(
+        id: 'home1',
+        kind: 'house',
+        name: 'Terraced house',
+        value: 250000,
+        yearlyCost: 3000,
+        since: 32,
+        info: {'area': 'Old Town'},
+      ),
+    );
+    l.assets.add(
+      Asset(
+        id: 'let1',
+        kind: 'house',
+        name: 'Flat',
+        value: 150000,
+        yearlyCost: 1800,
+        since: 33,
+        info: {'area': 'Northgate', 'let': true, 'tenant': null},
+      ),
+    );
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    // Tapping your money opens the Wealth tab.
+    await t.tap(find.text('\$25,000').first);
+    await _pump(t);
+    expect(find.text('What you own'), findsOneWidget);
+    await _tapText(t, 'What you own');
+    // Closed: the empty rental still shows its one urgent button.
+    expect(find.text('Find a tenant'), findsOneWidget);
+    expect(find.text('Add a room'), findsNothing);
+    // Back to the top of the list, where the homes are.
+    await t.drag(find.byType(Scrollable).first, const Offset(0, 2000));
+    await _pump(t);
+    await _tapText(t, 'Terraced house');
+    expect(find.text('Add a room'), findsOneWidget);
+    expect(find.text('Remortgage'), findsOneWidget);
+    expect(find.text('Sell'), findsOneWidget);
+    await _tapText(t, 'Flat');
+    expect(find.text('Manage'), findsOneWidget);
+  });
+
   testWidgets('desktop: side tabs, the game and Activities side by side', (
     t,
   ) async {

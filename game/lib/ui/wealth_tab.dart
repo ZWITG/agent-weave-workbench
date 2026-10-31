@@ -476,7 +476,7 @@ class _WealthTabState extends State<WealthTab> {
       if (life.items.isNotEmpty) ...[
         const HubHeading('Everyday stuff', sub: 'Tech, furniture and gear'),
         for (final item in List<Map<String, dynamic>>.from(life.items))
-          OwnedItemCard(controller: c, item: item),
+          OwnedItemCard(key: ObjectKey(item), controller: c, item: item),
       ],
       const HubHeading('Buy and manage'),
       for (final a in shop) ...[
@@ -487,6 +487,7 @@ class _WealthTabState extends State<WealthTab> {
   }
 
   Widget _assetCard(BuildContext context, Life life, Asset a) => _AssetCard(
+    key: ValueKey(a.id),
     asset: a,
     onSell: () => _sell(context, a),
     onRepair: a.kind == 'house' && a.condition < 80
@@ -506,7 +507,40 @@ class _WealthTabState extends State<WealthTab> {
     onManage: a.info['let'] == true
         ? () => _scene(context, 'let_manage:${a.id}')
         : null,
+    extras: _extras(context, life, a),
   );
+
+  /// Activities that belong to this kind of thing, shown on its card.
+  List<(String, VoidCallback?)> _extras(
+    BuildContext context,
+    Life life,
+    Asset a,
+  ) {
+    (String, VoidCallback?) act(String label, String id) {
+      final g = c.engine!.actions.where((x) => x.id == id).firstOrNull;
+      final ok = g != null && g.lockReason(life) == null;
+      return (
+        label,
+        ok ? () => runActionFlow(context, c, g, closeSheet: false) : null,
+      );
+    }
+
+    final let = a.info['let'] == true;
+    return switch (a.kind) {
+      'house' => [
+        if (!let) act('Add a room', 'home_upgrade'),
+        act('Insurance', 'home_insurance'),
+        if (!let) act('Remortgage', 'remortgage'),
+        if (!let) act('Move house', 'buy_house'),
+      ],
+      'rental' => [act('Find somewhere else', 'rent_flat')],
+      'collectible' => [act('Get it appraised', 'appraise')],
+      'boat' => [act('Go sailing', 'go_sailing')],
+      'plane' => [act('Fly somewhere', 'fly_away')],
+      'car' => [act('Road trip', 'road_trip')],
+      _ => const [],
+    };
+  }
 
   /// Opens a property scene (finding a tenant, managing a rental).
   void _scene(BuildContext context, String id) {
@@ -1163,8 +1197,10 @@ class _MoneyRow extends StatelessWidget {
   }
 }
 
-class _AssetCard extends StatelessWidget {
+/// One thing you own. Tap it to open its details and every option for it.
+class _AssetCard extends StatefulWidget {
   const _AssetCard({
+    super.key,
     required this.asset,
     required this.onSell,
     this.onRepair,
@@ -1174,8 +1210,13 @@ class _AssetCard extends StatelessWidget {
     this.rent,
     this.onTenant,
     this.onManage,
+    this.extras = const [],
   });
   final Asset asset;
+
+  /// More things to do with it (add a room, insure, appraise, sail...),
+  /// each with a null callback when it is locked.
+  final List<(String, VoidCallback?)> extras;
   final VoidCallback onSell;
 
   /// For an empty rental: choose from applicants.
@@ -1192,8 +1233,17 @@ class _AssetCard extends StatelessWidget {
   final int? rent;
 
   @override
+  State<_AssetCard> createState() => _AssetCardState();
+}
+
+class _AssetCardState extends State<_AssetCard> {
+  bool _open = false;
+
+  @override
   Widget build(BuildContext context) {
-    final a = asset;
+    final w = widget;
+    final a = w.asset;
+    final rent = w.rent;
     final rental = a.kind == 'rental';
     final condColor = a.condition >= 60
         ? _good
@@ -1205,52 +1255,79 @@ class _AssetCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: NF.blue.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(12),
+          InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => setState(() => _open = !_open),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: NF.blue.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(_assetIcon(a), color: NF.blue),
                 ),
-                child: Icon(_assetIcon(a), color: NF.blue),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(a.name, style: NF.sora(16, weight: FontWeight.w700)),
+                      Text(
+                        rental
+                            ? 'Renting since age ${a.since}'
+                            : rent != null
+                            ? (isVacant(a)
+                                  ? 'Empty · no rent coming in'
+                                  : 'Let to tenants · ${money(rent)} a year')
+                            : 'Owned since age ${a.since}',
+                        style: NF.sora(12, color: NF.muted),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(a.name, style: NF.sora(16, weight: FontWeight.w700)),
                     Text(
-                      rental
-                          ? 'Renting since age ${a.since}'
-                          : rent != null
-                          ? (isVacant(a)
-                                ? 'Empty · no rent coming in'
-                                : 'Let to tenants · ${money(rent!)} a year')
-                          : 'Owned since age ${a.since}',
+                      rental ? 'Rent' : money(a.value),
+                      style: NF.sora(16, weight: FontWeight.w700),
+                    ),
+                    Text(
+                      '${money(a.yearlyCost)}/yr',
                       style: NF.sora(12, color: NF.muted),
                     ),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    rental ? 'Rent' : money(a.value),
-                    style: NF.sora(16, weight: FontWeight.w700),
-                  ),
-                  Text(
-                    '${money(a.yearlyCost)}/yr',
-                    style: NF.sora(12, color: NF.muted),
-                  ),
-                ],
-              ),
-            ],
+                const SizedBox(width: 4),
+                Icon(
+                  _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                  color: NF.muted,
+                ),
+              ],
+            ),
           ),
-          if (!rental && a.kind != 'collectible' && a.kind != 'heirloom') ...[
+          // An empty rental keeps its one urgent button visible.
+          if (!_open && w.onTenant != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  onPressed: w.onTenant,
+                  child: const Text('Find a tenant'),
+                ),
+              ),
+            ),
+          if (_open &&
+              !rental &&
+              a.kind != 'collectible' &&
+              a.kind != 'heirloom') ...[
             const SizedBox(height: 10),
             Row(
               children: [
@@ -1275,32 +1352,35 @@ class _AssetCard extends StatelessWidget {
               ],
             ),
           ],
-          if (_details(a).isNotEmpty)
+          if (_open && _details(a).isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(_details(a), style: NF.sora(12, color: NF.soft)),
             ),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.end,
-            spacing: 8,
-            runSpacing: 6,
-            children: [
-              if (a.kind == 'house' && a.condition < 80)
-                _small(repairLabel, onRepair),
-              if (a.kind == 'house') _small(renovateLabel, onRenovate),
-              if (onManage != null) _small('Manage', onManage),
-              if (onTenant != null)
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
+          if (_open) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                if (w.onTenant != null)
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    onPressed: w.onTenant,
+                    child: const Text('Find a tenant'),
                   ),
-                  onPressed: onTenant,
-                  child: const Text('Find a tenant'),
-                ),
-              _small(rental ? 'Move out' : 'Sell', onSell),
-            ],
-          ),
+                if (w.onManage != null) _small('Manage', w.onManage),
+                if (a.kind == 'house' && a.condition < 80)
+                  _small(w.repairLabel, w.onRepair),
+                if (a.kind == 'house') _small(w.renovateLabel, w.onRenovate),
+                for (final (label, tap) in w.extras) _small(label, tap),
+                _small(rental ? 'Move out' : 'Sell', w.onSell),
+              ],
+            ),
+          ],
         ],
       ),
     );
