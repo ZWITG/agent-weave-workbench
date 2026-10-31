@@ -209,7 +209,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
         [
           Choice(
             label: 'Enjoy it',
-            outcome: 'You opened a very old bottle of something and looked at the view for a long time. The Upper echelon is in Activities now.',
+            outcome: 'You opened a very old bottle of something and looked at the view for a long time. The Echelon is open: find it at the top of your Wealth tab.',
             run: (l, rng) {
               l.stats.add('happiness', 8);
               return null;
@@ -217,7 +217,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
           ),
           Choice(
             label: 'Think about what it is for',
-            outcome: 'You lay awake thinking about what all of it could do. The Upper echelon is in Activities now.',
+            outcome: 'You lay awake thinking about what all of it could do. The Echelon is open: find it at the top of your Wealth tab.',
             run: (l, rng) {
               l.stats.add('karma', 3);
               return null;

@@ -25,6 +25,7 @@ import 'result_popup.dart';
 import 'shop_screen.dart';
 import 'widgets.dart';
 import 'yard_map.dart';
+import 'echelon_screen.dart' show EchelonCard;
 
 /// Category order and icons for the Activities panel.
 const activityCategories = <(String, IconData)>[
@@ -782,6 +783,10 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           padding: const EdgeInsets.only(bottom: 14),
           child: Text(categoryBlurbs[cat]!, style: NF.sora(14, color: NF.soft)),
         ),
+      if (cat == 'Upper echelon') ...[
+        EchelonCard(controller: c),
+        const SizedBox(height: 14),
+      ],
       if (cat == 'Crime') ...[
         CrimeProfileCard(life: life),
         const SizedBox(height: 12),

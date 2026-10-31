@@ -9,6 +9,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/models.dart';
+import 'package:relivable/engine/echelon.dart';
+
+import 'dart:math';
+
 import 'package:relivable/game_controller.dart';
 import 'package:relivable/main.dart';
 import 'package:relivable/sound.dart';
@@ -181,5 +185,102 @@ void main() {
       await t.pump(const Duration(milliseconds: 150));
     }
     await shot('yard_game');
+  });
+
+  testWidgets('echelon', (t) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    SharedPreferences.setMockInitialValues({});
+    await t.runAsync(_fonts);
+    await t.runAsync(() async {
+      final f = FontLoader('Playfair')
+        ..addFont(rootBundle.load('assets/fonts/PlayfairDisplay-Variable.ttf'));
+      await f.load();
+    });
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async {
+      c = GameController();
+      await c.load();
+    });
+    Sound.instance.enabled = false;
+    c.startLife(seed: 33);
+    final l = c.life!;
+    l.age = 44;
+    l.money = 160000000;
+    final key = GlobalKey();
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(milliseconds: 150));
+    }
+    Future<void> shot(String name) => t.runAsync(() async {
+      final b =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final img = await b.toImage(pixelRatio: 1);
+      final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+      Directory(out).createSync(recursive: true);
+      File('$out/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
+    });
+    // Crossing the line: the Invitation.
+    l.flags['upper_echelon'] = Memory(l.age, 'joining');
+    echelonYear(l, Random(1));
+    c.notifyListeners();
+    var ms = 0;
+    for (final at in const [400, 1300, 2000, 2700, 3400, 4200]) {
+      await t.pump(Duration(milliseconds: at - ms));
+      ms = at;
+      await shot('invite_${at.toString().padLeft(4, '0')}');
+    }
+    await t.pump(const Duration(seconds: 2));
+    // A new tier: the plaque.
+    l.money = 2400000000;
+    echelonYear(l, Random(2));
+    c.notifyListeners();
+    ms = 0;
+    for (final at in const [500, 1200]) {
+      await t.pump(Duration(milliseconds: at - ms));
+      ms = at;
+      await shot('tier_$at');
+    }
+    await t.pump(const Duration(seconds: 3));
+    // The Echelon screen, from the Wealth tab.
+    l.echelon['influence'] = 47;
+    l.npcs.add(
+      Npc(
+        id: 'kid9',
+        role: 'Son',
+        name: 'Rafael',
+        birthYear: l.year - 19,
+        circle: 'Children',
+      ),
+    );
+    l.echelon['ready'] = {'kid9': 45};
+    final rs = rivals(l);
+    rs[2]['feud'] = 70;
+    l.echelon['rivals'] = rs;
+    c.notifyListeners();
+    await t.tap(find.text('Wealth').last);
+    for (var i = 0; i < 4; i++) {
+      await t.pump(const Duration(milliseconds: 150));
+    }
+    await shot('wealth_card');
+    await t.tap(find.text('THE ECHELON').first);
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(milliseconds: 150));
+    }
+    await shot('echelon_0');
+    for (var k = 1; k <= 4; k++) {
+      await t.drag(find.byType(Scrollable).last, const Offset(0, -700));
+      for (var i = 0; i < 4; i++) {
+        await t.pump(const Duration(milliseconds: 150));
+      }
+      await shot('echelon_$k');
+    }
   });
 }

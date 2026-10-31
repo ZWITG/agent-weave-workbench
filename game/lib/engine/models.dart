@@ -865,6 +865,10 @@ class Life {
   /// Your music career: label, advance, albums, tours (music.dart).
   final Map<String, dynamic> music = {};
 
+  /// Life at the very top (echelon.dart): tier reached, rival tycoons,
+  /// influence, a moonshot, heirs' readiness and your best rank.
+  final Map<String, dynamic> echelon = {};
+
   /// Your life in organised crime: crew, rank, loyalty, informant
   /// (underworld.dart).
   final Map<String, dynamic> crew = {};
@@ -1132,6 +1136,7 @@ class Life {
     'items': items,
     'songs': songs,
     'music': music,
+    'echelon': echelon,
     'crew': crew,
     'dirty': dirty,
     'subs': subs,
@@ -1310,6 +1315,7 @@ class Life {
           Map<String, dynamic>.from(s),
       ])
       ..music.addAll(Map<String, dynamic>.from(j['music'] ?? const {}))
+      ..echelon.addAll(Map<String, dynamic>.from(j['echelon'] ?? const {}))
       ..crew.addAll(Map<String, dynamic>.from(j['crew'] ?? const {}))
       ..dirty = j['dirty'] ?? 0
       ..subs.addAll(List<String>.from(j['subs'] ?? const []))

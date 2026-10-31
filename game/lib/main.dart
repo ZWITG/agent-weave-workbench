@@ -9,6 +9,7 @@ import 'ui/recap_screen.dart';
 import 'ui/update_prompt.dart';
 import 'ui/colour_modes.dart';
 import 'ui/lockdown.dart';
+import 'ui/invitation.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +55,13 @@ class RelivableApp extends StatelessWidget {
               final game = Lockdown(
                 controller: controller,
                 reduceMotion: p.reduceMotion,
-                child: child!,
+                // Crossing into the upper echelon, and each tier after it,
+                // plays the Invitation (invitation.dart).
+                child: Ascension(
+                  controller: controller,
+                  reduceMotion: p.reduceMotion,
+                  child: child!,
+                ),
               );
               return colourMatrices[p.colourMode] == null
                   ? game

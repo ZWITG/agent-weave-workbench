@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'echelon.dart' show inheritEchelon;
 import 'actions.dart';
 import 'careers.dart';
 import 'family.dart';
@@ -138,11 +139,14 @@ Life heirLife(Life old, Npc heir) {
       'cause': old.causeOfDeath ?? '',
       'job': old.job ?? (old.retired ? 'Retired' : ''),
     });
+  // Heirs to the upper echelon: prepared or not (echelon.dart).
+  final (kept, why) = inheritEchelon(old, life, heir, share);
   if (age >= 18) {
-    life.money = share;
+    life.money = kept;
   } else {
-    life.trust = share;
+    life.trust = kept;
   }
+  if (why != null) life.feed.add(FeedEntry(age, why, kind: 'milestone'));
   life.flags['heir'] = Memory(age, 'inheriting from ${old.firstName}');
   final heirlooms = passHeirlooms(old);
   life.assets.addAll(heirlooms);

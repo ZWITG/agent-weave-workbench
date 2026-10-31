@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'echelon.dart' show echelonYear;
 import 'actions.dart';
 import 'currency.dart';
 import 'odds.dart';
@@ -328,6 +329,7 @@ class GameEngine {
       ...countryYear(life, _rngFor(life, 107)),
       ...musicYear(life, _rngFor(life, 109)),
       ...eliteYear(life, _rngFor(life, 113)),
+      ...echelonYear(life, _rngFor(life, 117)),
       ...crewYear(life, _rngFor(life, 131)),
       ...migrationYear(life, _rngFor(life, 139)),
       ...petsYear(life, _rngFor(life, 103)),

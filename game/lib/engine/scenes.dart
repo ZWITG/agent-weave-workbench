@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'echelon.dart' show echelonScene, takeoverScene;
 import 'lifespan.dart';
 import 'dynasty.dart';
 import 'finance.dart';
@@ -223,6 +224,11 @@ Storylet? buildScene(String id, Life life) {
     'elite_threat' ||
     'elite_island' ||
     'elite_team' => eliteScene(parts.first, parts.sublist(1), life),
+    'echelon_rival' ||
+    'echelon_top' ||
+    'echelon_moonshot' ||
+    'echelon_groom' => echelonScene(parts.first, parts.sublist(1), life),
+    'echelon_takeover' => takeoverScene(life),
     'draft' => countryScene(parts.first, parts.sublist(1), life),
     'fame_rumour' ||
     'fame_stalker' ||

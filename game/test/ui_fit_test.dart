@@ -1,3 +1,7 @@
+import 'package:relivable/engine/echelon.dart';
+
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/kin.dart';
@@ -541,6 +545,74 @@ void main() {
     await t.pump(const Duration(seconds: 4));
     await _pump(t);
     expect(find.text('People'), findsOneWidget);
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('the Echelon: card, screen and Invitation fit a small phone', (
+    t,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.updateProfile((p) => p.textScale = 1.3);
+    final l = c.life!;
+    l.money = 160000000;
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    // Crossing the line plays the Invitation over the game.
+    l.flags['upper_echelon'] = Memory(l.age, 'joining');
+    echelonYear(l, Random(1));
+    l.sceneQueue.clear(); // no rival scene in the way here
+    c.notifyListeners();
+    await t.pump(const Duration(milliseconds: 100));
+    expect(find.bySemanticsLabel(RegExp('invited')), findsOneWidget);
+    await t.pump(const Duration(milliseconds: 2500));
+    await t.pump(const Duration(seconds: 4));
+    await _pump(t);
+    expect(find.bySemanticsLabel(RegExp('invited')), findsNothing);
+    l.npcs.add(
+      Npc(
+        id: 'kid9',
+        role: 'Son',
+        name: 'Rafael',
+        birthYear: l.year - 19,
+        circle: 'Children',
+      ),
+    );
+    c.notifyListeners();
+    await t.tap(find.text('Wealth').last);
+    await _pump(t);
+    await t.scrollUntilVisible(
+      find.text('THE ECHELON'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await _pump(t);
+    expect(find.text('THE ECHELON'), findsOneWidget);
+    await t.tap(find.text('THE ECHELON'));
+    await _pump(t);
+    await t.scrollUntilVisible(
+      find.text('The List'),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(find.text('The List'), findsOneWidget);
+    await _scrollAll(t);
     FlutterError.onError = old;
     expect(problems, isEmpty, reason: problems.join('\n'));
     expect(t.takeException(), isNull);

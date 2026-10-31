@@ -18,6 +18,8 @@ import 'wealth_more.dart';
 import '../engine/possessions.dart';
 import '../engine/property.dart';
 import 'widgets.dart';
+import '../engine/elite.dart' show upperEchelon;
+import 'echelon_screen.dart' show EchelonCard;
 
 const _good = Color(0xFF5EE6A8);
 
@@ -123,6 +125,11 @@ class _WealthTabState extends State<WealthTab> {
       children: [
         _Overview(life: life),
         const SizedBox(height: 12),
+        // The way into the Echelon once you are at the top (echelon_screen.dart).
+        if (upperEchelon(life)) ...[
+          EchelonCard(controller: c),
+          const SizedBox(height: 12),
+        ],
         HubSearch(
           controller: _search,
           hint: 'Search money: savings, loan, house…',
@@ -633,6 +640,7 @@ IconData _assetIcon(Asset a) => switch (a.kind) {
   'team' => Icons.sports_soccer_rounded,
   'media' => Icons.newspaper_rounded,
   'bunker' => Icons.shield_rounded,
+  'city' => Icons.location_city_rounded,
   _ => Icons.directions_car_rounded,
 };
 

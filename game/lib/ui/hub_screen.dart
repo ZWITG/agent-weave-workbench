@@ -18,6 +18,9 @@ import 'result_popup.dart';
 import 'path_tab.dart';
 import 'health_screen.dart';
 import 'inside_tabs.dart';
+import 'echelon_screen.dart' show Gilt;
+import '../engine/echelon.dart' show bigMoney;
+import '../engine/elite.dart' show upperEchelon;
 import 'meta_screens.dart';
 import 'social_screen.dart';
 import 'me_screens.dart';
@@ -426,15 +429,21 @@ class _Header extends StatelessWidget {
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          // Inside, what counts is your stash.
+                          // Inside, what counts is your stash. Fortunes
+                          // over ten million are shown short ($160M), and
+                          // in gold once you are in the upper echelon.
                           life.prison != null
                               ? 'Stash ${life.prison!.stash}'
+                              : life.money.abs() >= 10000000
+                              ? bigMoney(life.money)
                               : money(life.money),
                           style: NF.sora(
                             13,
                             weight: FontWeight.w700,
                             color: life.money < 0
                                 ? NF.danger
+                                : upperEchelon(life) && life.prison == null
+                                ? Gilt.gold
                                 : const Color(0xFF5EE6A8),
                           ),
                         ),

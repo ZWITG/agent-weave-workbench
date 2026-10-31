@@ -16,6 +16,7 @@ import 'package:relivable/engine/crime_jobs.dart';
 import 'package:relivable/engine/gangs.dart';
 import 'package:relivable/engine/prison_life.dart';
 import 'package:relivable/engine/cell.dart';
+import 'package:relivable/engine/echelon.dart';
 import 'package:relivable/engine/variants.dart' show variantsFor;
 import 'package:relivable/engine/heists.dart';
 import 'package:relivable/engine/identity.dart';
@@ -3565,6 +3566,97 @@ void main() {
       engine.world.ledger.any((s) => s.headline.contains('crime family')),
       isTrue,
     );
+  });
+
+  test('the echelon: tiers, the List, influence, moonshots and heirs', () {
+    final l = engine.newLife(seed: 4242)..age = 40;
+    l.money = 150000000;
+    engine.ageUp(l);
+    expect(upperEchelon(l), isTrue);
+    expect(rivals(l).length, 8);
+    expect(theList(l).length, 9);
+    expect(rankOf(l), inInclusiveRange(7, 9));
+    expect(echelonTier(l), 0);
+    expect(tierReached(l), 0);
+    GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
+    expect(act('power_lobby').lockReason(l), contains('half-billionaire'));
+    expect(act('moonshot').lockReason(l), contains('decabillionaire'));
+    l.money = 12000000000;
+    l.echelon['influence'] = 60;
+    echelonYear(l, Random(1));
+    expect(tierReached(l), 3);
+    expect(act('power_lobby').lockReason(l), isNull);
+    expect(act('moonshot').lockReason(l), isNull);
+    final oceans = moonshotVariants.firstWhere((v) => v.id == 'oceans');
+    oceans.run(l, Random(2), null, null);
+    expect(activeMoonshot(l), isNotNull);
+    expect(echelonCosts(l).single.$2, lessThan(0));
+    for (var i = 0; i < 4; i++) {
+      echelonYear(l, Random(10 + i));
+    }
+    expect(l.sceneQueue, contains('echelon_moonshot'));
+    final scene = echelonScene('echelon_moonshot', [], l)!;
+    scene.choices.first.run!(l, Random(3));
+    expect(activeMoonshot(l), isNull);
+    for (final r in rivals(l)) {
+      final s = echelonScene('echelon_rival', [r['id'] as String], l)!;
+      expect(s.choices, isNotEmpty);
+    }
+    expect(takeoverScene(l)!.choices.length, 6);
+    addInfluence(l, 500);
+    expect(influence(l), 100);
+    final kid = Npc(
+      id: 'kid1',
+      role: 'Daughter',
+      name: 'Ada',
+      birthYear: l.year - 20,
+      circle: 'Children',
+    );
+    l.npcs.add(kid);
+    l.marks.add('family_office');
+    const share = 1000000000;
+    var (kept, why) = inheritEchelon(l, engine.newLife(seed: 1), kid, share);
+    expect(kept, 750000000);
+    expect(why, contains('Nobody had prepared'));
+    final groom = echelonScene('echelon_groom', [], l)!;
+    for (var i = 0; i < 4; i++) {
+      groom.choices.first.run!(l, Random(i));
+    }
+    expect(readiness(l, kid), greaterThanOrEqualTo(70));
+    final heir = engine.newLife(seed: 2);
+    (kept, why) = inheritEchelon(l, heir, kid, share);
+    expect(kept, share);
+    expect(heir.marks, contains('family_office'));
+    expect(heir.echelon['rivals'], isNotNull);
+    final next = heirLife(l, kid);
+    expect(next.echelon['rivals'], isNotNull);
+    final back = Life.fromJson(
+      jsonDecode(jsonEncode(l.toJson())) as Map<String, dynamic>,
+    );
+    expect(rivals(back).length, 8);
+    expect(tierReached(back), tierReached(l));
+    // A long rich life runs without errors and the List keeps moving.
+    final rich = engine.newLife(seed: 777)..age = 35;
+    rich.money = 3000000000;
+    final rng = Random(5);
+    for (var y = 0; y < 40 && rich.alive; y++) {
+      var ev = engine.ageUp(rich);
+      var g = 0;
+      while (ev != null && g++ < 12) {
+        final open = ev.choices
+            .where((c) => c.lockReason(rich) == null)
+            .toList();
+        if (open.isEmpty) break;
+        engine.choose(rich, ev, open[rng.nextInt(open.length)]);
+        ev = engine.nextScene(rich);
+      }
+      for (final a in engine.actions.where(
+        (a) => a.category == 'Upper echelon' && a.lockReason(rich) == null,
+      )) {
+        if (rng.nextInt(100) < 15) a.run(rich, rng);
+      }
+    }
+    expect(rivals(rich).length, 8);
   });
 
   test(

@@ -175,3 +175,16 @@ Named updates since the game was created (26 October 2026). Newest last.
 - Results inside come back as a stamped block report, and option menus are stencilled ("Pick your move").
 - Your cell: buy things for your shelf with your stash. A radio, paperbacks, photos and a hot plate help a little every year. A smuggled phone, a shank and a bag of brew are contraband: they do more (calls home, winning yard fights, a happier year), but cell searches can find them, and a shank found costs a year and solitary. Your shelf is on the Canteen tab.
 - The yard gives you a nickname once people know you, from what you are known for: Bench, Professor, Chef, Books, Keys, Iron, Owl, Accountant, DJ, Boss, or Canary if you snitched. It goes on your inmate ID.
+
+## 2.20 "The Echelon" (31 Oct)
+Life at the top rebuilt around goals money alone does not settle. Players of life sims say the late game goes quiet once you have bought the biggest house, so the upper echelon now has a ladder to climb, rivals to beat, power to use and a legacy to leave.
+- The Invitation: crossing $100 million plays a moment. The screen goes dark, a black envelope edged in gold rises, a gold wax seal stamps it and cracks, and an engraved card slides out: "You are cordially invited to the Upper Echelon". Each tier after that gets a gold plaque and a burst of sparks.
+- The Echelon: its own screen in obsidian and gold leaf with a serif face (Playfair Display), at the top of the Wealth tab and the Upper echelon activities.
+- Six tiers: Centimillionaire, Half-billionaire, Billionaire, Decabillionaire, Centibillionaire and Richest Alive, each unlocking bigger plays, with a ladder showing how far it is to the next.
+- The List: eight named rival tycoons (rockets, luxury fashion, chips and AI, old oil money, pharma, a hedge fund...) whose fortunes rise and fall every year. Climb past them, feud with them, and watch them age and hand over to heirs who lose some of it. Rivals make moves: bidding against you at auction, offering for your team, proposing joint ventures, challenging you to out-give them, and suing you once a feud boils over.
+- Influence (0–100), earned from your newspaper, foundation, politics and rank, and spent on power moves: lobbying for a tax break, killing a story, hosting a summit, a hostile takeover of a rival, and making a head of government.
+- Moonshots from $10 billion: fusion power, a Mars outpost, curing a disease, cleaning the oceans or an AI lab. Years of funding and a real chance it fails; success puts your name in the history books.
+- Heirs: most billionaire heirs lose a comma because nobody prepared them (UBS/PwC). Prepare your heirs with board seats, time working elsewhere and family councils. A ready heir keeps the family office, foundation and seat on the List; an unprepared one loses a quarter to lawyers and hangers-on.
+- At $100 billion: buy a social network or found a city with your name on it.
+- A trophy cabinet, a legacy score and every upper-echelon purchase grouped by what it is for.
+- Fortunes over $10 million show short in the header ($160M), in gold once you are in the upper echelon.

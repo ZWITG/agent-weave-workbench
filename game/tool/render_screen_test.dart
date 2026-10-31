@@ -32,8 +32,11 @@ void main() {
         ]) {
           final f = FontLoader(fam);
           if (file == null) {
-            final p = '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter-sdk/flutter'}/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf';
-            f.addFont(Future.value(ByteData.sublistView(File(p).readAsBytesSync())));
+            final p =
+                '${Platform.environment['FLUTTER_ROOT'] ?? '/opt/flutter-sdk/flutter'}/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf';
+            f.addFont(
+              Future.value(ByteData.sublistView(File(p).readAsBytesSync())),
+            );
           } else {
             f.addFont(rootBundle.load('assets/fonts/$file'));
           }
@@ -59,20 +62,44 @@ void main() {
         ..respect = 41
         ..stash = 12;
       l.feed
-        ..add(FeedEntry(26, 'You finished the carpentry course. The instructor said your joints were "almost professional".', kind: 'action'))
-        ..add(FeedEntry(27, 'An hour in the yard. For a moment the sun felt the same as it does outside.'))
-        ..add(FeedEntry(27, 'Your mum came to visit. She brought photos of the dog.', kind: 'milestone'));
+        ..add(
+          FeedEntry(
+            26,
+            'You finished the carpentry course. The instructor said your joints were "almost professional".',
+            kind: 'action',
+          ),
+        )
+        ..add(
+          FeedEntry(
+            27,
+            'An hour in the yard. For a moment the sun felt the same as it does outside.',
+          ),
+        )
+        ..add(
+          FeedEntry(
+            27,
+            'Your mum came to visit. She brought photos of the dog.',
+            kind: 'milestone',
+          ),
+        );
       final key = GlobalKey();
-      await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+      await t.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: RelivableApp(controller: c),
+        ),
+      );
       for (var i = 0; i < 10; i++) {
         await t.pump(const Duration(milliseconds: 150));
       }
       await t.runAsync(() async {
-        final b = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+        final b =
+            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
         final img = await b.toImage(pixelRatio: 2);
         final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
         Directory(out).createSync(recursive: true);
-        File('$out/prison_${w.toInt()}.png').writeAsBytesSync(bytes!.buffer.asUint8List());
+        File('$out/prison_${w.toInt()}.png')
+            .writeAsBytesSync(bytes!.buffer.asUint8List());
       });
     });
   }

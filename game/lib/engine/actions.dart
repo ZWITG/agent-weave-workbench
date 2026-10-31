@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'echelon.dart' show echelonActions;
 import 'currency.dart';
 import 'odds.dart';
 
@@ -466,6 +467,7 @@ final allActions = <GameAction>[
   ...celebrityActions,
   ...musicActions,
   ...eliteActions,
+  ...echelonActions,
   ...underworldActions,
   ...migrationActions,
   ...petActions,
