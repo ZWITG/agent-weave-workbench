@@ -188,3 +188,8 @@ Life at the top rebuilt around goals money alone does not settle. Players of lif
 - At $100 billion: buy a social network or found a city with your name on it.
 - A trophy cabinet, a legacy score and every upper-echelon purchase grouped by what it is for.
 - Fortunes over $10 million show short in the header ($160M), in gold once you are in the upper echelon.
+
+## 2.21 "Molten" (1 Nov)
+- The game changes look in the upper echelon: Gilded. Black lacquer backgrounds, molten-gold lines, borders, buttons and accents, ivory text, a gold avatar ring, gold money in the header, and a seam of molten gold along the top of the screen with a slow shine running along it and drips hanging off it.
+- Crossing $100 million plays Molten: the screen freezes, its lines and text turn to gold leaf while the background sinks to black, thin streams of molten gold run down over everything, then a wave of molten gold pours down the screen and leaves the game Gilded behind it. The Invitation follows once the gold has set. Tap to skip; Reduce motion makes it a fade.
+- Prison still wins: inside, the game wears Yard Time, and release brings the Gilded look back.

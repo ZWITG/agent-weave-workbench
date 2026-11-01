@@ -10,6 +10,7 @@ import 'ui/update_prompt.dart';
 import 'ui/colour_modes.dart';
 import 'ui/lockdown.dart';
 import 'ui/invitation.dart';
+import 'engine/elite.dart' show upperEchelon;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,11 @@ class RelivableApp extends StatelessWidget {
     final p = controller.profile;
     // In prison the whole game wears Yard Time (theme.dart, yard_time.dart).
     final l = controller.life;
-    NF.prison = l != null && l.alive && l.prison != null;
+    // In the upper echelon it wears Gilded (black and molten gold).
+    NF.look(
+      prison: l != null && l.alive && l.prison != null,
+      rich: l != null && l.alive && upperEchelon(l),
+    );
     return MaterialApp(
       title: 'Relivable',
       debugShowCheckedModeBanner: false,

@@ -54,14 +54,42 @@ const yardTime = NFPalette(
   orange: Color(0xFF9FE0C1),
 );
 
+/// Gilded: once you are in the upper echelon. Black lacquer, molten-gold
+/// lines and accents, ivory text.
+const gildedLook = NFPalette(
+  bg: Color(0xFF090806),
+  surface: Color(0xFF13110C),
+  surface2: Color(0xFF1C1810),
+  card: Color(0xFF16130D),
+  nav: Color(0xFF050403),
+  border: Color(0xFF4A3B1C),
+  borderStrong: Color(0xFFB8913F),
+  text: Color(0xFFF3EBD8),
+  muted: Color(0xFFA39577),
+  soft: Color(0xFFCFC2A2),
+  blue: Color(0xFFE8C877),
+  orange: Color(0xFFD4AF5A),
+);
+
 /// Night Feed design tokens (design B, chosen 2026-10-26). The colours
-/// follow the active palette, so the whole game changes look in prison.
+/// follow the active palette, so the whole game changes look in prison
+/// (Yard Time) and in the upper echelon (Gilded).
 class NF {
   static NFPalette _p = nightFeed;
 
   /// In prison the game wears Yard Time; outside, Night Feed.
   static bool get prison => identical(_p, yardTime);
   static set prison(bool on) => _p = on ? yardTime : nightFeed;
+
+  /// In the upper echelon (and not in prison) the game wears Gilded.
+  static bool get gilded => identical(_p, gildedLook);
+
+  /// Picks the look: prison wins over riches.
+  static void look({required bool prison, required bool rich}) => _p = prison
+      ? yardTime
+      : rich
+      ? gildedLook
+      : nightFeed;
 
   static Color get bg => _p.bg;
   static Color get surface => _p.surface;

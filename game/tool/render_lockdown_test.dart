@@ -227,17 +227,31 @@ void main() {
       Directory(out).createSync(recursive: true);
       File('$out/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
     });
-    // Crossing the line: the Invitation.
+    // Crossing the line: molten gold, then the Invitation.
     l.flags['upper_echelon'] = Memory(l.age, 'joining');
     echelonYear(l, Random(1));
+    l.sceneQueue.clear();
     c.notifyListeners();
     var ms = 0;
-    for (final at in const [400, 1300, 2000, 2700, 3400, 4200]) {
+    for (final at in const [
+      300,
+      900,
+      1500,
+      2100,
+      2700,
+      3300,
+      4000,
+      5000,
+      7000,
+      8200,
+      9600,
+    ]) {
       await t.pump(Duration(milliseconds: at - ms));
       ms = at;
-      await shot('invite_${at.toString().padLeft(4, '0')}');
+      await shot('gold_${at.toString().padLeft(5, '0')}');
     }
-    await t.pump(const Duration(seconds: 2));
+    await t.pump(const Duration(seconds: 3));
+    await shot('gilded_life');
     // A new tier: the plaque.
     l.money = 2400000000;
     echelonYear(l, Random(2));

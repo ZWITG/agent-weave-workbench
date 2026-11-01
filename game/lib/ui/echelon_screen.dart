@@ -1099,3 +1099,110 @@ class _GiltAction extends StatelessWidget {
     );
   }
 }
+
+/// The Gilded look's seam: a thin line of molten gold along the top of the
+/// game, with a slow shine running along it and a few drips hanging off.
+class GoldSeam extends StatefulWidget {
+  const GoldSeam({super.key});
+
+  @override
+  State<GoldSeam> createState() => _GoldSeamState();
+}
+
+class _GoldSeamState extends State<GoldSeam>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shine = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 6),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _shine.stop();
+      _shine.value = 0.3;
+    } else if (!_shine.isAnimating) {
+      _shine.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _shine.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: SizedBox(
+      height: 12,
+      width: double.infinity,
+      child: AnimatedBuilder(
+        animation: _shine,
+        builder: (context, _) =>
+            CustomPaint(painter: _SeamPainter(_shine.value)),
+      ),
+    ),
+  );
+}
+
+class _SeamPainter extends CustomPainter {
+  _SeamPainter(this.t);
+  final double t;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final line = Rect.fromLTWH(0, 0, w, 2.5);
+    canvas.drawRect(
+      line,
+      Paint()
+        ..shader = LinearGradient(
+          colors: const [
+            Gilt.goldLo,
+            Gilt.gold,
+            Gilt.goldHi,
+            Gilt.gold,
+            Gilt.goldLo,
+          ],
+          stops: [
+            0,
+            (t - 0.12).clamp(0.0, 1.0),
+            t,
+            (t + 0.12).clamp(0.0, 1.0),
+            1,
+          ],
+        ).createShader(line),
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, 4),
+      Paint()
+        ..color = Gilt.gold.withValues(alpha: 0.25)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
+    // Drips that have set where the gold ran over the edge.
+    final rng = Random(5);
+    for (var x = 18.0; x < w; x += 46 + rng.nextDouble() * 70) {
+      final len = 3 + rng.nextDouble() * 6;
+      final r = 1.4 + rng.nextDouble() * 1.4;
+      final drip = RRect.fromRectAndCorners(
+        Rect.fromLTWH(x - r, 1, r * 2, len),
+        bottomLeft: Radius.circular(r),
+        bottomRight: Radius.circular(r),
+      );
+      canvas.drawRRect(
+        drip,
+        Paint()
+          ..shader = const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Gilt.gold, Gilt.goldHi],
+          ).createShader(drip.outerRect),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SeamPainter old) => old.t != t;
+}

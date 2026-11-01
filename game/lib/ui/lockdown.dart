@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../engine/justice.dart' show crimeById;
+import '../engine/elite.dart' show upperEchelon;
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../sound.dart';
@@ -24,7 +25,10 @@ import 'yard_time.dart';
 // new palette, so both looks are on screen at once while one consumes the
 // other. Tap to skip; Reduce motion turns it into a short fade.
 
-enum _Kind { enter, release }
+/// How long the molten-gold takeover runs (the Invitation waits for it).
+const moltenDuration = Duration(milliseconds: 5200);
+
+enum _Kind { enter, release, gild }
 
 class Lockdown extends StatefulWidget {
   const Lockdown({
@@ -67,6 +71,14 @@ class _LockdownState extends State<Lockdown>
     return l != null && l.alive && l.prison != null;
   }
 
+  /// Wearing the Gilded look: the upper echelon, and not in a cell.
+  bool get _isRich {
+    final l = c.life;
+    return l != null && l.alive && l.prison == null && upperEchelon(l);
+  }
+
+  bool _rich = false;
+
   @override
   void initState() {
     super.initState();
@@ -77,6 +89,7 @@ class _LockdownState extends State<Lockdown>
       });
     _life = c.life;
     _inside = _isInside;
+    _rich = _isRich;
     _prison = _life?.prison;
     c.addListener(_changed);
   }
@@ -98,9 +111,34 @@ class _LockdownState extends State<Lockdown>
     final sameLife = identical(l, _life);
     final was = _inside;
     final before = _prison;
+    final richNow = _isRich;
+    final richWas = _rich;
     _life = l;
     _inside = now;
+    _rich = richNow;
     if (now) _prison = l!.prison;
+    // Reaching the upper echelon: molten gold seeps over the night look.
+    if (richNow &&
+        !richWas &&
+        now == was &&
+        sameLife &&
+        l != null &&
+        Lockdown.enabled &&
+        _kind == null) {
+      _shot?.dispose();
+      _shot = _capture();
+      _kind = _Kind.gild;
+      _stamp = '';
+      _number = '';
+      _sub = '';
+      _cued.clear();
+      _anim.duration = widget.reduceMotion
+          ? const Duration(milliseconds: 600)
+          : moltenDuration;
+      _anim.forward(from: 0);
+      setState(() {});
+      return;
+    }
     // Only a sentence starting or ending in the life being played: not a
     // new life, a loaded save, a rewind or a death.
     if (now == was || !sameLife || l == null || !l.alive) return;
@@ -158,7 +196,13 @@ class _LockdownState extends State<Lockdown>
       if (t >= when && _cued.add(id)) f();
     }
 
-    if (_kind == _Kind.enter) {
+    if (_kind == _Kind.gild) {
+      at('pour', 0.02, () => Sound.instance.whoosh());
+      at('set', 0.78, () {
+        HapticFeedback.lightImpact();
+        Sound.instance.cue('coin');
+      });
+    } else if (_kind == _Kind.enter) {
       at('siren', 0.0, () => Sound.instance.cue('siren'));
       at('clang', _Beat.slam, () {
         HapticFeedback.heavyImpact();
@@ -205,6 +249,8 @@ class _LockdownState extends State<Lockdown>
             child: Semantics(
               label: kind == _Kind.enter
                   ? 'You are in prison. $_number. $_sub.'
+                  : kind == _Kind.gild
+                  ? 'Molten gold spreads across the screen. The upper echelon.'
                   : '$_stamp. $_sub.',
               liveRegion: true,
               child: GestureDetector(
@@ -267,7 +313,7 @@ class _LockdownPainter extends CustomPainter {
   final String sub;
 
   // The two looks, whichever palette is live right now.
-  NFPalette get _old => kind == _Kind.enter ? nightFeed : yardTime;
+  NFPalette get _old => kind == _Kind.release ? yardTime : nightFeed;
 
   static double _seg(double t, double a, double b) =>
       ((t - a) / (b - a)).clamp(0.0, 1.0);
@@ -280,8 +326,169 @@ class _LockdownPainter extends CustomPainter {
     }
     if (kind == _Kind.enter) {
       _enter(canvas, size);
+    } else if (kind == _Kind.gild) {
+      _gild(canvas, size);
     } else {
       _release(canvas, size);
+    }
+  }
+
+  // ---------------- Going gold ----------------
+
+  /// The old screen in gold leaf: its lines and text turn to gold while
+  /// its background sinks to black ([k] from 0 to 1).
+  static List<double> _goldTone(double k) {
+    const lr = 0.2126, lg = 0.7152, lb = 0.0722;
+    // Gold (226, 184, 78), with extra contrast so darks go to black.
+    const gold = [226 / 255 * 1.35, 184 / 255 * 1.35, 78 / 255 * 1.35];
+    const off = -38.0;
+    final id = [
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0],
+    ];
+    final m = <double>[];
+    for (var row = 0; row < 3; row++) {
+      for (var col = 0; col < 3; col++) {
+        final tone = gold[row] * [lr, lg, lb][col];
+        m.add(id[row][col] * (1 - k) + tone * k);
+      }
+      m
+        ..add(0)
+        ..add(off * k);
+    }
+    m.addAll([0, 0, 0, 1, 0]);
+    return m;
+  }
+
+  /// Molten gold seeps into the game. The old screen's lines turn to gold
+  /// and its background to black while thin streams of molten gold run
+  /// down over it; then a wave of gold pours down the screen, and behind
+  /// it the game is Gilded.
+  void _gild(Canvas canvas, Size size) {
+    final w = size.width, h = size.height;
+    const goldHi = Color(0xFFFFF1BF);
+    const gold = Color(0xFFE2B84E);
+    const goldLo = Color(0xFF9C6F1E);
+    final fade = 1 - _seg(t, 0.9, 1);
+
+    // The wave: it starts late and leaves the new look behind it.
+    final wave =
+        h * 1.12 * Curves.easeInOutCubic.transform(_seg(t, 0.52, 0.92));
+    Path below() {
+      final p = Path()..moveTo(-2, h + 2);
+      for (var x = -2.0; x <= w + 2; x += 6) {
+        p.lineTo(x, wave + sin(x * 0.05 + t * 11) * 7 + sin(x * 0.013) * 9);
+      }
+      p
+        ..lineTo(w + 2, h + 2)
+        ..close();
+      return p;
+    }
+
+    final rest = wave <= 0 ? (Path()..addRect(Offset.zero & size)) : below();
+    // The old screen turning to gold leaf on black.
+    final paint = Paint()
+      ..filterQuality = FilterQuality.medium
+      ..colorFilter = ColorFilter.matrix(
+        _goldTone(Curves.easeOut.transform(_seg(t, 0.0, 0.5))),
+      );
+    canvas.save();
+    canvas.clipPath(rest);
+    final img = shot;
+    if (img != null) {
+      canvas.drawImageRect(
+        img,
+        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+        Offset.zero & size,
+        paint,
+      );
+    } else {
+      canvas.drawRect(Offset.zero & size, Paint()..color = Colors.black);
+    }
+    canvas.restore();
+
+    // Thin streams of molten gold running down over it.
+    final rng = Random(41);
+    final n = max(14, (w / 16).round());
+    for (var k = 0; k < n; k++) {
+      final x = (k + 0.5) * w / n + (rng.nextDouble() - 0.5) * w / n * 0.8;
+      final r = 1.2 + rng.nextDouble() * 2.6;
+      final start = 0.02 + rng.nextDouble() * 0.35;
+      final len = 0.3 + rng.nextDouble() * 0.35;
+      final y = (h + 20) * Curves.easeIn.transform(_seg(t, start, start + len));
+      if (y <= 0) continue;
+      final top = 0.0;
+      final bottom = min(y, wave > 0 ? max(0.0, wave) + h : y);
+      if (wave > 0 && y <= wave) continue; // swallowed by the wave
+      final stream = Rect.fromLTRB(x - r, max(top, wave), x + r, bottom);
+      canvas.drawRect(
+        stream,
+        Paint()
+          ..shader = LinearGradient(
+            colors: [
+              goldLo.withValues(alpha: fade),
+              goldHi.withValues(alpha: fade),
+              gold.withValues(alpha: fade),
+              goldLo.withValues(alpha: fade),
+            ],
+            stops: const [0, 0.35, 0.6, 1],
+          ).createShader(stream),
+      );
+      final head = Offset(x, y - r * 1.4);
+      canvas.drawCircle(
+        head,
+        r * 4,
+        Paint()
+          ..color = gold.withValues(alpha: 0.35 * fade)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+      );
+      canvas.drawCircle(
+        head,
+        r * 1.7,
+        Paint()
+          ..shader = RadialGradient(
+            center: const Alignment(-0.35, -0.4),
+            colors: [
+              goldHi.withValues(alpha: fade),
+              gold.withValues(alpha: fade),
+              goldLo.withValues(alpha: fade),
+            ],
+          ).createShader(Rect.fromCircle(center: head, radius: r * 1.7)),
+      );
+    }
+
+    // The wave's molten edge.
+    if (wave > 0 && wave < h + 40) {
+      final edge = Path();
+      for (var x = -2.0; x <= w + 2; x += 6) {
+        final y = wave + sin(x * 0.05 + t * 11) * 7 + sin(x * 0.013) * 9;
+        if (x < 0) {
+          edge.moveTo(x, y);
+        } else {
+          edge.lineTo(x, y);
+        }
+      }
+      canvas.drawPath(
+        edge,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 26
+          ..color = gold.withValues(alpha: 0.35 * fade)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14),
+      );
+      canvas.drawPath(
+        edge,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 9
+          ..strokeCap = StrokeCap.round
+          ..shader = const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [gold, goldHi, goldLo],
+          ).createShader(Rect.fromLTRB(0, wave - 20, w, wave + 20)),
+      );
     }
   }
 

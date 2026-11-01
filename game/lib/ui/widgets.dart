@@ -202,27 +202,39 @@ class GlowBackground extends StatelessWidget {
           top: -140,
           left: -120,
           child: _glow(
-            NF.prison ? const Color(0xFF4D7A69) : const Color(0xFF7C9CFF),
+            NF.prison
+                ? const Color(0xFF4D7A69)
+                : NF.gilded
+                ? const Color(0xFFD4AF5A)
+                : const Color(0xFF7C9CFF),
             360,
-            0.22,
+            NF.gilded ? 0.10 : 0.22,
           ),
         ),
         Positioned(
           top: 220,
           right: -160,
           child: _glow(
-            NF.prison ? const Color(0xFFE3CF7A) : const Color(0xFFFFB86B),
+            NF.prison
+                ? const Color(0xFFE3CF7A)
+                : NF.gilded
+                ? const Color(0xFFF6E3A1)
+                : const Color(0xFFFFB86B),
             320,
-            NF.prison ? 0.06 : 0.13,
+            NF.prison || NF.gilded ? 0.06 : 0.13,
           ),
         ),
         Positioned(
           bottom: -160,
           left: 40,
           child: _glow(
-            NF.prison ? const Color(0xFF2C433B) : const Color(0xFFB57CFF),
+            NF.prison
+                ? const Color(0xFF2C433B)
+                : NF.gilded
+                ? const Color(0xFF8C6A2A)
+                : const Color(0xFFB57CFF),
             340,
-            0.12,
+            NF.gilded ? 0.08 : 0.12,
           ),
         ),
         Positioned.fill(child: child),
@@ -408,6 +420,8 @@ class AgeRingAvatar extends StatelessWidget {
                   // In prison the avatar takes the yard's green.
                   colors: NF.prison
                       ? const [Color(0xFF5C8A78), Color(0xFF3E6B5B)]
+                      : NF.gilded
+                      ? const [Color(0xFFF6E3A1), Color(0xFF9C7A33)]
                       : const [Color(0xFF9DB4FF), Color(0xFF6A7FE8)],
                 ),
                 boxShadow: [

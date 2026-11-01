@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import '../engine/models.dart';
 import '../game_controller.dart';
 import '../sound.dart';
 import 'echelon_screen.dart' show Gilt;
+import 'lockdown.dart' show Lockdown, moltenDuration;
 
 // The Invitation: the moment you cross into the upper echelon. The screen
 // goes dark, a black envelope edged in gold rises, a gold wax seal stamps
@@ -48,6 +50,7 @@ class _AscensionState extends State<Ascension>
   String _title = '';
   String _sub = '';
   bool _cued = false;
+  Timer? _wait;
 
   GameController get c => widget.controller;
 
@@ -108,7 +111,16 @@ class _AscensionState extends State<Ascension>
         : _kind == _Kind.invite
         ? const Duration(milliseconds: 5200)
         : const Duration(milliseconds: 3400);
-    _anim.forward(from: 0);
+    // The Invitation waits for the molten gold (lockdown.dart) to settle.
+    _wait?.cancel();
+    if (_kind == _Kind.invite && Lockdown.enabled && !widget.reduceMotion) {
+      _anim.value = 0;
+      _wait = Timer(moltenDuration * 0.9, () {
+        if (mounted && _kind != null) _anim.forward(from: 0);
+      });
+    } else {
+      _anim.forward(from: 0);
+    }
     setState(() {});
   }
 
@@ -120,6 +132,7 @@ class _AscensionState extends State<Ascension>
 
   @override
   void dispose() {
+    _wait?.cancel();
     c.removeListener(_changed);
     _anim.dispose();
     super.dispose();

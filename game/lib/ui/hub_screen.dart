@@ -18,7 +18,7 @@ import 'result_popup.dart';
 import 'path_tab.dart';
 import 'health_screen.dart';
 import 'inside_tabs.dart';
-import 'echelon_screen.dart' show Gilt;
+import 'echelon_screen.dart' show Gilt, GoldSeam;
 import '../engine/echelon.dart' show bigMoney;
 import '../engine/elite.dart' show upperEchelon;
 import 'meta_screens.dart';
@@ -110,7 +110,10 @@ class _HubScreenState extends State<HubScreen> {
       constraints: BoxConstraints(maxWidth: wide ? 720 : 560),
       child: Column(
         children: [
-          if (NF.prison) const FenceStrip(),
+          if (NF.prison)
+            const FenceStrip()
+          else if (NF.gilded)
+            const GoldSeam(),
           _Header(
             life: life,
             // Tapping your money opens the Wealth tab.
@@ -411,10 +414,12 @@ class _Header extends StatelessWidget {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF5EE6A8).withValues(alpha: 0.14),
+                      color: (NF.gilded ? Gilt.gold : const Color(0xFF5EE6A8))
+                          .withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: const Color(0xFF5EE6A8).withValues(alpha: 0.35),
+                        color: (NF.gilded ? Gilt.gold : const Color(0xFF5EE6A8))
+                            .withValues(alpha: NF.gilded ? 0.7 : 0.35),
                       ),
                     ),
                     child: Row(
@@ -425,7 +430,9 @@ class _Header extends StatelessWidget {
                               ? Icons.inventory_2_rounded
                               : Icons.account_balance_wallet_rounded,
                           size: 14,
-                          color: Color(0xFF5EE6A8),
+                          color: NF.gilded
+                              ? Gilt.gold
+                              : const Color(0xFF5EE6A8),
                         ),
                         const SizedBox(width: 5),
                         Text(
@@ -448,10 +455,12 @@ class _Header extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 2),
-                        const Icon(
+                        Icon(
                           Icons.chevron_right_rounded,
                           size: 14,
-                          color: Color(0xFF5EE6A8),
+                          color: NF.gilded
+                              ? Gilt.gold
+                              : const Color(0xFF5EE6A8),
                         ),
                       ],
                     ),

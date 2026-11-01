@@ -581,9 +581,15 @@ void main() {
     c.notifyListeners();
     await t.pump(const Duration(milliseconds: 100));
     expect(find.bySemanticsLabel(RegExp('invited')), findsOneWidget);
+    // Molten gold first: the game turns Gilded underneath it.
+    expect(find.bySemanticsLabel(RegExp('Molten gold')), findsOneWidget);
+    expect(NF.gilded, isTrue);
     await t.pump(const Duration(milliseconds: 2500));
-    await t.pump(const Duration(seconds: 4));
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(seconds: 2));
+    }
     await _pump(t);
+    expect(find.bySemanticsLabel(RegExp('Molten gold')), findsNothing);
     expect(find.bySemanticsLabel(RegExp('invited')), findsNothing);
     l.npcs.add(
       Npc(
