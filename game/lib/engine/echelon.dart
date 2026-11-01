@@ -1160,4 +1160,4 @@ bool aboveLine(int worth) => worth >= eliteThreshold;
 
 /// Real-world context for the rich list action.
 String worldContext(int worth) =>
-    'Forbes counted 3,428 billionaires in 2026. About ${richerThan(worth)} people are richer than you; ${worth >= billion ? 'you are one of the billionaires' : 'you are not a billionaire yet'}.';
+    'The business press counted 3,428 billionaires in 2026. About ${richerThan(worth)} people are richer than you; ${worth >= billion ? 'you are one of the billionaires' : 'you are not a billionaire yet'}.';

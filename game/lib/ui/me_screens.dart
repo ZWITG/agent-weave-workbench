@@ -9,6 +9,7 @@ import '../engine/lifespan.dart';
 import '../engine/love.dart' show partnerOf;
 import '../engine/models.dart';
 import '../game_controller.dart';
+import '../updater.dart' show appVersion;
 import '../engine/profile.dart' show plusForEveryone;
 import '../theme.dart';
 import 'activities.dart' show runActionFlow, showEvent;
@@ -383,6 +384,36 @@ class SettingsScreen extends StatelessWidget {
                   (v) => controller.updateProfile((p) => p.plusTest = v),
                 ),
               ],
+              const _Head('About and legal'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Privacy: your game is saved only on this device. Relivable has no accounts, '
+                  'no ads and no tracking, and sends nothing about you to us. The apps check '
+                  'GitHub for updates, and the web version is hosted on GitHub Pages; GitHub '
+                  'sees the usual connection details when that happens.\n\n'
+                  'Relivable is fiction. People, companies, brands, gangs and products in it '
+                  'are invented. It contains mature themes and is recommended for ages 16 '
+                  'and up. Casino-style mini-games use no real money.',
+                  style: NF.sora(13, color: NF.muted),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  'Open-source licences',
+                  style: NF.sora(15, weight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  'The libraries and fonts Relivable is built with',
+                  style: NF.sora(12, color: NF.muted),
+                ),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => showLicensePage(
+                  context: context,
+                  applicationName: 'Relivable',
+                  applicationVersion: appVersion,
+                ),
+              ),
               if (life != null) ...[
                 const _Head('This life'),
                 ListTile(

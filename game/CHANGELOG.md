@@ -202,3 +202,9 @@ The first public release, after a front-to-back audit of the game.
 - An unreadable save is kept aside instead of overwritten, and the load-error screen has a Try again button.
 - A release fuzz test plays whole dynasties, full prison sentences and lives at the top of the List (over 40,000 simulated years) with no problems.
 - What is still missing, and what it needs, is in docs/phase-2/01 Phase 2 Open Items.md.
+
+## 1.0 legal pass (1 Nov)
+- Real-world names made fictional: the Open Hand Pledge, the Summer Games, "the business press".
+- Settings has an About and legal section: privacy statement (saved on your device only; no accounts, ads or tracking), a fiction notice, the 16+ recommendation and the open-source licences page, including the fonts' licence.
+- The new-life screen states the mature themes and the 16+ recommendation.
+- The promo's "Coming next" card says "Planned features. Details may change."

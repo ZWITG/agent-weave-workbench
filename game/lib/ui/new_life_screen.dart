@@ -72,6 +72,15 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                     'Every choice is remembered.',
                     style: NF.sora(30, weight: FontWeight.w700, height: 1.2),
                   ),
+                  const SizedBox(height: 8),
+                  // No store rating covers the web and sideloaded builds,
+                  // so the game says it plainly.
+                  Text(
+                    'Contains mature themes: crime and prison, drugs and alcohol, '
+                    'death and grief, and casino-style mini-games with no real '
+                    'money. Recommended for ages 16 and up.',
+                    style: NF.sora(12, color: NF.muted),
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     'Live a life from birth. People remember what you did, and so does the world.',

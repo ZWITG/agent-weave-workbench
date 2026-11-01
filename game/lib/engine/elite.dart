@@ -251,7 +251,7 @@ Storylet? eliteScene(String id, List<String> args, Life l) {
             },
           ),
           Choice(
-            label: 'Sign the Giving Pledge',
+            label: 'Sign the Open Hand Pledge',
             outcome: '',
             risk: 'Promise to give away at least half your wealth',
             run: (l, rng) {
@@ -509,7 +509,7 @@ final eliteActions = <GameAction>[
       'About 117,000 people in the world are worth over \$100,000,000, and about 3,800 are billionaires',
       if (foundationFund(l) > 0)
         'Your foundation holds ${_m(foundationFund(l))}',
-      if (l.marks.contains('pledge')) 'You have signed the Giving Pledge',
+      if (l.marks.contains('pledge')) 'You have signed the Open Hand Pledge',
     ]),
     repeatable: true,
   ),
@@ -1038,7 +1038,7 @@ final eliteActions = <GameAction>[
   ),
   _buy(
     'giving_pledge',
-    'Sign the Giving Pledge',
+    'Sign the Open Hand Pledge',
     ['giving pledge', 'philanthropy', 'give away', 'pledge'],
     'A public promise to give away half your fortune',
     (l, rng) {

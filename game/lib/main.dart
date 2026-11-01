@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'game_controller.dart';
 import 'theme.dart';
@@ -14,6 +16,15 @@ import 'engine/elite.dart' show upperEchelon;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // The fonts' SIL Open Font License, shown with the other licences.
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Sora',
+      'Caveat',
+      'Stardos Stencil',
+      'Playfair Display',
+    ], await rootBundle.loadString('assets/fonts/OFL.txt'));
+  });
   runApp(RelivableApp(controller: GameController()..load()));
 }
 

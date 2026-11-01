@@ -28,7 +28,7 @@ provide. Items are ordered by how much they block a public store launch.
 | A4 | **macOS and Linux desktop** | Not built (web works there) | Whether you want them; macOS needs the Apple account from A2 |
 | A5 | **Age rating** | Content is written for 16+; there is no age screen | Confirm 16+, and decide ages 13–15: block, or a softened build (plan 04 open decision 4). Then the Apple questionnaire and IARC |
 | A6 | **Privacy policy and terms** | The game is offline and collects nothing, which keeps this simple | Approve a short policy (needed by both stores even for offline games) |
-| A7 | **Trademark clearance** for "Relivable" and the fictional brand names (Vybe, Lenso, Murmur…) | Not started | IP counsel, or accept the risk for a small release |
+| A7 | **Trademark: "RELIVABLE" is already a registered US trademark** (reg. no. 7538229, serial 97400693, classes 41 and 42, entertainment and computer services; owner listed as Robert Matteson, registered 15 Oct 2024, per a 1 Nov 2026 search; confirm on USPTO TSDR). The fictional brand names (Vybe, Lenso, Murmur…) are also unchecked | Not cleared. **This is the biggest legal risk before any public launch or store listing** | IP counsel to read the registration's exact goods and services and advise: keep the name, license it, or rename the game before promoting it |
 
 ## B. Money (the plan's business model is not built)
 
@@ -74,6 +74,19 @@ provide. Items are ordered by how much they block a public store launch.
 | F2 | **In-game feedback form** | None | Where feedback should go (email, form, Discord) |
 | F3 | **Accessibility release gate** | Labels, text size, reduce motion, colour-vision modes and left-hand layout are in; no manual VoiceOver/TalkBack pass yet | A device test session, and later an external audit for the European Accessibility Act |
 | F4 | **Gate 2 readout** | Not written | Playtest data from F1 and C3 |
+
+## Legal check (1 Nov 2026)
+
+Done in code: real-world names made fictional (the Open Hand Pledge, the
+Summer Games, "the business press"); Settings has an About and legal
+section (privacy statement, fiction notice, 16+ note) and the open-source
+licences page (fonts' OFL included); the new-life screen states the mature
+themes; the promo marks its roadmap as "Planned features. Details may
+change." Fonts are SIL OFL, sounds and music are generated in the repo,
+and the promo uses only the game's own footage. What still needs a lawyer
+or the owner: A5 (age rating and ages 13–15), A6 (privacy policy and terms
+for the stores), A7 (the RELIVABLE trademark), the fictional brand-name
+search, and B-series consumer-law review once anything is sold.
 
 ## What the 1.0 audit fixed (for reference)
 

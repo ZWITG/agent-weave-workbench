@@ -394,6 +394,8 @@ def render_card(b, lt, t):
             d.ellipse((140, y + 20, 172, y + 52), fill=mix(LOOKS['night']['bg1'], LOOKS['night']['accent'], a))
             d.text((210, y), head, font=sora(52, 800), fill=mix(LOOKS['night']['bg1'], LOOKS['night']['text'], a))
             d.text((210, y + 68), sub, font=sora(34, 400), fill=mix(LOOKS['night']['bg1'], LOOKS['night']['muted'], a))
+        # Plans, not promises.
+        centered(d, 1660, 'Planned features. Details may change.', sora(30, 400), LOOKS['night']['muted'])
         return img
     if kind == 'end':
         img = card_bg('night', t)

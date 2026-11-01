@@ -24,6 +24,7 @@ flutter:
   assets:
     - assets/storylets/
     - assets/sounds/
+    - assets/fonts/OFL.txt
   fonts:
     - family: Sora
       fonts:

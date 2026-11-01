@@ -796,7 +796,7 @@ const _globalTemplates = [
   ),
   _Template(
     'sport',
-    'The Olympics open with a record number of countries',
+    'The Summer Games open with a record number of countries',
     'Two hundred and six teams marched into the stadium. The opening ceremony featured a thousand drummers and one very nervous horse.',
   ),
   _Template(
