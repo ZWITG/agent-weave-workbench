@@ -94,9 +94,24 @@ class RelivableApp extends StatelessWidget {
                 body: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      'Something went wrong loading the game.\n${controller.loadError ?? ''}',
-                      textAlign: TextAlign.center,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Something went wrong loading the game.\n${controller.loadError ?? ''}',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: () {
+                            controller.loading = true;
+                            controller.loadError = null;
+                            controller.notifyListeners();
+                            controller.load();
+                          },
+                          child: const Text('Try again'),
+                        ),
+                      ],
                     ),
                   ),
                 ),

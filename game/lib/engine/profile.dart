@@ -1,6 +1,9 @@
 /// Things that belong to the player rather than to one life: settings,
 /// and (Wave F) achievements, collections, Sparks and challenges.
 /// Saved separately from the life and the world.
+/// First release: every Plus feature is free until store purchases exist.
+const plusForEveryone = true;
+
 class Profile {
   Profile();
 
@@ -18,6 +21,11 @@ class Profile {
   /// generations, Destiny Mode). Real purchases need store accounts, so in
   /// the prototype the owner can switch Plus on to try those features.
   bool plusTest = false;
+
+  /// Relivable Plus features are on for everyone in the first release:
+  /// there is no store purchase yet (Phase 2), so nobody hits a paywall
+  /// they cannot pay.
+  bool get plus => plusForEveryone || plusTest;
 
   /// Default difficulty for new lives.
   String difficulty = 'normal';

@@ -35,6 +35,9 @@ tags: [relivable, phase-2, roadmap]
 | 5 · Content + polish | Reach about 150 events, Life Recap share card, accessibility pass (screen reader, text size), sound and haptics | Ready for playtests |
 | 6 · Playtests + Gate 2 | Analytics events, feedback form, playtest build, Gate 2 report | Real players test it |
 
+> [!note] Update 1 Nov 2026
+> The game is past this route: release 1.0 is prepared. What is still missing, and what each part needs from the owner, is in [[01 Phase 2 Open Items]].
+
 ## Progress (27 Oct 2026)
 | Sprint | Status | What is built |
 |---|---|---|

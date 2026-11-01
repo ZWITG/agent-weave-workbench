@@ -2,7 +2,7 @@
 ; Built in CI: ISCC /DAppVersion=<version> /DSourceDir=<release folder> relivable.iss
 
 #ifndef AppVersion
-  #define AppVersion "0.1.0"
+  #define AppVersion "1.0.0"
 #endif
 #ifndef SourceDir
   #define SourceDir "..\..\build\windows\x64\runner\Release"

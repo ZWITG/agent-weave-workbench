@@ -193,3 +193,12 @@ Life at the top rebuilt around goals money alone does not settle. Players of lif
 - The game changes look in the upper echelon: Gilded. Black lacquer backgrounds, molten-gold lines, borders, buttons and accents, ivory text, a gold avatar ring, gold money in the header, and a seam of molten gold along the top of the screen with a slow shine running along it and drips hanging off it.
 - Crossing $100 million plays Molten: the screen freezes, its lines and text turn to gold leaf while the background sinks to black, thin streams of molten gold run down over everything, then a wave of molten gold pours down the screen and leaves the game Gilded behind it. The Invitation follows once the gold has set. Tap to skip; Reduce motion makes it a fade.
 - Prison still wins: inside, the game wears Yard Time, and release brings the Gilded look back.
+
+## 1.0 release candidate (1 Nov)
+The first public release, after a front-to-back audit of the game.
+- Versions are now 1.0.<build> on Android, iPhone, Windows and the web.
+- Relivable Plus features (unlimited Rewind, dynasties to Generation 8) are free for everyone until the game is in the stores; the test switch is gone from Settings.
+- Fixed: The Healer, The Teacher and The Restaurateur titles could never be earned; joining the Stage Kids did not open acting; an affair coming out was not remembered; palliative care did nothing after you chose it.
+- An unreadable save is kept aside instead of overwritten, and the load-error screen has a Try again button.
+- A release fuzz test plays whole dynasties, full prison sentences and lives at the top of the List (over 40,000 simulated years) with no problems.
+- What is still missing, and what it needs, is in docs/phase-2/01 Phase 2 Open Items.md.

@@ -94,7 +94,7 @@ jobs:
       - name: Build Android APK
         run: |
           flutter build apk --release \
-            --build-name=0.1.${{ github.run_number }} --build-number=${{ github.run_number }} \
+            --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }} \
             --dart-define=RELIVABLE_BUILD=${{ github.run_number }} --dart-define=RELIVABLE_CERT=$RELIVABLE_CERT
           cp build/app/outputs/flutter-apk/app-release.apk Relivable.apk
       - uses: actions/upload-artifact@v4
@@ -109,7 +109,7 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           base="https://github.com/$REPO/releases/download/relivable-latest"
-          jq -n --argjson build ${{ github.run_number }} --arg version "0.1.${{ github.run_number }}" \
+          jq -n --argjson build ${{ github.run_number }} --arg version "1.0.${{ github.run_number }}" \
             --arg apk "$base/Relivable.apk" --arg cert "$RELIVABLE_CERT" \
             --arg notes "$(git log -1 --pretty=%s)" \
             '{build: $build, version: $version, apk: $apk, cert: $cert, notes: $notes}' > version.json
@@ -117,7 +117,7 @@ jobs:
             gh release create relivable-latest --repo "$REPO" --prerelease --latest=false \
               --target "${{ github.sha }}" --title "Relivable (latest build)" --notes "Latest Relivable build."
           gh release edit relivable-latest --repo "$REPO" --prerelease --latest=false \
-            --title "Relivable 0.1.${{ github.run_number }} (latest build)" \
+            --title "Relivable 1.0.${{ github.run_number }} (latest build)" \
             --notes "Android: download Relivable.apk and open it to install. Installed copies update themselves.
           iPhone and iPad (easiest): open https://zwitg.github.io/agent-weave-workbench/ in Safari, tap Share, then Add to Home Screen. It runs full-screen and is always the latest version.
           iPhone with AltStore or SideStore already installed: add the source https://github.com/$REPO/releases/download/relivable-latest/altstore.json inside the store app (opening that link in Safari only shows its data), then install Relivable.
@@ -145,7 +145,7 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y --no-progress
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=0.1.${{ github.run_number }} /DSourceDir="$PWD\build\windows\x64\runner\Release" windows\installer\relivable.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=1.0.${{ github.run_number }} /DSourceDir="$PWD\build\windows\x64\runner\Release" windows\installer\relivable.iss
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows\installer\Output\Relivable-portable.zip
       - uses: actions/upload-artifact@v4
         with:
@@ -216,7 +216,7 @@ jobs:
       - name: Build iPhone app
         run: |
           flutter build ios --release --no-codesign \
-            --build-name=0.1.${{ github.run_number }} --build-number=${{ github.run_number }} \
+            --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }} \
             --dart-define=RELIVABLE_BUILD=${{ github.run_number }}
           mkdir -p Payload
           cp -R build/ios/iphoneos/Runner.app Payload/
@@ -234,7 +234,7 @@ jobs:
           cp web/icons/Icon-512.png relivable-icon.png
           gh release upload relivable-latest Relivable.ipa relivable-icon.png --repo "$REPO" --clobber
           notes="$(git log -1 --pretty=%s)"
-          jq -n --arg version "0.1.${{ github.run_number }}" --arg build "${{ github.run_number }}" \
+          jq -n --arg version "1.0.${{ github.run_number }}" --arg build "${{ github.run_number }}" \
             --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg notes "$notes" \
             --arg ipa "$base/Relivable.ipa" --arg icon "$base/relivable-icon.png" \
             --arg source "$base/altstore.json" --arg page "https://github.com/$REPO/releases/tag/relivable-latest" \
@@ -256,7 +256,7 @@ jobs:
               }],
               news: []
             }' > altstore.json
-          jq -n --argjson build ${{ github.run_number }} --arg version "0.1.${{ github.run_number }}" \
+          jq -n --argjson build ${{ github.run_number }} --arg version "1.0.${{ github.run_number }}" \
             --arg ipa "$base/Relivable.ipa" --arg notes "$notes" \
             '{build: $build, version: $version, ipa: $ipa, notes: $notes}' > version-ios.json
           gh release upload relivable-latest altstore.json --repo "$REPO" --clobber

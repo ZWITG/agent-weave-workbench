@@ -534,3 +534,23 @@ int? parseSeedCode(String code) {
 /// The same seed for every player today.
 int dailySeed(DateTime d) =>
     (d.year * 10000 + d.month * 100 + d.day) * 7919 % 0x7fffffff;
+
+/// Remembers kinds of work and ownership the life titles look for, so a
+/// title still counts after you change job or sell up.
+void rememberWork(Life l) {
+  void mark(String flag, String label) =>
+      l.flags.putIfAbsent(flag, () => Memory(l.age, label));
+  if (const {'nurse', 'doctor', 'vet'}.contains(l.careerId)) {
+    mark('healthcare_career', 'working in healthcare');
+  }
+  if (l.careerId == 'teacher') mark('teaching_career', 'teaching');
+  if (l.job == 'Restaurant owner' ||
+      l.businesses.any((b) => b.industry == 'restaurant')) {
+    mark('owned_restaurant', 'owning a restaurant');
+  }
+  // Palliative care: comfort rather than a cure, and it shows.
+  if (l.marks.contains('palliative')) {
+    l.stats.add('happiness', 2);
+    l.stress = (l.stress - 5).clamp(0, 100);
+  }
+}

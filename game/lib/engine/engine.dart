@@ -318,6 +318,7 @@ class GameEngine {
     if (trust != null) {
       life.feed.add(FeedEntry(life.age, trust, kind: 'milestone'));
     }
+    rememberWork(life);
     for (final line in [
       ...justiceYear(life, _rngFor(life, 73)),
       ...healthYear(life, _rngFor(life, 79)),

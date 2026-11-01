@@ -17,7 +17,7 @@ import 'package:http/http.dart' as http;
 
 const appBuild = int.fromEnvironment('RELIVABLE_BUILD');
 const appCert = String.fromEnvironment('RELIVABLE_CERT');
-const appVersion = appBuild > 0 ? '0.1.$appBuild' : 'dev';
+const appVersion = appBuild > 0 ? '1.0.$appBuild' : 'dev';
 
 const _release =
     'https://github.com/ZWITG/agent-weave-workbench/releases/download/'
@@ -71,7 +71,7 @@ Future<UpdateInfo?> checkForUpdate() async {
     final cert = j['cert'] as String? ?? '';
     return UpdateInfo(
       build: build,
-      version: j['version'] as String? ?? '0.1.$build',
+      version: j['version'] as String? ?? '1.0.$build',
       apk: (j['apk'] ?? j['ipa']) as String,
       notes: j['notes'] as String? ?? '',
       sameKey: _isIos || appCert.isEmpty || cert.isEmpty || cert == appCert,

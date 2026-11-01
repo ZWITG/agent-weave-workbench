@@ -106,6 +106,9 @@ class GameController extends ChangeNotifier {
         life = Life.fromJson(Map<String, dynamic>.from(j['life']));
       } catch (_) {
         life = null;
+        // Keep the unreadable save aside instead of overwriting it, so it
+        // can be recovered by a later version.
+        await prefs.setString('$_saveKey.unreadable', saved);
       }
       // An unfinished event is rebuilt from its full key; if that fails the
       // life carries on without it rather than being lost.
@@ -202,7 +205,7 @@ class GameController extends ChangeNotifier {
 
   // ---------------- Dynasty (plan Social §4) ----------------
 
-  int get generationCap => dynastyCap(plus: profile.plusTest);
+  int get generationCap => dynastyCap(plus: profile.plus);
 
   /// Continue the family as one of the children.
   void continueAsHeir(Npc heir) {
@@ -287,7 +290,7 @@ class GameController extends ChangeNotifier {
     if (l == null) return 'No life';
     if (l.ironman) return 'Ironman lives cannot rewind';
     if (_snapshots.isEmpty) return 'Nothing to rewind to yet';
-    if (!profile.plusTest && l.rewindsUsed >= 1) {
+    if (!profile.plus && l.rewindsUsed >= 1) {
       return 'Your free Rewind for this life is used (Plus: unlimited)';
     }
     return null;

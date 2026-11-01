@@ -338,7 +338,7 @@ String? _stat(Life l, String s, int min) => l.stats[s] >= min
 String? _actorReq(Life l) =>
     l.school.electives.contains('Drama') ||
         l.school.clubs.contains('Drama club') ||
-        l.flags.containsKey('clique_stage') ||
+        l.school.clique == 'stage' ||
         l.school.major == 'Fine Arts'
     ? null
     : _stat(l, 'charisma', 60) ?? _stat(l, 'looks', 55);

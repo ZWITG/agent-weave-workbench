@@ -9,6 +9,7 @@ import '../engine/lifespan.dart';
 import '../engine/love.dart' show partnerOf;
 import '../engine/models.dart';
 import '../game_controller.dart';
+import '../engine/profile.dart' show plusForEveryone;
 import '../theme.dart';
 import 'activities.dart' show runActionFlow, showEvent;
 import 'result_popup.dart';
@@ -175,8 +176,10 @@ Future<void> showRewind(BuildContext context, GameController c) async {
             ),
             const SizedBox(height: 4),
             Text(
-              'Go back to the start of an earlier year. One free Rewind per life; '
-              'Plus makes it unlimited; Ironman lives cannot rewind.',
+              c.profile.plus
+                  ? 'Go back to the start of an earlier year, as often as you like. Ironman lives cannot rewind.'
+                  : 'Go back to the start of an earlier year. One free Rewind per life; '
+                        'Plus makes it unlimited; Ironman lives cannot rewind.',
               style: NF.sora(13, color: NF.muted),
             ),
             const SizedBox(height: 12),
@@ -370,13 +373,16 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const _Head('Relivable Plus (test switch)'),
-              sw(
-                'Plus features on',
-                'Unlimited Rewind, 8 generations, Destiny Mode. Real purchases arrive with the store version.',
-                p.plusTest,
-                (v) => controller.updateProfile((p) => p.plusTest = v),
-              ),
+              // Plus is free for everyone until store purchases exist.
+              if (!plusForEveryone) ...[
+                const _Head('Relivable Plus (test switch)'),
+                sw(
+                  'Plus features on',
+                  'Unlimited Rewind, 8 generations, Destiny Mode. Real purchases arrive with the store version.',
+                  p.plusTest,
+                  (v) => controller.updateProfile((p) => p.plusTest = v),
+                ),
+              ],
               if (life != null) ...[
                 const _Head('This life'),
                 ListTile(

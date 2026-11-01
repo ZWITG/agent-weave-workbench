@@ -3568,6 +3568,49 @@ void main() {
     );
   });
 
+  test('release audit: titles, requirements and memories are linked', () {
+    final l = engine.newLife(seed: 818)..age = 40;
+    double title(String id) =>
+        lifeTitles.firstWhere((t) => t.id == id).progress(l);
+    // Working as a nurse earns the Healer title even after changing job.
+    l.careerId = 'nurse';
+    rememberWork(l);
+    l.careerId = null;
+    expect(title('healer'), 1);
+    // Teaching, likewise.
+    l.careerId = 'teacher';
+    rememberWork(l);
+    l.careerId = null;
+    expect(title('teacher'), 1);
+    // A restaurant business counts for The Restaurateur after selling up.
+    l.businesses.add(
+      Business(
+        name: 'Chez Test',
+        industry: 'restaurant',
+        tier: 'mid',
+        since: 38,
+      ),
+    );
+    rememberWork(l);
+    l.businesses.clear();
+    expect(title('mogul'), 1);
+    // Being in the Stage Kids at school opens acting without the stats.
+    final actor =
+        careerById('actor') ?? careers.firstWhere((c) => c.extra != null);
+    final kid = engine.newLife(seed: 819)..age = 18;
+    kid.stats.values['charisma'] = 10;
+    kid.stats.values['looks'] = 10;
+    kid.school.clique = 'stage';
+    expect(actor.extra!(kid), isNull);
+    // Palliative care comforts every year.
+    l.marks.add('palliative');
+    l.stats.values['happiness'] = 40;
+    rememberWork(l);
+    expect(l.stats['happiness'], 42);
+    // Plus is free for everyone in the first release.
+    expect(Profile().plus, isTrue);
+  });
+
   test('the echelon: tiers, the List, influence, moonshots and heirs', () {
     final l = engine.newLife(seed: 4242)..age = 40;
     l.money = 150000000;

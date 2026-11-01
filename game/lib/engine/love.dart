@@ -939,7 +939,11 @@ void loveYear(Life l, Random rng) {
     final risk = ((lover.info['risk'] as int?) ?? 0) + 1;
     lover.info['risk'] = risk;
     final odds = 15 + 10 * (risk - 1) - (p.trust - 50) ~/ 10;
-    if (rng.nextInt(100) < odds) l.sceneQueue.add('affair_found');
+    if (rng.nextInt(100) < odds) {
+      l.sceneQueue.add('affair_found');
+      // Remembered for the Life Recap and for future partners' doubts.
+      l.flags['affair_found'] = Memory(l.age, 'your affair coming out');
+    }
   }
   final stage = stageOf(l, p);
   final since = (p.info['stageSince'] as int?) ?? l.age;
