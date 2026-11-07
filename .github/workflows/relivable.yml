@@ -1,0 +1,263 @@
+name: Relivable game
+
+# Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
+# - tests the engine (including the 500-life simulator run)
+# - saves the web build, the Android APK and the Windows installer as
+#   downloadable build artifacts on the workflow run
+# - publishes Relivable.apk, version.json and the Windows installer to the
+#   rolling "relivable-latest" pre-release, which the phone app reads to
+#   update itself (game/lib/updater.dart). It is never marked "latest", so
+#   the desktop app's own updater is unaffected.
+# - publishes the web version to GitHub Pages, so it can be added to an
+#   iPhone home screen from Safari (no App Store or sideloading needed)
+# - builds an unsigned iPhone app (Relivable.ipa) for sideloading, plus an
+#   AltStore/SideStore source (altstore.json) so those stores keep it
+#   updated, and version-ios.json for the in-game update prompt.
+
+on:
+  push:
+    branches: [relivable-phase-2]
+    paths: ['game/**', '.github/workflows/relivable.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: relivable-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build web
+        run: flutter build web --release --no-web-resources-cdn
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-web
+          path: game/build/web
+      # Every APK must be signed with the same key or Android refuses to
+      # install updates. Uses the RELIVABLE_KEYSTORE_BASE64 secret when set;
+      # otherwise one key is made once and kept in this repo's Actions cache.
+      - name: Restore signing key
+        uses: actions/cache/restore@v4
+        with:
+          path: game/android/relivable-signing.jks
+          key: relivable-signing-v1
+      - name: Prepare signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.RELIVABLE_KEYSTORE_BASE64 }}
+          RELIVABLE_KEYSTORE_PASSWORD: ${{ secrets.RELIVABLE_KEYSTORE_PASSWORD || 'relivable' }}
+          RELIVABLE_KEY_ALIAS: ${{ secrets.RELIVABLE_KEY_ALIAS || 'relivable' }}
+        run: |
+          ks="$PWD/android/relivable-signing.jks"
+          if [ -n "$KEYSTORE_B64" ]; then
+            printf '%s' "$KEYSTORE_B64" | base64 --decode > "$ks"
+          elif [ ! -f "$ks" ]; then
+            keytool -genkeypair -keystore "$ks" -storepass "$RELIVABLE_KEYSTORE_PASSWORD" \
+              -keypass "$RELIVABLE_KEYSTORE_PASSWORD" -alias "$RELIVABLE_KEY_ALIAS" \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Relivable"
+            echo "NEW_SIGNING_KEY=1" >> "$GITHUB_ENV"
+          fi
+          cert=$(keytool -list -v -keystore "$ks" -storepass "$RELIVABLE_KEYSTORE_PASSWORD" -alias "$RELIVABLE_KEY_ALIAS" \
+            | grep -m1 'SHA256:' | sed 's/.*SHA256: //; s/://g' | tr 'A-F' 'a-f')
+          test -n "$cert"
+          {
+            echo "RELIVABLE_KEYSTORE=$ks"
+            echo "RELIVABLE_KEYSTORE_PASSWORD=$RELIVABLE_KEYSTORE_PASSWORD"
+            echo "RELIVABLE_KEY_ALIAS=$RELIVABLE_KEY_ALIAS"
+            echo "RELIVABLE_CERT=$cert"
+          } >> "$GITHUB_ENV"
+      - name: Keep the new signing key
+        if: env.NEW_SIGNING_KEY == '1'
+        uses: actions/cache/save@v4
+        with:
+          path: game/android/relivable-signing.jks
+          key: relivable-signing-v1
+      - name: Build Android APK
+        run: |
+          flutter build apk --release \
+            --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }} \
+            --dart-define=RELIVABLE_BUILD=${{ github.run_number }} --dart-define=RELIVABLE_CERT=$RELIVABLE_CERT
+          cp build/app/outputs/flutter-apk/app-release.apk Relivable.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-android-apk
+          path: game/Relivable.apk
+      # version.json goes up last, so phones never see a version whose APK
+      # is not uploaded yet.
+      - name: Publish the phone update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$REPO/releases/download/relivable-latest"
+          jq -n --argjson build ${{ github.run_number }} --arg version "1.0.${{ github.run_number }}" \
+            --arg apk "$base/Relivable.apk" --arg cert "$RELIVABLE_CERT" \
+            --arg notes "$(git log -1 --pretty=%s)" \
+            '{build: $build, version: $version, apk: $apk, cert: $cert, notes: $notes}' > version.json
+          gh release view relivable-latest --repo "$REPO" >/dev/null 2>&1 || \
+            gh release create relivable-latest --repo "$REPO" --prerelease --latest=false \
+              --target "${{ github.sha }}" --title "Relivable (latest build)" --notes "Latest Relivable build."
+          gh release edit relivable-latest --repo "$REPO" --prerelease --latest=false \
+            --title "Relivable 1.0.${{ github.run_number }} (latest build)" \
+            --notes "Android: download Relivable.apk and open it to install. Installed copies update themselves.
+          iPhone and iPad (easiest): open https://zwitg.github.io/agent-weave-workbench/ in Safari, tap Share, then Add to Home Screen. It runs full-screen and is always the latest version.
+          iPhone with AltStore or SideStore already installed: add the source https://github.com/$REPO/releases/download/relivable-latest/altstore.json inside the store app (opening that link in Safari only shows its data), then install Relivable.
+          Windows: download RelivableSetup.exe and run it, or unzip Relivable-portable.zip."
+          gh release upload relivable-latest Relivable.apk --repo "$REPO" --clobber
+          gh release upload relivable-latest version.json --repo "$REPO" --clobber
+
+  windows:
+    needs: build
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build Windows app
+        run: flutter build windows --release
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DAppVersion=1.0.${{ github.run_number }} /DSourceDir="$PWD\build\windows\x64\runner\Release" windows\installer\relivable.iss
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows\installer\Output\Relivable-portable.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-windows-installer
+          path: game/windows/installer/Output/RelivableSetup.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-windows-portable
+          path: game/windows/installer/Output/Relivable-portable.zip
+      - name: Add the Windows files to the latest-build release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload relivable-latest windows/installer/Output/RelivableSetup.exe windows/installer/Output/Relivable-portable.zip --repo "${{ github.repository }}" --clobber
+
+  # The web version on GitHub Pages: on an iPhone, Safari's Share > Add to
+  # Home Screen turns it into a full-screen app that is always up to date.
+  # Pages must be switched on once in the repo settings (Source: GitHub
+  # Actions); until then this job fails without affecting the others.
+  pages:
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build web for Pages
+        run: flutter build web --release --no-web-resources-cdn --pwa-strategy=none --base-href /agent-weave-workbench/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: game/build/web
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  # iOS only installs apps signed for the device, so this IPA is unsigned:
+  # AltStore, SideStore or Sideloadly sign it with the player's own Apple ID
+  # when installing. altstore.json lists each new build so those stores
+  # offer the update; version-ios.json goes up last, as on Android.
+  ios:
+    needs: build
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build iPhone app
+        run: |
+          flutter build ios --release --no-codesign \
+            --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }} \
+            --dart-define=RELIVABLE_BUILD=${{ github.run_number }}
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry Relivable.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relivable-ios-ipa
+          path: game/Relivable.ipa
+      - name: Publish the iPhone update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$REPO/releases/download/relivable-latest"
+          cp web/icons/Icon-512.png relivable-icon.png
+          gh release upload relivable-latest Relivable.ipa relivable-icon.png --repo "$REPO" --clobber
+          notes="$(git log -1 --pretty=%s)"
+          jq -n --arg version "1.0.${{ github.run_number }}" --arg build "${{ github.run_number }}" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg notes "$notes" \
+            --arg ipa "$base/Relivable.ipa" --arg icon "$base/relivable-icon.png" \
+            --arg source "$base/altstore.json" --arg page "https://github.com/$REPO/releases/tag/relivable-latest" \
+            --argjson size "$(stat -f%z Relivable.ipa)" \
+            '{
+              name: "Relivable", identifier: "com.relivable.source", sourceURL: $source,
+              subtitle: "A life simulator where every choice is remembered.",
+              iconURL: $icon, website: $page, tintColor: "#7C9CFF",
+              apps: [{
+                name: "Relivable", bundleIdentifier: "com.relivable.relivable", developerName: "ZWITG",
+                subtitle: "Every choice is remembered.",
+                localizedDescription: "Live a whole life, one year at a time: school, love, work, money, crime, family and the world around you. People remember what you did, and your choices carry on through your children.",
+                iconURL: $icon, tintColor: "#7C9CFF", category: "games",
+                version: $version, versionDate: $date, versionDescription: $notes, downloadURL: $ipa, size: $size,
+                versions: [{version: $version, buildVersion: $build, date: $date,
+                  localizedDescription: $notes, downloadURL: $ipa, size: $size, minOSVersion: "15.0"}],
+                appPermissions: {entitlements: [], privacy: {
+                  NSPhotoLibraryAddUsageDescription: "Relivable saves your Life Recap cards to your photos when you ask it to."}}
+              }],
+              news: []
+            }' > altstore.json
+          jq -n --argjson build ${{ github.run_number }} --arg version "1.0.${{ github.run_number }}" \
+            --arg ipa "$base/Relivable.ipa" --arg notes "$notes" \
+            '{build: $build, version: $version, ipa: $ipa, notes: $notes}' > version-ios.json
+          gh release upload relivable-latest altstore.json --repo "$REPO" --clobber
+          gh release upload relivable-latest version-ios.json --repo "$REPO" --clobber

@@ -1,0 +1,42 @@
+name: relivable
+description: "Relivable: a life simulator where every choice is remembered."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.3.0
+  audioplayers: ^6.1.0
+  http: ^1.6.0
+  web: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/storylets/
+    - assets/sounds/
+    - assets/fonts/OFL.txt
+  fonts:
+    - family: Sora
+      fonts:
+        - asset: assets/fonts/Sora-Variable.ttf
+    - family: Caveat
+      fonts:
+        - asset: assets/fonts/Caveat-Bold.ttf
+          weight: 700
+    - family: StardosStencil
+      fonts:
+        - asset: assets/fonts/StardosStencil-Bold.ttf
+          weight: 700
+    - family: Playfair
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay-Variable.ttf
