@@ -32,6 +32,7 @@ Get the trademark answer before you put ad money behind the name.
 | 12 | `04_the_list.jpg` | Update spotlight: The Echelon |
 | 13 | `03_invited.jpg` | Mystery: "most players never see this screen" |
 | 14 | `10_whats_new.jpg` | Recap of the big updates |
+| when ready | `12_next_update_new_look.jpg` | Teaser for the layout and design update |
 | later | `07_87_years.jpg`, `08_things_to_do.jpg`, `09_minigames.jpg` | Evergreen features |
 
 ---
@@ -95,6 +96,12 @@ Which one are you trying first?
 ### 11_out_now.jpg
 **Caption:** Relivable 1.0 is out. 🎉 A life simulator where every choice is remembered. Free on Android, iPhone (web app), Windows and the web. Link in bio.
 **Alt text:** Three phones showing Relivable's normal, prison and gold looks, with "Every choice is remembered" and "Play free".
+
+### 12_next_update_new_look.jpg · NEXT UPDATE: A WHOLE NEW LOOK
+**Caption:** Our next update is all about looks. 🎨
+We're rebuilding Relivable's layout and design screen by screen: cleaner navigation, sharper type, fresh colour and more room to breathe. The phone shows today's look, so you can compare when it lands.
+What would you change first? Tell us 👇
+**Alt text:** A drafting grid behind a phone showing Relivable's current life screen, labelled "Today's look", with the headline "A whole new look" and a checklist: layout, navigation, typography, colour, spacing.
 
 ## Carousel (carousel_1 to carousel_5, post together)
 **Caption:** One life, five swipes. 👉

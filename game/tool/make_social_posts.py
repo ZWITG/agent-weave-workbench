@@ -334,6 +334,57 @@ def launch():
     save(img, '11_out_now.jpg')
 
 
+def blueprint(img, box, step=40, color=(124, 156, 255)):
+    """A drafting grid over part of the image, for the redesign teaser."""
+    x0, y0, x1, y1 = box
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    for i, x in enumerate(range(x0, x1 + 1, step)):
+        d.line((x, y0, x, y1), fill=color + (90 if i % 4 == 0 else 40,), width=2 if i % 4 == 0 else 1)
+    for i, y in enumerate(range(y0, y1 + 1, step)):
+        d.line((x0, y, x1, y), fill=color + (90 if i % 4 == 0 else 40,), width=2 if i % 4 == 0 else 1)
+    img.paste(layer, (0, 0), layer)
+
+
+def next_update():
+    """Teaser: the next update is a layout and design update. It shows the
+    game as it looks today under a drafting grid, and does not mock up the
+    new design before it exists."""
+    look = 'night'
+    L = LOOKS[look]
+    img = backdrop(look, FW, FH, seed=13)
+    blueprint(img, (0, 0, FW, FH))
+    y = badge(img, 'NEXT UPDATE', look) + 34
+    y = headline(img, look, 'A whole new\nlook.*', y, 120)
+    d = ImageDraw.Draw(img)
+    for line in wrap(d, 'Our next update rebuilds the layout and design, screen by screen.', sora(36, 500), 460):
+        d.text((70, y + 16), line, font=sora(36, 500), fill=L['muted'])
+        y += 46
+
+    # Today's screen, tilted, with dashed redline marks around it.
+    ph = phone_layer(screen('life_24'), 470, look, -7)
+    px, py = FW - ph.width + 60, 470
+    img.paste(ph, (px, py), ph)
+    d = ImageDraw.Draw(img)
+    t = "TODAY'S LOOK"
+    d.text((FW - 70 - d.textlength(t, font=sora(26, 800)), py + 6), t, font=sora(26, 800), fill=L['accent'])
+
+    # A checklist of what is being reworked, on the left.
+    items = ['Layout', 'Navigation', 'Typography', 'Colour', 'Spacing']
+    ly = max(y + 70, 700)
+    for t in items:
+        d.rounded_rectangle((70, ly, 112, ly + 42), 10, outline=L['accent'], width=4)
+        d.line((80, ly + 22, 90, ly + 32), fill=L['accent'], width=5)
+        d.line((90, ly + 32, 104, ly + 12), fill=L['accent'], width=5)
+        d.text((134, ly + 2), t, font=sora(38, 700), fill=L['text'])
+        ly += 66
+
+    bottom_band(img, look)
+    brand(img, look)
+    footer(img, look, 'Coming soon')
+    save(img, '12_next_update_new_look.jpg')
+
+
 # ---------------- Carousel: a whole life in five slides ----------------
 
 def carousel():
@@ -523,7 +574,7 @@ def reels():
 
 
 if __name__ == '__main__':
-    feed()
-    carousel()
-    stories()
-    reels()
+    # Optional extra arguments pick parts to rebuild, e.g. "next_update".
+    parts = sys.argv[4:] or ['feed', 'next_update', 'carousel', 'stories', 'reels']
+    for p in parts:
+        globals()[p]()
