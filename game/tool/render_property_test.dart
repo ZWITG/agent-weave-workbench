@@ -18,6 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const out = String.fromEnvironment('OUT', defaultValue: 'build/screens');
 
+/// --dart-define=EMPTY=true renders a life with no property (the plot).
+const empty = bool.fromEnvironment('EMPTY');
+
 void main() {
   IntroSplash.enabled = false;
   for (final (w, h) in const [(390.0, 2900.0), (320.0, 2900.0)]) {
@@ -59,16 +62,18 @@ void main() {
       l.money = 900000;
       l.economy = 'Normal';
       final homes = listings(l);
-      buyListing(l, homes[0], homes[0].price);
-      buyListing(l, homes[1], homes[1].price);
-      buyListing(l, homes[2], homes[2].price);
-      final lets = l.assets.where((a) => a.info['let'] == true).toList();
-      lets[0].info['tenant'] = {
-        'kind': 'family',
-        'name': 'Ana Rivera',
-        'since': 36,
-      };
-      makeHolidayLet(l, lets[1]);
+      if (!empty) buyListing(l, homes[0], homes[0].price);
+      if (!empty) {
+        buyListing(l, homes[1], homes[1].price);
+        buyListing(l, homes[2], homes[2].price);
+        final lets = l.assets.where((a) => a.info['let'] == true).toList();
+        lets[0].info['tenant'] = {
+          'kind': 'family',
+          'name': 'Ana Rivera',
+          'since': 36,
+        };
+        makeHolidayLet(l, lets[1]);
+      }
       l.money = 120000;
       l.sceneQueue.clear();
       final key = GlobalKey();
@@ -86,8 +91,15 @@ void main() {
         await t.pump(const Duration(milliseconds: 150));
       }
       await t.tap(find.text('Real estate').first);
-      for (var i = 0; i < 6; i++) {
+      for (var i = 0; i < 20; i++) {
         await t.pump(const Duration(milliseconds: 150));
+      }
+      // Let the home icons decode.
+      for (var i = 0; i < 3; i++) {
+        await t.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 400)),
+        );
+        await t.pump(const Duration(milliseconds: 50));
       }
       await t.runAsync(() async {
         final b =
@@ -95,7 +107,7 @@ void main() {
         final img = await b.toImage(pixelRatio: 1);
         final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
         Directory(out).createSync(recursive: true);
-        File('$out/real_estate_${w.toInt()}.png')
+        File('$out/real_estate${empty ? '_empty' : ''}_${w.toInt()}.png')
             .writeAsBytesSync(bytes!.buffer.asUint8List());
       });
     });

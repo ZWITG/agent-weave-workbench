@@ -93,11 +93,24 @@ class _WealthTabState extends State<WealthTab> {
     ),
   };
 
-  void _open(String? s) => setState(() {
-    _section = s;
-    _search.clear();
-    _q = '';
-  });
+  @override
+  void initState() {
+    super.initState();
+    // A new life starts on the Wealth home, not inside Real estate.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) c.realtyPage = false;
+    });
+  }
+
+  void _open(String? s) {
+    setState(() {
+      _section = s;
+      _search.clear();
+      _q = '';
+    });
+    // Real estate wears its own look (Sunset Strip) while it is open.
+    c.realtyPage = s == 'property';
+  }
 
   List<GameAction> get _moneyActions => c.engine!.actions
       .where((a) => a.category == 'Money' || a.category == 'Assets')

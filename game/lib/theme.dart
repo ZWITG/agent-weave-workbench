@@ -71,6 +71,23 @@ const gildedLook = NFPalette(
   orange: Color(0xFFD4AF5A),
 );
 
+/// Sunset Strip: while the Real estate page is open. A beach-town dusk:
+/// violet sky, neon pink and pool cyan, warm white text.
+const sunsetStrip = NFPalette(
+  bg: Color(0xFF160D2E),
+  surface: Color(0xFF231442),
+  surface2: Color(0xFF2E1B55),
+  card: Color(0xFF2A184C),
+  nav: Color(0xFF110924),
+  border: Color(0xFF4B2C72),
+  borderStrong: Color(0xFFB4428E),
+  text: Color(0xFFFFF3E8),
+  muted: Color(0xFFC7A9D8),
+  soft: Color(0xFFE8D3EC),
+  blue: Color(0xFF5EF0EE),
+  orange: Color(0xFFFF6FB0),
+);
+
 /// Night Feed design tokens (design B, chosen 2026-10-26). The colours
 /// follow the active palette, so the whole game changes look in prison
 /// (Yard Time) and in the upper echelon (Gilded).
@@ -84,9 +101,19 @@ class NF {
   /// In the upper echelon (and not in prison) the game wears Gilded.
   static bool get gilded => identical(_p, gildedLook);
 
-  /// Picks the look: prison wins over riches.
-  static void look({required bool prison, required bool rich}) => _p = prison
+  /// On the Real estate page the game wears Sunset Strip.
+  static bool get sunset => identical(_p, sunsetStrip);
+
+  /// Picks the look: prison wins over everything, then the Real estate
+  /// page (only while it is open), then riches.
+  static void look({
+    required bool prison,
+    required bool rich,
+    bool sunset = false,
+  }) => _p = prison
       ? yardTime
+      : sunset
+      ? sunsetStrip
       : rich
       ? gildedLook
       : nightFeed;

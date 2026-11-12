@@ -49,6 +49,8 @@ class RelivableApp extends StatelessWidget {
     NF.look(
       prison: l != null && l.alive && l.prison != null,
       rich: l != null && l.alive && upperEchelon(l),
+      // Wealth › Real estate wears Sunset Strip while it is open.
+      sunset: l != null && l.alive && controller.sunsetLook,
     );
     return MaterialApp(
       title: 'Relivable',

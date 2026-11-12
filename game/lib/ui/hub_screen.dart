@@ -43,6 +43,14 @@ class HubScreen extends StatefulWidget {
 
 class _HubScreenState extends State<HubScreen> {
   int _tab = 0;
+
+  /// Shows tab [i] and tells the controller (the Real estate look only
+  /// shows while Wealth is the visible tab).
+  void _goTab(int i) {
+    setState(() => _tab = i);
+    c.hubTab = i;
+  }
+
   String? _lastEvent;
   final _dockScroll = ScrollController();
 
@@ -73,7 +81,7 @@ class _HubScreenState extends State<HubScreen> {
     final event = c.pendingEvent?.id;
     if (event != null && event != _lastEvent && _tab != 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _tab = 0);
+        if (mounted) _goTab(0);
       });
     }
     _lastEvent = event;
@@ -81,7 +89,7 @@ class _HubScreenState extends State<HubScreen> {
       c.wantLifeTab = false;
       if (_tab != 0) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) setState(() => _tab = 0);
+          if (mounted) _goTab(0);
         });
       }
     }
@@ -117,7 +125,7 @@ class _HubScreenState extends State<HubScreen> {
           _Header(
             life: life,
             // Tapping your money opens the Wealth tab.
-            onMoney: () => setState(() => _tab = 3),
+            onMoney: () => _goTab(3),
             onFame: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => FameScreen(controller: c)),
             ),
@@ -145,7 +153,7 @@ class _HubScreenState extends State<HubScreen> {
                   backgroundColor: NF.nav,
                   extended: MediaQuery.sizeOf(context).width >= 1300,
                   selectedIndex: _tab,
-                  onDestinationSelected: (i) => setState(() => _tab = i),
+                  onDestinationSelected: (i) => _goTab(i),
                   labelType: MediaQuery.sizeOf(context).width >= 1300
                       ? NavigationRailLabelType.none
                       : NavigationRailLabelType.all,
@@ -192,7 +200,7 @@ class _HubScreenState extends State<HubScreen> {
         padding: EdgeInsets.only(bottom: _iosWeb ? 14 : 0),
         child: NavigationBar(
           selectedIndex: _tab,
-          onDestinationSelected: (i) => setState(() => _tab = i),
+          onDestinationSelected: (i) => _goTab(i),
           height: 64,
           destinations: [
             for (final (icon, selected, label) in _destinations)

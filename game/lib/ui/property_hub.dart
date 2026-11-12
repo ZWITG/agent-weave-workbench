@@ -11,6 +11,7 @@ import '../theme.dart';
 import 'activities.dart';
 import 'hub_kit.dart';
 import 'result_popup.dart';
+import 'sunset_strip.dart';
 import 'widgets.dart';
 
 const _good = Color(0xFF5EE6A8);
@@ -31,6 +32,9 @@ class _PropertyHubState extends State<PropertyHub> {
   /// Whether a listing you open is a home to move into or one to let out
   /// (only asked when you already own a home).
   bool _toLet = true;
+
+  /// The long skyline rise plays on the first visit in each life.
+  late final bool _fullRise = c.life?.marks.add('seen:realty') ?? false;
 
   GameController get c => widget.controller;
 
@@ -97,57 +101,72 @@ class _PropertyHubState extends State<PropertyHub> {
     final p = portfolioOf(life);
     final equity = p.value - p.owed;
     return NFCard(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel('Property portfolio'),
-          const SizedBox(height: 6),
-          Text(
-            p.homes == 0 ? 'No property yet' : money(p.value),
-            style: NF.sora(26, weight: FontWeight.w800),
-          ),
-          Text(
-            p.homes == 0
-                ? 'Buy a home, bid at auction or let out a second one.'
-                : '${p.homes} home${p.homes == 1 ? '' : 's'} · ${life.economy} market',
-            style: NF.sora(12, color: NF.muted),
-          ),
-          if (p.homes > 0) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _stat('Equity', money(equity), equity >= 0 ? _good : NF.danger),
-                _stat('Mortgages', money(p.owed), NF.text),
-                _stat(
-                  'Rent a year',
-                  money(p.rent),
-                  p.rent > 0 ? _good : NF.muted,
-                ),
-              ],
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
+            child: SunsetSkyline(
+              key: ValueKey(life.assets.length),
+              towers: skylineOf(life),
+              economy: life.economy,
+              full: _fullRise,
             ),
-            if (p.value > 0) ...[
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: (equity / p.value).clamp(0, 1).toDouble(),
-                  minHeight: 6,
-                  backgroundColor: NF.surface2,
-                  color: _good,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'You own ${(equity * 100 / p.value).clamp(0, 100).round()}% outright; the bank owns the rest.',
-                style: NF.sora(11, color: NF.muted),
-              ),
-            ],
-          ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _numbers(life, p, equity),
+          ),
         ],
       ),
     );
   }
+
+  Widget _numbers(Life life, Portfolio p, int equity) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SectionLabel('Property portfolio'),
+      const SizedBox(height: 6),
+      Text(
+        p.homes == 0 ? 'No property yet' : money(p.value),
+        style: NF.sora(26, weight: FontWeight.w800),
+      ),
+      Text(
+        p.homes == 0
+            ? 'Buy a home, bid at auction or let out a second one.'
+            : '${p.homes} home${p.homes == 1 ? '' : 's'} · ${life.economy} market',
+        style: NF.sora(12, color: NF.muted),
+      ),
+      if (p.homes > 0) ...[
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            _stat('Equity', money(equity), equity >= 0 ? _good : NF.danger),
+            _stat('Mortgages', money(p.owed), NF.text),
+            _stat('Rent a year', money(p.rent), p.rent > 0 ? _good : NF.muted),
+          ],
+        ),
+        if (p.value > 0) ...[
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: (equity / p.value).clamp(0, 1).toDouble(),
+              minHeight: 6,
+              backgroundColor: NF.surface2,
+              color: _good,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'You own ${(equity * 100 / p.value).clamp(0, 100).round()}% outright; the bank owns the rest.',
+            style: NF.sora(11, color: NF.muted),
+          ),
+        ],
+      ],
+    ],
+  );
 
   Widget _stat(String label, String value, Color color) => Expanded(
     child: Column(
@@ -178,7 +197,7 @@ class _PropertyHubState extends State<PropertyHub> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _titleRow(
-            Icons.home_rounded,
+            homeArt(home),
             home.name,
             [
               home.info['area'] ?? life.city,
@@ -251,7 +270,7 @@ class _PropertyHubState extends State<PropertyHub> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _titleRow(
-            Icons.key_rounded,
+            homeArt(flat),
             flat.name,
             '${flat.info['area'] ?? life.city} · ${flat.info['landlord'] == 'slow' ? 'a slow landlord' : 'a decent landlord'}'
                 '${flat.info['shared'] == true ? ' · flatmates' : ''}',
@@ -459,22 +478,14 @@ class _PropertyHubState extends State<PropertyHub> {
 String _signed(int v) => '${v >= 0 ? '+' : '−'}${money(v.abs())}';
 
 Widget _titleRow(
-  IconData icon,
+  String art,
   String title,
   String sub,
   String value,
   String valueSub,
 ) => Row(
   children: [
-    Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: NF.blue.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(icon, color: NF.blue),
-    ),
+    HomeIcon(art, size: 48),
     const SizedBox(width: 12),
     Expanded(
       child: Column(
@@ -619,7 +630,7 @@ class _LetCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _titleRow(
-            holiday ? Icons.luggage_rounded : Icons.key_rounded,
+            homeArt(a),
             a.name,
             '${a.info['area'] ?? ''} · $status',
             money(a.value),
@@ -769,9 +780,9 @@ class _ListingCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Icon(
-                _typeIcon(h.type),
-                color: lock != null ? NF.muted : NF.orange,
+              Opacity(
+                opacity: lock != null ? 0.5 : 1,
+                child: HomeIcon(typeArt(h.type, h.area), size: 52),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -813,11 +824,3 @@ class _ListingCard extends StatelessWidget {
     );
   }
 }
-
-IconData _typeIcon(String type) => switch (type) {
-  'Flat' || 'Penthouse' => Icons.apartment_rounded,
-  'Houseboat' => Icons.directions_boat_rounded,
-  'Farmhouse' => Icons.agriculture_rounded,
-  'Mansion' => Icons.castle_rounded,
-  _ => Icons.house_rounded,
-};

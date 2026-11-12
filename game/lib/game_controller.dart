@@ -251,6 +251,28 @@ class GameController extends ChangeNotifier {
     return null;
   }
 
+  // ---- Sunset Strip: the look of Wealth › Real estate ----
+  int _hubTab = 0;
+  bool _realtyPage = false;
+
+  /// True while the Real estate page is on screen: the game wears Sunset
+  /// Strip (theme.dart) until you leave it.
+  bool get sunsetLook => _realtyPage && _hubTab == 3;
+
+  /// The hub's visible tab (3 is Wealth).
+  set hubTab(int i) {
+    final was = sunsetLook;
+    _hubTab = i;
+    if (sunsetLook != was) notifyListeners();
+  }
+
+  /// Whether the Wealth tab is showing its Real estate section.
+  set realtyPage(bool on) {
+    final was = sunsetLook;
+    _realtyPage = on;
+    if (sunsetLook != was) notifyListeners();
+  }
+
   /// Set when the Life tab should come to the front (an event opened from
   /// another tab or screen). The hub reads and clears it.
   bool wantLifeTab = false;
