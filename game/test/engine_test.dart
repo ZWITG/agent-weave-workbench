@@ -2783,6 +2783,64 @@ void main() {
     expect(homeOf(poor), isNull);
   });
 
+  test('a child heir sees the family property auctioned into trust', () {
+    final old = engine.newLife(seed: 271)..age = 60;
+    old.assets.clear();
+    old.debts.clear();
+    old.money = 3000000;
+    old.savings = 0;
+    old.invested = 0;
+    final homes = listings(old);
+    buyListing(old, homes[0], homes[0].price);
+    buyListing(old, homes[1], homes[1].price);
+    final minor = newChild(old, Random(7), ageNow: 9);
+    old.npcs.add(minor);
+    old.economy = 'Normal';
+    final share = shareFor(old, minor);
+    final young = heirLife(old, minor);
+    expect(young.marks, contains('estate_auction'));
+    expect(young.assets.where((a) => a.kind == 'house'), isEmpty);
+    expect(young.money, 0);
+    final note = young.feed
+        .map((f) => f.text)
+        .firstWhere((t) => t.contains('sold at auction'));
+    expect(note, contains('held in trust'));
+    // Auctions fetch 85% to 105% of the valuation in a normal market, and
+    // the heir's trust moves by their share of the difference.
+    final value = old.assets
+        .where((a) => a.kind == 'house')
+        .fold(0, (s, a) => s + a.value);
+    final fresh = engine.newLife(seed: 273)..trust = share;
+    auctionForMinor(old, fresh, minor, share);
+    expect(fresh.trust, greaterThanOrEqualTo(share - (value * 0.16).round()));
+    expect(fresh.trust, lessThanOrEqualTo(share + (value * 0.06).round()));
+    // A grown-up heir is not put through the auction.
+    final adult = newChild(old, Random(8), ageNow: 30);
+    old.npcs.add(adult);
+    expect(auctionForMinor(old, heirLife(old, adult), adult, 1), isNull);
+  });
+
+  test('property tax is charged on every building you own', () {
+    final l = engine.newLife(seed: 272)..age = 40;
+    l.assets.clear();
+    l.debts.clear();
+    l.country = 'United States';
+    expect(propertyTax(l), 0);
+    l.money = 2000000;
+    final homes = listings(l);
+    buyListing(l, homes[0], homes[0].price);
+    final home = homeOf(l)!;
+    expect(propertyTax(l), (home.value * 0.01 / 10).round() * 10);
+    l.country = 'China';
+    expect(propertyTax(l), 0);
+    l.country = 'United States';
+    final before = l.money;
+    final rng = Random(1);
+    yearlyMoney(l, rng);
+    expect(l.money, lessThan(before));
+    expect(l.lastYear.any((e) => e.$1 == 'Property tax'), isTrue);
+  });
+
   test('moving house: sell or let the old one; remortgage', () {
     final l = engine.newLife(seed: 257)..age = 35;
     l.job = 'Engineer';

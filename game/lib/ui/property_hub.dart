@@ -156,7 +156,7 @@ class _PropertyHubState extends State<PropertyHub> {
       Text(
         p.homes == 0
             ? 'Buy a home, bid at auction or let out a second one.'
-            : '${p.homes} home${p.homes == 1 ? '' : 's'} · ${life.economy} market',
+            : '${p.homes} home${p.homes == 1 ? '' : 's'} · ${life.economy} market${propertyTax(life) > 0 ? ' · property tax ${money(propertyTax(life))} a year' : ''}',
         style: NF.sora(12, color: NF.muted),
       ),
       if (p.homes > 0) ...[

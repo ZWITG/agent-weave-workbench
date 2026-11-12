@@ -149,6 +149,11 @@ Life heirLife(Life old, Npc heir) {
   }
   if (why != null) life.feed.add(FeedEntry(age, why, kind: 'milestone'));
   life.flags['heir'] = Memory(age, 'inheriting from ${old.firstName}');
+  // A child cannot hold property: it goes to auction and the money joins
+  // their trust.
+  if (auctionForMinor(old, life, heir, share) case final note?) {
+    life.feed.add(FeedEntry(age, note, kind: 'milestone'));
+  }
   // The family home stays in the family when the heir's share covers it.
   if (passFamilyHome(old, life, age) case final note?) {
     life.feed.add(FeedEntry(age, note, kind: 'milestone'));
@@ -167,7 +172,7 @@ Life heirLife(Life old, Npc heir) {
   life.feed.add(
     FeedEntry(
       age,
-      'You are ${heir.name} ${old.surname}, Generation ${life.generation}. ${memoryOf(heir)} ${share > 0 ? (age >= 18 ? 'You inherited \$$share.' : '\$$share is held in trust until you turn 18.') : ''}',
+      'You are ${heir.name} ${old.surname}, Generation ${life.generation}. ${memoryOf(heir)} ${share > 0 ? (age >= 18 ? 'You inherited \$$share.' : '\$${life.trust} is held in trust until you turn 18.') : ''}',
       kind: 'milestone',
     ),
   );
@@ -241,6 +246,49 @@ final dynastyActions = <GameAction>[
 
 /// Careers that count toward the dynasty's record (for the family tree).
 String careerLabel(Life l) => careerById(l.careerId)?.field ?? (l.job ?? '');
+
+/// An heir under 18 cannot inherit property, so every building the parent
+/// owned is auctioned. Auctions rarely fetch the full valuation (85% to
+/// 105%, 75% to 95% in a slump); the heir's trust moves by their share of
+/// the difference. Returns the feed line, or null when there was nothing to
+/// sell or the heir is grown up.
+String? auctionForMinor(Life old, Life heir, Npc child, int share) {
+  final age = child.ageIn(old.year);
+  final homes = old.assets.where((a) => a.kind == 'house').toList();
+  if (age >= 18 || homes.isEmpty) return null;
+  final rng = Random(old.seed ^ 0xA0C7 ^ child.id.hashCode);
+  final slump = old.economy == 'Recession' || old.economy == 'Crash';
+  var gap = 0;
+  final sold = <String>[];
+  for (final h in homes) {
+    final pct = (slump ? 75 : 85) + rng.nextInt(21);
+    final price = (h.value * pct / 100 / 1000).round() * 1000;
+    gap += price - h.value;
+    final area = h.info['area'];
+    sold.add(
+      '${h.name.toLowerCase()}${area != null ? ' in $area' : ''} (${_money(price)})',
+    );
+  }
+  final estate = estateOf(old);
+  final move = estate > 0 ? (gap * share / estate).round() : 0;
+  heir.trust = max(0, heir.trust + move);
+  heir.marks.add('estate_auction');
+  final list = sold.length <= 3
+      ? sold.join(', ')
+      : '${sold.take(3).join(', ')} and ${sold.length - 3} more';
+  final verdict = move == 0
+      ? ''
+      : move > 0
+      ? ' The bidding went well, adding ${_money(move)} to your share.'
+      : ' The hammer fell below the valuations, costing your share ${_money(-move)}.';
+  final what = homes.length == 1
+      ? 'home was'
+      : '${homes.length} properties were';
+  return "You were too young to own property, so ${old.firstName}'s $what sold at auction: $list.$verdict The money is held in trust until you turn 18.";
+}
+
+String _money(int v) =>
+    '\$${v.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',')}';
 
 /// Hands the family home to a grown-up heir instead of that much cash,
 /// when the heir's share covers what the home is worth after its

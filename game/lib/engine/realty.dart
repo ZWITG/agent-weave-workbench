@@ -58,10 +58,53 @@ Portfolio portfolioOf(Life l) {
     value: houses.fold(0, (s, a) => s + a.value),
     owed: owed,
     rent: lets.fold(0, (s, a) => s + rentIncome(l, a)),
-    costs: lets.fold(0, (s, a) => s + a.yearlyCost),
+    costs: lets.fold(0, (s, a) => s + a.yearlyCost + propertyTaxOn(l, a)),
     interest: (btl * rateOf(l, 'Buy-to-let mortgage')).round(),
   );
 }
+
+// ---------------- Property tax ----------------
+
+/// Rough yearly property tax as a share of value, by country (local rates
+/// vary; these are typical effective rates). China has no recurring tax on
+/// homes yet; elsewhere it falls back to 0.5%.
+const propertyTaxRates = <String, double>{
+  'United States': 0.010,
+  'Canada': 0.008,
+  'United Kingdom': 0.006,
+  'Ireland': 0.002,
+  'France': 0.005,
+  'Germany': 0.003,
+  'Netherlands': 0.002,
+  'Portugal': 0.004,
+  'Spain': 0.005,
+  'Italy': 0.004,
+  'Sweden': 0.001,
+  'Japan': 0.014,
+  'South Korea': 0.002,
+  'China': 0.0,
+  'India': 0.002,
+  'Philippines': 0.010,
+  'Australia': 0.004,
+  'Brazil': 0.006,
+  'Argentina': 0.005,
+  'Mexico': 0.001,
+  'South Africa': 0.006,
+  'Egypt': 0.001,
+  'Nigeria': 0.003,
+  'Kenya': 0.001,
+};
+
+double propertyTaxRate(String country) => propertyTaxRates[country] ?? 0.005;
+
+/// This year's property tax on one building you own, rounded to \$10.
+int propertyTaxOn(Life l, Asset a) {
+  if (a.kind != 'house') return 0;
+  return (a.value * propertyTaxRate(l.country) / 10).round() * 10;
+}
+
+/// Property tax on everything you own, paid with your other bills.
+int propertyTax(Life l) => l.assets.fold(0, (s, a) => s + propertyTaxOn(l, a));
 
 /// What your rentals make in a year after running costs and the interest
 /// on their mortgage.

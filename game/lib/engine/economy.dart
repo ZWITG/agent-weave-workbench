@@ -6,6 +6,7 @@ import 'finance.dart';
 import 'health.dart' show healthCosts;
 import 'homes.dart' show homeOf, lettingOf, letDebtShare;
 import 'property.dart' show lettingsOf, rentIncome;
+import 'realty.dart' show propertyTax;
 import 'lifespan.dart' show statePension, statePensionAge;
 import 'models.dart';
 import 'world_data.dart';
@@ -159,6 +160,7 @@ int forecastNextYear(Life life) {
     total += b.profit;
   }
   if (life.age + 1 >= 18) total -= homeInsuranceCost(life);
+  total -= propertyTax(life);
   total += fostersOf(life).length * fosterAllowance;
   total -= subscriptionCost(life);
   return total;
@@ -287,6 +289,7 @@ List<String> yearlyMoney(Life life, Random rng) {
     cash(label, amount);
   }
   if (life.age >= 18) cash('Home insurance', -homeInsuranceCost(life));
+  cash('Property tax', -propertyTax(life));
   cash('Fostering allowance', fostersOf(life).length * fosterAllowance);
   cash('Subscriptions', -subscriptionCost(life));
   if (life.age >= 18 && jailed) {
