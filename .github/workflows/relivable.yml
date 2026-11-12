@@ -1,6 +1,7 @@
 name: Relivable game
 
-# Builds the Relivable prototype (game/) on every push to the Phase 2 branch:
+# Builds and publishes the Relivable game (game/) on every push to its one
+# branch, claude/bitlife-features-skills-yiz4s7:
 # - tests the engine (including the 500-life simulator run)
 # - saves the web build, the Android APK and the Windows installer as
 #   downloadable build artifacts on the workflow run
@@ -16,7 +17,7 @@ name: Relivable game
 
 on:
   push:
-    branches: [relivable-phase-2]
+    branches: [claude/bitlife-features-skills-yiz4s7]
     paths: ['game/**', '.github/workflows/relivable.yml']
   workflow_dispatch:
 
