@@ -2636,7 +2636,7 @@ void main() {
     final p = portfolioOf(l);
     expect(p.homes, 2);
     expect(p.value, greaterThan(0));
-    expect(maxLets, 8);
+    expect(maxLets, 12);
 
     // Home life: a housewarming once per home, DIY that fixes things.
     final warm = engine.actions.firstWhere((x) => x.id == 'housewarming');
@@ -2647,6 +2647,140 @@ void main() {
     homeOf(l)!.condition = 50;
     diy.run(l, Random(2));
     expect(homeOf(l)!.condition, isNot(50));
+  });
+
+  test('real estate 2: selling, haunting, gifts, commercial, landlords', () {
+    final l = engine.newLife(seed: 260)..age = 40;
+    l.money = 9000000;
+    l.economy = 'Normal';
+    final homes = listings(l);
+    buyListing(l, homes[0], homes[0].price);
+    final home = homeOf(l)!;
+
+    // Selling: pick a price, an offer may come, then accept or haggle.
+    expect(saleOdds(l, home, 'quick'), greaterThan(saleOdds(l, home, 'high')));
+    l.sceneQueue
+      ..clear()
+      ..add('sell_home:${home.id}');
+    var scene = engine.nextScene(l)!;
+    expect(scene.choices.length, 4);
+    engine.choose(l, scene, scene.choices.first); // quick sale, 95%
+    if (l.sceneQueue.isNotEmpty) {
+      expect(l.sceneQueue.first, startsWith('sale_offer:${home.id}:'));
+      scene = engine.nextScene(l)!;
+      final cash = l.money;
+      engine.choose(l, scene, scene.choices.first); // accept
+      expect(l.assets.contains(home), isFalse);
+      expect(l.money, greaterThan(cash));
+    }
+    // The same price can only be tried once a year.
+    buyListing(l, homes[1], homes[1].price);
+    final h2 = homeOf(l)!;
+    l.marks.add('sale:${l.age}:${h2.id}:market');
+    l.sceneQueue
+      ..clear()
+      ..add('sell_home:${h2.id}');
+    scene = engine.nextScene(l)!;
+    expect(scene.choices[1].lock!(l), isNotNull);
+
+    // Haunted homes: cheaper, ghost scenes, and tenants who flee.
+    h2.info['traits'] = ['haunted'];
+    expect(saleOdds(l, h2, 'market'), lessThan(78));
+    var haunted = false;
+    for (var i = 0; i < 20 && !haunted; i++) {
+      l.sceneQueue.clear();
+      homeYear(l, Random(i));
+      haunted = l.sceneQueue.any((s) => s.startsWith('haunting:'));
+    }
+    expect(haunted, isTrue);
+    scene = engine.nextScene(l)!;
+    engine.choose(l, scene, scene.choices[1]); // make friends
+    expect(h2.info['ghost'], 'friendly');
+
+    // Commercial property: business tenants and a higher yield.
+    final units = commercialUnits(l);
+    expect(units.length, 3);
+    l.sceneQueue
+      ..clear()
+      ..add('commercial');
+    scene = engine.nextScene(l)!;
+    engine.choose(l, scene, scene.choices.first);
+    final unit = lettingsOf(l).firstWhere(isCommercial);
+    expect(rentFor(unit), greaterThan(unit.value * 0.07));
+    l.sceneQueue
+      ..clear()
+      ..add('let_pick:${unit.id}');
+    scene = engine.nextScene(l)!;
+    engine.choose(l, scene, scene.choices.first);
+    expect(tenantKinds[tenantOf(unit)!['kind']]!.business, isTrue);
+
+    // Landlord tools: fill empties, repair all, the yearly report.
+    buyListing(l, homes[2], homes[2].price);
+    buyListing(l, homes[3], homes[3].price);
+    expect(emptyLets(l).length, 2);
+    fillEmptyLets(l);
+    expect(emptyLets(l), isEmpty);
+    for (final a in lettingsOf(l)) {
+      a.condition = 40;
+    }
+    final cost = repairAllCost(l);
+    repairAll(l);
+    expect(worn(l), isEmpty);
+    expect(cost, greaterThan(0));
+    propertyYear(l, Random(5));
+    expect(lettingsOf(l).every((a) => a.info['log'] is String), isTrue);
+
+    // A letting company raises the cap.
+    expect(lettingCap(l), maxLets);
+    expect(companyLock(l), isNotNull); // fewer than 5 rentals
+    buyListing(l, homes[4], homes[4].price);
+    buyListing(l, homes[5], homes[5].price);
+    expect(companyLock(l), isNull);
+    startLettingCompany(l);
+    expect(lettingCap(l), companyLets);
+
+    // Giving a home to a grown-up child.
+    final kid = Npc(
+      id: 'child',
+      role: 'Daughter',
+      name: 'Mia Test',
+      birthYear: l.year - 20,
+      circle: 'Children',
+    );
+    l.npcs.add(kid);
+    final gift = lettingsOf(l).firstWhere((a) => !isCommercial(a));
+    l.debts.remove('Buy-to-let mortgage');
+    expect(giftLock(l, gift), isNull);
+    final bond = kid.bond;
+    l.sceneQueue
+      ..clear()
+      ..add('gift_home:${gift.id}');
+    scene = engine.nextScene(l)!;
+    engine.choose(
+      l,
+      scene,
+      scene.choices.firstWhere((c) => c.label.contains('Mia')),
+    );
+    expect(l.assets.contains(gift), isFalse);
+    expect(kid.bond, greaterThan(bond));
+  });
+
+  test('the family home passes to a grown-up heir', () {
+    final old = engine.newLife(seed: 261)..age = 80;
+    old.money = 2000000;
+    final homes = listings(old);
+    buyListing(old, homes[0], homes[0].price);
+    final heir = engine.newLife(seed: 262)..age = 45;
+    heir.money = 3000000;
+    final note = passFamilyHome(old, heir, 45);
+    expect(note, isNotNull);
+    expect(homeOf(heir)!.name, homeOf(old)!.name);
+    expect(heir.money, 3000000 - homeOf(old)!.value);
+    // A share too small for the home: it is sold with the estate instead.
+    final poor = engine.newLife(seed: 263)..age = 30;
+    poor.money = 1000;
+    expect(passFamilyHome(old, poor, 30), isNull);
+    expect(homeOf(poor), isNull);
   });
 
   test('moving house: sell or let the old one; remortgage', () {

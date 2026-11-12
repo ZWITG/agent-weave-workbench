@@ -6,6 +6,7 @@ import 'careers.dart';
 import 'family.dart';
 import 'lifespan.dart';
 import 'love.dart';
+import 'homes.dart' show homeOf;
 import 'models.dart';
 import 'possessions.dart';
 import 'storylet.dart';
@@ -148,6 +149,10 @@ Life heirLife(Life old, Npc heir) {
   }
   if (why != null) life.feed.add(FeedEntry(age, why, kind: 'milestone'));
   life.flags['heir'] = Memory(age, 'inheriting from ${old.firstName}');
+  // The family home stays in the family when the heir's share covers it.
+  if (passFamilyHome(old, life, age) case final note?) {
+    life.feed.add(FeedEntry(age, note, kind: 'milestone'));
+  }
   final heirlooms = passHeirlooms(old);
   life.assets.addAll(heirlooms);
   for (final h in heirlooms) {
@@ -236,3 +241,29 @@ final dynastyActions = <GameAction>[
 
 /// Careers that count toward the dynasty's record (for the family tree).
 String careerLabel(Life l) => careerById(l.careerId)?.field ?? (l.job ?? '');
+
+/// Hands the family home to a grown-up heir instead of that much cash,
+/// when the heir's share covers what the home is worth after its
+/// mortgage. Returns the feed line, or null when the home is sold.
+String? passFamilyHome(Life old, Life heir, int age) {
+  final home = homeOf(old);
+  if (home == null || age < 18 || old.will == 'charity') return null;
+  final equity = max(0, home.value - (old.debts['Mortgage'] ?? 0));
+  if (heir.money < equity) return null;
+  heir.money -= equity;
+  heir.assets.add(
+    Asset(
+      id: 'family_home',
+      kind: 'house',
+      name: home.name,
+      value: home.value,
+      yearlyCost: home.yearlyCost,
+      since: age,
+      condition: home.condition,
+      info: {...home.info, 'inherited': old.firstName}
+        ..removeWhere((k, _) => k == 'let' || k == 'tenant' || k == 'warmed'),
+    ),
+  );
+  heir.flags['owns_house'] = Memory(age, 'inheriting the family home');
+  return 'You inherited the family ${home.name.toLowerCase()} in ${home.info['area'] ?? old.city}, where ${old.firstName} lived. It came out of your share of the estate.';
+}

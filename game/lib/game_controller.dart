@@ -14,6 +14,7 @@ import 'engine/meta.dart';
 import 'engine/community.dart' show emigrateTo;
 import 'engine/currency.dart';
 import 'engine/models.dart';
+import 'engine/realty.dart' show propertySceneIds;
 import 'engine/relationships.dart';
 import 'engine/storylet.dart';
 import 'engine/variants.dart';
@@ -257,7 +258,21 @@ class GameController extends ChangeNotifier {
 
   /// True while the Real estate page is on screen: the game wears Sunset
   /// Strip (theme.dart) until you leave it.
-  bool get sunsetLook => _realtyPage && _hubTab == 3;
+  ///
+  /// Property scenes (house hunting, viewings, auctions, tenants, sales...)
+  /// and their outcomes wear it too, on whichever tab they play.
+  bool get sunsetLook =>
+      (_realtyPage && _hubTab == 3) ||
+      _isPropertyScene(pendingEvent) ||
+      (lastOutcome != null && _propertyOutcome);
+
+  /// Whether the outcome on screen came from a property scene.
+  bool _propertyOutcome = false;
+
+  static bool _isPropertyScene(Storylet? s) =>
+      s != null &&
+      s.id.startsWith('scene:') &&
+      propertySceneIds.contains(s.id.substring(6).split(':').first);
 
   /// The hub's visible tab (3 is Wealth).
   set hubTab(int i) {
@@ -427,6 +442,7 @@ class GameController extends ChangeNotifier {
         !pendingEvent!.choices.contains(choice)) {
       return;
     }
+    _propertyOutcome = _isPropertyScene(pendingEvent);
     lastOutcome = engine!.choose(life!, pendingEvent!, choice);
     Sound.instance.outcome(
       lastOutcome!.tone,

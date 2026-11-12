@@ -645,6 +645,11 @@ class _WealthTabState extends State<WealthTab> {
   }
 
   Future<void> _sell(BuildContext context, Asset a) async {
+    // Homes go on the market (realty.dart): pick a price, wait for offers.
+    if (a.kind == 'house') {
+      _scene(context, 'sell_home:${a.id}');
+      return;
+    }
     final life = c.life!;
     final verb = a.kind == 'rental' ? 'Move out' : 'Sell';
     final detail = switch (a.kind) {

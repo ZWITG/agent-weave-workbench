@@ -73,6 +73,10 @@ void main() {
           'since': 36,
         };
         makeHolidayLet(l, lets[1]);
+        buyListing(l, homes[3], homes[3].price);
+        buyListing(l, homes[4], homes[4].price);
+        buyCommercial(l, commercialUnits(l).first);
+        lets[0].info['traits'] = ['haunted'];
       }
       l.money = 120000;
       l.sceneQueue.clear();
@@ -110,6 +114,22 @@ void main() {
         File('$out/real_estate${empty ? '_empty' : ''}_${w.toInt()}.png')
             .writeAsBytesSync(bytes!.buffer.asUint8List());
       });
+      // A property scene keeps the look on the Life tab.
+      if (!empty) {
+        c.openScene('sell_home:${homeOf(l)!.id}');
+        c.goToEvent();
+        for (var i = 0; i < 12; i++) {
+          await t.pump(const Duration(milliseconds: 150));
+        }
+        await t.runAsync(() async {
+          final b =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final img = await b.toImage(pixelRatio: 1);
+          final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+          File('$out/sale_scene_${w.toInt()}.png')
+              .writeAsBytesSync(bytes!.buffer.asUint8List());
+        });
+      }
     });
   }
 }

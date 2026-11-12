@@ -33,7 +33,13 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
   choices: choices,
 );
 
-const maxLets = 8;
+/// Rentals you can own on your own, and with a letting company.
+const maxLets = 12;
+const companyLets = 30;
+
+/// How many rentals you can own now.
+int lettingCap(Life l) =>
+    l.flags.containsKey('letting_co') ? companyLets : maxLets;
 
 /// Every home you let out.
 List<Asset> lettingsOf(Life l) =>
@@ -55,6 +61,9 @@ typedef TenantKind = ({
   int unpaid,
   int damage,
   int repairs,
+
+  /// A business renting commercial property, not a household.
+  bool business,
 });
 
 const tenantKinds = <String, TenantKind>{
@@ -65,6 +74,7 @@ const tenantKinds = <String, TenantKind>{
     unpaid: 3,
     damage: 3,
     repairs: 8,
+    business: false,
   ),
   'students': (
     label: 'Three students',
@@ -73,6 +83,7 @@ const tenantKinds = <String, TenantKind>{
     unpaid: 4,
     damage: 25,
     repairs: 6,
+    business: false,
   ),
   'family': (
     label: 'A family of four',
@@ -81,6 +92,7 @@ const tenantKinds = <String, TenantKind>{
     unpaid: 5,
     damage: 10,
     repairs: 18,
+    business: false,
   ),
   'retiree': (
     label: 'A retired teacher',
@@ -89,6 +101,7 @@ const tenantKinds = <String, TenantKind>{
     unpaid: 2,
     damage: 2,
     repairs: 10,
+    business: false,
   ),
   'charmer': (
     label: 'A smooth talker',
@@ -97,8 +110,48 @@ const tenantKinds = <String, TenantKind>{
     unpaid: 30,
     damage: 12,
     repairs: 2,
+    business: false,
+  ),
+  // Businesses, for shops, offices and warehouses.
+  'cafe': (
+    label: 'An independent café',
+    hint: 'Lovely owners · thin margins',
+    leave: 12,
+    unpaid: 10,
+    damage: 4,
+    repairs: 10,
+    business: true,
+  ),
+  'chain': (
+    label: 'A national chain',
+    hint: 'Never late · ten-year lease · drives a hard bargain',
+    leave: 4,
+    unpaid: 1,
+    damage: 2,
+    repairs: 4,
+    business: true,
+  ),
+  'startup': (
+    label: 'A tech startup',
+    hint: 'Pays a premium · may not exist next year',
+    leave: 28,
+    unpaid: 14,
+    damage: 3,
+    repairs: 3,
+    business: true,
+  ),
+  'charity': (
+    label: 'A charity shop',
+    hint: 'Quiet and steady · good for your name',
+    leave: 6,
+    unpaid: 3,
+    damage: 2,
+    repairs: 6,
+    business: true,
   ),
 };
+
+bool isCommercial(Asset a) => a.info['commercial'] == true;
 
 bool isVacant(Asset a) =>
     a.info.containsKey('tenant') && a.info['tenant'] == null;
@@ -131,18 +184,31 @@ int rentIncome(Life l, Asset a) {
 
 List<(String, Map<String, dynamic>)> _applicants(Life l, Asset a) {
   final rng = Random(l.seed * 7 + l.age * 131 + a.id.hashCode);
-  final kinds = tenantKinds.keys.toList()..shuffle(rng);
+  final biz = isCommercial(a);
+  final kinds =
+      tenantKinds.keys.where((k) => tenantKinds[k]!.business == biz).toList()
+        ..shuffle(rng);
   final c = countryNamed(l.country);
   return [
     for (final k in kinds.take(3))
       () {
         final pool = rng.nextBool() ? c.female : c.male;
-        final name =
-            '${pool[rng.nextInt(pool.length)]} ${c.surnames[rng.nextInt(c.surnames.length)]}';
+        final surname = c.surnames[rng.nextInt(c.surnames.length)];
+        final name = biz
+            ? switch (k) {
+                'cafe' => '$surname & Daughters Coffee',
+                'chain' => 'Brightway Stores',
+                'startup' => '${surname}ly (a startup)',
+                _ => '$surname Hospice Shop',
+              }
+            : '${pool[rng.nextInt(pool.length)]} $surname';
         return (k, <String, dynamic>{'kind': k, 'name': name, 'since': l.age});
       }(),
   ];
 }
+
+/// The tenant a letting agent would choose.
+Map<String, dynamic> agentPick(Life l, Asset a) => _applicants(l, a).first.$2;
 
 // ---------------- Each birthday ----------------
 
@@ -150,11 +216,34 @@ List<(String, Map<String, dynamic>)> _applicants(Life l, Asset a) {
 /// scenes for things that need a decision.
 List<String> propertyYear(Life l, Random rng) {
   final feed = <String>[];
-  var asked = false;
+  final asked = [false];
   for (final a in lettingsOf(l)) {
+    final before = feed.length;
+    _letYear(l, a, rng, feed, asked);
+    // Last year's line for this rental, for the landlord report.
+    a.info['log'] = feed.length > before
+        ? feed[before]
+        : l.sceneQueue.any((s) => s.startsWith('let_trouble:${a.id}'))
+        ? 'Trouble with the tenant: waiting for your decision.'
+        : 'A quiet year: rent paid, nothing broke.';
+  }
+  feed.addAll(_renterYear(l, rng));
+  return feed;
+}
+
+void _letYear(
+  Life l,
+  Asset a,
+  Random rng,
+  List<String> feed,
+  List<bool> asked,
+) {
+  final haunted = List<String>.from(a.info['traits'] ?? const [])
+      .contains('haunted');
+  {
     if (isHoliday(a)) {
       feed.addAll(holidayYear(l, a, rng));
-      continue;
+      return;
     }
     final t = tenantOf(a);
     if (isVacant(a)) {
@@ -169,12 +258,12 @@ List<String> propertyYear(Life l, Random rng) {
       } else {
         // A reminder, not a pop-up: you choose when to look for tenants.
         feed.add(
-          'Your ${a.name.toLowerCase()} in ${a.info['area']} is still empty, so no rent came in. Find a tenant from Wealth › What you own.',
+          'Your ${a.name.toLowerCase()} in ${a.info['area']} is still empty, so no rent came in. Find a tenant from Wealth › Real estate.',
         );
       }
-      continue;
+      return;
     }
-    if (t == null) continue; // an older let with an unnamed tenant
+    if (t == null) return; // an older let with an unnamed tenant
     final k = tenantKinds[t['kind']] ?? tenantKinds['professional']!;
     final level = rentLevelOf(a);
     final leave =
@@ -183,15 +272,21 @@ List<String> propertyYear(Life l, Random rng) {
             ? 15
             : level == 'low'
             ? -4
-            : 0);
+            : 0) +
+        (k.business && (l.economy == 'Recession' || l.economy == 'Crash')
+            ? 12
+            : 0) +
+        (haunted && !k.business ? 12 : 0);
     final who = (t['name'] as String).split(' ').first;
     final agent = a.info['agent'] == true;
     if (rng.nextInt(100) < leave) {
       a.info['tenant'] = null;
       feed.add(
-        '$who handed in their notice on your ${a.name.toLowerCase()}${level == 'high' ? ', saying the rent was too steep' : ''}. It is empty now.',
+        haunted && rng.nextBool()
+            ? '$who moved out of your ${a.name.toLowerCase()} in the middle of the night, muttering about footsteps in the attic. It is empty now.'
+            : '$who handed in their notice on your ${a.name.toLowerCase()}${level == 'high' ? ', saying the rent was too steep' : ''}. It is empty now.',
       );
-      continue;
+      return;
     }
     final roll = rng.nextInt(100);
     if (roll < k.unpaid) {
@@ -200,9 +295,9 @@ List<String> propertyYear(Life l, Random rng) {
         feed.add(
           '$who fell behind on the rent. Your agent chased it and got half back.',
         );
-      } else if (!asked) {
+      } else if (!asked[0]) {
         l.sceneQueue.add('let_trouble:${a.id}:unpaid');
-        asked = true;
+        asked[0] = true;
       }
     } else if (roll < k.unpaid + k.damage) {
       a.condition = max(0, a.condition - 12 - rng.nextInt(10));
@@ -218,16 +313,24 @@ List<String> propertyYear(Life l, Random rng) {
         feed.add(
           'Your agent sorted a leaking roof at the ${a.name.toLowerCase()} for ${_m(cost)}.',
         );
-      } else if (!asked) {
+      } else if (!asked[0]) {
         l.sceneQueue.add('let_trouble:${a.id}:repair');
-        asked = true;
+        asked[0] = true;
       }
     } else if (roll > 96) {
       feed.add(
-        '$who sent you a photo of the garden they planted at your ${a.name.toLowerCase()}. Best tenant ever.',
+        k.business
+            ? '$who had a record year at your ${a.name.toLowerCase()} and renewed the lease early.'
+            : '$who sent you a photo of the garden they planted at your ${a.name.toLowerCase()}. Best tenant ever.',
       );
     }
   }
+}
+
+/// Renting your own home: landlords who raise the rent, sell up or ignore
+/// repairs.
+List<String> _renterYear(Life l, Random rng) {
+  final feed = <String>[];
   final flat = l.assets.where((a) => a.kind == 'rental').firstOrNull;
   if (flat != null && rng.nextInt(100) < 22) {
     final bad = flat.info['landlord'] == 'slow';
@@ -380,7 +483,7 @@ Storylet? propertyScene(String id, List<String> args, Life l) {
     case 'hunt_purpose':
       final home = homeOf(l);
       if (home == null) return null;
-      final full = lettingsOf(l).length >= maxLets;
+      final full = lettingsOf(l).length >= lettingCap(l);
       return _scene(
         id,
         'You already own a ${home.name.toLowerCase()} in ${home.info['area'] ?? l.city}. What are you looking for?',
@@ -398,8 +501,9 @@ Storylet? propertyScene(String id, List<String> args, Life l) {
           Choice(
             label: 'A home to let out',
             outcome: '',
-            risk: '${lettingsOf(l).length} of $maxLets rentals owned',
-            lock: (_) => full ? 'You own $maxLets rentals already' : null,
+            risk: '${lettingsOf(l).length} of ${lettingCap(l)} rentals owned',
+            lock: (_) =>
+                full ? 'You own ${lettingCap(l)} rentals already' : null,
             run: (l, rng) {
               l.marks.add('hunt:${l.age}:let');
               l.sceneQueue.insert(0, 'house_hunt');
@@ -439,11 +543,11 @@ Storylet? propertyScene(String id, List<String> args, Life l) {
             label: 'Let it out',
             outcome: '',
             risk: 'Rent comes in · its mortgage becomes a buy-to-let',
-            lock: (l) => lettingsOf(l).length > maxLets
-                ? 'You own $maxLets rentals already'
+            lock: (l) => lettingsOf(l).length > lettingCap(l)
+                ? 'You own ${lettingCap(l)} rentals already'
                 : null,
             run: (l, rng) {
-              return 'You are a landlord now. Find a tenant from Wealth › What you own when you are ready.';
+              return 'You are a landlord now. Find a tenant from Wealth › Real estate when you are ready.';
             },
           ),
         ],
@@ -577,7 +681,7 @@ Storylet? propertyScene(String id, List<String> args, Life l) {
     case 'let_list':
       final lets = lettingsOf(l);
       if (lets.isEmpty) return null;
-      return _scene(id, 'Your rentals: ${lets.length} of $maxLets.', [
+      return _scene(id, 'Your rentals: ${lets.length} of ${lettingCap(l)}.', [
         for (final a in lets)
           Choice(
             label: '${a.name} · ${a.info['area'] ?? ''}',

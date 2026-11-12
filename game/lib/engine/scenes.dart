@@ -162,7 +162,12 @@ Storylet? buildScene(String id, Life life) {
     'landlord_rise' ||
     'landlord_sells' => propertyScene(parts.first, parts.sublist(1), life),
     'auction' ||
-    'auction_lot' => realtyScene(parts.first, parts.sublist(1), life),
+    'auction_lot' ||
+    'sell_home' ||
+    'sale_offer' ||
+    'haunting' ||
+    'gift_home' ||
+    'commercial' => realtyScene(parts.first, parts.sublist(1), life),
     'house_hunt' ||
     'house_view' ||
     'bidding' ||

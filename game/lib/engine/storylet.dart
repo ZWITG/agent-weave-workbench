@@ -114,6 +114,12 @@ class Storylet {
     }
     for (final f in forbidsFlags) {
       if (life.flags.containsKey(f)) return false;
+      // Someone you got back with, or left your partner for, is a partner
+      // even without the flag: "single only" events must not add another.
+      if (f == 'partner' &&
+          life.npcs.any((n) => n.alive && n.circle == 'Partner')) {
+        return false;
+      }
     }
     for (final n in requiresNpcs) {
       final npc = life.who(n);

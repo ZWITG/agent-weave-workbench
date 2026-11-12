@@ -63,6 +63,11 @@ String typeArt(String type, [String? area]) => switch (type) {
     area == 'Harbour' || area == 'Riverside' ? 'stilt' : 'modern',
   'Houseboat' => 'boat',
   'Farmhouse' || 'Mansion' => 'villa',
+  // Commercial units.
+  'Shop unit' => 'strip',
+  'Office floor' => 'block',
+  'Small warehouse' => 'warehouse',
+  'Restaurant site' => 'shack',
   _ => 'motel',
 };
 

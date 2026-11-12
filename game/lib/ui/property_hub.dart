@@ -33,6 +33,9 @@ class _PropertyHubState extends State<PropertyHub> {
   /// (only asked when you already own a home).
   bool _toLet = true;
 
+  /// Rentals opened to their full card when the list is long.
+  final _expanded = <String>{};
+
   /// The long skyline rise plays on the first visit in each life.
   late final bool _fullRise = c.life?.marks.add('seen:realty') ?? false;
 
@@ -66,23 +69,41 @@ class _PropertyHubState extends State<PropertyHub> {
             'Your rentals',
             sub: lets.isEmpty
                 ? 'Buy a second home or win an auction to become a landlord'
-                : '${lets.length} of $maxLets · ${_signed(rentalProfit(life))} a year after costs',
+                : '${lets.length} of ${lettingCap(life)} · ${_signed(rentalProfit(life))} a year after costs',
           ),
           if (lets.isEmpty)
             Text(
               home == null
-                  ? 'Own a home first. Anything you buy after that can be let out.'
+                  ? 'Own a home first, or buy a shop or office below. Homes you buy after your own can be let out.'
                   : 'No rentals yet. Pick "To let out" below and buy a second home.',
               style: NF.sora(13, color: NF.muted),
             ),
-          for (final a in lets) ...[
-            _LetCard(
-              key: ValueKey(a.id),
-              controller: c,
-              asset: a,
-              onSell: () => _sell(context, a),
-            ),
+          if (lets.isNotEmpty) ...[
+            _landlordTools(context, life),
             const SizedBox(height: 10),
+          ],
+          for (final a in lets) ...[
+            if (lets.length > 3 && !_expanded.contains(a.id))
+              _LetRow(
+                key: ValueKey('row${a.id}'),
+                life: life,
+                asset: a,
+                onTap: () => setState(() => _expanded.add(a.id)),
+              )
+            else
+              _LetCard(
+                key: ValueKey(a.id),
+                controller: c,
+                asset: a,
+                onSell: () => _sell(context, a),
+                onGift: giftLock(life, a) == null
+                    ? () => _openScene(context, 'gift_home:${a.id}')
+                    : null,
+                onCollapse: lets.length > 3
+                    ? () => setState(() => _expanded.remove(a.id))
+                    : null,
+              ),
+            const SizedBox(height: 8),
           ],
           const HubHeading(
             'Find property',
@@ -185,6 +206,151 @@ class _PropertyHubState extends State<PropertyHub> {
     ),
   );
 
+  // ---------------- Landlord tools ----------------
+
+  Widget _landlordTools(BuildContext context, Life life) {
+    final empty = emptyLets(life);
+    final worn = repairAllCost(life);
+    final lets = lettingsOf(life);
+    final late = lets
+        .where((a) => life.marks.contains('late_rent:${life.age}:${a.id}'))
+        .length;
+    return NFCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _chip('${lets.length - empty.length} let', _good),
+              _chip(
+                '${empty.length} empty',
+                empty.isEmpty ? NF.muted : NF.orange,
+              ),
+              if (late > 0) _chip('$late paid late', NF.danger),
+              _chip('${lets.where(isHoliday).length} holiday', NF.blue),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _buttons([
+            if (empty.isNotEmpty)
+              (
+                'Fill ${empty.length == 1 ? 'the empty home' : 'all ${empty.length} empty'}',
+                () => _bulk(context, 'Letting agent', fillEmptyLets),
+              ),
+            if (worn > 0)
+              (
+                'Repair all (${money(worn)})',
+                life.money >= worn
+                    ? () => _bulk(context, 'Repairs', repairAll)
+                    : null,
+              ),
+            ('Last year\'s report', () => _report(context, life)),
+            if (!life.flags.containsKey('letting_co'))
+              (
+                'Letting company (${money(lettingCompanyCost)})',
+                companyLock(life) == null
+                    ? () =>
+                          _bulk(context, 'Letting company', startLettingCompany)
+                    : null,
+              ),
+          ]),
+          if (!life.flags.containsKey('letting_co') &&
+              companyLock(life) != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'A letting company lets you own up to $companyLets rentals (${companyLock(life)!.toLowerCase()}).',
+                style: NF.sora(11, color: NF.muted),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(String text, Color color) => Padding(
+    padding: const EdgeInsets.only(right: 6),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        text,
+        style: NF.sora(11, weight: FontWeight.w700, color: color),
+      ),
+    ),
+  );
+
+  void _bulk(
+    BuildContext context,
+    String title,
+    ActionResult Function(Life) f,
+  ) {
+    final r = c.wealth(f);
+    showResultPopup(context, r, title: title, icon: Icons.key_rounded);
+  }
+
+  void _report(BuildContext context, Life life) {
+    final lets = lettingsOf(life);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: NF.surface,
+      isScrollControlled: true,
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.8,
+          ),
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+            children: [
+              Text(
+                'Landlord report · age ${life.age - 1} to ${life.age}',
+                style: NF.sora(18, weight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Rent ${money(portfolioOf(life).rent)} · running costs ${money(portfolioOf(life).costs)} · interest ${money(portfolioOf(life).interest)} · profit ${_signed(rentalProfit(life))} a year',
+                style: NF.sora(12, color: NF.muted),
+              ),
+              const SizedBox(height: 12),
+              for (final a in lets) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HomeIcon(homeArt(a), size: 36),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${a.name} · ${a.info['area'] ?? ''}',
+                            style: NF.sora(13, weight: FontWeight.w700),
+                          ),
+                          Text(
+                            (a.info['log'] as String?) ??
+                                'Bought this year: no report yet.',
+                            style: NF.sora(12, color: NF.soft),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // ---------------- Where you live ----------------
 
   Widget _homeCard(BuildContext context, Life life, Asset home) {
@@ -248,6 +414,12 @@ class _PropertyHubState extends State<PropertyHub> {
               _act(context, life, 'Garden', 'tend_garden'),
             _act(context, life, 'Remortgage', 'remortgage'),
             ('Move house', () => _moveHouse(context)),
+            (
+              'Give it away',
+              giftLock(life, home) == null
+                  ? () => _openScene(context, 'gift_home:${home.id}')
+                  : null,
+            ),
             ('Sell', () => _sell(context, home)),
           ]),
         ],
@@ -312,6 +484,16 @@ class _PropertyHubState extends State<PropertyHub> {
           locked: auction.lockReason(life) != null || lots == 0,
           onTap: () => runActionFlow(context, c, auction, closeSheet: false),
         ),
+      const SizedBox(height: 8),
+      OptionRow(
+        icon: Icons.storefront_rounded,
+        title: 'Commercial property',
+        detail: life.age < 21
+            ? 'Unlocks at 21'
+            : 'Shops, offices and warehouses let to businesses · about $commercialYield% rent a year',
+        locked: life.age < 21 || life.prison != null,
+        onTap: () => _openScene(context, 'commercial'),
+      ),
       if (rent != null && homeOf(life) == null) ...[
         const SizedBox(height: 8),
         OptionRow(
@@ -428,7 +610,22 @@ class _PropertyHubState extends State<PropertyHub> {
     showResultPopup(context, r, title: title, icon: Icons.handyman_rounded);
   }
 
+  /// Opens a property scene on the Life tab (it keeps the Sunset look).
+  void _openScene(BuildContext context, String id) {
+    if (c.busyReason case final busy?) {
+      showBusyNotice(context, c, busy);
+      return;
+    }
+    c.openScene(id);
+    showEvent(context, c);
+  }
+
   Future<void> _sell(BuildContext context, Asset a) async {
+    // Homes go on the market: you pick a price and wait for offers.
+    if (a.kind == 'house') {
+      _openScene(context, 'sell_home:${a.id}');
+      return;
+    }
     final life = c.life!;
     final verb = a.kind == 'rental' ? 'Move out' : 'Sell';
     final owed = a.kind != 'house'
@@ -569,17 +766,104 @@ class ConditionBar extends StatelessWidget {
 
 // ---------------- One rental ----------------
 
+/// One rental as a single line, for long lists. Tap to open its card.
+class _LetRow extends StatelessWidget {
+  const _LetRow({
+    super.key,
+    required this.life,
+    required this.asset,
+    required this.onTap,
+  });
+
+  final Life life;
+  final Asset asset;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final a = asset;
+    final late = life.marks.contains('late_rent:${life.age}:${a.id}');
+    final (label, color) = isHoliday(a)
+        ? ('Holiday', NF.blue)
+        : isVacant(a)
+        ? ('Empty', NF.orange)
+        : late
+        ? ('Late', NF.danger)
+        : ('Let', _good);
+    final income = rentIncome(life, a);
+    return Material(
+      color: NF.surface,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              HomeIcon(homeArt(a), size: 36),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      a.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: NF.sora(14, weight: FontWeight.w700),
+                    ),
+                    Text(
+                      '${a.info['area'] ?? ''} · ${a.condition}%',
+                      style: NF.sora(11, color: NF.muted),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  label,
+                  style: NF.sora(11, weight: FontWeight.w700, color: color),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 78,
+                child: Text(
+                  income > 0 ? '+${money(income)}' : '—',
+                  textAlign: TextAlign.end,
+                  style: NF.sora(13, weight: FontWeight.w700),
+                ),
+              ),
+              Icon(Icons.expand_more_rounded, color: NF.muted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LetCard extends StatelessWidget {
   const _LetCard({
     super.key,
     required this.controller,
     required this.asset,
     required this.onSell,
+    this.onGift,
+    this.onCollapse,
   });
 
   final GameController controller;
   final Asset asset;
   final VoidCallback onSell;
+  final VoidCallback? onGift;
+  final VoidCallback? onCollapse;
 
   @override
   Widget build(BuildContext context) {
@@ -646,6 +930,9 @@ class _LetCard extends StatelessWidget {
                 '${money(letDebtShare(life, a))} still owed',
               if (!holiday) agent ? 'agent manages it' : 'you manage it',
               if (a.info['auction'] == true) 'bought at auction',
+              if (List<String>.from(a.info['traits'] ?? const [])
+                  .contains('haunted'))
+                a.info['ghost'] == 'friendly' ? 'a friendly ghost' : 'haunted',
             ].join(' · '),
             style: NF.sora(12, color: NF.soft),
           ),
@@ -710,7 +997,7 @@ class _LetCard extends StatelessWidget {
                   ),
                 if (holiday)
                   ('Back to long lets', () => work('Long lets', endHolidayLet))
-                else
+                else if (!isCommercial(a))
                   (
                     'Holiday let (${money(furnishCost(a))})',
                     holidayLock(life, a) == null
@@ -730,7 +1017,9 @@ class _LetCard extends StatelessWidget {
                       ? () => work('Renovation', renovateHome)
                       : null,
                 ),
+                ('Give away', onGift),
                 ('Sell', onSell),
+                if (onCollapse != null) ('Close', onCollapse),
               ].map(
                 (e) => OutlinedButton(
                   style: OutlinedButton.styleFrom(

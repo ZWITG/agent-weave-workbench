@@ -115,7 +115,7 @@ const homeTraits = <String, (String, int, int)>{
   'neighbours': ('lovely neighbours', 0, 2),
   'road': ('a noisy main road', 0, -1),
   'subsidence': ('cracks from subsidence', -15, 0),
-  'haunted': ('a local "haunted house" rumour', 0, 0),
+  'haunted': ('a "haunted house" rumour (15% cheaper)', 0, 0),
   'cellar': ('a sealed cellar nobody mentioned', 0, 0),
 };
 
@@ -166,13 +166,16 @@ List<Listing> listings(Life l) {
     cond = cond.clamp(15, 100);
     final shown = 50 + rng.nextInt(46);
     final pool = rng.nextInt(100) < t.poolChance;
+    // Rumours of a ghost knock 15% off.
+    final spooky = traits.contains('haunted') ? 0.85 : 1.0;
     final price =
         (200000 *
                 countryProfile(l.country).cost *
                 t.price *
                 areas[area]!.$1 *
                 (0.75 + shown / 400) *
-                (_econPrice[l.economy] ?? 1) /
+                (_econPrice[l.economy] ?? 1) *
+                spooky /
                 1000)
             .round() *
         1000;
@@ -235,8 +238,8 @@ String? buyLock(Life l, int price) {
   if (creditOf(l) < 580) return 'Needs Fair credit (580+) for a mortgage';
   if (homeOf(l) != null &&
       !l.marks.contains('hunt:${l.age}:move') &&
-      lettingsOf(l).length >= maxLets) {
-    return 'You own $maxLets rentals already';
+      lettingsOf(l).length >= lettingCap(l)) {
+    return 'You own ${lettingCap(l)} rentals already';
   }
   return null;
 }
@@ -325,13 +328,13 @@ String buyListing(Life l, Listing h, int price) {
     ),
   );
   l.stats.add('happiness', asLet ? 3 : 8);
-  return '${asLet ? 'You bought a ${h.type.toLowerCase()} in ${h.area} to let out.' : 'You got the keys to a ${h.type.toLowerCase()} in ${h.area}.'} ${cash ? 'You paid ${_m(price)} in cash.' : 'You put down ${_m(deposit)} and took a ${_m(loan)} ${debt.toLowerCase()} at ${(l.rates[debt]! * 100).toStringAsFixed(1)}% over 25 years.'} Fees: ${_m(fees)}.$find${asLet ? ' It is empty for now. When you are ready, find a tenant from Wealth › What you own (about ${_m(rentFor(l.assets.last))} a year in rent).' : ''}';
+  return '${asLet ? 'You bought a ${h.type.toLowerCase()} in ${h.area} to let out.' : 'You got the keys to a ${h.type.toLowerCase()} in ${h.area}.'} ${cash ? 'You paid ${_m(price)} in cash.' : 'You put down ${_m(deposit)} and took a ${_m(loan)} ${debt.toLowerCase()} at ${(l.rates[debt]! * 100).toStringAsFixed(1)}% over 25 years.'} Fees: ${_m(fees)}.$find${asLet ? ' It is empty for now. When you are ready, find a tenant from Wealth › Real estate (about ${_m(rentFor(l.assets.last))} a year in rent).' : ''}';
 }
 
 /// Yearly rent from tenants: about 5% of the home's value.
 int rentFor(Asset a) =>
     ((a.value *
-                0.05 *
+                (a.info['commercial'] == true ? 0.075 : 0.05) *
                 (a.condition < 40 ? 0.7 : 1) *
                 rentLevels[rentLevelOf(a)]!.$2) /
             100)
@@ -398,6 +401,15 @@ List<String> homeYear(Life l, Random rng) {
       if (h != 0) {
         l.reason = h > 0 ? 'Lovely neighbours' : 'A noisy road';
         l.stats.add('happiness', h);
+      }
+    }
+    final traits = List<String>.from(home.info['traits'] ?? const []);
+    if (traits.contains('haunted')) {
+      if (home.info['ghost'] == 'friendly') {
+        l.reason = 'Gerald, the friendly ghost';
+        l.stats.add('happiness', 1);
+      } else if (rng.nextInt(100) < 35) {
+        l.sceneQueue.add('haunting:${home.id}');
       }
     }
     if (home.condition < 30) {

@@ -1,5 +1,9 @@
 import 'dart:math';
 
+import 'family.dart' show childrenOf;
+import 'love.dart' show partnerOf;
+import 'economy.dart' show sellAsset;
+
 import 'actions.dart';
 import 'finance.dart';
 import 'friends.dart';
@@ -165,6 +169,10 @@ List<String> holidayYear(Life l, Asset a, Random rng) {
   };
   if (a.condition < 50) occ -= 15;
   if (l.marks.remove('five_star:${a.id}')) occ += 10;
+  // Ghost hunters love a haunted holiday let.
+  if (List<String>.from(a.info['traits'] ?? const []).contains('haunted')) {
+    occ += 10;
+  }
   occ = occ.clamp(15, 98);
   a.info['occ'] = occ;
   a.condition = max(0, a.condition - 3 - rng.nextInt(4));
@@ -286,8 +294,8 @@ String? auctionLock(Life l, int bid) {
   if (l.money < lotCash(bid)) {
     return 'Needs ${_m(lotCash(bid))} in cash (auctions take no mortgages)';
   }
-  if (homeOf(l) != null && lettingsOf(l).length >= maxLets) {
-    return 'You own $maxLets rentals already';
+  if (homeOf(l) != null && lettingsOf(l).length >= lettingCap(l)) {
+    return 'You own ${lettingCap(l)} rentals already';
   }
   return null;
 }
@@ -325,8 +333,177 @@ String _winLot(Life l, Lot lot, int bid) {
       'Valued at ${_m(lot.worth)}. ${text.replaceFirst(RegExp(r'^You (bought|got)[^.]*\. '), '')}';
 }
 
+Asset? _asset(Life l, List<String> args) =>
+    args.isEmpty ? null : l.assets.where((a) => a.id == args.first).firstOrNull;
+
 Storylet? realtyScene(String id, List<String> args, Life l) {
   switch (id) {
+    case 'sell_home':
+      final a = _asset(l, args);
+      if (a == null) return null;
+      Choice ask(String level, String label, double f) {
+        final price = (a.value * f / 1000).round() * 1000;
+        final odds = saleOdds(l, a, level);
+        return Choice(
+          label: '$label (${_m(price)})',
+          outcome: '',
+          risk: '$odds% chance of an offer this year',
+          lock: (l) => l.marks.contains('sale:${l.age}:${a.id}:$level')
+              ? 'No takers at that price this year'
+              : null,
+          run: (l, rng) {
+            l.marks.add('sale:${l.age}:${a.id}:$level');
+            if (rng.nextInt(100) >= odds) {
+              return 'Viewings, a few nosy neighbours, no offers. Try a lower price, or wait for a better market.';
+            }
+            final offer =
+                (price * (0.94 + rng.nextDouble() * 0.08) / 1000).round() *
+                1000;
+            l.sceneQueue.insert(0, 'sale_offer:${a.id}:$offer');
+            return 'A buyer wants to make an offer.';
+          },
+        );
+      }
+
+      final owed = a.info['let'] == true
+          ? letDebtShare(l, a)
+          : (l.debts['Mortgage'] ?? 0);
+      final haunted = List<String>.from(a.info['traits'] ?? const [])
+          .contains('haunted');
+      return _scene(
+        id,
+        'You put your ${a.name.toLowerCase()} in ${a.info['area'] ?? l.city} on the market. It is valued at ${_m(a.value)} in a ${l.economy.toLowerCase()} market; condition ${a.condition}%.${owed > 0 ? ' ${_m(owed)} of mortgage is paid off from the sale.' : ''}${haunted ? ' Buyers have heard the ghost stories.' : ''} The agent takes 3%.',
+        [
+          ask('quick', 'Quick sale, 8% under value', 0.92),
+          ask('market', 'Ask the valuation', 1),
+          ask('high', 'Ask 10% over', 1.1),
+          Choice(label: 'Keep it', outcome: 'You took the sign down.'),
+        ],
+      );
+    case 'sale_offer':
+      final a = _asset(l, args);
+      final offer = args.length > 1 ? int.tryParse(args[1]) : null;
+      if (a == null || offer == null) return null;
+      final counter = (offer * 1.04 / 1000).round() * 1000;
+      return _scene(
+        id,
+        'A buyer offers ${_m(offer)} for your ${a.name.toLowerCase()} (valued at ${_m(a.value)}). The agent says they seem serious.',
+        [
+          Choice(
+            label: 'Accept ${_m(offer)}',
+            outcome: '',
+            run: (l, rng) => completeSale(l, a, offer),
+          ),
+          Choice(
+            label: 'Counter at ${_m(counter)}',
+            outcome: '',
+            risk: 'They may walk away',
+            run: (l, rng) {
+              if (rng.nextInt(100) < 55) return completeSale(l, a, counter);
+              return 'The buyer thanked you for your time and bought the house next door instead.';
+            },
+          ),
+          Choice(label: 'Decline', outcome: 'You decided not to sell.'),
+        ],
+      );
+    case 'haunting':
+      final a = _asset(l, args);
+      if (a == null) return null;
+      return _scene(
+        id,
+        'Doors in your ${a.name.toLowerCase()} close on their own at 3am. Something taps on the bedroom wall in threes. The old neighbours were not joking.',
+        [
+          Choice(
+            label: 'Hire a medium (\$800)',
+            outcome: '',
+            risk: 'Might settle it for good',
+            needsMoney: 800,
+            run: (l, rng) {
+              l.money -= 800;
+              if (rng.nextBool()) {
+                (a.info['traits'] as List).remove('haunted');
+                return 'The medium lit candles, spoke to "Edith", and left. The house has been quiet ever since.';
+              }
+              return 'The medium got as far as the landing, went pale and left without charging the second half. It is still haunted.';
+            },
+          ),
+          Choice(
+            label: 'Make friends with it',
+            outcome: '',
+            run: (l, rng) {
+              a.info['ghost'] = 'friendly';
+              l.stats.add('happiness', 2);
+              return 'You started saying goodnight to the ghost. The tapping became gentler. You call it Gerald.';
+            },
+          ),
+          Choice(
+            label: 'Charge for ghost tours',
+            outcome: '',
+            risk: 'Money, and the neighbours will talk',
+            run: (l, rng) {
+              final take = 1500 + rng.nextInt(26) * 100;
+              l.money += take;
+              l.stats.add('karma', -1);
+              return 'Ghost hunters paid ${_m(take)} to sit in your kitchen with torches. Gerald did not show up, but a cupboard door did swing open on cue.';
+            },
+          ),
+        ],
+      );
+    case 'gift_home':
+      final a = _asset(l, args);
+      if (a == null) return null;
+      final people = giftable(l);
+      return _scene(
+        id,
+        'Who should get your ${a.name.toLowerCase()} in ${a.info['area'] ?? l.city}, worth about ${_m(a.value)}? A gift like this is never forgotten.',
+        [
+          for (final p in people)
+            Choice(
+              label: '${p.name} (${p.role.toLowerCase()})',
+              outcome: '',
+              run: (l, rng) {
+                l.assets.remove(a);
+                if (a.info['let'] != true) l.flags.remove('owns_house');
+                p.addBond(25);
+                p.remember(
+                  NpcMemory(
+                    age: l.age,
+                    text: 'You gave them your ${a.name.toLowerCase()}.',
+                    valence: 1,
+                    intensity: 5,
+                    tags: ['gift', 'home'],
+                  ),
+                );
+                l.stats.add('karma', 3);
+                l.stats.add('happiness', 4);
+                return 'You handed ${p.name.split(' ').first} the keys. They cried, then asked where the fuse box is.';
+              },
+            ),
+          Choice(label: 'Not yet', outcome: 'You kept the keys for now.'),
+        ],
+      );
+    case 'commercial':
+      final units = commercialUnits(l)
+          .where((u) => !l.marks.contains('unit:${l.age}:${u.i}'))
+          .toList();
+      return _scene(
+        id,
+        units.isEmpty
+            ? 'Nothing else is for sale this year.'
+            : 'Commercial property in ${l.city}: shops, offices and warehouses let to businesses. Higher rent than homes and longer leases, but empty units hurt in a recession. Banks lend up to 65%.',
+        [
+          for (final u in units)
+            Choice(
+              label: '${u.name} · ${u.area} · ${_m(u.price)}',
+              outcome: '',
+              risk:
+                  'Rent about ${_m((u.price * commercialYield / 100).round() * 100)} a year · ${u.blurb}',
+              lock: (l) => commercialLock(l, u.price),
+              run: (l, rng) => buyCommercial(l, u),
+            ),
+          Choice(label: 'Not now', outcome: 'You closed the brochure.'),
+        ],
+      );
     case 'auction':
       final lots = auctionLots(l).where((x) => !_lotGone(l, x.i)).toList();
       if (lots.isEmpty) {
@@ -399,6 +576,247 @@ Storylet? realtyScene(String id, List<String> args, Life l) {
       );
   }
   return null;
+}
+
+// ---------------- Scenes this file and the property files own ----------------
+
+/// Every scene that belongs to property, so the game can keep wearing
+/// Sunset Strip while one is on screen.
+const propertySceneIds = {
+  'hunt_purpose',
+  'old_home',
+  'let_pick',
+  'let_trouble',
+  'let_list',
+  'let_manage',
+  'remortgage',
+  'landlord_rise',
+  'landlord_sells',
+  'house_hunt',
+  'house_view',
+  'bidding',
+  'flat_hunt',
+  'auction',
+  'auction_lot',
+  'sell_home',
+  'sale_offer',
+  'haunting',
+  'gift_home',
+  'commercial',
+  'home_upgrade',
+  'disaster',
+};
+
+// ---------------- Selling ----------------
+
+/// Chance (out of 100) that a buyer makes an offer at this price level.
+int saleOdds(Life l, Asset a, String level) {
+  var odds = switch (level) {
+    'quick' => 95,
+    'high' => switch (l.economy) {
+      'Boom' => 65,
+      'Normal' => 35,
+      'Slowdown' => 25,
+      'Recession' => 15,
+      _ => 8,
+    },
+    _ => switch (l.economy) {
+      'Boom' => 92,
+      'Normal' => 78,
+      'Slowdown' => 62,
+      'Recession' => 45,
+      _ => 30,
+    },
+  };
+  if (a.condition < 50) odds -= 15;
+  if (List<String>.from(a.info['traits'] ?? const []).contains('haunted')) {
+    odds -= 20;
+  }
+  return odds.clamp(5, 98);
+}
+
+String completeSale(Life l, Asset a, int price) {
+  a.value = price;
+  final r = sellAsset(l, a);
+  return '${r.text} ${r.notes.join('. ')}.';
+}
+
+// ---------------- Giving a home away ----------------
+
+/// Grown-up family who could be given a home: children, partner, siblings.
+List<Npc> giftable(Life l) => [
+  ...childrenOf(l).where((c) => c.alive && c.ageIn(l.year) >= 18),
+  ?partnerOf(l),
+  ...l.npcs.where(
+    (n) =>
+        n.alive &&
+        (n.role == 'Sister' || n.role == 'Brother') &&
+        n.ageIn(l.year) >= 18,
+  ),
+];
+
+String? giftLock(Life l, Asset a) {
+  if (giftable(l).isEmpty) return 'No grown-up family to give it to';
+  final owed = a.info['let'] == true
+      ? letDebtShare(l, a)
+      : (l.debts['Mortgage'] ?? 0);
+  if (owed > 0) return 'Pay off its mortgage first';
+  return null;
+}
+
+// ---------------- The letting company ----------------
+
+const lettingCompanyCost = 25000;
+
+String? companyLock(Life l) {
+  if (l.flags.containsKey('letting_co')) return 'You run one already';
+  if (lettingsOf(l).length < 5) return 'Needs 5 rentals';
+  if (l.money < lettingCompanyCost) return 'Needs ${_m(lettingCompanyCost)}';
+  return null;
+}
+
+ActionResult startLettingCompany(Life l) {
+  l.money -= lettingCompanyCost;
+  l.flags['letting_co'] = Memory(l.age, 'starting a letting company');
+  return ActionResult(
+    'You set up ${l.surname} Lettings Ltd: an office above a bakery, a part-time manager and a logo you designed yourself.',
+    [
+      'Money −${_m(lettingCompanyCost)}',
+      'Rentals allowed: $maxLets → $companyLets',
+    ],
+  );
+}
+
+// ---------------- Bulk actions for landlords ----------------
+
+/// Empty long lets (not holiday lets).
+List<Asset> emptyLets(Life l) =>
+    lettingsOf(l).where((a) => isVacant(a) && !isHoliday(a)).toList();
+
+/// Gives every empty rental to a letting agent, who moves a tenant in.
+ActionResult fillEmptyLets(Life l) {
+  final empty = emptyLets(l);
+  for (final a in empty) {
+    a.info['agent'] = true;
+    a.info['tenant'] = agentPick(l, a);
+    l.marks.remove('void:${l.age}:${a.id}');
+  }
+  return ActionResult(
+    'Your letting agent filled ${empty.length == 1 ? 'your empty home' : 'all ${empty.length} empty homes'} by the end of the week.',
+    ['Agent fee: 12% of rent on ${empty.length == 1 ? 'it' : 'each'}'],
+  );
+}
+
+/// Rentals below 80% condition, and what fixing them all costs.
+List<Asset> worn(Life l) =>
+    lettingsOf(l).where((a) => a.condition < 80).toList();
+int repairAllCost(Life l) => worn(l).fold(0, (s, a) => s + repairCost(a));
+
+ActionResult repairAll(Life l) {
+  final list = worn(l);
+  final cost = repairAllCost(l);
+  l.money -= cost;
+  for (final a in list) {
+    a.condition = 95;
+  }
+  return ActionResult(
+    'One builder, ${list.length} addresses and a van full of plasterboard.',
+    ['Money −${_m(cost)}', '${list.length} rentals now 95%'],
+  );
+}
+
+// ---------------- Commercial property ----------------
+
+/// Rent from a commercial unit, as a percentage of its value a year.
+const commercialYield = 7.5;
+
+typedef Unit = ({int i, String name, String area, int price, String blurb});
+
+const _units = [
+  ('Shop unit', 0.9, 'Busy high street, flat above'),
+  ('Office floor', 1.4, 'Open plan, lift, no character'),
+  ('Small warehouse', 1.1, 'Loading bay and a leaky skylight'),
+  ('Restaurant site', 1.2, 'Kitchen already fitted'),
+];
+
+/// This year's three commercial units for sale.
+List<Unit> commercialUnits(Life l) {
+  final rng = Random(l.seed * 41 + l.age * 23 + 11);
+  final kinds = List.of(_units)..shuffle(rng);
+  return [
+    for (var i = 0; i < 3; i++)
+      () {
+        final (name, f, blurb) = kinds[i];
+        final area = areas.keys.elementAt(rng.nextInt(areas.length));
+        final price =
+            (260000 *
+                    countryProfile(l.country).cost *
+                    f *
+                    areas[area]!.$1 *
+                    (_econ[l.economy] ?? 1) *
+                    (0.9 + rng.nextDouble() * 0.2) /
+                    1000)
+                .round() *
+            1000;
+        return (i: i, name: name, area: area, price: price, blurb: blurb);
+      }(),
+  ];
+}
+
+String? commercialLock(Life l, int price) {
+  if (lettingsOf(l).length >= lettingCap(l)) {
+    return 'You own ${lettingCap(l)} rentals already';
+  }
+  if (l.money >= (price * 1.03).round()) return null;
+  if (l.money < (price * 0.38).round()) {
+    return 'Needs ${_m((price * 0.38).round())} (35% deposit + fees)';
+  }
+  if (loansBlocked(l)) return 'No loans for 7 years after bankruptcy';
+  if (creditOf(l) < 640) {
+    return 'Needs Good credit (640+) for a commercial loan';
+  }
+  if (l.salary <= 0 && l.business == null && lettingsOf(l).isEmpty) {
+    return 'A commercial loan needs an income';
+  }
+  return null;
+}
+
+String buyCommercial(Life l, Unit u) {
+  l.marks.add('unit:${l.age}:${u.i}');
+  final fees = (u.price * 0.03).round();
+  final cash = l.money >= u.price + fees;
+  final deposit = cash ? u.price : (u.price * 0.35).round();
+  final loan = u.price - deposit;
+  l.money -= deposit + fees;
+  if (loan > 0) {
+    l.credit ??= 640;
+    l.debts['Buy-to-let mortgage'] =
+        (l.debts['Buy-to-let mortgage'] ?? 0) + loan;
+    l.rates['Buy-to-let mortgage'] = max(
+      l.rates['Buy-to-let mortgage'] ?? 0,
+      mortgageRate(l) + 0.02,
+    );
+  }
+  l.assets.add(
+    Asset(
+      id: 'unit${l.age}_${u.i}',
+      kind: 'house',
+      name: u.name,
+      value: u.price,
+      yearlyCost: ((u.price * 0.01) / 100).round() * 100,
+      since: l.age,
+      condition: 70 + Random(l.seed + u.i).nextInt(25),
+      info: {
+        'area': u.area,
+        'let': true,
+        'commercial': true,
+        'tenant': null,
+        'loan': loan,
+        'rentLevel': 'market',
+      },
+    ),
+  );
+  return 'You bought the ${u.name.toLowerCase()} in ${u.area} for ${_m(u.price)}${cash ? ' in cash' : ', with a ${_m(loan)} commercial loan'}. Fees ${_m(fees)}. It is empty: find a business to rent it from Wealth › Real estate.';
 }
 
 // ---------------- Life in your own home ----------------
