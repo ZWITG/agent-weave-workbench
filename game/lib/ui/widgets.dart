@@ -202,7 +202,9 @@ class GlowBackground extends StatelessWidget {
           top: -140,
           left: -120,
           child: _glow(
-            NF.sunset
+            NF.alley
+                ? const Color(0xFFFF3B3B)
+                : NF.sunset
                 ? const Color(0xFFB0207A)
                 : NF.prison
                 ? const Color(0xFF4D7A69)
@@ -217,7 +219,9 @@ class GlowBackground extends StatelessWidget {
           top: 220,
           right: -160,
           child: _glow(
-            NF.sunset
+            NF.alley
+                ? const Color(0xFFFFB547)
+                : NF.sunset
                 ? const Color(0xFFFF8A3D)
                 : NF.prison
                 ? const Color(0xFFE3CF7A)
@@ -232,7 +236,9 @@ class GlowBackground extends StatelessWidget {
           bottom: -160,
           left: 40,
           child: _glow(
-            NF.sunset
+            NF.alley
+                ? const Color(0xFF3B6BFF)
+                : NF.sunset
                 ? const Color(0xFF5EF0EE)
                 : NF.prison
                 ? const Color(0xFF2C433B)

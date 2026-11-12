@@ -7,6 +7,8 @@ import 'package:relivable/engine/actions.dart';
 import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/celebrity.dart';
 import 'package:relivable/engine/dynasty.dart';
+import 'package:relivable/engine/crime_wall.dart';
+import 'package:relivable/ui/back_alley.dart' show crimeStamp;
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
@@ -2818,6 +2820,33 @@ void main() {
     final adult = newChild(old, Random(8), ageNow: 30);
     old.npcs.add(adult);
     expect(auctionForMinor(old, heirLife(old, adult), adult, 1), isNull);
+  });
+
+  test('the alley remembers your crimes and the scanner knows your name', () {
+    final l = engine.newLife(seed: 281)..age = 24;
+    expect(crimeTags(l), isEmpty);
+    expect(scannerLines(l).first, contains('Clean as a whistle'));
+    // A real crime activity leaves a tag; lying low does not.
+    final shoplift = engine.actions.firstWhere((a) => a.id == 'shoplift');
+    engine.runAction(l, shoplift);
+    noteCrime(l, 'lie_low');
+    noteCrime(l, 'shoplift');
+    expect(crimeTags(l), ['shoplift']);
+    expect(crimesCommitted(l), 2);
+    // The tally survives a save.
+    final back = Life.fromJson(l.toJson());
+    expect(crimesCommitted(back), 2);
+    expect(bountyOf(l), 0);
+    l.notoriety = 25;
+    l.cases.add({'crime': 'burglary', 'evidence': 60, 'age': 24});
+    expect(bountyOf(l), greaterThan(100000));
+    final lines = scannerLines(l);
+    expect(lines.first, contains(l.fullName));
+    expect(lines.any((x) => x.contains('burglary')), isTrue);
+    expect(scannerLines(l), lines); // steady within a year
+    expect(crimeStamp('The police arrested you outside.', 'bad'), 'BUSTED');
+    expect(crimeStamp('You got away clean.', 'good', paid: true), 'PAYDAY');
+    expect(crimeStamp('You got away clean.', 'good'), 'CLEAN GETAWAY');
   });
 
   test('property tax is charged on every building you own', () {

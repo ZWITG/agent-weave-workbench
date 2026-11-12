@@ -13,6 +13,8 @@ import '../engine/variants.dart';
 import '../game_controller.dart';
 import '../sound.dart';
 import '../theme.dart';
+import '../engine/crime_wall.dart' show scannerLines;
+import 'back_alley.dart';
 import 'health_screen.dart' show CrimeProfileCard;
 import '../engine/justice.dart' show prisonAllowed;
 import '../engine/underworld.dart' show heat;
@@ -213,7 +215,16 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
   @override
   void dispose() {
     _search.dispose();
+    // Leaving Activities takes the Back Alley look with it.
+    final ctl = c;
+    WidgetsBinding.instance.addPostFrameCallback((_) => ctl.crimePage = false);
     super.dispose();
+  }
+
+  /// Opens a category (or none). Crime wears Back Alley while it is open.
+  void _setCategory(String? cat) {
+    _category = cat;
+    c.crimePage = cat == 'Crime';
   }
 
   /// Every activity, minus those hidden by the content filters.
@@ -343,7 +354,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
           IconButton(
             tooltip: 'Back to all activities',
             onPressed: () => setState(() {
-              _category = null;
+              _setCategory(null);
               _showLocked = false;
             }),
             icon: const Icon(Icons.arrow_back_rounded),
@@ -711,7 +722,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => setState(() {
-            _category = cat;
+            _setCategory(cat);
             _toTop();
             _showLocked = false;
           }),
@@ -788,8 +799,19 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         const SizedBox(height: 14),
       ],
       if (cat == 'Crime') ...[
-        CrimeProfileCard(life: life),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          // Shorter on small phones, so the crimes are not pushed away.
+          child: AlleyScene(
+            state: alleyOf(life),
+            height: MediaQuery.sizeOf(context).height < 700 ? 150 : 190,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ScannerTicker(lines: scannerLines(life)),
         const SizedBox(height: 12),
+        CrimeProfileCard(life: life),
+        const TapeDivider(),
         ..._crimePage(context, all),
       ] else ...[
         if (open.isEmpty)
@@ -870,58 +892,22 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
               !_crimeClosed.contains(title));
       out.add(
         Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Material(
-            color: NF.surface2,
-            borderRadius: BorderRadius.circular(14),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(14),
-              onTap: () => setState(() {
-                if (expanded) {
-                  _crimeOpen.remove(title);
-                  _crimeClosed.add(title);
-                } else {
-                  _crimeOpen.add(title);
-                  _crimeClosed.remove(title);
-                }
-              }),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-                child: Row(
-                  children: [
-                    Icon(
-                      icon,
-                      color: openHere.isEmpty ? NF.muted : NF.orange,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: NF.sora(15, weight: FontWeight.w700),
-                          ),
-                          Text(
-                            openHere.isEmpty
-                                ? 'Nothing open right now · $sub'
-                                : '${openHere.length} open · $sub',
-                            style: NF.sora(12, color: NF.muted),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      expanded
-                          ? Icons.expand_less_rounded
-                          : Icons.expand_more_rounded,
-                      color: NF.muted,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          padding: const EdgeInsets.only(bottom: 10),
+          child: CaseFolder(
+            title: title,
+            sub: sub,
+            icon: icon,
+            open: openHere.length,
+            expanded: expanded,
+            onTap: () => setState(() {
+              if (expanded) {
+                _crimeOpen.remove(title);
+                _crimeClosed.add(title);
+              } else {
+                _crimeOpen.add(title);
+                _crimeClosed.remove(title);
+              }
+            }),
           ),
         ),
       );

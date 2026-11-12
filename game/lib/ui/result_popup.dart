@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../engine/actions.dart';
 import '../sound.dart';
 import '../theme.dart';
+import 'back_alley.dart' show CrimeStamp, crimeStamp;
 import 'yard_time.dart';
 import 'outcome_card.dart';
 import 'widgets.dart';
@@ -113,6 +114,15 @@ class _ResultCard extends StatelessWidget {
     // Inside, results come back as a stamped report on the block's paper.
     final inside = NF.prison;
     final stamp = inside ? (prisonStamp(text) ?? 'LOGGED') : null;
+    // On the Crime page, results come back as case notes with a stamp.
+    final alley = !inside && NF.alley;
+    final caseStamp = alley
+        ? crimeStamp(
+            text,
+            tone,
+            paid: chips.any((c) => c.$1.startsWith('Money') && c.$2),
+          )
+        : null;
     return SafeArea(
       child: Center(
         child: Padding(
@@ -165,6 +175,20 @@ class _ResultCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         const FenceStrip(),
+                        const SizedBox(height: 12),
+                      ],
+                      if (alley) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'CASE NOTES',
+                                style: NF.stencil(11, color: NF.muted),
+                              ),
+                            ),
+                            CrimeStamp(caseStamp!),
+                          ],
+                        ),
                         const SizedBox(height: 12),
                       ],
                       Row(

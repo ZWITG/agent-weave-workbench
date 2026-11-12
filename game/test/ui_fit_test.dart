@@ -1,3 +1,4 @@
+import 'package:relivable/ui/back_alley.dart';
 import 'package:relivable/engine/echelon.dart';
 
 import 'dart:math';
@@ -415,26 +416,37 @@ void main() {
     );
     await _pump(t);
     await _tapText(t, 'Crime');
-    // The page opens at its top: a one-line profile, then sections
-    // instead of one long list.
-    expect(find.text('Your criminal profile'), findsOneWidget);
-    expect(find.text('Cover your tracks'), findsOneWidget);
-    // Under heat, Cover your tracks is already open.
-    expect(find.text('Lie low'), findsOneWidget);
-    expect(find.text('Fraud'), findsNothing);
-    // The profile opens on tap.
-    await _tapText(t, 'Your criminal profile');
-    expect(find.text('Open investigations'), findsOneWidget);
+    // The page opens at its top: the alley, the police scanner and a
+    // one-line profile, then crimes in case folders, not one long list.
+    expect(find.byType(AlleyScene), findsOneWidget);
+    expect(find.byType(ScannerTicker), findsOneWidget);
     final page = find.byWidget(
       t.widget(
         find
             .ancestor(
-              of: find.text('Cover your tracks'),
+              of: find.byType(ScannerTicker),
               matching: find.byType(Scrollable),
             )
             .first,
       ),
     );
+    await t.scrollUntilVisible(
+      find.text('Your criminal profile'),
+      100,
+      scrollable: page,
+    );
+    // Under heat, Cover your tracks is already open.
+    await t.scrollUntilVisible(find.text('Lie low'), 150, scrollable: page);
+    expect(find.text('Cover your tracks'), findsOneWidget);
+    expect(find.text('Fraud'), findsNothing);
+    // The profile opens on tap.
+    await t.scrollUntilVisible(
+      find.text('Your criminal profile'),
+      -150,
+      scrollable: page,
+    );
+    await _tapText(t, 'Your criminal profile');
+    expect(find.text('Open investigations'), findsOneWidget);
     await t.scrollUntilVisible(
       find.text('White-collar'),
       200,

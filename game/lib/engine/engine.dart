@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'echelon.dart' show echelonYear;
+import 'crime_wall.dart' show noteCrime;
 import 'actions.dart';
 import 'currency.dart';
 import 'odds.dart';
@@ -666,6 +667,8 @@ class GameEngine {
     if (hooked != null) {
       life.feed.add(FeedEntry(life.age, hooked, kind: 'milestone'));
     }
+    // The alley remembers every kind of crime you try (crime_wall.dart).
+    if (action.category == 'Crime') noteCrime(life, action.id);
     checkDeeds(life);
     return ActionResult(text, [...result.notes, ?hooked]);
   }

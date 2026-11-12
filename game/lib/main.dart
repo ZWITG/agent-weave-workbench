@@ -51,6 +51,8 @@ class RelivableApp extends StatelessWidget {
       rich: l != null && l.alive && upperEchelon(l),
       // Wealth › Real estate wears Sunset Strip while it is open.
       sunset: l != null && l.alive && controller.sunsetLook,
+      // Activities › Crime and crime scenes wear Back Alley.
+      alley: l != null && l.alive && controller.alleyLook,
     );
     return MaterialApp(
       title: 'Relivable',

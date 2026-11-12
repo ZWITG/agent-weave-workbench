@@ -288,6 +288,29 @@ class GameController extends ChangeNotifier {
     if (sunsetLook != was) notifyListeners();
   }
 
+  // ---- Back Alley: the look of Activities › Crime ----
+  bool _crimePage = false;
+
+  /// Whether the outcome on screen came from a crime scene.
+  bool _crimeOutcome = false;
+
+  /// True while the Crime activities page is open, a crime scene (a job,
+  /// a heist, a crew, an arrest) is waiting, or its outcome is showing.
+  bool get alleyLook =>
+      _crimePage ||
+      _isCrimeScene(pendingEvent) ||
+      (lastOutcome != null && _crimeOutcome);
+
+  static bool _isCrimeScene(Storylet? s) =>
+      s != null && s.category.toLowerCase() == 'crime';
+
+  /// Whether Activities is showing its Crime category.
+  set crimePage(bool on) {
+    final was = alleyLook;
+    _crimePage = on;
+    if (alleyLook != was) notifyListeners();
+  }
+
   /// Set when the Life tab should come to the front (an event opened from
   /// another tab or screen). The hub reads and clears it.
   bool wantLifeTab = false;
@@ -443,6 +466,7 @@ class GameController extends ChangeNotifier {
       return;
     }
     _propertyOutcome = _isPropertyScene(pendingEvent);
+    _crimeOutcome = _isCrimeScene(pendingEvent);
     lastOutcome = engine!.choose(life!, pendingEvent!, choice);
     Sound.instance.outcome(
       lastOutcome!.tone,

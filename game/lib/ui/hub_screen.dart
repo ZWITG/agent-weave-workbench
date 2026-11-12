@@ -281,7 +281,6 @@ class _HubScreenState extends State<HubScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: NF.surface,
       builder: (_) => DraggableScrollableSheet(
         expand: false,
         initialChildSize: 0.66,

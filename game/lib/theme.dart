@@ -88,6 +88,24 @@ const sunsetStrip = NFPalette(
   orange: Color(0xFFFF6FB0),
 );
 
+/// Back Alley: while Activities › Crime is open, and for crime scenes. A
+/// rain-soaked alley at midnight: wet-asphalt black, sodium-lamp amber,
+/// police red and blue in the glows.
+const backAlley = NFPalette(
+  bg: Color(0xFF0B0D10),
+  surface: Color(0xFF15181D),
+  surface2: Color(0xFF1E2228),
+  card: Color(0xFF181B21),
+  nav: Color(0xFF07080A),
+  border: Color(0xFF2B3038),
+  borderStrong: Color(0xFF8A6A2E),
+  text: Color(0xFFECE8E1),
+  muted: Color(0xFF9A9A98),
+  soft: Color(0xFFC9C5BD),
+  blue: Color(0xFF6FA8FF),
+  orange: Color(0xFFFFB547),
+);
+
 /// Night Feed design tokens (design B, chosen 2026-10-26). The colours
 /// follow the active palette, so the whole game changes look in prison
 /// (Yard Time) and in the upper echelon (Gilded).
@@ -104,14 +122,20 @@ class NF {
   /// On the Real estate page the game wears Sunset Strip.
   static bool get sunset => identical(_p, sunsetStrip);
 
-  /// Picks the look: prison wins over everything, then the Real estate
-  /// page (only while it is open), then riches.
+  /// On the Crime page (and in crime scenes) the game wears Back Alley.
+  static bool get alley => identical(_p, backAlley);
+
+  /// Picks the look: prison wins over everything, then the Crime page and
+  /// the Real estate page (only while open), then riches.
   static void look({
     required bool prison,
     required bool rich,
     bool sunset = false,
+    bool alley = false,
   }) => _p = prison
       ? yardTime
+      : alley
+      ? backAlley
       : sunset
       ? sunsetStrip
       : rich

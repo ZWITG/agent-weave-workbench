@@ -5,6 +5,7 @@ import 'package:relivable/engine/models.dart';
 import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/game_controller.dart';
 import 'package:relivable/sound.dart';
+import 'package:relivable/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// The game as the player drives it: events, Continue, activities and
@@ -93,4 +94,28 @@ void main() {
     expect(picked, hasLength(2));
     expect(picked.first, contains('died'));
   });
+
+  test(
+    'the Crime page and crime scenes wear Back Alley; prison wins',
+    () async {
+      final c = await _game();
+      c.life!.age = 25;
+      expect(c.alleyLook, isFalse);
+      c.crimePage = true;
+      expect(c.alleyLook, isTrue);
+      c.crimePage = false;
+      expect(c.alleyLook, isFalse);
+      c.openScene('crew_pick');
+      expect(c.pendingEvent?.category, 'crime');
+      expect(c.alleyLook, isTrue);
+      c.choose(c.pendingEvent!.choices.first);
+      // The outcome keeps the look until it is dismissed.
+      expect(c.alleyLook, isTrue);
+      NF.look(prison: false, rich: true, sunset: true, alley: true);
+      expect(NF.alley, isTrue);
+      NF.look(prison: true, rich: false, alley: true);
+      expect(NF.prison, isTrue);
+      NF.look(prison: false, rich: false);
+    },
+  );
 }
