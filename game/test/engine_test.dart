@@ -19,6 +19,7 @@ import 'package:relivable/engine/cell.dart';
 import 'package:relivable/engine/echelon.dart';
 import 'package:relivable/engine/variants.dart' show variantsFor;
 import 'package:relivable/engine/heists.dart';
+import 'package:relivable/engine/realty.dart';
 import 'package:relivable/engine/identity.dart';
 import 'package:relivable/engine/homes.dart';
 import 'package:relivable/engine/justice.dart';
@@ -2569,6 +2570,83 @@ void main() {
     l.age++;
     propertyYear(l, Random(3));
     expect(lettingsOf(l).length, 3);
+  });
+
+  test('real estate: auctions, flips, holiday lets and home life', () {
+    final l = engine.newLife(seed: 259)..age = 35;
+    l.money = 5000000;
+    // Three auction lots, the same all year, guided well under their value
+    // as they look (hidden damp or subsidence can still make a lot a dud).
+    final lots = auctionLots(l);
+    expect(lots.length, 3);
+    expect(auctionLots(l).map((x) => x.guide), lots.map((x) => x.guide));
+    for (final x in lots) {
+      expect(x.guide, lessThan(x.worth * 1.2));
+    }
+    // With no home, the first lot you win becomes your home.
+    l.sceneQueue
+      ..clear()
+      ..add('auction');
+    var scene = engine.nextScene(l)!;
+    expect(scene.choices.length, 4); // three lots and "just watching"
+    engine.choose(l, scene, scene.choices.first);
+    scene = engine.nextScene(l)!;
+    final cash = l.money;
+    // Keep bidding the top price until it lands (92% each time).
+    engine.choose(l, scene, scene.choices[2]);
+    expect(l.marks.contains('lot:${l.age}:0'), isTrue);
+    if (homeOf(l) != null) {
+      expect(homeOf(l)!.value, lots[0].worth);
+      expect(homeOf(l)!.info['auction'], isTrue);
+      expect(l.money, lessThan(cash));
+      expect(l.debts.containsKey('Mortgage'), isFalse); // cash only
+    }
+    // A sold lot leaves the catalogue.
+    l.sceneQueue
+      ..clear()
+      ..add('auction');
+    scene = engine.nextScene(l)!;
+    expect(scene.choices.length, 3);
+
+    // Rentals: a holiday let earns more than a long let in a normal year.
+    final homes = listings(l);
+    if (homeOf(l) == null) buyListing(l, homes[0], homes[0].price);
+    buyListing(l, homes[1], homes[1].price);
+    final a = lettingsOf(l).single;
+    l.economy = 'Normal';
+    expect(holidayLock(l, a), isNull);
+    makeHolidayLet(l, a);
+    expect(isHoliday(a), isTrue);
+    expect(isVacant(a), isFalse);
+    expect(rentIncome(l, a), greaterThan(rentFor(a)));
+    final cond = a.condition;
+    final feed = propertyYear(l, Random(4));
+    expect(feed, isNotEmpty);
+    expect(a.condition, lessThan(cond));
+    expect(occupancyOf(a), inInclusiveRange(15, 98));
+    endHolidayLet(l, a);
+    expect(isHoliday(a), isFalse);
+    expect(isVacant(a), isTrue);
+    expect(rentalProfit(l), lessThanOrEqualTo(0)); // empty again
+    // Quick controls on the card.
+    setRentLevel(l, a, 'low');
+    expect(rentLevelOf(a), 'low');
+    toggleAgent(l, a);
+    expect(a.info['agent'], isTrue);
+    final p = portfolioOf(l);
+    expect(p.homes, 2);
+    expect(p.value, greaterThan(0));
+    expect(maxLets, 8);
+
+    // Home life: a housewarming once per home, DIY that fixes things.
+    final warm = engine.actions.firstWhere((x) => x.id == 'housewarming');
+    expect(warm.lockReason(l), isNull);
+    warm.run(l, Random(1));
+    expect(warm.lockReason(l), isNotNull);
+    final diy = engine.actions.firstWhere((x) => x.id == 'diy');
+    homeOf(l)!.condition = 50;
+    diy.run(l, Random(2));
+    expect(homeOf(l)!.condition, isNot(50));
   });
 
   test('moving house: sell or let the old one; remortgage', () {

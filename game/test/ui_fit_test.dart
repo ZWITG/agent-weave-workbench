@@ -769,7 +769,25 @@ void main() {
     // Tapping your money opens the Wealth tab.
     await t.tap(find.text('\$25,000').first);
     await _pump(t);
-    expect(find.text('What you own'), findsOneWidget);
+    // The empty rental is suggested, and opens Real estate.
+    expect(find.text('Your flat is empty'), findsOneWidget);
+    await _tapText(t, 'Your flat is empty');
+    expect(find.text('PROPERTY PORTFOLIO'), findsOneWidget);
+    expect(find.text('Find a tenant'), findsOneWidget);
+    expect(find.text('Market'), findsOneWidget); // rent level on the card
+    expect(find.textContaining('Holiday let ('), findsOneWidget);
+    expect(find.text('Housewarming'), findsOneWidget);
+    expect(find.text('To let out'), findsOneWidget);
+    expect(find.text('Property auction'), findsOneWidget);
+    await t.drag(find.byType(Scrollable).first, const Offset(0, 4000));
+    await _pump(t);
+    await t.tap(find.byTooltip('Back to Wealth'));
+    await _pump(t);
+    await t.scrollUntilVisible(
+      find.text('What you own'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await _tapText(t, 'What you own');
     // Closed: the empty rental still shows its one urgent button.
     expect(find.text('Find a tenant'), findsOneWidget);

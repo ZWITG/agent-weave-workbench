@@ -193,6 +193,10 @@ List<Listing> listings(Life l) {
   return out;
 }
 
+/// True once you have bought this year's listing [i].
+bool listingSold(Life l, int i) =>
+    l.assets.any((a) => a.id == 'home${l.age}_$i');
+
 String _features(Listing h) =>
     ['${h.beds} bed', if (h.garden) 'garden', if (h.pool) 'pool'].join(' · ');
 
@@ -451,21 +455,23 @@ Storylet? homeScene(String id, List<String> args, Life l) {
         '${letting ? 'You are looking for a second home to let out.' : 'You spend a Saturday scrolling listings.'} Six homes are for sale in ${l.city} this year, in a ${l.economy.toLowerCase()} market. Each listing shows what the seller wants you to see; a viewing or a survey shows the rest.',
         [
           for (final h in list)
-            Choice(
-              label: '${h.type} · ${h.area} · ${_m(h.price)}',
-              outcome: '',
-              risk:
-                  '${_features(h)} · looks ${conditionBand(h.shown).toLowerCase()} · ${_m(h.upkeep)}/yr',
-              run: (l, rng) {
-                l.sceneQueue.add('house_view:${h.i}');
-                return 'You booked an appointment to look at the ${h.type.toLowerCase()}.';
-              },
-            ),
+            if (!listingSold(l, h.i))
+              Choice(
+                label: '${h.type} · ${h.area} · ${_m(h.price)}',
+                outcome: '',
+                risk:
+                    '${_features(h)} · looks ${conditionBand(h.shown).toLowerCase()} · ${_m(h.upkeep)}/yr',
+                run: (l, rng) {
+                  l.sceneQueue.add('house_view:${h.i}');
+                  return 'You booked an appointment to look at the ${h.type.toLowerCase()}.';
+                },
+              ),
           Choice(label: 'Not this year', outcome: 'Nothing felt like home.'),
         ],
       );
     case 'house_view':
       final h = listings(l)[int.tryParse(args.first) ?? 0];
+      if (listingSold(l, h.i)) return null;
       final known = _known(l, h);
       final surveyed = _surveyed(l, h.i);
       final viewed = l.marks.contains('view:${l.age}:${h.i}');

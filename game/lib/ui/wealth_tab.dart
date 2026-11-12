@@ -20,6 +20,8 @@ import '../engine/property.dart';
 import 'widgets.dart';
 import '../engine/elite.dart' show upperEchelon;
 import 'echelon_screen.dart' show EchelonCard;
+import 'property_hub.dart';
+import '../engine/realty.dart' show portfolioOf;
 
 const _good = Color(0xFF5EE6A8);
 
@@ -73,6 +75,11 @@ class _WealthTabState extends State<WealthTab> {
       'Business',
       Icons.storefront_rounded,
       'Start one, run it, sell it',
+    ),
+    'property': (
+      'Real estate',
+      Icons.real_estate_agent_rounded,
+      'Your home, rentals, auctions and homes for sale',
     ),
     'assets': (
       'What you own',
@@ -165,6 +172,7 @@ class _WealthTabState extends State<WealthTab> {
         'bank' => _bank(context, life),
         'invest' => [MarketList(controller: c)],
         'business' => [BusinessCard(controller: c)],
+        'property' => [PropertyHub(controller: c)],
         'assets' => _assets(context, life),
         _ => [
           for (final a in _moneyActions) ...[
@@ -199,12 +207,19 @@ class _WealthTabState extends State<WealthTab> {
         1 => life.businesses.first.name,
         final n => '$n businesses',
       },
+      'property' => () {
+        final p = portfolioOf(life);
+        if (p.homes > 0) return money(p.value);
+        if (life.has('rental')) return 'Renting';
+        return life.age < 18 ? 'From age 18' : 'Rent or buy';
+      }(),
       'assets' =>
         life.assets.length + life.items.length == 0
             ? (life.age < 18 ? 'From age 18' : 'Nothing owned')
             : '${life.assets.length + life.items.length} owned',
       _ => '${openMoney.length} open',
     };
+    final emptyLets = lettingsOf(life).where(isVacant).length;
     final sale = saleOn(DateTime.now());
     return [
       BrowseItem(
@@ -219,9 +234,13 @@ class _WealthTabState extends State<WealthTab> {
           icon: e.value.$2,
           label: e.value.$1,
           status: status(e.key),
-          alert: (e.key == 'flow' && short) || (e.key == 'bank' && debt > 0),
+          alert:
+              (e.key == 'flow' && short) ||
+              (e.key == 'bank' && debt > 0) ||
+              (e.key == 'property' && emptyLets > 0),
           dim: switch (e.key) {
             'assets' => life.age < 18 && life.items.isEmpty,
+            'property' => life.age < 18,
             'invest' || 'business' => life.age < 18,
             'more' => openMoney.isEmpty,
             _ => false,
@@ -243,6 +262,19 @@ class _WealthTabState extends State<WealthTab> {
           detail:
               'About ${money(-(life.money + f))} goes on a credit card. See why',
           onTap: () => _open('flow'),
+        ),
+      );
+    }
+    final empty = lettingsOf(life).where(isVacant).toList();
+    if (empty.isNotEmpty) {
+      rows.add(
+        OptionRow(
+          icon: Icons.key_rounded,
+          title: empty.length == 1
+              ? 'Your ${empty.first.name.toLowerCase()} is empty'
+              : '${empty.length} of your rentals are empty',
+          detail: 'No rent comes in until you find a tenant',
+          onTap: () => _open('property'),
         ),
       );
     }
@@ -479,6 +511,15 @@ class _WealthTabState extends State<WealthTab> {
       for (final g in groups.entries)
         if (g.value.isNotEmpty) ...[
           HubHeading(g.key),
+          if (g.key == 'Homes') ...[
+            OptionRow(
+              icon: Icons.real_estate_agent_rounded,
+              title: 'Open Real estate',
+              detail: 'Rent levels, holiday lets, auctions and listings',
+              onTap: () => _open('property'),
+            ),
+            const SizedBox(height: 8),
+          ],
           for (final a in g.value) ...[
             _assetCard(context, life, a),
             const SizedBox(height: 8),

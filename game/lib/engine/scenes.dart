@@ -34,6 +34,7 @@ import 'love.dart';
 import 'models.dart';
 import 'news_impact.dart';
 import 'property.dart';
+import 'realty.dart';
 import 'school.dart';
 import 'storylet.dart';
 
@@ -160,6 +161,8 @@ Storylet? buildScene(String id, Life life) {
     'remortgage' ||
     'landlord_rise' ||
     'landlord_sells' => propertyScene(parts.first, parts.sublist(1), life),
+    'auction' ||
+    'auction_lot' => realtyScene(parts.first, parts.sublist(1), life),
     'house_hunt' ||
     'house_view' ||
     'bidding' ||

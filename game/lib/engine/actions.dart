@@ -17,6 +17,7 @@ import 'prison_life.dart';
 import 'kin.dart';
 import 'possessions.dart';
 import 'property.dart';
+import 'realty.dart';
 import 'shopping.dart' show shopAction;
 import 'recap.dart';
 import 'community.dart';
@@ -459,6 +460,7 @@ final allActions = <GameAction>[
   ...financeActions,
   ...homeActions,
   ...propertyActions,
+  ...realtyActions,
   ...justiceActions,
   ...healthActions,
   ...identityActions,

@@ -5,6 +5,7 @@ import 'finance.dart';
 import 'friends.dart';
 import 'homes.dart';
 import 'models.dart';
+import 'realty.dart';
 import 'storylet.dart';
 import 'world_data.dart';
 
@@ -32,7 +33,7 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
   choices: choices,
 );
 
-const maxLets = 5;
+const maxLets = 8;
 
 /// Every home you let out.
 List<Asset> lettingsOf(Life l) =>
@@ -116,6 +117,7 @@ const rentLevels = <String, (String, double)>{
 /// What the tenants actually pay you this year (after empty months, late
 /// rent and the agent's cut).
 int rentIncome(Life l, Asset a) {
+  if (isHoliday(a)) return holidayIncome(l, a);
   if (isVacant(a)) return 0;
   var r = rentFor(a);
   if (l.marks.contains('late_rent:${l.age}:${a.id}') ||
@@ -150,6 +152,10 @@ List<String> propertyYear(Life l, Random rng) {
   final feed = <String>[];
   var asked = false;
   for (final a in lettingsOf(l)) {
+    if (isHoliday(a)) {
+      feed.addAll(holidayYear(l, a, rng));
+      continue;
+    }
     final t = tenantOf(a);
     if (isVacant(a)) {
       // An empty home loses a third of the year's rent and needs a tenant.
