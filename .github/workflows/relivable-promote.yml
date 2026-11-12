@@ -1,0 +1,55 @@
+name: Relivable auto-publish
+
+# Publishes game work automatically: every push to the development branch
+# below that touches game/ moves relivable-phase-2 forward to the same
+# commit and starts the "Relivable game" build, which tests it and ships
+# the web, Android, Windows and iPhone updates.
+#
+# Only a fast-forward is allowed. If relivable-phase-2 has commits the
+# development branch does not, nothing is overwritten: the run fails and
+# says so, and the branches need merging by hand.
+#
+# A push made with the workflow's own token does not start other workflows,
+# so the build is started explicitly with "gh workflow run". The token also
+# cannot change workflow files, so commits that edit .github/workflows must
+# reach relivable-phase-2 by a normal push.
+
+on:
+  push:
+    branches: [claude/bitlife-features-skills-yiz4s7]
+    paths: ['game/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: relivable-promote
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fast-forward relivable-phase-2
+        run: |
+          git fetch origin relivable-phase-2
+          if git merge-base --is-ancestor "$GITHUB_SHA" origin/relivable-phase-2; then
+            echo "relivable-phase-2 already has this commit."
+            echo "SKIP_BUILD=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor origin/relivable-phase-2 "$GITHUB_SHA"; then
+            echo "::error::relivable-phase-2 has commits that ${GITHUB_REF_NAME} does not. Merge them into ${GITHUB_REF_NAME} first; nothing was published."
+            exit 1
+          fi
+          git push origin "$GITHUB_SHA:refs/heads/relivable-phase-2"
+      - name: Start the game build
+        if: env.SKIP_BUILD != '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run relivable.yml --ref relivable-phase-2 --repo "${{ github.repository }}"
