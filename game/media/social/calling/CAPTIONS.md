@@ -26,7 +26,7 @@ that answered before you put ad money behind the name.
 |---|---|---|
 | 1 | `01_pick_your_calling.jpg` | The update announcement |
 | 1 | `story_2_calling.jpg` | Same day, in stories, with the link sticker |
-| 2 | `reel_calling.mp4` | Reach: eight looks in 14 seconds |
+| 2 | `reel_calling.mp4` | Reach: the whole pitch in 12 seconds, on the beat |
 | 3 | `carousel_01–11.jpg` | Swipes keep people on the post |
 | 4 | `02_mars.jpg` | New career spotlight: Astronaut |
 | 4 | `story_1_astronaut_or_fighter.jpg` | Poll sticker: easy engagement |
@@ -115,8 +115,9 @@ Add a **link sticker** over the "Play free" button.
 
 ## Reel
 
-### reel_calling.mp4 (14 s, with sound)
-**Caption:** POV: you pick a career and the whole game becomes it. 🎭🎸⚽🏛️🚀🥊🩺🚓
-Which one are you?
-**Cover:** pick the fighter frame (around 8 s).
-**Alt text:** Eight career screens in turn, each in its own look, ending on "Which one are you? 14 careers, free to play."
+### reel_calling.mp4 (12 s, with sound)
+**Caption:** Pick a job. The whole game changes. 🚀🥊🎭🎸🏛️🩺🚓⚽
+Which one are you? 👇
+**Cover:** pick the fighter frame (around 2.8 s), with "Fighter. NEW" over the ring.
+**Alt text:** "Pick a job. The whole game changes." over the game flashing through its career looks. Then the new astronaut and fighter careers, ending on a mission success and a knockout, then actor, musician, politician, doctor, cop and athlete in quick cuts, a count to 14 careers, and "Which one are you? Play free, link in bio."
+**Sound:** an original 120 bpm track, synthesised by the script; every cut lands on a beat. Safe to post with its own audio, or mute it and add a trending sound (the cuts sit every half second).
