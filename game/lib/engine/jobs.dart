@@ -1,3 +1,5 @@
+import 'policing.dart' show policeYear;
+
 import 'dart:math';
 
 import 'actions.dart';
@@ -153,6 +155,8 @@ List<String> workYear(
     l.flags.remove('high_stress');
   }
   if (c != null && c.special) lines.addAll(_specialYear(l, c, rng));
+  // The police career: academy, casework, bribes, undercover (policing.dart).
+  if (c?.id == 'police') lines.addAll(policeYear(l, rng));
   return lines;
 }
 

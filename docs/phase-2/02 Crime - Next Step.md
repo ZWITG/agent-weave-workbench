@@ -157,8 +157,10 @@ Rough size: similar to the Echelon update (about 5–7 working sessions).
 
 ### 6.4 After that
 
-1. **Police academy and detective path** (option 3): the most requested
-   crime-adjacent feature; reuses the evidence system from the other side.
+1. **Police academy and detective path** (option 3): **built 13 Nov 2026**
+   (`engine/policing.dart`): academy tests played as mini-games, casework on
+   the same evidence scale, promotion by closed cases, crew bribes and
+   Internal Affairs, undercover operations, and a badge card on Path.
 2. **Youth custody** (option 4) and **street hustle** (option 5) as a
    smaller update.
 3. **Country law** (option 7), once D1 and D2 are decided.

@@ -1,3 +1,5 @@
+import 'policing.dart' show nextRankNeeds;
+
 import 'dart:math';
 
 import 'actions.dart';
@@ -699,6 +701,11 @@ void startCareer(Life life, Career c) {
   life.lowPerfYears = 0;
   life.jobLostAge = null;
   newWorkplace(life, c);
+  // New recruits start at the police academy (policing.dart).
+  if (c.id == 'police') {
+    life.marks.remove('academy_done');
+    life.sceneQueue.add('academy:fitness');
+  }
 }
 
 /// Applying starts a 3-question interview (jobs.dart); the last answer
@@ -718,6 +725,8 @@ String? promotionLock(Life life) {
   if (c == null) return 'Needs a job from the job board';
   if (life.careerRank >= c.ladder.length - 1) return 'Top of the ladder';
   if (c.elected) return 'Politicians move up by winning elections';
+  // Police rank comes from the academy and closed cases (policing.dart).
+  if (c.id == 'police') return nextRankNeeds(life);
   final left = yearsPerPromotion - (life.age - life.jobSince);
   if (left > 0) return 'Needs $left more year${left == 1 ? '' : 's'} in role';
   if (c.id == 'lawyer' && life.careerRank == 2 && life.stats['karma'] < 50) {

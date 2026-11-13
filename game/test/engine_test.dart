@@ -9,6 +9,7 @@ import 'package:relivable/engine/celebrity.dart';
 import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/crime_wall.dart';
 import 'package:relivable/engine/manhunt.dart';
+import 'package:relivable/engine/policing.dart';
 import 'package:relivable/ui/back_alley.dart' show crimeStamp;
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
@@ -2923,6 +2924,86 @@ void main() {
     manhuntYear(l, Random(4));
     expect(mostWanted(l), isFalse);
   });
+
+  test(
+    'the police: academy, casework, bribes, Internal Affairs, undercover',
+    () {
+      final l = engine.newLife(seed: 301)..age = 22;
+      for (final k in ['athleticism', 'smarts', 'discipline', 'charisma']) {
+        l.stats.values[k] = 100;
+      }
+      l.sceneQueue.clear();
+      startCareer(l, careerById('police')!);
+      expect(l.job, 'Police cadet');
+      expect(l.sceneQueue, contains('academy:fitness'));
+      expect(promotionLock(l), contains('academy'));
+      // Three tests, played at a top score: graduation.
+      for (var i = 0; i < 3; i++) {
+        final s = engine.nextScene(l)!;
+        expect(s.id, 'scene:academy');
+        expect(s.choices.first.miniGame, isNotNull);
+        engine.choose(l, s, s.choices.first, score: 1.0);
+      }
+      expect(academyDone(l), isTrue);
+      expect(l.job, 'Police officer');
+      // A case from the beat: build evidence, then charge.
+      var closedRuns = 0;
+      for (var i = 0; i < 40 && casesClosed(l) < 3; i++) {
+        l.sceneQueue
+          ..clear()
+          ..add('beat_case:burglary:70');
+        var s = engine.nextScene(l)!;
+        engine.choose(l, s, s.choices[2]); // stake-out
+        s = engine.nextScene(l)!;
+        expect(s.id, 'scene:case_build');
+        engine.choose(l, s, s.choices.first); // charge
+        closedRuns++;
+      }
+      expect(casesClosed(l), greaterThanOrEqualTo(3));
+      expect(closedRuns, greaterThan(0));
+      policeYear(l, Random(1));
+      expect(l.job, 'Sergeant');
+      // An envelope goes on the file; Internal Affairs can end it.
+      l.sceneQueue
+        ..clear()
+        ..add('bribe_offer:velvet');
+      var s = engine.nextScene(l)!;
+      engine.choose(l, s, s.choices.first);
+      expect(dirtyFile(l), 1);
+      final ia = Life.fromJson(l.toJson())..sceneQueue.clear();
+      ia.sceneQueue.add('internal_affairs');
+      s = engine.nextScene(ia)!;
+      engine.choose(ia, s, s.choices.last); // resign
+      expect(ia.job, isNull);
+      // A detective goes undercover and brings a crew down.
+      l.careerRank = 3;
+      l.job = 'Detective';
+      l.sceneQueue
+        ..clear()
+        ..add('undercover:offer');
+      s = engine.nextScene(l)!;
+      engine.choose(l, s, s.choices.first);
+      expect(undercoverIn(l), isNotNull);
+      l.sceneQueue.add('undercover:test');
+      s = engine.nextScene(l)!;
+      engine.choose(l, s, s.choices.first); // do the job: cover up
+      expect(cover(l), 80);
+      final before = casesClosed(l);
+      l.sceneQueue.add('undercover:bust');
+      s = engine.nextScene(l)!;
+      engine.choose(l, s, s.choices.first);
+      expect(undercoverIn(l), isNull);
+      expect(casesClosed(l), before + 5);
+      expect(l.job, 'Police chief');
+      // A blown cover plays as a chase.
+      l.marks.add('undercover:harbour:${l.age}');
+      l.sceneQueue.add('undercover:blown');
+      s = engine.nextScene(l)!;
+      expect(s.choices.single.miniGame, 'getaway');
+      engine.choose(l, s, s.choices.single, score: 0.6);
+      expect(undercoverIn(l), isNull);
+    },
+  );
 
   test('property tax is charged on every building you own', () {
     final l = engine.newLife(seed: 272)..age = 40;

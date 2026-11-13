@@ -4,6 +4,8 @@ import '../engine/actions.dart';
 import '../engine/careers.dart';
 import '../engine/jobs.dart';
 import '../engine/models.dart';
+import '../engine/policing.dart';
+import '../engine/underworld.dart' show crewById;
 import '../engine/school.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -168,9 +170,10 @@ class _PathTabState extends State<PathTab> {
       ),
     ],
     'career' => [
-      if (careerById(life.careerId) != null)
-        _ladder(careerById(life.careerId)!)
-      else
+      if (careerById(life.careerId) != null) ...[
+        if (isCop(life)) ...[_badge(), const SizedBox(height: 10)],
+        _ladder(careerById(life.careerId)!),
+      ] else
         Text(
           life.age < 16
               ? 'Jobs open at 16. Full-time careers open at 18.'
@@ -346,6 +349,73 @@ class _PathTabState extends State<PathTab> {
                   ),
                 ],
               ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// The police badge: casework, Internal Affairs and undercover.
+  Widget _badge() {
+    final closed = casesClosed(life), lost = casesLost(life);
+    final crew = undercoverIn(life);
+    final dirt = dirtyFile(life);
+    Widget line(String k, String v, {Color? color}) => Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(k, style: NF.sora(13, color: NF.muted)),
+          ),
+          Text(
+            v,
+            style: NF.sora(13, weight: FontWeight.w600, color: color),
+          ),
+        ],
+      ),
+    );
+    return NFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.local_police_rounded, color: NF.blue, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Badge · ${life.job}',
+                  style: NF.sora(15, weight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          if (!academyDone(life) && life.careerRank == 0)
+            line('Academy', 'Fitness, law exam, the range')
+          else ...[
+            line('Cases closed', '$closed'),
+            line(
+              'Conviction rate',
+              closed + lost == 0
+                  ? '—'
+                  : '${(closed * 100 / (closed + lost)).round()}%',
+            ),
+          ],
+          line(
+            'Internal Affairs',
+            dirt == 0
+                ? 'Clean file'
+                : dirt <= 2
+                ? 'Rumours'
+                : 'Watching you',
+            color: dirt == 0 ? null : NF.danger,
+          ),
+          if (crew != null)
+            line(
+              'Undercover',
+              '${crewById(crew).name} · cover ${cover(life)}%',
+              color: cover(life) < 30 ? NF.danger : NF.orange,
             ),
         ],
       ),
