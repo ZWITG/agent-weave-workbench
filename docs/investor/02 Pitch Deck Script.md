@@ -11,6 +11,9 @@ tags: [relivable, investor, deck, pitch]
 
 *Purpose:* The investor deck, slide by slide: what goes on screen, what to say, and how long to take. It replaces the client deck in [[13 Client Pitch Script and FAQ]] for investor meetings.
 
+> [!info] The visual deck
+> Built as "Relivable Investor Deck" (https://claude.ai/artifact/Vh7d3JooSz8GJR8trU4M4P; private until you share it from its Share menu, and it exports to PowerPoint or PDF). It has 15 slides: the 13 below, plus a **Team** slide before the ask (fill its bracketed fields) and a closing **Live demo** slide. Speaker notes on each slide carry the "Say" text.
+
 > [!tip] Format
 > **13 slides, about 12 minutes, then a 5-minute live demo and Q&A.** One idea per slide. Show real screens from the game, not mock-ups: stills are in `game/media/social/` and `game/media/social/calling/`, and `game/tool/render_*_test.dart` renders more. Put the Reel on slide 1, or play it as people sit down.
 

@@ -89,7 +89,7 @@ provide. Items are ordered by how much they block a public store launch.
 | G2 | **Company and IP** | Not recorded in the repo | Entity, cap table, and founder-to-company IP assignment, including a statement on AI-assisted development |
 | G3 | **Team slide** | Placeholders marked [OWNER] in the investor pack | Founder bios, time commitment, advisers |
 | G4 | **Player evidence** | None (F1, C3) | Run playtests before or alongside the first meetings; it is the pack's biggest gap |
-| G5 | **Visual deck** | Script ready ([[02 Pitch Deck Script]]) | Build or approve the visual deck, then export it to PDF |
+| G5 | **Visual deck** | Built: 15 slides with speaker notes (https://claude.ai/artifact/Vh7d3JooSz8GJR8trU4M4P) | Fill the Team and Ask placeholders; share it or export it to PDF |
 
 ## Legal check (1 Nov 2026)
 

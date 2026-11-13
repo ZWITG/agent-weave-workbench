@@ -51,6 +51,6 @@ tags: [relivable, investor, moc]
 - [ ] IP counsel's view on the RELIVABLE trademark (keep, license, or rename) (A7).
 - [ ] Run the first 10–20 player playtests (F1) so the deck can show real player reactions. This is the biggest gap in the pack today.
 - [ ] Add basic analytics (C3) to the playtest build so retention claims have data behind them.
-- [ ] Build the visual deck from [[02 Pitch Deck Script]] and export it to PDF.
+- [x] Build the visual deck from [[02 Pitch Deck Script]]: done (https://claude.ai/artifact/Vh7d3JooSz8GJR8trU4M4P). Fill its Team and Ask placeholders, then share or export it to PDF.
 - [ ] Put the data room together from the checklist in [[06 Investor FAQ and Due Diligence]].
 - [ ] Prepare a demo phone with a save at an interesting moment (an Echelon life, a prison sentence, a special career with its Hub).
