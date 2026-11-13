@@ -2,7 +2,7 @@
 title: "03 Special Careers - Next Update"
 project: Relivable
 phase: 2
-status: wave 1 in progress (13 Nov 2026); defaults taken for D3–D5, D1–D2 open
+status: wave 1 in progress (13 Nov 2026); defaults taken for D3–D5; D1 and D2 decided by the owner (13 Nov 2026)
 updated: 2026-11-13
 tags: [relivable, phase-2, careers, special-careers, themes, plan]
 ---
@@ -252,7 +252,7 @@ league) and D5 (the musician career runs on `music.dart`):
 | 3 Wave 1 careers | **Done:** actor, musician, athlete, politician (meters, activities, seasons, scenes). **Not yet:** contacts as NPCs; career mini-games reuse existing game engines with career wording (rhythm, memory, whack, reps, timing, breath, reaction), not new designs |
 | 4 Look upgrades | **Mostly done:** motifs on the Hub, the Curtain Call on promotion, the look's stamps on Work and Career results in its type accent (all twelve looks), the Final Bow on leaving a special career. Then signature instruments, illustrated scenes, themed sections and career pages in the Life Recap (`ui/career_stage.dart`) |
 | 5 Wave 2 careers | **Done:** model, doctor, vet, pilot, armed forces, lawyer/judge, street hustler (`engine/career_hub_wave2.dart`): meters, activities with one played moment each, seasons, scenes and promotion rules; deployments, hospital cases and big cases move the meters. Contacts as people, defending and treating people you know and judges hearing the crime list followed (`engine/career_hub_people.dart`) |
-| 6 Astronaut and Fighter | Not started (waits on D1) |
+| 6 Astronaut and Fighter | **Done** (D1: yes; `engine/career_hub_wave3.dart`, `ui/minigames_calling.dart`): Astronaut (Orbit) with missions to the station, the Moon and Mars and a real, always-shown risk to life; Fighter (Fight Night), boxing or MMA, with the Fight Night mini-game, injuries, a title fight and crews offering to fix fights (fraud on the crime scale). D2: yes, street hustler scams run through the crime system |
 | 7 Full test run, ship | Tests and release fuzz pass after each step; screenshots reviewed (`tool/render_hub_test.dart`) |
 
 ### 6.6 Rules carried over
@@ -279,3 +279,10 @@ league) and D5 (the musician career runs on `music.dart`):
 - Secret Agent: [Pro Game Guides](https://progameguides.com/bitlife/how-to-complete-secret-agent-missions-in-bitlife/), [GameSkinny](https://www.gameskinny.com/tips/how-become-secret-agent-bitlife/)
 - Ultimate Fighter: [Pro Game Guides](https://progameguides.com/bitlife/complete-bitlife-ultimate-fighter-mode-guide-leagues-move-set-stamina-more/)
 - Player feedback: [Game Solver: BitLife player comments](https://game-solver.com/bitlife-life-simulator/), [App Store listing](https://apps.apple.com/US/app/id1374403536)
+
+## 8. Owner decisions (13 Nov 2026)
+
+- **D1:** Astronaut and Fighter ride with this update.
+- Astronaut reach: the station, the Moon and Mars, **with real danger**: a launch can end a life. The risk is always shown before launch, readiness lowers it, and scrubbing is always safe.
+- Fighter: **boxing and MMA** in a fictional league; **crews can ask you to throw a fight** (fraud on the crime scale).
+- **D2:** **yes**: the street hustler can run scams (three-card trick, a raffle with no prize, a fake charity collection) through the crime system.

@@ -26,6 +26,12 @@ const hubContactRoles = <String, (String, String, String)>{
   'vet': ('Practice owner', 'Veterinary nurse', 'Rival vet'),
   'hustler': ('Market old-timer', 'Fellow busker', 'Rival on the next pitch'),
   'police': ('Sergeant', 'Partner', 'Rival detective'),
+  'astronaut': (
+    'Chief of the astronaut office',
+    'Crewmate',
+    'Rival for the seat',
+  ),
+  'fighter': ('Head coach', 'Cornerman', 'Rival in your division'),
 };
 
 /// Gives the workplace's people their career roles.
@@ -126,6 +132,8 @@ String _prize(String id) => switch (id) {
   'pilot' => 'the same captaincy',
   'vet' => 'the same farm contracts',
   'hustler' => 'the best pitch in town',
+  'astronaut' => 'the last seat on the next flight',
+  'fighter' => 'the next title shot',
   _ => 'the same promotion',
 };
 

@@ -378,6 +378,23 @@ String? _pilotReq(Life l) => l.flags.containsKey('pilot_licence')
     ? null
     : 'Needs a commercial pilot licence (flight school)';
 String? _hustlerReq(Life l) => null;
+
+/// A science or engineering degree (or Medicine) for astronauts.
+bool _scienceDegree(Life l) => l.school.degrees.any(
+  (d) =>
+      d.contains('Engineering') ||
+      d.contains('Computer Science') ||
+      d.contains('Biology') ||
+      d == 'Medicine',
+);
+String? _astronautReq(Life l) => !_scienceDegree(l)
+    ? 'Needs a science or engineering degree'
+    : _stat(l, 'health', 70) ??
+          (l.flags.containsKey('pilot_licence') || l.stats['smarts'] >= 75
+              ? null
+              : 'Needs a pilot licence or Smarts 75+');
+String? _fighterReq(Life l) =>
+    _stat(l, 'athleticism', 60) ?? _stat(l, 'health', 60);
 String? _vetReq(Life l) =>
     _has(l, 'Veterinary Medicine') ? null : 'Needs a Veterinary degree';
 
@@ -660,7 +677,37 @@ const careers = <Career>[
     special: true,
     extra: _hustlerReq,
     interview: 'service',
-    blurb: 'Earnings vary every year. Legal hustles only here.',
+    blurb: 'Earnings vary every year. Some hustles are scams.',
+  ),
+  Career(
+    id: 'astronaut',
+    field: 'Spaceflight',
+    ladder: [
+      'Astronaut candidate',
+      'Mission specialist',
+      'Commander',
+      'Expedition leader',
+    ],
+    baseSalary: 62000,
+    needs: 'degree',
+    minAge: 23,
+    keyStat: 'smarts',
+    special: true,
+    extra: _astronautReq,
+    interview: 'uniform',
+    blurb: 'The station, the Moon, then Mars. Every launch is a risk.',
+  ),
+  Career(
+    id: 'fighter',
+    field: 'Combat sports',
+    ladder: ['Amateur fighter', 'Pro prospect', 'Contender', 'Champion'],
+    baseSalary: 9000,
+    needs: 'any',
+    keyStat: 'athleticism',
+    special: true,
+    extra: _fighterReq,
+    interview: 'uniform',
+    blurb: 'Boxing or MMA: fight camps, weigh-ins and title nights.',
   ),
 ];
 
@@ -846,6 +893,18 @@ List<(String, bool)> unlockChecklist(Career c, Life l) {
       ),
     ],
     'vet' => [('A Veterinary degree', _has(l, 'Veterinary Medicine'))],
+    'astronaut' => [
+      ('A science or engineering degree', _scienceDegree(l)),
+      ('Health 70', st('health', 70)),
+      (
+        'A pilot licence or Smarts 75',
+        l.flags.containsKey('pilot_licence') || st('smarts', 75),
+      ),
+    ],
+    'fighter' => [
+      ('Athleticism 60', st('athleticism', 60)),
+      ('Health 60', st('health', 60)),
+    ],
     'police' => [
       ('A school diploma', finishedSchool(l)),
       ('A clean record', !l.flags.containsKey('arrested')),
@@ -856,6 +915,7 @@ List<(String, bool)> unlockChecklist(Career c, Life l) {
   return [
     if (c.minAge > 0) ('Age ${c.minAge}+', l.age >= c.minAge),
     if (c.needs != 'any' &&
+        c.id != 'astronaut' &&
         c.id != 'lawyer' &&
         c.id != 'doctor' &&
         c.id != 'vet')

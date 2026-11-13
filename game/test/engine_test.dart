@@ -118,6 +118,8 @@ Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
 }
 
 const _wave2Meters = {
+  'astronaut': 'Readiness',
+  'fighter': 'Ranking',
   'model': 'Portfolio',
   'doctor': 'Ward trust',
   'vet': 'Standing',
@@ -3190,6 +3192,8 @@ void main() {
         'military',
         'lawyer',
         'hustler',
+        'astronaut',
+        'fighter',
       ]) {
         final l = engine.newLife(seed: 700 + id.length)..age = 24;
         for (final k in [
@@ -3214,7 +3218,7 @@ void main() {
             .where((a) => a.category == 'Career' && hubActionFits(l, a.id))
             .toList();
         expect(mine.length, greaterThanOrEqualTo(4), reason: id);
-        for (var year = 0; year < 14 && l.job != null; year++) {
+        for (var year = 0; year < 14 && l.job != null && l.alive; year++) {
           l.usedActions.clear();
           l.energy = 99;
           for (final a in mine) {
@@ -3243,7 +3247,9 @@ void main() {
           expect(hubMeter(l), inInclusiveRange(0, 100), reason: id);
           l.age++;
         }
-        expect(l.careerRank, greaterThanOrEqualTo(1), reason: '$id promoted');
+        if (l.alive) {
+          expect(l.careerRank, greaterThanOrEqualTo(1), reason: '$id promoted');
+        }
         // The Hub survives a save.
         final back = Life.fromJson(jsonDecode(jsonEncode(l.toJson())));
         expect(hubMeter(back), hubMeter(l), reason: id);
@@ -3356,6 +3362,107 @@ void main() {
     // The pages survive a save.
     final back = Life.fromJson(jsonDecode(jsonEncode(l.toJson())));
     expect(hubHistory(back).length, 2);
+  });
+
+  test('astronauts fly missions with real risk; fighters fight for a belt', () {
+    GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
+    Life start(String id, int seed) {
+      final l = engine.newLife(seed: seed)..age = 30;
+      l.sceneQueue.clear();
+      startCareer(l, careerById(id)!);
+      l.sceneQueue.clear();
+      return l;
+    }
+
+    final fresh = engine.newLife(seed: 960)..age = 25;
+    expect(unlockChecklist(careerById('astronaut')!, fresh), isNotEmpty);
+    expect(careerById('astronaut')!.lockReason(fresh), isNotNull);
+
+    final a = start('astronaut', 961);
+    expect(missionFor(a), isNull);
+    expect(act('ast_launch').lockReason(a), contains('Mission specialists'));
+    a.careerRank = 1;
+    a.hub['meter'] = 20;
+    expect(act('ast_launch').lockReason(a), contains('Readiness 50'));
+    a.hub['meter'] = 50;
+    final mid = launchRisk(a);
+    a.hub['meter'] = 100;
+    expect(launchRisk(a), lessThan(mid));
+    a.careerRank = 3;
+    expect(missionFor(a)!.$2, 'Mars');
+    expect(launchRisk(a), greaterThan(mid));
+    a.careerRank = 1;
+    a.hub['meter'] = 60;
+    expect(promotionLock(a), contains('the space station'));
+    engine.runAction(a, act('ast_launch'));
+    var s = engine.nextScene(a)!;
+    engine.choose(a, s, s.choices.last);
+    expect(a.alive, isTrue);
+    expect(missionsFlown(a), isEmpty);
+    var lost = 0, flown = 0;
+    for (var i = 0; i < 400; i++) {
+      final l = start('astronaut', 1000 + i)
+        ..careerRank = 3
+        ..hub['meter'] = 50;
+      l.sceneQueue.add('hub:astronaut:launch');
+      final sc = engine.nextScene(l)!;
+      engine.choose(l, sc, sc.choices.first);
+      if (!l.alive) {
+        lost++;
+        expect(l.causeOfDeath, contains('Mars'));
+      }
+      if (missionsFlown(l).contains('mars')) flown++;
+    }
+    expect(lost, inInclusiveRange(4, 70));
+    expect(flown, greaterThan(250));
+
+    final f = start('fighter', 970);
+    expect(act('fig_fight').lockReason(f), contains('boxing or MMA'));
+    engine.runAction(f, act('fig_style'));
+    s = engine.nextScene(f)!;
+    engine.choose(f, s, s.choices[1]);
+    expect(fightStyle(f), 'MMA');
+    engine.runAction(f, act('fig_fight'), score: 1.0);
+    expect(fightRecord(f), startsWith('1–0'));
+    f.hub['injured'] = f.age;
+    f.usedActions.clear();
+    expect(act('fig_fight').lockReason(f), contains('Injured'));
+    f.usedActions.clear();
+    engine.runAction(f, act('fig_rest'));
+    expect(act('fig_fight').lockReason(f), isNull);
+    f
+      ..careerRank = 2
+      ..hub['meter'] = 85;
+    expect(promotionLock(f), contains('title fight'));
+    f.usedActions.clear();
+    engine.runAction(f, act('fig_fight'), score: 1.0);
+    expect(f.hub['belt'], isTrue);
+    expect(f.flags.containsKey('champion'), isTrue);
+    final fx = start('fighter', 971)..careerRank = 1;
+    fx.hub['style'] = 'Boxing';
+    fx.sceneQueue.add('hub:fighter:fix');
+    s = engine.nextScene(fx)!;
+    final cases = fx.cases.length;
+    engine.choose(fx, s, s.choices.first);
+    expect(
+      fx.cases.length > cases ||
+          fx.sceneQueue.any((q) => q.startsWith('arrest:fraud')),
+      isTrue,
+    );
+    expect(fightRecord(fx), startsWith('0–1'));
+
+    final h = start('hustler', 972);
+    expect(act('hus_scam').lockReason(h), contains('pitch'));
+    h.hub['pitch'] = 'market';
+    engine.runAction(h, act('hus_scam'));
+    s = engine.nextScene(h)!;
+    final before = h.cases.length;
+    engine.choose(h, s, s.choices.first);
+    expect(
+      h.cases.length > before ||
+          h.sceneQueue.any((q) => q.startsWith('arrest:fraud')),
+      isTrue,
+    );
   });
 
   test('Calling wave 2: each career has its own way up', () {

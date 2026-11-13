@@ -10,6 +10,7 @@ import '../theme.dart';
 part 'minigame_skins.dart';
 part 'minigames_more.dart';
 part 'minigames_crime.dart';
+part 'minigames_calling.dart';
 
 /// Short mini-games for some activities. Each returns a score from 0 to 1,
 /// or null if the player closes it. "Skip" always resolves at 0.6, so
@@ -61,6 +62,9 @@ const miniPools = <String, List<String>>{
   'mil_drill': ['reps', 'whack'],
   'law_cross': ['memory', 'timing'],
   'hus_busk': ['rhythm', 'memory'],
+  'fig_fight': ['fight', 'reaction'],
+  'fig_train': ['reps', 'whack'],
+  'ast_sim': ['docking', 'timing'],
   'study': ['quiz', 'words'],
   'gym': ['reps', 'whack'],
   'shoplift': ['sneak', 'timing'],
@@ -125,6 +129,13 @@ const _intros = <String, Map<String, String>>{
   'vet_clinic': {
     'rhythm':
         'A busy waiting room: see each patient the moment they are called.',
+  },
+  'fig_fight': {
+    'reaction':
+        'Counter-punch: hit back the moment you see the opening. Not before.',
+  },
+  'ast_sim': {
+    'timing': 'Final approach: fire the braking burn while the marker is in the green.',
   },
   'pil_check': {
     'reaction': 'Engine failure on take-off: react the moment the light shows.',
@@ -270,6 +281,11 @@ final _defaults = <String, MiniTheme>{
   'whack': _t('Tap the targets as they pop up. Not the grey ones.'),
   'rhythm': _t('Tap each pad as it lights up, on the beat.'),
   'words': _t('Unscramble the words before time runs out.'),
+  'fight': _t(
+    'Read the tell: Guard a jab, Slip a hook, Strike an opening.',
+    stat: 'athleticism',
+  ),
+  'docking': _t('Centre the port and brake to arrive slowly.', stat: 'smarts'),
   'getaway': _t(
     'Lose the police and reach the motorway (M). Steer with the arrows or swipe; a tunnel breaks their line of sight, and the garage swaps your car.',
     stat: 'athleticism',
@@ -405,6 +421,19 @@ final miniThemes = <String, MiniTheme>{
     pads: ['Strum', 'Pick', 'Slap', 'Stomp'],
     stat: 'creativity',
   ),
+  'fig_fight': _t(
+    'Read the tell and answer it: Guard a jab, Slip a hook, Strike an opening. Strikes cost stamina. Three rounds.',
+    stat: 'athleticism',
+  ),
+  'fig_train': _t(
+    'Pads: hit the mitts as your coach holds them up. Not the empty hand.',
+    button: 'Hit',
+    stat: 'athleticism',
+  ),
+  'ast_sim': _t(
+    'Dock with the station: nudge left and right to centre the port, brake to arrive slowly. Fuel is limited.',
+    stat: 'smarts',
+  ),
   'pil_check': _t(
     'Crosswind landing: flare while the marker is over the centreline. Three approaches, each gustier.',
     button: 'Flare',
@@ -479,6 +508,8 @@ class _MiniGameScreen extends StatelessWidget {
       'getaway' => _GetawayGame(onDone: finish, ease: ease),
       'breakin' => _BreakInGame(onDone: finish, ease: ease),
       'breakout' => _BreakoutGame(onDone: finish, ease: ease),
+      'fight' => _FightGame(onDone: finish, ease: ease),
+      'docking' => _DockingGame(onDone: finish, ease: ease),
       'words' => _WordsGame(
         onDone: finish,
         words: _wordLists[activity] ?? _wordLists['study']!,

@@ -1322,7 +1322,7 @@ List<String> _wave2Year(Life l, Random rng, String id, int beat) =>
       'pilot' => _pilotYear(l, rng, beat),
       'military' => _militaryYear(l, rng, beat),
       'hustler' => _hustlerYear(l, rng, beat),
-      _ => const [],
+      _ => _wave3Year(l, rng, id, beat),
     };
 
 Storylet? _wave2Scene(List<String> args, Life l) {
@@ -1337,7 +1337,7 @@ Storylet? _wave2Scene(List<String> args, Life l) {
     'lawyer:case' => _caseScene(l, which),
     'lawyer:bench' => _hearingScene(l, which),
     'hustler:pitch' => _pitchScene(l),
-    _ => null,
+    final key => _wave3Scene(key, l),
   };
 }
 
@@ -1357,7 +1357,7 @@ String? _wave2Needs(Life l, String id, String meter, int need) => switch (id) {
   'lawyer' when l.careerRank == 2 && l.stats['karma'] < 50 =>
     'Judges need Karma 50+ and $meter $need',
   'hustler' when hustlerPitch(l) == null => 'Pick a pitch',
-  _ => null,
+  _ => _wave3Needs(l, id, meter, need),
 };
 
 String _wave2Promotion(String id) => switch (id) {
@@ -1368,6 +1368,8 @@ String _wave2Promotion(String id) => switch (id) {
   'military' => 'Your commanding officer pinned on the new rank.',
   'lawyer' => 'The senior partners have been watching your cases.',
   'hustler' => 'Everyone on the street knows your name now.',
+  'astronaut' => 'The chief of the astronaut office called you in.',
+  'fighter' => 'The rankings moved: you are on the next poster.',
   _ => 'Your work was noticed.',
 };
 
@@ -1379,6 +1381,8 @@ const _wave2Specs = <String, HubSpec>{
   'military': _military,
   'lawyer': _lawyer,
   'hustler': _hustler,
+  'astronaut': _astronaut,
+  'fighter': _fighter,
 };
 
 final _wave2Actions = <GameAction>[
@@ -1389,6 +1393,9 @@ final _wave2Actions = <GameAction>[
   ..._militaryActions,
   ..._lawyerActions,
   ..._hustlerActions,
+  _scamAction,
+  ..._astronautActions,
+  ..._fighterActions,
 ];
 
 const _wave2Prefixes = {
@@ -1399,6 +1406,8 @@ const _wave2Prefixes = {
   'mil_': 'military',
   'law_': 'lawyer',
   'hus_': 'hustler',
+  'ast_': 'astronaut',
+  'fig_': 'fighter',
 };
 
 /// Moves a Hub career's meter from scenes elsewhere (jobs.dart's

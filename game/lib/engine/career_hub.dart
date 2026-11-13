@@ -8,11 +8,13 @@ import 'pets.dart' show petHealth, petsOf;
 import 'policing.dart'
     show academyDone, casesClosed, casesLost, dirtyFile, isCop;
 import 'storylet.dart';
-import 'justice.dart' show crimes;
+import 'justice.dart' show commitCrime, crimeById, crimes;
+import 'underworld.dart' show crewOf;
 import 'world_data.dart' show countryNamed;
 
 part 'career_hub_wave2.dart';
 part 'career_hub_people.dart';
+part 'career_hub_wave3.dart';
 
 // The Career Hub ("Calling", docs/phase-2/03): every special career gets
 // the same shape, filled with its own data.

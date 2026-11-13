@@ -55,6 +55,8 @@ void main() {
     'military',
     'lawyer',
     'hustler',
+    'astronaut',
+    'fighter',
   ]) {
     testWidgets('hub $id', (t) async {
       // ignore: invalid_use_of_visible_for_testing_member

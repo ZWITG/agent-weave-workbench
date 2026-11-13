@@ -17,6 +17,7 @@ import 'package:relivable/sound.dart';
 import 'package:relivable/theme.dart';
 import 'package:relivable/ui/intro.dart';
 import 'package:relivable/ui/result_popup.dart';
+import 'package:relivable/ui/minigames.dart' show showMiniGame;
 import 'package:relivable/ui/life_recap.dart';
 import 'package:relivable/engine/recap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,6 +62,48 @@ Future<void> _frames(WidgetTester t, int n, [int ms = 150]) async {
 
 void main() {
   IntroSplash.enabled = false;
+  for (final (id, game, look) in const [
+    ('fig_fight', 'fight', 'fighter'),
+    ('ast_sim', 'docking', 'astronaut'),
+  ]) {
+    testWidgets('mini-game $game', (t) async {
+      // ignore: invalid_use_of_visible_for_testing_member
+      SharedPreferences.setMockInitialValues({});
+      await t.runAsync(_fonts);
+      t.view.physicalSize = const Size(390, 760);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.reset);
+      late GameController c;
+      await t.runAsync(() async {
+        c = GameController();
+        await c.load();
+      });
+      Sound.instance.enabled = false;
+      c.startLife(seed: 51);
+      startCareer(c.life!..age = 26, careerById(look)!);
+      c.life!.sceneQueue.clear();
+      c.notifyListeners();
+      final key = GlobalKey();
+      await t.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: RelivableApp(controller: c),
+        ),
+      );
+      await _frames(t, 30);
+      final ctx = t.element(find.byType(Scaffold).first);
+      showMiniGame(
+        ctx,
+        game,
+        age: 26,
+        title: 'Calling',
+        activity: id,
+        game: game,
+      );
+      await _frames(t, 10, 100);
+      await _shot(t, key, 'game_$game');
+    });
+  }
   for (final id in const ['lawyer', 'musician']) {
     testWidgets('recap page $id', (t) async {
       // ignore: invalid_use_of_visible_for_testing_member

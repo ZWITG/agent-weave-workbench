@@ -652,6 +652,8 @@ void main() {
       'military',
       'lawyer',
       'hustler',
+      'astronaut',
+      'fighter',
     ]) {
       startCareer(c.life!, careerById(id)!);
       c.life!.sceneQueue.clear();

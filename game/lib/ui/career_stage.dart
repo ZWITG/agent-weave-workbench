@@ -33,7 +33,7 @@ TextStyle _face(String look, double size, Color color) => switch (look) {
     color: color,
     height: 1,
   ),
-  'athlete' || 'military' || 'police' => TextStyle(
+  'athlete' || 'military' || 'police' || 'fighter' => TextStyle(
     fontFamily: 'StardosStencil',
     fontSize: size,
     fontWeight: FontWeight.w700,
@@ -98,6 +98,8 @@ String instrumentCaption(String look, int v) => switch (look) {
   'pilot' => '${v * 100} hours in the logbook',
   'vet' => '${v ~/ 10} sheep on the hill',
   'hustler' => '$v chalk marks',
+  'astronaut' => v >= 50 ? 'Go for launch' : 'No-go: keep training',
+  'fighter' => '${(v / 10).round()} of 10 studs lit on the belt',
   _ => '$v of 100',
 };
 
@@ -181,9 +183,165 @@ class _InstrumentPainter extends CustomPainter {
         _hillside(c, s);
       case 'hustler':
         _tally(c, s);
+      case 'astronaut':
+        _trajectory(c, s);
+      case 'fighter':
+        _belt(c, s);
       default:
         _badge(c, s);
     }
+  }
+
+  // ---- Orbit: a transfer chart, Earth to the Moon to Mars ----
+  void _trajectory(Canvas c, Size s) {
+    final r = Rect.fromLTWH(4, 4, s.width - 8, s.height - 8);
+    c.drawRRect(
+      RRect.fromRectAndRadius(r, const Radius.circular(12)),
+      _fill(const Color(0xFF070A16)),
+    );
+    final rnd = Random(2);
+    for (var i = 0; i < 30; i++) {
+      c.drawCircle(
+        Offset(
+          r.left + rnd.nextDouble() * r.width,
+          r.top + rnd.nextDouble() * r.height,
+        ),
+        rnd.nextDouble() * 1.1,
+        _fill(Colors.white.withValues(alpha: 0.5)),
+      );
+    }
+    final earth = Offset(r.left + 34, r.bottom - 30);
+    final moon = Offset(r.left + r.width * 0.45, r.top + 40);
+    final mars = Offset(r.right - 34, r.bottom - 42);
+    final path = Path()
+      ..moveTo(earth.dx, earth.dy)
+      ..quadraticBezierTo(r.left + r.width * 0.2, r.top + 10, moon.dx, moon.dy)
+      ..quadraticBezierTo(r.left + r.width * 0.75, r.top + 6, mars.dx, mars.dy);
+    c.drawPath(path, _stroke(p.blue.withValues(alpha: 0.25), 1.5));
+    // The part of the path your readiness has earned, bright.
+    final metric = path.computeMetrics().first;
+    c.drawPath(metric.extractPath(0, metric.length * f), _stroke(p.blue, 2.4));
+    final at = metric.getTangentForOffset(metric.length * f)?.position ?? earth;
+    c.drawCircle(earth, 16, _fill(const Color(0xFF2E7BD6)));
+    c.drawArc(
+      Rect.fromCircle(center: earth, radius: 16),
+      -1.2,
+      2.2,
+      false,
+      _stroke(const Color(0xFF6BD08A), 4),
+    );
+    c.drawCircle(earth, 20, _stroke(p.blue.withValues(alpha: 0.4), 2));
+    c.drawCircle(moon, 7, _fill(const Color(0xFFCFD3DC)));
+    c.drawCircle(mars, 11, _fill(const Color(0xFFD0623A)));
+    // The capsule, with a pulse.
+    c.drawCircle(
+      at,
+      7 + 3 * sin(t * pi * 2).abs(),
+      _fill(p.orange.withValues(alpha: 0.3)),
+    );
+    c.drawCircle(at, 4, _fill(p.orange));
+    // Go / no-go lights.
+    final go = v >= 50;
+    for (final (i, word, on) in [(0, 'GO', go), (1, 'NO-GO', !go)]) {
+      final o = Offset(r.right - 74 + i * 0.0, r.top + 18 + i * 20);
+      c.drawCircle(
+        o,
+        5,
+        _fill(on ? (i == 0 ? const Color(0xFF5BE38A) : p.orange) : p.border),
+      );
+      _text(
+        c,
+        word,
+        _face(look, 10, on ? p.text : p.muted),
+        o.translate(12, 0),
+        centre: false,
+      );
+    }
+    _text(
+      c,
+      '${label.toUpperCase()} $v',
+      _face(look, 11 * k, p.muted).copyWith(letterSpacing: 2),
+      Offset(r.left + 12, r.top + 16),
+      centre: false,
+    );
+  }
+
+  // ---- Fight Night: a gold title belt ----
+  void _belt(Canvas c, Size s) {
+    final cy = s.height / 2;
+    final strap = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: Offset(s.width / 2, cy),
+        width: s.width - 10,
+        height: 46,
+      ),
+      const Radius.circular(10),
+    );
+    c.drawRRect(strap, _fill(const Color(0xFF1A0C0C)));
+    c.drawRRect(
+      strap.deflate(4),
+      _stroke(p.borderStrong.withValues(alpha: 0.6), 1.5),
+    );
+    // Side plates: one stud per ten points.
+    const n = 10;
+    final plateW = (s.width - 150) / n;
+    for (var i = 0; i < n; i++) {
+      final left = i < n / 2;
+      final x = left
+          ? 14 + i * plateW
+          : s.width - 14 - (n - 1 - i) * plateW - plateW;
+      final on = i < (v / 10).round();
+      final plate = RRect.fromRectAndRadius(
+        Rect.fromLTWH(x + 1, cy - 14, plateW - 2, 28),
+        const Radius.circular(4),
+      );
+      c.drawRRect(plate, _fill(on ? p.borderStrong : const Color(0xFF3A2A1A)));
+      if (on) c.drawCircle(plate.center, 3, _fill(const Color(0xFFFFF4C0)));
+    }
+    // The centre plate.
+    final centre = Offset(s.width / 2, cy);
+    final plate = Path();
+    for (var i = 0; i < 8; i++) {
+      final a = pi / 8 + i * pi / 4;
+      final pt = centre + Offset(cos(a) * 62, sin(a) * 54);
+      i == 0 ? plate.moveTo(pt.dx, pt.dy) : plate.lineTo(pt.dx, pt.dy);
+    }
+    plate.close();
+    c.drawPath(
+      plate,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFFE89A),
+            p.borderStrong,
+            const Color(0xFF9A7420),
+          ],
+        ).createShader(Rect.fromCircle(center: centre, radius: 62)),
+    );
+    c.drawPath(plate, _stroke(const Color(0xFF6B4E10), 2));
+    // A glint sweeping across.
+    final gx = centre.dx - 60 + 120 * ((t * 1.5) % 1);
+    c.save();
+    c.clipPath(plate);
+    c.drawRect(
+      Rect.fromLTWH(gx, cy - 60, 10, 120),
+      _fill(Colors.white.withValues(alpha: 0.35)),
+    );
+    c.restore();
+    _text(
+      c,
+      '$v',
+      _face(look, 30 * k, const Color(0xFF3A1A0A)),
+      centre.translate(0, -4),
+    );
+    _text(
+      c,
+      label.toUpperCase(),
+      _face(look, 9 * k, const Color(0xFF3A1A0A)).copyWith(letterSpacing: 2),
+      centre.translate(0, 22),
+    );
   }
 
   // ---- Marquee: a sign ringed with bulbs, lit in proportion to Buzz ----
@@ -916,6 +1074,10 @@ class HubScenePainter extends CustomPainter {
         _valley(c, s);
       case 'hustler':
         _market(c, s);
+      case 'astronaut':
+        _orbit(c, s);
+      case 'fighter':
+        _arena(c, s);
       default:
         _street(c, s);
     }
@@ -1789,6 +1951,147 @@ class HubScenePainter extends CustomPainter {
     );
   }
 
+  // Orbit: Earth's glowing limb below, stars, the station drifting by.
+  void _orbit(Canvas c, Size s) {
+    _sky(c, s, const Color(0xFF010205), const Color(0xFF060A18));
+    final rnd = Random(77);
+    for (var i = 0; i < 70; i++) {
+      final tw = 0.3 + 0.5 * (sin(t * pi * 2 * 3 + i) * 0.5 + 0.5);
+      c.drawCircle(
+        Offset(rnd.nextDouble() * s.width, rnd.nextDouble() * s.height * 0.8),
+        rnd.nextDouble() * 1.4,
+        _fill(Colors.white.withValues(alpha: tw)),
+      );
+    }
+    // The Earth's limb, with its thin blue atmosphere.
+    final r = s.width * 1.4;
+    final centre = Offset(s.width / 2, s.height * 0.62 + r);
+    c.drawCircle(centre, r + 10, _fill(p.blue.withValues(alpha: 0.18)));
+    c.drawCircle(centre, r + 4, _fill(p.blue.withValues(alpha: 0.35)));
+    c.drawCircle(
+      centre,
+      r,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(0, -1),
+          radius: 0.08,
+          colors: [const Color(0xFF2B6CB8), const Color(0xFF0B2244)],
+        ).createShader(Rect.fromCircle(center: centre, radius: r)),
+    );
+    // Cloud bands.
+    for (var i = 0; i < 4; i++) {
+      final y = s.height * 0.68 + i * 9;
+      c.drawLine(
+        Offset(s.width * (0.1 + 0.2 * i), y),
+        Offset(s.width * (0.35 + 0.2 * i), y + 2),
+        _stroke(Colors.white.withValues(alpha: 0.25), 3),
+      );
+    }
+    // The sun breaking over the edge.
+    c.drawCircle(
+      Offset(s.width * 0.88, s.height * 0.6),
+      24,
+      _fill(Colors.white.withValues(alpha: 0.25)),
+    );
+    c.drawCircle(
+      Offset(s.width * 0.88, s.height * 0.6),
+      7,
+      _fill(Colors.white),
+    );
+    // The station, drifting across.
+    final sx = s.width * (((t * 0.5) % 1) * 1.3 - 0.15);
+    final st = Offset(sx, s.height * 0.3);
+    c.drawRect(
+      Rect.fromCenter(center: st, width: 30, height: 6),
+      _fill(const Color(0xFFD7DCE6)),
+    );
+    for (final dx in [-26.0, 26.0]) {
+      c.drawRect(
+        Rect.fromCenter(center: st.translate(dx, 0), width: 20, height: 14),
+        _fill(const Color(0xFF2A4A8A)),
+      );
+      c.drawRect(
+        Rect.fromCenter(center: st.translate(dx, 0), width: 20, height: 14),
+        _stroke(const Color(0xFFD7DCE6), 1),
+      );
+    }
+    c.drawCircle(st, 4, _fill(p.orange));
+  }
+
+  // Fight Night: the arena from the front row, the ring under the lights.
+  void _arena(Canvas c, Size s) {
+    _sky(c, s, const Color(0xFF050202), p.bg);
+    // The lighting rig and its cones.
+    c.drawRect(
+      Rect.fromLTWH(s.width * 0.15, 8, s.width * 0.7, 8),
+      _fill(const Color(0xFF241414)),
+    );
+    for (var i = 0; i < 4; i++) {
+      final x = s.width * (0.22 + i * 0.19);
+      _beam(
+        c,
+        Offset(x, 16),
+        Offset(s.width / 2 + (x - s.width / 2) * 0.3, s.height * 0.62),
+        40,
+        Colors.white,
+      );
+      c.drawCircle(Offset(x, 16), 4, _fill(Colors.white));
+    }
+    // The crowd, with phone and camera flashes.
+    final rnd = Random(51);
+    for (var x = 0.0; x < s.width; x += 9) {
+      final y = s.height * 0.72 + rnd.nextDouble() * 10;
+      c.drawCircle(Offset(x, y), 5, _fill(const Color(0xFF0E0606)));
+      if (((t * 3 + rnd.nextDouble()) % 1) < 0.03) {
+        c.drawCircle(
+          Offset(x, y - 6),
+          6,
+          _fill(Colors.white.withValues(alpha: 0.7)),
+        );
+      }
+    }
+    // The ring: apron, posts and ropes.
+    final apron = Rect.fromLTWH(
+      s.width * 0.12,
+      s.height * 0.62,
+      s.width * 0.76,
+      s.height * 0.12,
+    );
+    c.drawRect(apron, _fill(const Color(0xFF3A0F12)));
+    for (final x in [apron.left, apron.right]) {
+      c.drawRect(
+        Rect.fromLTWH(x - 4, s.height * 0.3, 8, apron.top - s.height * 0.3),
+        _fill(const Color(0xFFB8B8B8)),
+      );
+    }
+    for (var i = 0; i < 3; i++) {
+      final y = s.height * (0.36 + i * 0.08);
+      c.drawLine(
+        Offset(apron.left, y),
+        Offset(apron.right, y),
+        _stroke((i == 1 ? Colors.white : p.orange).withValues(alpha: 0.85), 3),
+      );
+    }
+    // Two fighters touching gloves in the middle.
+    final mid = Offset(s.width / 2, s.height * 0.44);
+    for (final side in [-1.0, 1.0]) {
+      final body = mid.translate(side * 22, 0);
+      c.drawCircle(body.translate(0, -26), 8, _fill(const Color(0xFF0A0505)));
+      c.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(center: body, width: 22, height: 34),
+          const Radius.circular(8),
+        ),
+        _fill(const Color(0xFF0A0505)),
+      );
+      c.drawCircle(
+        mid.translate(side * 6, -10 + sin(t * pi * 4) * 1.5),
+        6,
+        _fill(side < 0 ? p.orange : const Color(0xFF3A6BFF)),
+      );
+    }
+  }
+
   // Blue Line: a city at night, tape across it, the light bar washing it.
   void _street(Canvas c, Size s) {
     final on = (t * 6).floor().isEven;
@@ -1883,6 +2186,8 @@ const hubWords = <String, (String, String, String, String)>{
   'vet': ('The practice', 'Day list', 'Field notes', '❦'),
   'hustler': ('Street cred', 'Today\'s pitch', 'Word on the street', '✎'),
   'police': ('Rank', 'Duty roster', 'Case log', '▪'),
+  'astronaut': ('Flight assignments', 'Mission prep', 'Mission log', '◆'),
+  'fighter': ('The rankings', 'Fight camp', 'Fight record', '●'),
 };
 
 (String, String, String, String) wordsFor(String look) =>
@@ -1956,6 +2261,20 @@ const _actionIcons = <String, IconData>{
   'hus_sell': Icons.shopping_basket_rounded,
   'hus_show': Icons.auto_awesome_rounded,
   'hus_licence': Icons.card_membership_rounded,
+  'hus_scam': Icons.style_rounded,
+  'ast_sim': Icons.satellite_alt_rounded,
+  'ast_centrifuge': Icons.cyclone_rounded,
+  'ast_survival': Icons.forest_rounded,
+  'ast_research': Icons.science_rounded,
+  'ast_outreach': Icons.school_rounded,
+  'ast_launch': Icons.rocket_launch_rounded,
+  'fig_style': Icons.sports_martial_arts_rounded,
+  'fig_train': Icons.fitness_center_rounded,
+  'fig_spar': Icons.sports_kabaddi_rounded,
+  'fig_cut': Icons.monitor_weight_rounded,
+  'fig_promo': Icons.campaign_rounded,
+  'fig_fight': Icons.sports_mma_rounded,
+  'fig_rest': Icons.healing_rounded,
 };
 
 IconData? hubActionIcon(String id) => _actionIcons[id];

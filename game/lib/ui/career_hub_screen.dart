@@ -707,6 +707,44 @@ class CareerMotif extends CustomPainter {
             chalk..color = p.blue.withValues(alpha: 0.6),
           );
         }
+      case 'astronaut':
+        // Stars, and a capsule crossing the strip.
+        final rnd = Random(9);
+        for (var i = 0; i < (w / 14).floor(); i++) {
+          canvas.drawCircle(
+            Offset(rnd.nextDouble() * w, rnd.nextDouble() * h),
+            rnd.nextDouble() * 1.2,
+            Paint()..color = p.text.withValues(alpha: 0.6),
+          );
+        }
+        canvas.drawCircle(
+          Offset(w * ((t * 0.7) % 1), y),
+          3.5,
+          Paint()..color = p.orange,
+        );
+        canvas.drawLine(
+          Offset(0, y + 6),
+          Offset(w, y - 6),
+          Paint()
+            ..color = p.blue.withValues(alpha: 0.3)
+            ..strokeWidth = 1,
+        );
+      case 'fighter':
+        // Three ropes and a belt glint.
+        for (var i = 0; i < 3; i++) {
+          canvas.drawLine(
+            Offset(0, y - 8 + i * 8.0),
+            Offset(w, y - 8 + i * 8.0),
+            Paint()
+              ..color = (i == 1 ? p.text : p.orange).withValues(alpha: 0.6)
+              ..strokeWidth = 2,
+          );
+        }
+        canvas.drawCircle(
+          Offset(w * ((t * 1.2) % 1), y),
+          5,
+          Paint()..color = p.borderStrong,
+        );
       case 'police':
         final on = (t * 6).floor().isEven;
         canvas.drawRRect(

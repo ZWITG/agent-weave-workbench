@@ -22,6 +22,8 @@ const _stamps = <String, (String, String, String)>{
   'vet': ('ALL WELL', 'CHECK BACK', 'CALLED OUT'),
   'hustler': ('SOLD', 'SLOW DAY', 'MOVED ON'),
   'police': ('CASE CLOSED', 'ON FILE', 'NO FURTHER ACTION'),
+  'astronaut': ('MISSION SUCCESS', 'HOLD', 'SCRUBBED'),
+  'fighter': ('WINNER', 'SPLIT DECISION', 'DEFEATED'),
 };
 
 /// The stamp on a career result in [look] (a careerLooks id), from the
@@ -39,6 +41,13 @@ String? careerStamp(String? look, String tone, String text) {
   if (look == 'lawyer' && t.contains('not guilty')) return 'NOT GUILTY';
   if (look == 'model' && t.contains('cover')) return 'ON THE COVER';
   if (look == 'military' && t.contains('medal')) return 'MEDAL';
+  if (look == 'fighter' && t.contains('champion')) return 'NEW CHAMPION';
+  if (look == 'fighter' && tone == 'good' && t.contains('ended it')) {
+    return 'KO!';
+  }
+  if (look == 'astronaut' && t.contains('dock')) {
+    return tone == 'bad' ? 'ABORT' : 'DOCKED';
+  }
   return switch (tone) {
     'good' => s.$1,
     'bad' => s.$3,
