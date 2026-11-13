@@ -2,7 +2,7 @@
 title: "03 Special Careers - Next Update"
 project: Relivable
 phase: 2
-status: plan (13 Nov 2026), awaiting owner decisions in section 5
+status: wave 1 in progress (13 Nov 2026); defaults taken for D3–D5, D1–D2 open
 updated: 2026-11-13
 tags: [relivable, phase-2, careers, special-careers, themes, plan]
 ---
@@ -238,6 +238,20 @@ fade; Settings › Career looks turns everything off.
 Rough size: larger than the Echelon update. Wave 1 (steps 1–4) is about
 5–7 working sessions; wave 2 about the same again; each new career about
 one more.
+
+### 6.6 Progress
+
+Built 13 Nov 2026 (`engine/career_hub.dart`, `ui/career_hub_screen.dart`),
+with the recommended defaults for D3 (Gilded still wins), D4 (fictional
+league) and D5 (the musician career runs on `music.dart`):
+
+| Step | State |
+|---|---|
+| 1 Hub framework and screen, police on it | **Done** |
+| 2 Menu upgrades | **Done:** Hub cards on Path, the Career category in Activities, the way-in checklists. **Not yet:** the meter chip in the header |
+| 3 Wave 1 careers | **Done:** actor, musician, athlete, politician (meters, activities, seasons, scenes). **Not yet:** contacts as NPCs; career mini-games reuse existing game engines with career wording (rhythm, memory, whack, reps, timing, breath, reaction), not new designs |
+| 4 Look upgrades | **Partly:** motifs on the Hub, the Curtain Call on promotion. **Not yet:** stamps, type accents, the Final Bow, motifs outside the Hub |
+| 5–7 | Not started |
 
 ### 6.6 Rules carried over
 

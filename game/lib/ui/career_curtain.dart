@@ -66,6 +66,11 @@ class _CareerCurtainState extends State<CareerCurtain>
   String? _look;
   CareerLook? _playing;
   String _title = '';
+  int _rank = 0;
+
+  /// 'NOW WORKING AS' when a career starts, 'PROMOTED TO' on a promotion
+  /// (the Curtain Call).
+  String _kicker = 'NOW WORKING AS';
   ui.Image? _shot;
   bool _cued = false;
 
@@ -89,6 +94,7 @@ class _CareerCurtainState extends State<CareerCurtain>
       });
     _life = c.life;
     _look = careerLookId(_life);
+    _rank = _life?.careerRank ?? 0;
     c.addListener(_changed);
   }
 
@@ -107,20 +113,28 @@ class _CareerCurtainState extends State<CareerCurtain>
     final same = identical(l, _life);
     final was = _look;
     final now = careerLookId(l);
+    final rankWas = _rank;
     _life = l;
     _look = now;
-    // Only starting a special career in the life being played: not a new
-    // life, a loaded save, or a page opening or closing over the look.
-    if (!same || now == null || now == was) return;
+    _rank = l?.careerRank ?? 0;
+    // Only starting a special career (or a promotion in one) in the life
+    // being played: not a new life, a loaded save, or a page opening or
+    // closing over the look.
+    if (!same || now == null) return;
+    final promoted = now == was && _rank > rankWas;
+    if (now == was && !promoted) return;
     if (shownCareerLook(c) != now) return;
     if (!CareerCurtain.enabled || _playing != null) return;
     _shot?.dispose();
     _shot = _capture();
     _playing = careerLooks[now];
     _title = l?.job ?? '';
+    _kicker = promoted ? 'PROMOTED TO' : 'NOW WORKING AS';
     _cued = false;
     _anim.duration = widget.reduceMotion
         ? const Duration(milliseconds: 500)
+        : promoted
+        ? const Duration(milliseconds: 2400)
         : const Duration(milliseconds: 3000);
     _anim.forward(from: 0);
     setState(() {});
@@ -166,7 +180,7 @@ class _CareerCurtainState extends State<CareerCurtain>
           Positioned.fill(
             child: Semantics(
               label:
-                  'New career: $_title. The game now wears ${look.name}: ${look.tagline}.',
+                  '${_kicker == 'PROMOTED TO' ? 'Promoted' : 'New career'}: $_title. The game now wears ${look.name}: ${look.tagline}.',
               liveRegion: true,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -248,7 +262,7 @@ class _CareerCurtainState extends State<CareerCurtain>
             ),
             const SizedBox(height: 18),
             Text(
-              'NOW WORKING AS',
+              _kicker,
               style: NF
                   .sora(12, weight: FontWeight.w700, color: p.muted)
                   .copyWith(letterSpacing: 2.4),

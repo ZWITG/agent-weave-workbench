@@ -220,3 +220,17 @@ The groundwork for the special careers update: each special career now changes h
 - Lawyers representing themselves in court use their courtroom skill (62, plus 7 for each step up the ladder).
 - A criminal record costs votes: 8 points off the election odds for each conviction on file (up to 24).
 - tool/render_careers_test.dart renders the looks and the Curtain for visual checks.
+
+## "Calling" wave 1: the Career Hub (13 Nov)
+The first part of the special careers update (docs/phase-2/03 Special Careers - Next Update.md).
+- The Career Hub: actors, musicians, athletes, politicians and the police each get their own screen, opened from Path › Career or the new Career category at the top of Activities. It shows the career's motif across the top (marquee bulbs, VU meters, a pitch, a ballot ribbon, a light bar), its signature meter, the season, the ladder with what the next step needs, the career's own work and what has happened so far.
+- Signature meters: Buzz (actor), Following (musician, from your listeners), Form (athlete), Approval (politician), Record (police). Promotion now comes from the meter instead of random big breaks; quiet years let it fade.
+- Actor: audition for roles (a cold read played as a mini-game), acting classes, industry parties, agents (small or top agency), press tours. Roles are filmed, released and reviewed; acclaimed work is nominated at the Golden Reel awards. Offers turn up: an indie film, an advert or a reality show.
+- Musician: the career now runs on the music system (songs, releases, labels, tours open when you start). Rehearse, collaborate (new listeners), produce for other artists, choose band or solo, and play festival slots that label scouts watch.
+- Athlete: choose a sport (football, basketball, tennis, athletics) in the fictional National League. Train (with an overtraining risk), rest, study footage and sign sponsors; every season plays out to a record and a league place, the top four play a final, and contracts come up every three years (re-sign, ask for more, or move clubs).
+- Politician: give speeches, hold rallies, meet constituents, fundraise (with a donor-scandal risk) and vote on bills that voters like or dislike. Approval and the campaign fund now count at elections.
+- Police: walk the beat or reopen a cold case from the Hub, alongside the academy, casework and the badge.
+- The job board shows "the way in" for every special career: a checklist of what it needs and what you already have.
+- The Curtain Call: a promotion in a special career plays the Curtain again with "PROMOTED TO".
+- Fix: the police badge card overflowed on small phones with large text.
+- tool/render_hub_test.dart renders each Hub for visual checks.

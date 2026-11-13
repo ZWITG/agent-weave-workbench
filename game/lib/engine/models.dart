@@ -873,6 +873,10 @@ class Life {
   /// (underworld.dart).
   final Map<String, dynamic> crew = {};
 
+  /// The special career you are in (career_hub.dart): its signature meter,
+  /// the season beat, contacts and career-specific state.
+  final Map<String, dynamic> hub = {};
+
   /// Crime money you have not explained or laundered yet.
   int dirty = 0;
 
@@ -1137,6 +1141,7 @@ class Life {
     'songs': songs,
     'music': music,
     'echelon': echelon,
+    'hub': hub,
     'crew': crew,
     'dirty': dirty,
     'subs': subs,
@@ -1316,6 +1321,7 @@ class Life {
       ])
       ..music.addAll(Map<String, dynamic>.from(j['music'] ?? const {}))
       ..echelon.addAll(Map<String, dynamic>.from(j['echelon'] ?? const {}))
+      ..hub.addAll(Map<String, dynamic>.from(j['hub'] ?? const {}))
       ..crew.addAll(Map<String, dynamic>.from(j['crew'] ?? const {}))
       ..dirty = j['dirty'] ?? 0
       ..subs.addAll(List<String>.from(j['subs'] ?? const []))

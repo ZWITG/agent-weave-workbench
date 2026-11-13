@@ -11,6 +11,7 @@ import 'package:relivable/engine/crime_wall.dart';
 import 'package:relivable/engine/manhunt.dart';
 import 'package:relivable/engine/policing.dart';
 import 'package:relivable/engine/career_law.dart';
+import 'package:relivable/engine/career_hub.dart';
 import 'package:relivable/theme.dart';
 import 'package:relivable/ui/career_curtain.dart' show careerLookId;
 import 'package:flutter/painting.dart' show Color;
@@ -3157,6 +3158,125 @@ void main() {
     leaveJob(l);
     expect(careerLookId(l), isNull);
     NF.look(prison: false, rich: false);
+  });
+
+  test('the Career Hub: meters, activities, seasons and promotion', () {
+    GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
+    // Actor: an audition, a shoot, a release, reviews and Buzz.
+    final l = engine.newLife(seed: 401)..age = 24;
+    for (final k in ['charisma', 'looks', 'smarts']) {
+      l.stats.values[k] = 90;
+    }
+    l.sceneQueue.clear();
+    startCareer(l, careerById('actor')!);
+    expect(hubFor(l)?.meter, 'Buzz');
+    expect(hubMeter(l), 20);
+    expect(hubActionFits(l, 'act_audition'), isTrue);
+    expect(hubActionFits(l, 'ath_train'), isFalse);
+    expect(promotionLock(l), contains('Buzz'));
+    for (var i = 0; i < 20 && actorProject(l) == null; i++) {
+      l.usedActions.clear();
+      engine.runAction(l, act('act_audition'), score: 1.0);
+    }
+    expect(actorProject(l)?['stage'], 'cast');
+    expect(act('act_audition').lockReason(l), isNotNull); // already cast
+    hubYear(l, Random(1));
+    expect(actorProject(l)?['stage'], 'shot');
+    hubYear(l, Random(2));
+    expect(actorProject(l)?['stage'], 'released');
+    expect(hubLog(l), isNotEmpty);
+    // A quiet year lets Buzz fade.
+    l.hub['meter'] = 50;
+    l.hub['active'] = l.age - 1;
+    l.hub.remove('project');
+    final feed = hubYear(l, Random(9));
+    expect(feed.join(), contains('quiet year'));
+    // Promotion from the meter.
+    l.hub['meter'] = 90;
+    l.hub['active'] = l.age;
+    l.jobSince = l.age - 2;
+    expect(promotionLock(l), startsWith('Ready'));
+    for (var i = 0; i < 10 && l.careerRank == 0; i++) {
+      l.hub['active'] = l.age;
+      hubYear(l, Random(i));
+    }
+    expect(l.careerRank, 1);
+    expect(l.job, 'Bit-part actor');
+    // Agents.
+    l.sceneQueue
+      ..clear()
+      ..add('hub:actor:agent');
+    var s = engine.nextScene(l)!;
+    engine.choose(l, s, s.choices.first);
+    expect(actorAgent(l), 1);
+
+    // Athlete: pick a sport, play a season, train and rest.
+    final a = engine.newLife(seed: 402)..age = 20;
+    a.sceneQueue.clear();
+    startCareer(a, careerById('athlete')!);
+    expect(a.sceneQueue, contains('hub:athlete:sport'));
+    s = engine.nextScene(a)!;
+    engine.choose(a, s, s.choices[1]);
+    expect(athleteSport(a), 'Basketball');
+    engine.runAction(a, act('ath_train'), score: 1.0);
+    expect(hubMeter(a), greaterThan(20));
+    hubYear(a, Random(3));
+    expect(a.hub['record'], contains('won'));
+    a.usedActions.clear();
+    engine.runAction(a, act('ath_rest'));
+    expect(a.hub['load'], 0);
+
+    // Politician: bills move Approval; Approval and the fund help elections.
+    final p = engine.newLife(seed: 403)..age = 30;
+    p.sceneQueue.clear();
+    startCareer(p, careerById('politician')!);
+    expect(hubMeter(p), 50);
+    p.sceneQueue
+      ..clear()
+      ..add('hub:politician:bill:3'); // free school meals: popular
+    s = engine.nextScene(p)!;
+    engine.choose(p, s, s.choices.first);
+    expect(hubMeter(p), 53);
+    engine.runAction(p, act('pol_fundraise'));
+    expect(warChest(p), greaterThan(0));
+    p.hub['meter'] = 80;
+    expect(hubElectionBonus(p).$1, greaterThanOrEqualTo(15));
+    spendWarChest(p);
+    expect(warChest(p), 0);
+
+    // Musician: Following comes from the music system's listeners.
+    final m = engine.newLife(seed: 404)..age = 22;
+    startCareer(m, careerById('musician')!);
+    expect(musicUnlocked(m), isTrue);
+    expect(hubMeter(m), 0);
+    m.music['fans'] = 100000;
+    expect(hubMeter(m), 75);
+    expect(promotionLock(m), isNotNull);
+
+    // Police use the Hub too; ordinary jobs have none.
+    final cop = engine.newLife(seed: 405)..age = 25;
+    startCareer(cop, careerById('police')!);
+    expect(hubFor(cop)?.meter, 'Record');
+    final clerk = engine.newLife(seed: 406)..age = 25;
+    startCareer(
+      clerk,
+      careers.firstWhere((c) => !c.special && c.id != 'police'),
+    );
+    expect(hubFor(clerk), isNull);
+    expect(hubYear(clerk, Random(1)), isEmpty);
+    // The way in: checklists for special careers only.
+    expect(unlockChecklist(careerById('lawyer')!, clerk), isNotEmpty);
+    expect(
+      unlockChecklist(
+        clerk.careerId == null ? careers.first : careerById(clerk.careerId)!,
+        clerk,
+      ),
+      isEmpty,
+    );
+    // Saves keep the Hub.
+    final back = Life.fromJson(jsonDecode(jsonEncode(l.toJson())));
+    expect(hubMeter(back), hubMeter(l));
+    expect(actorAgent(back), 1);
   });
 
   test('property tax is charged on every building you own', () {

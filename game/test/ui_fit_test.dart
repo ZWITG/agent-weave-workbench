@@ -12,6 +12,8 @@ import 'package:relivable/main.dart';
 import 'package:relivable/sound.dart';
 import 'package:relivable/engine/actions.dart';
 import 'package:relivable/engine/careers.dart';
+import 'package:relivable/ui/career_hub_screen.dart';
+import 'package:relivable/ui/career_curtain.dart';
 import 'package:relivable/ui/activities.dart';
 import 'package:relivable/ui/intro.dart';
 import 'package:relivable/theme.dart';
@@ -558,6 +560,66 @@ void main() {
     await _pump(t);
     expect(NF.prison, isTrue);
     expect(NF.career, isNull);
+  });
+
+  testWidgets('the Career Hub fits a small phone with large text', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.updateProfile((p) => p.textScale = 1.3);
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    CareerCurtain.enabled = false;
+    addTearDown(() => CareerCurtain.enabled = true);
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    for (final id in ['actor', 'athlete', 'politician', 'musician', 'police']) {
+      startCareer(c.life!, careerById(id)!);
+      c.life!.sceneQueue.clear();
+      c.notifyListeners();
+      await t.pump(const Duration(seconds: 4));
+      await _pump(t);
+      await t.tap(find.text('Path').last);
+      await _pump(t);
+      for (var i = 0; i < 8 && find.text('Career').evaluate().isEmpty; i++) {
+        await t.drag(
+          find.byType(Scrollable).first,
+          const Offset(0, -200),
+          warnIfMissed: false,
+        );
+        await _pump(t);
+      }
+      await t.tap(find.text('Career').first);
+      await _pump(t);
+      await t.drag(
+        find.byType(Scrollable).first,
+        const Offset(0, 3000),
+        warnIfMissed: false,
+      );
+      await _pump(t);
+      expect(find.byType(HubCard), findsOneWidget, reason: id);
+      await t.tap(find.byType(HubCard));
+      await _pump(t);
+      expect(find.byType(CareerHubScreen), findsOneWidget, reason: id);
+      expect(find.text('Your work'), findsOneWidget, reason: id);
+      await _scrollAll(t);
+      await t.tap(find.byTooltip('Back'));
+      await _pump(t);
+      await _back(t);
+    }
+    FlutterError.onError = old;
+    expect(problems, isEmpty);
   });
 
   testWidgets('prison wears Yard Time, and release takes it off', (t) async {

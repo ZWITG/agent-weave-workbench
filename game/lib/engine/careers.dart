@@ -1,4 +1,5 @@
 import 'policing.dart' show nextRankNeeds;
+import 'career_hub.dart' show hubRankNeeds, startHub;
 
 import 'dart:math';
 
@@ -701,6 +702,8 @@ void startCareer(Life life, Career c) {
   life.lowPerfYears = 0;
   life.jobLostAge = null;
   newWorkplace(life, c);
+  // Special careers run on the Career Hub (career_hub.dart).
+  startHub(life, c.id);
   // New recruits start at the police academy (policing.dart).
   if (c.id == 'police') {
     life.marks.remove('academy_done');
@@ -725,6 +728,8 @@ String? promotionLock(Life life) {
   if (c == null) return 'Needs a job from the job board';
   if (life.careerRank >= c.ladder.length - 1) return 'Top of the ladder';
   if (c.elected) return 'Politicians move up by winning elections';
+  // Hub careers move up on their signature meter (career_hub.dart).
+  if (hubRankNeeds(life) case final needs?) return needs;
   // Police rank comes from the academy and closed cases (policing.dart).
   if (c.id == 'police') return nextRankNeeds(life);
   final left = yearsPerPromotion - (life.age - life.jobSince);
@@ -786,3 +791,75 @@ final careerActions = <GameAction>[
     },
   ),
 ];
+
+/// The path into a special career as a checklist for the job board:
+/// (what it needs, done yet). Empty for ordinary jobs.
+List<(String, bool)> unlockChecklist(Career c, Life l) {
+  bool st(String s, int min) => l.stats[s] >= min;
+  final school =
+      l.school.electives.contains('Drama') ||
+      l.school.clubs.contains('Drama club') ||
+      l.school.clique == 'stage' ||
+      l.school.major == 'Fine Arts';
+  final music =
+      l.school.lessons == 'Piano' ||
+      l.school.clubs.contains('Band') ||
+      l.school.clubs.contains('Choir') ||
+      l.school.electives.contains('Music') ||
+      l.flags.containsKey('instrument');
+  final items = switch (c.id) {
+    'actor' => [
+      (
+        'Drama at school (or Charisma 60 and Looks 55)',
+        school || (st('charisma', 60) && st('looks', 55)),
+      ),
+    ],
+    'musician' => [
+      ('Creativity 55', st('creativity', 55)),
+      ('Lessons, a band or a choir', music),
+    ],
+    'athlete' => [
+      ('Athleticism 70', st('athleticism', 70)),
+      (
+        'A school team season',
+        l.school.seasons > 0 || l.flags.containsKey('captain'),
+      ),
+    ],
+    'model' => [('Looks 70', st('looks', 70))],
+    'politician' => [
+      ('Charisma 55', st('charisma', 55)),
+      ('No arrests', !l.flags.containsKey('arrested')),
+    ],
+    'military' => [
+      ('Health 60', st('health', 60)),
+      ('Athleticism 50', st('athleticism', 50)),
+    ],
+    'lawyer' => [
+      ('A Law degree (graduate school)', _has(l, 'Law')),
+      ('Pass the bar exam', l.flags.containsKey('passed_bar')),
+    ],
+    'doctor' => [('A Medicine degree (graduate school)', _has(l, 'Medicine'))],
+    'pilot' => [
+      (
+        'A commercial pilot licence (flight school)',
+        l.flags.containsKey('pilot_licence'),
+      ),
+    ],
+    'vet' => [('A Veterinary degree', _has(l, 'Veterinary Medicine'))],
+    'police' => [
+      ('A school diploma', finishedSchool(l)),
+      ('A clean record', !l.flags.containsKey('arrested')),
+    ],
+    _ => <(String, bool)>[],
+  };
+  if (items.isEmpty) return items;
+  return [
+    if (c.minAge > 0) ('Age ${c.minAge}+', l.age >= c.minAge),
+    if (c.needs != 'any' &&
+        c.id != 'lawyer' &&
+        c.id != 'doctor' &&
+        c.id != 'vet')
+      (c.needsLabel, c._meetsEducation(l)),
+    ...items,
+  ];
+}

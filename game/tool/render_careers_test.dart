@@ -66,7 +66,10 @@ void main() {
       final l = c.life!..age = 29;
       final key = GlobalKey();
       await t.pumpWidget(
-        RepaintBoundary(key: key, child: RelivableApp(controller: c)),
+        RepaintBoundary(
+          key: key,
+          child: RelivableApp(controller: c),
+        ),
       );
       for (var i = 0; i < 8; i++) {
         await t.pump(const Duration(milliseconds: 150));
@@ -90,9 +93,8 @@ void main() {
         final img = await b.toImage(pixelRatio: 1);
         final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
         Directory(out).createSync(recursive: true);
-        File(
-          '$out/career_${id}${curtain ? '_curtain' : ''}.png',
-        ).writeAsBytesSync(bytes!.buffer.asUint8List());
+        File('$out/career_$id${curtain ? '_curtain' : ''}.png')
+            .writeAsBytesSync(bytes!.buffer.asUint8List());
       });
       CareerCurtain.enabled = true;
       await t.pump(const Duration(seconds: 4));

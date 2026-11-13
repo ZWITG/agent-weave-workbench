@@ -5,6 +5,7 @@ import 'currency.dart';
 import 'odds.dart';
 
 import 'careers.dart';
+import 'career_hub.dart' show hubActions;
 import 'dynasty.dart';
 import 'family.dart';
 import 'finance.dart';
@@ -481,4 +482,5 @@ final allActions = <GameAction>[
   ...gangActions,
   ...prisonLifeActions,
   ...crimeJobActions,
+  ...hubActions,
 ];

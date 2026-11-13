@@ -48,6 +48,12 @@ Future<double?> showMiniGame(
 /// The games each activity rotates between, so the same activity is not
 /// always the same game.
 const miniPools = <String, List<String>>{
+  // The Career Hub (career_hub.dart).
+  'act_audition': ['rhythm', 'memory'],
+  'mus_rehearse': ['rhythm', 'memory'],
+  'mus_collab': ['memory', 'rhythm'],
+  'ath_train': ['whack', 'reps'],
+  'pol_speech': ['timing', 'breath'],
   'study': ['quiz', 'words'],
   'gym': ['reps', 'whack'],
   'shoplift': ['sneak', 'timing'],
@@ -86,6 +92,23 @@ String miniIntro(String? activity, String game) =>
     _defaults[game]!.intro;
 
 const _intros = <String, Map<String, String>>{
+  'act_audition': {
+    'memory': 'Learn the scene: watch the beats, then play them back in order.',
+  },
+  'mus_rehearse': {
+    'memory':
+        'Learn the new arrangement, then play it back. Each round adds a part.',
+  },
+  'mus_collab': {
+    'rhythm': 'Lock in with their groove: tap each pad as it lights up.',
+  },
+  'ath_train': {
+    'reps': 'Sprints: tap GO as many times as you can in 6 seconds.',
+  },
+  'pol_speech': {
+    'breath':
+        'Hold for the applause, let go when it peaks at the ring. Three lines.',
+  },
   'study': {
     'words':
         'Unscramble three words from today\'s lessons before time runs out.',
@@ -295,6 +318,30 @@ final miniThemes = <String, MiniTheme>{
     'Breathe slowly. Breathe out while the marker is in the calm zone.',
     button: 'Breathe out',
     stat: 'willpower',
+  ), // The Career Hub (career_hub.dart).
+  'act_audition': _t(
+    'A cold read: hit each line as it lights up, on the beat. Miss a beat and the casting director looks at the clock.',
+    pads: ['Line', 'Pause', 'Look', 'Line'],
+    stat: 'charisma',
+  ),
+  'mus_rehearse': _t(
+    'Run the set: tap each part as it lights up, on the beat.',
+    pads: ['Intro', 'Verse', 'Chorus', 'Outro'],
+    stat: 'creativity',
+  ),
+  'mus_collab': _t(
+    'Learn their part, then play it back. Each round adds a bar.',
+    pads: ['Their hook', 'Your verse', 'Harmony', 'Drop'],
+    stat: 'creativity',
+  ),
+  'ath_train': _t(
+    'Drills: hit the cones as they pop up. Not the grey ones.',
+    stat: 'athleticism',
+  ),
+  'pol_speech': _t(
+    'Land your lines: tap while the marker is in the applause zone. Three lines, each harder.',
+    button: 'Deliver',
+    stat: 'charisma',
   ),
 };
 

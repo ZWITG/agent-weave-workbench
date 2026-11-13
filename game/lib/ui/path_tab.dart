@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
 import '../engine/career_law.dart' show copCrewNote;
+import '../engine/career_hub.dart' show hubFor;
+import 'career_hub_screen.dart' show HubCard;
 import '../engine/careers.dart';
 import '../engine/jobs.dart';
 import '../engine/models.dart';
@@ -172,6 +174,11 @@ class _PathTabState extends State<PathTab> {
     ],
     'career' => [
       if (careerById(life.careerId) != null) ...[
+        // Special careers open their Hub (career_hub_screen.dart).
+        if (hubFor(life) != null) ...[
+          HubCard(controller: c),
+          const SizedBox(height: 10),
+        ],
         if (isCop(life)) ...[_badge(), const SizedBox(height: 10)],
         _ladder(careerById(life.careerId)!),
       ] else
@@ -368,9 +375,14 @@ class _PathTabState extends State<PathTab> {
           Expanded(
             child: Text(k, style: NF.sora(13, color: NF.muted)),
           ),
-          Text(
-            v,
-            style: NF.sora(13, weight: FontWeight.w600, color: color),
+          const SizedBox(width: 8),
+          Flexible(
+            flex: 2,
+            child: Text(
+              v,
+              textAlign: TextAlign.right,
+              style: NF.sora(13, weight: FontWeight.w600, color: color),
+            ),
           ),
         ],
       ),
@@ -537,6 +549,57 @@ class _PathTabState extends State<PathTab> {
 
   Widget _jobRow(Career j) {
     final lock = j.lockReason(life);
+    final steps = lock == null
+        ? const <(String, bool)>[]
+        : unlockChecklist(j, life);
+    final row = _jobOption(j, lock);
+    if (steps.isEmpty) return row;
+    // Special careers show the way in, step by step.
+    final done = steps.where((s) => s.$2).length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        row,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 6, 8, 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'The way in: $done of ${steps.length}',
+                style: NF.sora(12, weight: FontWeight.w700, color: NF.blue),
+              ),
+              const SizedBox(height: 2),
+              for (final (what, ok) in steps)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Row(
+                    children: [
+                      Icon(
+                        ok
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        size: 15,
+                        color: ok ? NF.orange : NF.muted,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          what,
+                          style: NF.sora(12.5, color: ok ? NF.soft : NF.muted),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _jobOption(Career j, String? lock) {
     return OptionRow(
       icon: Icons.work_outline_rounded,
       title: j.title,

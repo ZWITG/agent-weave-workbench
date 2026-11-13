@@ -6,6 +6,8 @@ import 'actions.dart';
 import 'careers.dart';
 import 'life_events.dart' show onFired;
 import 'career_law.dart' show recordVotePenalty;
+import 'career_hub.dart'
+    show hubElectionBonus, hubSpecs, hubYear, spendWarChest;
 import 'models.dart';
 import 'storylet.dart';
 import 'justice.dart' show convictions;
@@ -156,6 +158,8 @@ List<String> workYear(
     l.flags.remove('high_stress');
   }
   if (c != null && c.special) lines.addAll(_specialYear(l, c, rng));
+  // The Career Hub: season, meter and promotion (career_hub.dart).
+  if (l.job != null) lines.addAll(hubYear(l, rng));
   // The police career: academy, casework, bribes, undercover (policing.dart).
   if (c?.id == 'police') lines.addAll(policeYear(l, rng));
   return lines;
@@ -177,11 +181,13 @@ void _promote(Life l, Career c, List<String> lines, String why) {
 List<String> _specialYear(Life l, Career c, Random rng) {
   final lines = <String>[];
   final key = l.stats[c.keyStat];
-  final breakOdds = (3 + max(0, key - 60) ~/ 8 + (l.performance - 50) ~/ 15)
-      .clamp(3, 8);
+  // Hub careers move up on their meter instead of random big breaks.
+  final breakOdds = hubSpecs.containsKey(c.id)
+      ? -1
+      : (3 + max(0, key - 60) ~/ 8 + (l.performance - 50) ~/ 15).clamp(3, 8);
   switch (c.id) {
     case 'actor':
-      if (rng.nextInt(100) < 35) l.sceneQueue.add('audition');
+      // Auditions are a Hub activity now (career_hub.dart).
       if (rng.nextInt(100) < breakOdds) {
         _promote(
           l,
@@ -782,13 +788,17 @@ Storylet? jobScene(String kind, Life l) {
 String _election(Life l, Career c, Random rng, int bonus, int cost) {
   l.money -= cost;
   final rep = (l.worldMods['name'] ?? 0) * 2;
+  // Approval and the campaign fund (career_hub.dart).
+  final (hub, hubWhy) = hubElectionBonus(l);
+  spendWarChest(l);
   final odds =
       (30 +
               (l.stats['charisma'] - 50) ~/ 2 +
               (l.stats['karma'] - 50) ~/ 4 +
               bonus +
               rep +
-              (l.performance - 50) ~/ 5 -
+              (l.performance - 50) ~/ 5 +
+              hub -
               recordVotePenalty(convictions(l)))
           .clamp(5, 90);
   if (rng.nextInt(100) < odds) {
@@ -798,7 +808,7 @@ String _election(Life l, Career c, Random rng, int bonus, int cost) {
     return lines.join(' ');
   }
   l.stats.add('happiness', -6);
-  return 'You lost the election. Your odds were about $odds% (Charisma, Karma, your record and your family name all count). You keep your current seat.';
+  return 'You lost the election. Your odds were about $odds% (Charisma, Karma, ${hubWhy.isEmpty ? '' : '$hubWhy, '}your record and your family name all count). You keep your current seat.';
 }
 
 // ---------------- Activities added by this module ----------------

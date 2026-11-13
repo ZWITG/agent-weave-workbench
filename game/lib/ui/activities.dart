@@ -28,9 +28,12 @@ import 'shop_screen.dart';
 import 'widgets.dart';
 import 'yard_map.dart';
 import 'echelon_screen.dart' show EchelonCard;
+import 'career_hub_screen.dart' show HubCard;
+import '../engine/career_hub.dart' show hubActionFits, hubFor;
 
 /// Category order and icons for the Activities panel.
 const activityCategories = <(String, IconData)>[
+  ('Career', Icons.workspace_premium_rounded),
   ('Wellbeing', Icons.self_improvement_rounded),
   ('Health', Icons.medical_services_rounded),
   ('School', Icons.school_rounded),
@@ -60,6 +63,7 @@ const activityCategories = <(String, IconData)>[
 /// The categories in a few friendly groups, so the home view reads as a
 /// handful of short sections instead of one big grid.
 const activityGroups = <(String, String, List<String>)>[
+  ('Your calling', 'The work of your special career', ['Career']),
   (
     'The upper echelon',
     'Life among the richest people alive',
@@ -147,6 +151,7 @@ const crimeSections = <(String, String, IconData, List<String>)>[
 
 /// One plain sentence at the top of each category.
 const categoryBlurbs = <String, String>{
+  'Career': 'Your special career: its own work, its own meter, its own year.',
   'Wellbeing': 'Small things that lift your mood and keep you steady.',
   'Health': 'Doctors, check-ups and getting better.',
   'School': 'Study, exams and school life.',
@@ -244,6 +249,8 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
       .where((a) => a.category != 'Music' || musicUnlocked(life))
       // The upper echelon stays secret until the fortune passes the line.
       .where((a) => a.category != 'Upper echelon' || upperEchelon(life))
+      // Career work shows only for the special career you are in.
+      .where((a) => a.category != 'Career' || hubActionFits(life, a.id))
       // Inside, outside life is out of sight, not just locked.
       .where(
         (a) =>
@@ -796,6 +803,10 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
         ),
       if (cat == 'Upper echelon') ...[
         EchelonCard(controller: c),
+        const SizedBox(height: 14),
+      ],
+      if (cat == 'Career' && hubFor(life) != null) ...[
+        HubCard(controller: c),
         const SizedBox(height: 14),
       ],
       if (cat == 'Crime') ...[
