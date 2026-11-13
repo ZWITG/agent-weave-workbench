@@ -29,6 +29,7 @@ import 'widgets.dart';
 import 'yard_map.dart';
 import 'echelon_screen.dart' show EchelonCard;
 import 'career_hub_screen.dart' show HubCard;
+import 'career_stage.dart' show hubActionIcon;
 import '../engine/career_hub.dart' show hubActionCareer, hubActionFits, hubFor;
 
 /// Category order and icons for the Activities panel.
@@ -1156,7 +1157,7 @@ Widget actionRow(
       a.priceNote ??
       (a.cost > 0 ? 'Costs ${money(a.cost)}' : 'Free');
   return OptionRow(
-    icon: categoryIconFor(a.category),
+    icon: hubActionIcon(a.id) ?? categoryIconFor(a.category),
     title: a.label,
     detail: localizeMoney(
       lock ?? (a.miniGame != null ? '$price · Mini-game' : price),

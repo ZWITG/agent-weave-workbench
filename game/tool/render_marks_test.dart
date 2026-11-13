@@ -17,6 +17,8 @@ import 'package:relivable/sound.dart';
 import 'package:relivable/theme.dart';
 import 'package:relivable/ui/intro.dart';
 import 'package:relivable/ui/result_popup.dart';
+import 'package:relivable/ui/life_recap.dart';
+import 'package:relivable/engine/recap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const out = String.fromEnvironment('OUT', defaultValue: 'build/screens');
@@ -59,6 +61,50 @@ Future<void> _frames(WidgetTester t, int n, [int ms = 150]) async {
 
 void main() {
   IntroSplash.enabled = false;
+  for (final id in const ['lawyer', 'musician']) {
+    testWidgets('recap page $id', (t) async {
+      // ignore: invalid_use_of_visible_for_testing_member
+      SharedPreferences.setMockInitialValues({});
+      await t.runAsync(_fonts);
+      t.view.physicalSize = const Size(390, 760);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.reset);
+      late GameController c;
+      await t.runAsync(() async {
+        c = GameController();
+        await c.load();
+      });
+      Sound.instance.enabled = false;
+      c.startLife(seed: 51);
+      final l = c.life!..age = 30;
+      startCareer(l, careerById(id)!);
+      l.sceneQueue.clear();
+      l.hub['meter'] = 81;
+      l.hub['log'] = ['Age 41: won a civil case', 'Age 38: published a paper'];
+      l.careerRank = 2;
+      l.job = careerById(id)!.ladder[2];
+      l.age = 52;
+      final key = GlobalKey();
+      await t.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: RelivableApp(controller: c),
+        ),
+      );
+      await _frames(t, 6);
+      final nav = t.state<NavigatorState>(find.byType(Navigator).first);
+      nav.push(
+        MaterialPageRoute(builder: (_) => LifeRecapScreen(controller: c)),
+      );
+      await _frames(t, 6);
+      final cards = recapCards(l);
+      final at = cards.indexWhere((x) => x.kind == 'look:$id');
+      final pv = t.widget<PageView>(find.byType(PageView));
+      pv.controller!.jumpToPage(at);
+      await _frames(t, 6);
+      await _shot(t, key, 'recap_$id');
+    });
+  }
   for (final scale in const [1.0, 1.3]) {
     testWidgets('header at $scale', (t) async {
       // ignore: invalid_use_of_visible_for_testing_member

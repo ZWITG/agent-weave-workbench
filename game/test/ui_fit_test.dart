@@ -680,7 +680,11 @@ void main() {
       await t.tap(find.byType(HubCard));
       await _pump(t);
       expect(find.byType(CareerHubScreen), findsOneWidget, reason: id);
-      expect(find.text('Your work'), findsOneWidget, reason: id);
+      expect(
+        find.byKey(const ValueKey('hub-work')),
+        findsOneWidget,
+        reason: id,
+      );
       await _scrollAll(t);
       await t.tap(find.byTooltip('Back'));
       await _pump(t);

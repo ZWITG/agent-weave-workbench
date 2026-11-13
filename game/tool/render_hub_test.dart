@@ -25,6 +25,7 @@ Future<void> _fonts() async {
     ('Sora', 'Sora-Variable.ttf'),
     ('Caveat', 'Caveat-Bold.ttf'),
     ('StardosStencil', 'StardosStencil-Bold.ttf'),
+    ('Playfair', 'PlayfairDisplay-Variable.ttf'),
     ('MaterialIcons', null),
   ]) {
     final f = FontLoader(fam);

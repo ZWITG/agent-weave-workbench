@@ -1,8 +1,13 @@
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
+import 'career_marks.dart' show CareerStamp, careerStamp;
+import 'career_stage.dart' show HubScenePainter, hubFace;
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
@@ -231,7 +236,158 @@ class _LifeRecapScreenState extends State<LifeRecapScreen> {
         onSelected: (v) => setState(() => _hide = next(v)),
       );
 
+  /// A special career's page, worn in its look: its scene across the top,
+  /// its type and colours, and its stamp.
+  Widget _lookCard(RecapCard c, int i, int total, String look) {
+    final cl = careerLooks[look]!;
+    final p = cl.palette;
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: p.bg,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: p.borderStrong),
+      ),
+      child: LayoutBuilder(
+        builder: (context, box) => SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: box.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: min(170, box.maxHeight * 0.32),
+                    width: double.infinity,
+                    child: ExcludeSemantics(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CustomPaint(painter: HubScenePainter(look, 0.3)),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: const [0.5, 1],
+                                colors: [p.bg.withValues(alpha: 0), p.bg],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 16,
+                            right: 16,
+                            top: 14,
+                            child: Row(
+                              children: [
+                                for (var d = 0; d < total; d++)
+                                  Expanded(
+                                    child: Container(
+                                      height: 3,
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: d <= i
+                                            ? p.orange
+                                            : p.text.withValues(alpha: 0.25),
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 4, 24, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(cl.icon, color: p.orange, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  '${cl.name.toUpperCase()} · ${c.title}',
+                                  style: NF
+                                      .sora(
+                                        11,
+                                        weight: FontWeight.w700,
+                                        color: p.blue,
+                                      )
+                                      .copyWith(letterSpacing: 1.4),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              c.big,
+                              style: hubFace(look, 36, p.text),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            c.body,
+                            style: NF.sora(15, color: p.soft, height: 1.5),
+                          ),
+                          const Spacer(),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: CareerStamp(
+                              look,
+                              careerStamp(look, 'good', '') ?? 'THE END',
+                              tone: 'good',
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(Icons.spa_rounded, size: 16, color: p.muted),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Relivable',
+                                style: NF.sora(
+                                  12,
+                                  weight: FontWeight.w700,
+                                  color: p.muted,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                '${i + 1}/$total',
+                                style: NF.sora(12, color: p.muted),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _storyCard(RecapCard c, int i, int total) {
+    if (c.kind.startsWith('look:')) {
+      final look = c.kind.substring(5);
+      if (careerLooks.containsKey(look)) return _lookCard(c, i, total, look);
+    }
     final accent = _accent[c.kind] ?? NF.blue;
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),

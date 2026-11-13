@@ -1037,10 +1037,7 @@ final _lawyerActions = <GameAction>[
     extraCheck: (l) =>
         _only(l, 'lawyer', 'lawyers') ?? (!isJudge(l) ? 'Judges only' : null),
     run: (l, rng) {
-      l.sceneQueue.insert(
-        0,
-        'hub:lawyer:bench:${rng.nextInt(_hearings.length)}',
-      );
+      l.sceneQueue.insert(0, 'hub:lawyer:bench:${rng.nextInt(1000)}');
       return ActionResult('"All rise."');
     },
   ),
@@ -1126,64 +1123,6 @@ Storylet _caseScene(Life l, String? which) {
           }
           return result(l, rng, 20, 'A document arrived late, conveniently.');
         },
-      ),
-    ],
-  );
-}
-
-/// (defendant, crime): cases a judge hears.
-const _hearings = <(String, String)>[
-  ('a first-time shoplifter with three children', 'theft'),
-  ('a company director who hid losses from investors', 'fraud'),
-  ('a man who drove home drunk and hit a parked car', 'drink driving'),
-  ('a protester who chained herself to a bank', 'trespass'),
-  ('a burglar with a long record', 'burglary'),
-];
-
-Storylet _benchScene(Life l, String? which) {
-  final i = (int.tryParse(which ?? '') ?? 0) % _hearings.length;
-  final (who, crime) = _hearings[i];
-  final serious = crime == 'fraud' || crime == 'burglary';
-  String rule(Life l, int rep, int karma, String text) {
-    _add(l, 'heard');
-    _bump(l, rep);
-    l.stats.add('karma', karma);
-    return '$text Reputation ${rep >= 0 ? '+' : '−'}${rep.abs()}.';
-  }
-
-  return _scene(
-    'lawyer_bench',
-    'Before you: $who, found guilty of $crime. The court waits for your sentence.',
-    [
-      Choice(
-        label: 'Show mercy',
-        outcome: '',
-        run: (l, rng) => rule(
-          l,
-          serious ? -3 : 3,
-          2,
-          'A community order and a lecture they will remember.',
-        ),
-      ),
-      Choice(
-        label: 'Follow the guidelines',
-        outcome: '',
-        run: (l, rng) => rule(
-          l,
-          4,
-          0,
-          'A fair sentence, by the book. The appeal court will not touch it.',
-        ),
-      ),
-      Choice(
-        label: 'Make an example',
-        outcome: '',
-        run: (l, rng) => rule(
-          l,
-          serious ? 3 : -4,
-          -2,
-          'The newspapers liked it. The defendant\'s family did not.',
-        ),
       ),
     ],
   );
@@ -1396,7 +1335,7 @@ Storylet? _wave2Scene(List<String> args, Life l) {
     'pilot:divert' => _divertScene(l),
     'military:exercise' => _exerciseScene(l),
     'lawyer:case' => _caseScene(l, which),
-    'lawyer:bench' => _benchScene(l, which),
+    'lawyer:bench' => _hearingScene(l, which),
     'hustler:pitch' => _pitchScene(l),
     _ => null,
   };

@@ -3251,6 +3251,113 @@ void main() {
     },
   );
 
+  test(
+    'career people: contacts, rivals, defending and treating people you know',
+    () {
+      Life start(String id, int seed) {
+        final l = engine.newLife(seed: seed)..age = 34;
+        l.sceneQueue.clear();
+        startCareer(l, careerById(id)!);
+        l.sceneQueue.clear();
+        return l;
+      }
+
+      // Contacts: the workplace's people take the career's roles.
+      final a = start('actor', 901);
+      final people = hubContacts(a);
+      expect(people.map((n) => n.role), [
+        'Agent',
+        'Director who rates you',
+        'Rival actor',
+      ]);
+      expect(people.map((n) => n.circle).toSet(), {'Work'});
+      // A close ally puts in a word.
+      people[1].addBond(60);
+      a.hub['active'] = a.age;
+      final before = hubMeter(a);
+      final feed = hubYear(a, Random(5));
+      expect(feed.join(), contains('put in a word'));
+      expect(hubMeter(a), greaterThanOrEqualTo(before + 3));
+      // Backing the rival can turn them into an ally.
+      a.sceneQueue
+        ..clear()
+        ..add('hub:people:rival');
+      var s = engine.nextScene(a)!;
+      expect(s.text, contains('same lead role'));
+      people[2].addBond(60);
+      engine.choose(a, s, s.choices.last);
+      expect(people[2].info['contact'], 'ally');
+
+      // A lawyer defends someone they know.
+      final law = start('lawyer', 902);
+      final mum = law.npcs.firstWhere((n) => n.circle == 'Family' && n.alive);
+      final bond = mum.bond;
+      law.sceneQueue.add('hub:people:defend:${mum.id}:2');
+      s = engine.nextScene(law)!;
+      expect(s.text, contains('burglary'));
+      engine.choose(law, s, s.choices.last); // stay out of it
+      expect(mum.bond, lessThan(bond));
+      expect(mum.memories.last.text, contains('would not help'));
+
+      // A doctor and someone they know in the ambulance.
+      final doc = start('doctor', 903);
+      final dad = doc.npcs.firstWhere((n) => n.circle == 'Family' && n.alive);
+      final b2 = dad.bond;
+      doc.sceneQueue.add('hub:people:patient:${dad.id}:1');
+      s = engine.nextScene(doc)!;
+      expect(s.text, contains('a broken hip'));
+      engine.choose(doc, s, s.choices[1]); // hand to a colleague
+      expect(dad.bond, greaterThan(b2));
+
+      // A judge hears the crime list; now and then someone they know.
+      final judge = start('lawyer', 904)..careerRank = 3;
+      judge.sceneQueue.add('hub:lawyer:bench:0');
+      s = engine.nextScene(judge)!;
+      expect(s.text, contains('shoplifting'));
+      engine.choose(judge, s, s.choices[1]);
+      expect(judge.hub['heard'], 1);
+      judge.sceneQueue.add('hub:lawyer:bench:3');
+      s = engine.nextScene(judge)!;
+      expect(s.text, contains('Nobody else in the courtroom knows'));
+      engine.choose(judge, s, s.choices.first); // step aside
+      expect(judge.hub['heard'], 2);
+      // People scenes need a Hub career.
+      final clerk = engine.newLife(seed: 905)..age = 30;
+      clerk.sceneQueue
+        ..clear()
+        ..add('hub:people:rival');
+      expect(engine.nextScene(clerk), isNull);
+    },
+  );
+
+  test('the Life Recap keeps a page for every special career', () {
+    final l = engine.newLife(seed: 950)..age = 25;
+    l.sceneQueue.clear();
+    startCareer(l, careerById('actor')!);
+    l.hub['meter'] = 70;
+    l.hub['active'] = l.age;
+    hubYear(l, Random(1));
+    l.age += 6;
+    // Changing careers keeps the actor's page.
+    startCareer(l, careerById('pilot')!);
+    l.age += 3;
+    final h = hubHistory(l);
+    expect(h.map((e) => e['id']), ['actor', 'pilot']);
+    expect(h.first['peak'], greaterThanOrEqualTo(64));
+    expect(h.first['years'], 6);
+    // A plain job adds no page, and the old ones stay.
+    startCareer(l, careers.firstWhere((c) => !c.special && c.id != 'police'));
+    expect(hubHistory(l).length, 2);
+    final cards = recapCards(l);
+    final looks = cards.where((c) => c.kind.startsWith('look:')).toList();
+    expect(looks.map((c) => c.kind), ['look:actor', 'look:pilot']);
+    expect(looks.first.title, contains('Acting'));
+    expect(looks.first.body, contains('Buzz'));
+    // The pages survive a save.
+    final back = Life.fromJson(jsonDecode(jsonEncode(l.toJson())));
+    expect(hubHistory(back).length, 2);
+  });
+
   test('Calling wave 2: each career has its own way up', () {
     GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
     Life start(String id, int seed) {

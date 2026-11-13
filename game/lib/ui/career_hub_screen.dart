@@ -8,6 +8,8 @@ import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart' show actionRow;
+import 'career_stage.dart';
+import 'people.dart' show openPersonSheet;
 import 'widgets.dart';
 
 // The Career Hub screen ("Calling", docs/phase-2/03): the career's look
@@ -102,12 +104,11 @@ class _MeterBar extends StatelessWidget {
     required this.label,
     required this.value,
     required this.palette,
-    this.big = false,
   });
   final String label;
   final int value;
   final NFPalette palette;
-  final bool big;
+  static const big = false;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -222,13 +223,20 @@ class _CareerHubScreenState extends State<CareerHubScreen>
     final p = look.palette;
     return Stack(
       children: [
+        // The career's scene (career_stage.dart), drawn and animated.
         SizedBox(
-          height: 120,
+          height: 176,
           width: double.infinity,
-          child: AnimatedBuilder(
-            animation: _motif,
-            builder: (_, _) => CustomPaint(
-              painter: CareerMotif(l.careerId!, _motif.value, tall: true),
+          child: ExcludeSemantics(
+            child: AnimatedBuilder(
+              animation: _motif,
+              builder: (_, _) => CustomPaint(
+                painter: HubScenePainter(
+                  l.careerId!,
+                  _motif.value,
+                  beat: hubBeat(l),
+                ),
+              ),
             ),
           ),
         ),
@@ -239,7 +247,7 @@ class _CareerHubScreenState extends State<CareerHubScreen>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                stops: const [0.35, 0.95],
+                stops: const [0.55, 1.0],
                 colors: [p.bg.withValues(alpha: 0), p.bg],
               ),
             ),
@@ -307,16 +315,21 @@ class _CareerHubScreenState extends State<CareerHubScreen>
     final next = promotionLock(l);
     final log = hubLog(l);
     final details = spec.details?.call(l) ?? const [];
+    final words = wordsFor(l.careerId!);
     return [
       NFCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _MeterBar(
-              label: spec.meter,
-              value: hubMeter(l),
-              palette: p,
-              big: true,
+            // The meter as the career's own instrument (career_stage.dart).
+            AnimatedBuilder(
+              animation: _motif,
+              builder: (_, _) => HubInstrument(
+                look: l.careerId!,
+                label: spec.meter,
+                value: hubMeter(l),
+                t: _motif.value,
+              ),
             ),
             const SizedBox(height: 8),
             Text(spec.meterBlurb, style: NF.sora(13, color: NF.soft)),
@@ -330,42 +343,14 @@ class _CareerHubScreenState extends State<CareerHubScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('The ladder', style: NF.sora(15, weight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            for (var i = 0; i < career.ladder.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  children: [
-                    Icon(
-                      i < l.careerRank
-                          ? Icons.check_circle_rounded
-                          : i == l.careerRank
-                          ? Icons.radio_button_checked_rounded
-                          : Icons.radio_button_unchecked_rounded,
-                      size: 18,
-                      color: i <= l.careerRank ? p.orange : NF.muted,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        career.ladder[i],
-                        style: NF.sora(
-                          14,
-                          weight: i == l.careerRank
-                              ? FontWeight.w700
-                              : FontWeight.w400,
-                          color: i <= l.careerRank ? NF.text : NF.muted,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            if (next != null) ...[
-              const SizedBox(height: 6),
-              Text('Next: $next', style: NF.sora(13, color: p.blue)),
-            ],
+            hubHeading(l.careerId!, words.$1),
+            const SizedBox(height: 10),
+            HubLadder(
+              look: l.careerId!,
+              ladder: career.ladder,
+              rank: l.careerRank,
+              next: next,
+            ),
           ],
         ),
       ),
@@ -399,8 +384,27 @@ class _CareerHubScreenState extends State<CareerHubScreen>
           ),
         ),
       ],
+      if (hubContacts(l) case final people when people.isNotEmpty) ...[
+        const SizedBox(height: 18),
+        hubHeading(l.careerId!, 'Your people'),
+        const SizedBox(height: 8),
+        for (final n in people) ...[
+          HubContactCard(
+            look: l.careerId!,
+            name: n.name,
+            role: n.role,
+            kind: n.info['contact'] as String,
+            bond: n.bond,
+            onTap: () => openPersonSheet(context, c, n),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
       const SizedBox(height: 18),
-      Text('Your work', style: NF.sora(17, weight: FontWeight.w700)),
+      KeyedSubtree(
+        key: const ValueKey('hub-work'),
+        child: hubHeading(l.careerId!, words.$2),
+      ),
       const SizedBox(height: 8),
       for (final a in actions) ...[
         actionRow(context, c, a, closeSheet: false),
@@ -408,12 +412,32 @@ class _CareerHubScreenState extends State<CareerHubScreen>
       ],
       if (log.isNotEmpty) ...[
         const SizedBox(height: 10),
-        Text('So far', style: NF.sora(17, weight: FontWeight.w700)),
+        hubHeading(l.careerId!, words.$3),
         const SizedBox(height: 8),
         for (final line in log)
           Padding(
             padding: const EdgeInsets.only(bottom: 6),
-            child: Text('• $line', style: NF.sora(13, color: NF.soft)),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExcludeSemantics(
+                  child: SizedBox(
+                    width: 20,
+                    child: Text(
+                      words.$4,
+                      style: NF.sora(
+                        13,
+                        weight: FontWeight.w700,
+                        color: p.orange,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(line, style: NF.sora(13, color: NF.soft)),
+                ),
+              ],
+            ),
           ),
       ],
     ];
@@ -421,37 +445,63 @@ class _CareerHubScreenState extends State<CareerHubScreen>
 
   Widget _seasonStrip(Life l, HubSpec spec, NFPalette p) {
     final beat = hubBeat(l);
+    final look = careerLooks[l.careerId];
     return Semantics(
       label: 'Season: ${spec.seasons.join(', ')}. Now: ${spec.seasons[beat]}',
       excludeSemantics: true,
-      child: Row(
-        children: [
-          for (var i = 0; i < spec.seasons.length; i++) ...[
-            if (i > 0) const SizedBox(width: 6),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                decoration: BoxDecoration(
-                  color: i == beat
-                      ? p.orange.withValues(alpha: 0.18)
-                      : NF.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: i == beat ? p.orange : NF.border),
-                ),
-                child: Text(
-                  spec.seasons[i],
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  style: NF.sora(
-                    11,
-                    weight: i == beat ? FontWeight.w700 : FontWeight.w400,
-                    color: i == beat ? NF.text : NF.muted,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < spec.seasons.length; i++) ...[
+              if (i > 0) const SizedBox(width: 6),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: i == beat
+                        ? LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              p.orange.withValues(alpha: 0.30),
+                              p.orange.withValues(alpha: 0.08),
+                            ],
+                          )
+                        : null,
+                    color: i == beat ? null : NF.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: i == beat ? p.orange : NF.border,
+                      width: i == beat ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (i == beat) ...[
+                        Icon(look?.icon, size: 14, color: p.orange),
+                        const SizedBox(height: 3),
+                      ] else
+                        Text('${i + 1}', style: NF.sora(10, color: NF.muted)),
+                      Text(
+                        spec.seasons[i],
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        style: i == beat
+                            ? hubFace(l.careerId!, 12, NF.text)
+                            : NF.sora(11, color: NF.muted),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

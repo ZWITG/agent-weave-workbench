@@ -5,6 +5,8 @@ import 'family.dart' show childrenOf;
 import 'lifespan.dart';
 import 'models.dart';
 import 'storylet.dart';
+import 'career_hub.dart' show hubHistory, hubSpecs;
+import 'careers.dart' show careerById;
 
 /// The end of a life as a moment (plan Core Module 9 and Social §9): a
 /// funeral with the people who came and a eulogy built from what they
@@ -300,6 +302,24 @@ List<RecapCard> recapCards(
     body:
         '${l.job != null ? 'Last job: ${l.job}. ' : ''}${hide.money ? '' : 'Net worth at the end: ${_m(l.netWorth)}.'}',
   ));
+  // A page for each special career, worn in its look (life_recap.dart).
+  for (final h in hubHistory(l)) {
+    final id = h['id'] as String;
+    final spec = hubSpecs[id];
+    final c = careerById(id);
+    if (spec == null || c == null) continue;
+    final years = h['years'] as int;
+    final log = hide.names || hide.crimes
+        ? const <String>[]
+        : (h['log'] as List).cast<String>();
+    cards.add((
+      kind: 'look:$id',
+      title: 'Your calling: ${c.field}',
+      big: h['best'] as String,
+      body:
+          '$years ${years == 1 ? 'year' : 'years'}, at its best ${spec.meter} ${h['peak']}.${log.isEmpty ? '' : ' ${log.map((e) => e.replaceFirst(RegExp(r'^Age \d+: '), '')).map((e) => '${e[0].toUpperCase()}${e.substring(1)}').join('. ')}.'}',
+    ));
+  }
   final risk = _biggestRisk(l, hide.crimes);
   cards.add((
     kind: 'risk',

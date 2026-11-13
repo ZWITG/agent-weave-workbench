@@ -8,8 +8,11 @@ import 'pets.dart' show petHealth, petsOf;
 import 'policing.dart'
     show academyDone, casesClosed, casesLost, dirtyFile, isCop;
 import 'storylet.dart';
+import 'justice.dart' show crimes;
+import 'world_data.dart' show countryNamed;
 
 part 'career_hub_wave2.dart';
+part 'career_hub_people.dart';
 
 // The Career Hub ("Calling", docs/phase-2/03): every special career gets
 // the same shape, filled with its own data.
@@ -118,6 +121,43 @@ int hubMeter(Life l) {
 void _bump(Life l, int by) {
   l.hub['meter'] = (hubMeter(l) + by).clamp(0, 100);
   l.hub['active'] = l.age;
+  _notePeak(l);
+}
+
+/// Keeps the best the career has reached, for the Life Recap.
+void _notePeak(Life l) {
+  final m = hubMeter(l);
+  if (m > ((l.hub['peak'] as int?) ?? 0)) l.hub['peak'] = m;
+  if (l.job != null && l.careerRank >= ((l.hub['bestRank'] as int?) ?? -1)) {
+    l.hub['bestRank'] = l.careerRank;
+    l.hub['best'] = l.job;
+  }
+}
+
+/// This career's page for the Life Recap: what it was, how far you got.
+Map<String, dynamic>? _summary(Life l) {
+  final id = l.hub['id'] as String?;
+  if (id == null || !hubSpecs.containsKey(id)) return null;
+  final best = l.hub['best'] as String?;
+  if (best == null) return null;
+  return {
+    'id': id,
+    'best': best,
+    'years': max(1, l.age - ((l.hub['since'] as int?) ?? l.age)),
+    'peak': (l.hub['peak'] as int?) ?? hubMeter(l),
+    'log': hubLog(l).take(3).toList(),
+  };
+}
+
+/// Every special career this life had a Hub for, oldest first, with the
+/// one under way (or just ended) last.
+List<Map<String, dynamic>> hubHistory(Life l) {
+  if (hubSpecs.containsKey(l.hub['id'])) _notePeak(l);
+  return [
+    for (final p in (l.hub['past'] as List?) ?? const [])
+      Map<String, dynamic>.from(p as Map),
+    ?_summary(l),
+  ];
 }
 
 void _log(Life l, String line) {
@@ -133,11 +173,17 @@ int hubBeat(Life l) => ((l.hub['beat'] as int?) ?? 0) % 4;
 
 /// Starts a career's Hub (called from startCareer).
 void startHub(Life l, String careerId) {
+  // The career before keeps a page for the Life Recap.
+  final past = [...?(l.hub['past'] as List?), ?_summary(l)];
   l.hub
     ..clear()
     ..['id'] = careerId
+    ..['since'] = l.age
+    ..['past'] = past
     ..['meter'] = 20
     ..['beat'] = 0;
+  // The workplace's people take on the career's roles.
+  _castContacts(l, careerId);
   switch (careerId) {
     case 'athlete':
       l.sceneQueue.add('hub:athlete:sport');
@@ -205,7 +251,8 @@ List<String> hubYear(Life l, Random rng) {
     startHub(l, spec.id);
     if (spec.id != 'politician') l.hub['meter'] = min(80, 20 + rank * 15);
   }
-  final feed = <String>[];
+  _notePeak(l);
+  final feed = <String>[..._peopleYear(l, rng)];
   final beat = hubBeat(l);
   switch (spec.id) {
     case 'actor':
@@ -273,6 +320,9 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
 );
 
 Storylet? hubScene(List<String> args, Life l) {
+  if (args.length >= 2 && args[0] == 'people' && hubFor(l) != null) {
+    return _peopleScene(args, l);
+  }
   if (args.length < 2 || l.careerId != args[0] || hubFor(l) == null) {
     return null;
   }
