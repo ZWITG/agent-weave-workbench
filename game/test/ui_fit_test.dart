@@ -14,6 +14,8 @@ import 'package:relivable/engine/actions.dart';
 import 'package:relivable/engine/careers.dart';
 import 'package:relivable/ui/career_hub_screen.dart';
 import 'package:relivable/ui/career_curtain.dart';
+import 'package:relivable/ui/career_marks.dart';
+import 'package:relivable/engine/career_hub.dart' show hubMeter;
 import 'package:relivable/ui/activities.dart';
 import 'package:relivable/ui/intro.dart';
 import 'package:relivable/theme.dart';
@@ -560,6 +562,59 @@ void main() {
     await _pump(t);
     expect(NF.prison, isTrue);
     expect(NF.career, isNull);
+  });
+
+  testWidgets('the header shows the career meter, and leaving takes a bow', (
+    t,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.updateProfile((p) => p.textScale = 1.3);
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    final l = c.life!;
+    startCareer(l, careerById('actor')!);
+    l.sceneQueue.clear();
+    c.notifyListeners();
+    // The Curtain plays first (one frame starts its clock).
+    await t.pump(const Duration(milliseconds: 100));
+    await t.pump(const Duration(seconds: 4));
+    await _pump(t);
+    // The meter chip opens the Hub.
+    final chip = find.text(' ${hubMeter(l)}');
+    expect(chip, findsOneWidget);
+    await t.tap(chip);
+    await _pump(t);
+    expect(find.byType(CareerHubScreen), findsOneWidget);
+    await t.tap(find.byTooltip('Back'));
+    await _pump(t);
+    // Retiring plays the Final Bow in the old look, then it fades out.
+    final job = l.job!;
+    l.retired = true;
+    l.job = null;
+    c.notifyListeners();
+    await t.pump(const Duration(milliseconds: 100));
+    await t.pump(const Duration(milliseconds: 500));
+    expect(find.text('FINAL BOW'), findsOneWidget);
+    expect(find.text(job), findsWidgets);
+    expect(t.takeException(), isNull);
+    await t.pump(const Duration(seconds: 3));
+    await _pump(t);
+    expect(find.text('FINAL BOW'), findsNothing);
+    expect(NF.career, isNull);
+    expect(find.textContaining('Buzz'), findsNothing);
+    // Stamps follow the result and the look.
+    expect(careerStamp('actor', 'good', 'You nailed it.'), "THAT'S A WRAP");
+    expect(careerStamp('athlete', 'bad', 'You were injured.'), 'INJURED');
+    expect(
+      careerStamp('politician', 'mixed', 'It went through, changed.'),
+      'AMENDED',
+    );
+    expect(careerStamp(null, 'good', ''), isNull);
   });
 
   testWidgets('the Career Hub fits a small phone with large text', (t) async {

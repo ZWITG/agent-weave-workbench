@@ -234,3 +234,9 @@ The first part of the special careers update (docs/phase-2/03 Special Careers - 
 - The Curtain Call: a promotion in a special career plays the Curtain again with "PROMOTED TO".
 - Fix: the police badge card overflowed on small phones with large text.
 - tool/render_hub_test.dart renders each Hub for visual checks.
+
+## "Calling" wave 1: career marks (13 Nov)
+- The header shows your career's signature meter (Buzz 47, Form 62...) as a chip under your name while you work in a special career with a Hub; tap it to open the Hub. On very narrow screens it steps aside rather than crowd the header.
+- Career results are stamped in the look's own type: "THAT'S A WRAP" or "CUT" for actors, "ENCORE" or "SOLD OUT" for musicians, "MATCH WON" or "INJURED" for athletes, "PASSED", "AMENDED" or "DEFEATED" for politicians, "CASE CLOSED" for the police, with stamps ready for every other look. Work and the career's own activities get them.
+- The Final Bow: retiring, quitting or being let go from a special career plays a last bow in its look (your title, a single spotlight), then the look closes like an iris onto the game's usual colours. Prison and death keep their own screens; Reduce motion makes it a fade.
+- tool/render_marks_test.dart renders the header chip, the stamps and the Final Bow for visual checks.

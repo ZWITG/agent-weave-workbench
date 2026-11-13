@@ -20,6 +20,11 @@ import '../theme.dart';
 // (its badge, your new title and the look's name) settles, then the card
 // lifts away and the game is in its new colours. Tap to skip; Reduce
 // motion makes it a short fade.
+//
+// A promotion plays the Curtain Call (the same card, 'PROMOTED TO'), and
+// leaving a special career (retiring, quitting, being let go) plays the
+// Final Bow: the old look takes a bow and closes like an iris over the
+// game's new colours. Prison plays Lockdown instead, and death its own.
 
 /// The special career whose look this life should wear, or null (no job,
 /// retired, in prison, or a career without a look).
@@ -71,6 +76,10 @@ class _CareerCurtainState extends State<CareerCurtain>
   /// 'NOW WORKING AS' when a career starts, 'PROMOTED TO' on a promotion
   /// (the Curtain Call).
   String _kicker = 'NOW WORKING AS';
+
+  /// Playing the Final Bow (the old look closing) rather than a Curtain.
+  bool _bow = false;
+  String _job = '';
   ui.Image? _shot;
   bool _cued = false;
 
@@ -95,6 +104,7 @@ class _CareerCurtainState extends State<CareerCurtain>
     _life = c.life;
     _look = careerLookId(_life);
     _rank = _life?.careerRank ?? 0;
+    _job = _life?.job ?? '';
     c.addListener(_changed);
   }
 
@@ -114,9 +124,15 @@ class _CareerCurtainState extends State<CareerCurtain>
     final was = _look;
     final now = careerLookId(l);
     final rankWas = _rank;
+    final jobWas = _job;
     _life = l;
     _look = now;
     _rank = l?.careerRank ?? 0;
+    _job = l?.job ?? '';
+    if (same && was != null && now == null && l != null) {
+      _finalBow(l, was, jobWas);
+      return;
+    }
     // Only starting a special career (or a promotion in one) in the life
     // being played: not a new life, a loaded save, or a page opening or
     // closing over the look.
@@ -130,12 +146,36 @@ class _CareerCurtainState extends State<CareerCurtain>
     _playing = careerLooks[now];
     _title = l?.job ?? '';
     _kicker = promoted ? 'PROMOTED TO' : 'NOW WORKING AS';
+    _bow = false;
     _cued = false;
     _anim.duration = widget.reduceMotion
         ? const Duration(milliseconds: 500)
         : promoted
         ? const Duration(milliseconds: 2400)
         : const Duration(milliseconds: 3000);
+    _anim.forward(from: 0);
+    setState(() {});
+  }
+
+  /// The look [was] shown until this change: take its bow.
+  void _finalBow(Life l, String was, String job) {
+    // Prison has Lockdown and death its own screens; a look hidden by
+    // riches, Settings or an open Crime or Real estate page has nothing to
+    // bow out.
+    if (!l.alive || l.prison != null) return;
+    if (!c.profile.careerLooks || upperEchelon(l)) return;
+    if (c.alleyLook || c.sunsetLook) return;
+    if (!CareerCurtain.enabled || _playing != null) return;
+    _shot?.dispose();
+    _shot = _capture();
+    _playing = careerLooks[was];
+    _title = job;
+    _kicker = 'FINAL BOW';
+    _bow = true;
+    _cued = false;
+    _anim.duration = widget.reduceMotion
+        ? const Duration(milliseconds: 500)
+        : const Duration(milliseconds: 2400);
     _anim.forward(from: 0);
     setState(() {});
   }
@@ -179,8 +219,9 @@ class _CareerCurtainState extends State<CareerCurtain>
         if (look != null)
           Positioned.fill(
             child: Semantics(
-              label:
-                  '${_kicker == 'PROMOTED TO' ? 'Promoted' : 'New career'}: $_title. The game now wears ${look.name}: ${look.tagline}.',
+              label: _bow
+                  ? 'Final bow: $_title. ${look.name} fades out.'
+                  : '${_kicker == 'PROMOTED TO' ? 'Promoted' : 'New career'}: $_title. The game now wears ${look.name}: ${look.tagline}.',
               liveRegion: true,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -210,6 +251,7 @@ class _CareerCurtainState extends State<CareerCurtain>
     }
     double seg(double a, double b) =>
         Curves.easeOutCubic.transform(((t - a) / (b - a)).clamp(0.0, 1.0));
+    if (_bow) return _bowOverlay(look, t, seg);
     final iris = seg(0.0, 0.42);
     final card = seg(0.22, 0.5);
     final out = seg(0.82, 1.0);
@@ -227,6 +269,43 @@ class _CareerCurtainState extends State<CareerCurtain>
             opacity: card,
             child: Transform.translate(
               offset: Offset(0, 24 * (1 - card) - 30 * out),
+              child: _card(look, card),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// The Final Bow: the old look (the screen as it was) with its card,
+  /// then the look closes like an iris onto the game's new colours.
+  Widget _bowOverlay(
+    CareerLook look,
+    double t,
+    double Function(double, double) seg,
+  ) {
+    final p = look.palette;
+    final card = seg(0.0, 0.25);
+    final bow = seg(0.3, 0.5);
+    final close = Curves.easeInCubic.transform(
+      ((t - 0.55) / 0.45).clamp(0.0, 1.0),
+    );
+    return ClipPath(
+      clipper: _IrisClip(1 - close),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (_shot != null)
+            RawImage(image: _shot, fit: BoxFit.cover)
+          else
+            ColoredBox(color: p.bg),
+          ColoredBox(color: p.bg.withValues(alpha: 0.72 * card)),
+          CustomPaint(painter: _SpotPainter(p, card)),
+          Opacity(
+            opacity: card * (1 - seg(0.55, 0.8)),
+            // The card dips once: the bow.
+            child: Transform.translate(
+              offset: Offset(0, 18 * sin(pi * bow)),
               child: _card(look, card),
             ),
           ),
@@ -289,7 +368,11 @@ class _CareerCurtainState extends State<CareerCurtain>
             ),
             const SizedBox(height: 10),
             Text(
-              look.tagline,
+              _bow
+                  ? (_life?.retired ?? false)
+                        ? 'A last bow, and the house lights come up.'
+                        : 'The lights go down on this one.'
+                  : look.tagline,
               textAlign: TextAlign.center,
               style: NF.sora(14, color: p.soft, height: 1.35),
             ),
@@ -369,4 +452,49 @@ class _IrisPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_IrisPainter old) => old.k != k || old.t != t;
+}
+
+/// The Final Bow's closing iris: a circle [k] of the way to the corners.
+class _IrisClip extends CustomClipper<Path> {
+  _IrisClip(this.k);
+  final double k;
+
+  @override
+  Path getClip(Size size) {
+    final full = sqrt(size.width * size.width + size.height * size.height) / 2;
+    return Path()..addOval(
+      Rect.fromCircle(center: size.center(Offset.zero), radius: full * k),
+    );
+  }
+
+  @override
+  bool shouldReclip(_IrisClip old) => old.k != k;
+}
+
+/// A single spotlight on the card while the old look takes its bow.
+class _SpotPainter extends CustomPainter {
+  _SpotPainter(this.p, this.k);
+  final NFPalette p;
+  final double k;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (k <= 0) return;
+    final c = size.center(Offset.zero);
+    final r = size.shortestSide * 0.7;
+    canvas.drawCircle(
+      c,
+      r,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            p.surface2.withValues(alpha: 0.85 * k),
+            p.bg.withValues(alpha: 0),
+          ],
+        ).createShader(Rect.fromCircle(center: c, radius: r)),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_SpotPainter old) => old.k != k;
 }

@@ -248,9 +248,9 @@ league) and D5 (the musician career runs on `music.dart`):
 | Step | State |
 |---|---|
 | 1 Hub framework and screen, police on it | **Done** |
-| 2 Menu upgrades | **Done:** Hub cards on Path, the Career category in Activities, the way-in checklists. **Not yet:** the meter chip in the header |
+| 2 Menu upgrades | **Done:** Hub cards on Path, the Career category in Activities, the way-in checklists, the meter chip in the header (`ui/career_marks.dart`) |
 | 3 Wave 1 careers | **Done:** actor, musician, athlete, politician (meters, activities, seasons, scenes). **Not yet:** contacts as NPCs; career mini-games reuse existing game engines with career wording (rhythm, memory, whack, reps, timing, breath, reaction), not new designs |
-| 4 Look upgrades | **Partly:** motifs on the Hub, the Curtain Call on promotion. **Not yet:** stamps, type accents, the Final Bow, motifs outside the Hub |
+| 4 Look upgrades | **Mostly done:** motifs on the Hub, the Curtain Call on promotion, the look's stamps on Work and Career results in its type accent (all twelve looks), the Final Bow on leaving a special career. **Not yet:** motifs outside the Hub, career pages in the Life Recap |
 | 5–7 | Not started |
 
 ### 6.6 Rules carried over

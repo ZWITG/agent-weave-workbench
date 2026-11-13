@@ -30,6 +30,8 @@ import 'wealth_tab.dart';
 import 'people.dart';
 import 'widgets.dart';
 import 'yard_time.dart';
+import 'career_hub_screen.dart' show openCareerHub;
+import 'career_marks.dart' show hubMeterChip;
 
 /// The web version running on an iPhone or iPad.
 bool get _iosWeb => kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
@@ -130,6 +132,7 @@ class _HubScreenState extends State<HubScreen> {
             onFame: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => FameScreen(controller: c)),
             ),
+            onCareer: () => openCareerHub(context, c),
           ),
           Expanded(
             child: IndexedStack(index: _tab, children: tabs),
@@ -301,10 +304,13 @@ class _HubScreenState extends State<HubScreen> {
 // ---------------- Header ----------------
 
 class _Header extends StatelessWidget {
-  const _Header({required this.life, this.onMoney, this.onFame});
+  const _Header({required this.life, this.onMoney, this.onFame, this.onCareer});
   final Life life;
   final VoidCallback? onMoney;
   final VoidCallback? onFame;
+
+  /// Opens the Career Hub from the meter chip.
+  final VoidCallback? onCareer;
 
   @override
   Widget build(BuildContext context) {
@@ -341,6 +347,10 @@ class _Header extends StatelessWidget {
                   style: NF.sora(12, color: NF.muted),
                   overflow: TextOverflow.ellipsis,
                 ),
+                // The career's signature meter (Buzz, Form...) while you
+                // work in a special career with a Hub.
+                if (hubMeterChip(life, onTap: onCareer) case final chip?)
+                  Padding(padding: const EdgeInsets.only(top: 6), child: chip),
                 // Outside the Yard Time look (e.g. a test), still say so.
                 if (life.prison != null && !NF.prison)
                   Padding(

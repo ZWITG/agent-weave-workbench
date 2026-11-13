@@ -29,7 +29,7 @@ import 'widgets.dart';
 import 'yard_map.dart';
 import 'echelon_screen.dart' show EchelonCard;
 import 'career_hub_screen.dart' show HubCard;
-import '../engine/career_hub.dart' show hubActionFits, hubFor;
+import '../engine/career_hub.dart' show hubActionCareer, hubActionFits, hubFor;
 
 /// Category order and icons for the Activities panel.
 const activityCategories = <(String, IconData)>[
@@ -1502,5 +1502,11 @@ Future<void> runActionFlow(
     r,
     title: a.label,
     icon: categoryIconFor(a.category),
+    // Work and the career's own activities come back stamped in its look.
+    look:
+        a.category == 'Work' ||
+            (a.category == 'Career' && hubActionCareer(a.id) == NF.career)
+        ? NF.career
+        : null,
   );
 }

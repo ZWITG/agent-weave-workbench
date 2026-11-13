@@ -4,6 +4,7 @@ import '../engine/actions.dart';
 import '../sound.dart';
 import '../theme.dart';
 import 'back_alley.dart' show CrimeStamp, crimeStamp;
+import 'career_marks.dart';
 import 'yard_time.dart';
 import 'outcome_card.dart';
 import 'widgets.dart';
@@ -19,6 +20,7 @@ Future<void> showResultPopup(
   required String title,
   IconData icon = Icons.auto_awesome_rounded,
   String? cue,
+  String? look,
 }) {
   final chips = <(String, bool, Color)>[];
   final info = <String>[];
@@ -87,6 +89,7 @@ Future<void> showResultPopup(
       tone: tone,
       chips: chips,
       info: info,
+      look: look,
     ),
   );
 }
@@ -99,7 +102,11 @@ class _ResultCard extends StatelessWidget {
     required this.tone,
     required this.chips,
     required this.info,
+    this.look,
   });
+
+  /// A career result in that look (careerLooks id): stamped in its type.
+  final String? look;
 
   final String title;
   final IconData icon;
@@ -122,6 +129,10 @@ class _ResultCard extends StatelessWidget {
             tone,
             paid: chips.any((c) => c.$1.startsWith('Money') && c.$2),
           )
+        : null;
+    // A career's own activity, in its look: a stamp in the look's type.
+    final careerMark = !inside && !alley && look != null && NF.career == look
+        ? careerStamp(look, tone, text)
         : null;
     return SafeArea(
       child: Center(
@@ -190,6 +201,13 @@ class _ResultCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
+                      ],
+                      if (careerMark != null) ...[
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: CareerStamp(look!, careerMark, tone: tone),
+                        ),
+                        const SizedBox(height: 8),
                       ],
                       Row(
                         children: [
