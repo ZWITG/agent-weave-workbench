@@ -75,6 +75,25 @@ String _digits(int v) {
 }
 
 /// A game amount in [country]'s currency ("¥1,500,000", "−€920").
+/// A balance in the active currency, short: $950, $25K, $1.2M, $3.4B.
+String shortMoney(int amount, [String? country]) {
+  final (rate, symbol) = currencyOf(country ?? activeCountry);
+  final a = amount.abs() * rate;
+  String f(double x, String u) =>
+      '${x >= 100 ? x.toStringAsFixed(0) : x.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}$u';
+  final n = a >= 1e12
+      ? f(a / 1e12, 'T')
+      : a >= 1e9
+      ? f(a / 1e9, 'B')
+      : a >= 1e6
+      ? f(a / 1e6, 'M')
+      : a >= 1e3
+      ? f(a / 1e3, 'K')
+      : a.round().toString();
+  final space = symbol.length > 2 && !symbol.endsWith('\$') ? ' ' : '';
+  return '${amount < 0 ? '−' : ''}$symbol$space$n';
+}
+
 String moneyIn(int amount, String country) {
   final (rate, symbol) = currencyOf(country);
   final local = (amount * rate).round();

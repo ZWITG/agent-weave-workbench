@@ -20,6 +20,7 @@ import 'health_screen.dart';
 import 'inside_tabs.dart';
 import 'echelon_screen.dart' show Gilt, GoldSeam;
 import '../engine/echelon.dart' show bigMoney;
+import '../engine/currency.dart' show shortMoney;
 import '../engine/elite.dart' show upperEchelon;
 import 'meta_screens.dart';
 import 'minigames.dart' show showMiniGame;
@@ -316,81 +317,123 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-      child: Row(
-        children: [
-          AgeRingAvatar(
-            initials: life.initials,
-            progress: (life.age / 100).clamp(0.0, 1.0),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  life.fullName,
-                  style: NF.sora(20, weight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  life.prison != null
-                      ? 'Age ${life.age} · ${life.prison!.job ?? (life.prison!.youth ? 'Youth detention' : 'Inmate')}'
-                      : 'Age ${life.age} · ${life.job ?? life.stage}',
-                  style: NF.sora(13, color: NF.soft),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  life.prison != null
-                      ? '${life.city} Prison · ${life.prison!.security} security'
-                      : '${life.city}, ${life.country}',
-                  style: NF.sora(12, color: NF.muted),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                // The career's signature meter (Buzz, Form...) while you
-                // work in a special career with a Hub.
-                if (hubMeterChip(life, onTap: onCareer) case final chip?)
-                  Padding(padding: const EdgeInsets.only(top: 6), child: chip),
-                // Outside the Yard Time look (e.g. a test), still say so.
-                if (life.prison != null && !NF.prison)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      'In prison · ${life.prison!.left} ${life.prison!.left == 1 ? 'year' : 'years'} left',
-                      style: NF.sora(
-                        12,
-                        weight: FontWeight.w600,
-                        color: NF.orange,
-                      ),
+      child: LayoutBuilder(
+        builder: (context, box) => _row(context, box.maxWidth),
+      ),
+    );
+  }
+
+  /// The chips on the right never take more than this share of the row,
+  /// so your name keeps its room on small phones with large text.
+  static double _rightShare(BuildContext context) =>
+      MediaQuery.textScalerOf(context).scale(10) > 11 ? 0.4 : 0.45;
+
+  /// Your balance in full when it fits beside its icons, else short
+  /// ($25K, $1.2M).
+  String _moneyText(BuildContext context, double room, TextStyle style) {
+    final m = life.money;
+    final full = m.abs() >= 10000000 ? bigMoney(m) : money(m);
+    final tp = TextPainter(
+      text: TextSpan(text: full, style: style),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final fits = tp.width <= room;
+    tp.dispose();
+    return fits ? full : shortMoney(m);
+  }
+
+  Widget _row(BuildContext context, double width) {
+    final rightMax = width * _rightShare(context);
+    // The money chip's padding, border, icons and gaps.
+    const chipFrame = 10 * 2 + 2 + 14 + 5 + 2 + 14;
+    final moneyStyle = NF.sora(
+      13,
+      weight: FontWeight.w700,
+      color: life.money < 0
+          ? NF.danger
+          : upperEchelon(life) && life.prison == null
+          ? Gilt.gold
+          : const Color(0xFF5EE6A8),
+    );
+    return Row(
+      children: [
+        AgeRingAvatar(
+          initials: life.initials,
+          progress: (life.age / 100).clamp(0.0, 1.0),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                life.fullName,
+                style: NF.sora(20, weight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                life.prison != null
+                    ? 'Age ${life.age} · ${life.prison!.job ?? (life.prison!.youth ? 'Youth detention' : 'Inmate')}'
+                    : 'Age ${life.age} · ${life.job ?? life.stage}',
+                style: NF.sora(13, color: NF.soft),
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                life.prison != null
+                    ? '${life.city} Prison · ${life.prison!.security} security'
+                    : '${life.city}, ${life.country}',
+                style: NF.sora(12, color: NF.muted),
+                overflow: TextOverflow.ellipsis,
+              ),
+              // The career's signature meter (Buzz, Form...) while you
+              // work in a special career with a Hub.
+              if (hubMeterChip(life, onTap: onCareer) case final chip?)
+                Padding(padding: const EdgeInsets.only(top: 6), child: chip),
+              // Outside the Yard Time look (e.g. a test), still say so.
+              if (life.prison != null && !NF.prison)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    'In prison · ${life.prison!.left} ${life.prison!.left == 1 ? 'year' : 'years'} left',
+                    style: NF.sora(
+                      12,
+                      weight: FontWeight.w600,
+                      color: NF.orange,
                     ),
                   ),
-                if (isFrail(life))
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.monitor_heart_rounded,
-                          size: 14,
+                ),
+              if (isFrail(life))
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.monitor_heart_rounded,
+                        size: 14,
+                        color: NF.danger,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        frailtyLabel(life),
+                        style: NF.sora(
+                          12,
+                          weight: FontWeight.w600,
                           color: NF.danger,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          frailtyLabel(life),
-                          style: NF.sora(
-                            12,
-                            weight: FontWeight.w600,
-                            color: NF.danger,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-          Column(
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: rightMax),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (life.prison != null)
@@ -453,23 +496,26 @@ class _Header extends StatelessWidget {
                               : const Color(0xFF5EE6A8),
                         ),
                         const SizedBox(width: 5),
-                        Text(
-                          // Inside, what counts is your stash. Fortunes
-                          // over ten million are shown short ($160M), and
-                          // in gold once you are in the upper echelon.
-                          life.prison != null
-                              ? 'Stash ${life.prison!.stash}'
-                              : life.money.abs() >= 10000000
-                              ? bigMoney(life.money)
-                              : money(life.money),
-                          style: NF.sora(
-                            13,
-                            weight: FontWeight.w700,
-                            color: life.money < 0
-                                ? NF.danger
-                                : upperEchelon(life) && life.prison == null
-                                ? Gilt.gold
-                                : const Color(0xFF5EE6A8),
+                        Flexible(
+                          // Shrinks only if even the short form is too
+                          // wide (huge text on a tiny screen).
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              // Inside, what counts is your stash. Fortunes
+                              // over ten million are shown short ($160M),
+                              // and smaller ones too when space is tight
+                              // ($25K); in gold in the upper echelon.
+                              life.prison != null
+                                  ? 'Stash ${life.prison!.stash}'
+                                  : _moneyText(
+                                      context,
+                                      rightMax - chipFrame,
+                                      moneyStyle,
+                                    ),
+                              maxLines: 1,
+                              style: moneyStyle,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 2),
@@ -521,14 +567,18 @@ class _Header extends StatelessWidget {
                                 : NF.danger,
                           ),
                           const SizedBox(width: 5),
-                          Text(
-                            life.fame < 10
-                                ? 'Fame ${life.fame}'
-                                : fameTierOf(life).name,
-                            style: NF.sora(
-                              13,
-                              weight: FontWeight.w700,
-                              color: NF.orange,
+                          Flexible(
+                            child: Text(
+                              life.fame < 10
+                                  ? 'Fame ${life.fame}'
+                                  : fameTierOf(life).name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: NF.sora(
+                                13,
+                                weight: FontWeight.w700,
+                                color: NF.orange,
+                              ),
                             ),
                           ),
                         ],
@@ -539,8 +589,8 @@ class _Header extends StatelessWidget {
               ],
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

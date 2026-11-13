@@ -116,12 +116,44 @@ Widget? hubMeterChip(Life l, {VoidCallback? onTap}) {
   final m = hubMeter(l);
   // The look's accent while the game wears it; Night Feed's otherwise.
   final accent = NF.career == l.careerId ? NF.blue : look.palette.blue;
-  // Too little room (a huge fortune and fame squeezing the name): leave
-  // the meter to the Hub card rather than overflow.
+  final style = NF.sora(13, weight: FontWeight.w700, color: accent);
   return LayoutBuilder(
-    builder: (context, box) => box.maxWidth < 64
-        ? const SizedBox.shrink()
-        : _chip(spec.meter, m, look.icon, accent, onTap),
+    builder: (context, box) {
+      final scaler = MediaQuery.textScalerOf(context);
+      double w(String text) {
+        final tp = TextPainter(
+          text: TextSpan(text: text, style: style),
+          textDirection: TextDirection.ltr,
+          textScaler: scaler,
+          maxLines: 1,
+        )..layout();
+        final v = tp.width;
+        tp.dispose();
+        return v;
+      }
+
+      // Padding, border, icon and gap, then the number.
+      final base = 10 * 2 + 2 + scaler.scale(14) + 5 + w(' $m') + 1;
+      // The whole name fits: "Approval 50". Else just the icon and the
+      // number (the screen reader still hears the name). With too little
+      // room even for that (a huge fortune squeezing the name), the meter
+      // stays on the Hub card rather than overflow.
+      if (box.maxWidth >= base + w(spec.meter)) {
+        return _chip(spec.meter, m, look.icon, style, accent, onTap);
+      }
+      if (box.maxWidth >= base) {
+        return _chip(
+          spec.meter,
+          m,
+          look.icon,
+          style,
+          accent,
+          onTap,
+          label: false,
+        );
+      }
+      return const SizedBox.shrink();
+    },
   );
 }
 
@@ -129,16 +161,17 @@ Widget _chip(
   String meter,
   int m,
   IconData icon,
+  TextStyle style,
   Color accent,
-  VoidCallback? onTap,
-) => Semantics(
+  VoidCallback? onTap, {
+  bool label = true,
+}) => Semantics(
   label: '$meter $m of 100. Open your career',
   button: true,
   excludeSemantics: true,
   child: GestureDetector(
     onTap: onTap,
     behavior: HitTestBehavior.opaque,
-    // On a small phone the name gives way (ellipsis), never the number.
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -151,18 +184,8 @@ Widget _chip(
         children: [
           Icon(icon, size: 14, color: accent),
           const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              meter,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: NF.sora(13, weight: FontWeight.w700, color: accent),
-            ),
-          ),
-          Text(
-            ' $m',
-            style: NF.sora(13, weight: FontWeight.w700, color: accent),
-          ),
+          if (label) Text(meter, maxLines: 1, style: style),
+          Text(' $m', style: style),
         ],
       ),
     ),

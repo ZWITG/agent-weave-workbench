@@ -118,6 +118,15 @@ Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
 }
 
 void main() {
+  test('short money for tight spaces', () {
+    expect(shortMoney(950, 'United States'), '\$950');
+    expect(shortMoney(25000, 'United States'), '\$25K');
+    expect(shortMoney(1250000, 'United States'), '\$1.3M');
+    expect(shortMoney(2000000, 'United States'), '\$2M');
+    expect(shortMoney(-48000, 'United States'), '−\$48K');
+    expect(shortMoney(160000000, 'United States'), '\$160M');
+  });
+
   // Seasonal events follow the real calendar; tests use a quiet day.
   seasonClock = () => DateTime(2026, 8, 1);
   final storylets = loadStorylets();

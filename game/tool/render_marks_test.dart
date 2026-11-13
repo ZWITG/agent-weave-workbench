@@ -58,6 +58,41 @@ Future<void> _frames(WidgetTester t, int n, [int ms = 150]) async {
 
 void main() {
   IntroSplash.enabled = false;
+  for (final scale in const [1.0, 1.3]) {
+    testWidgets('header at $scale', (t) async {
+      // ignore: invalid_use_of_visible_for_testing_member
+      SharedPreferences.setMockInitialValues({});
+      await t.runAsync(_fonts);
+      t.view.physicalSize = const Size(320, 568);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.reset);
+      late GameController c;
+      await t.runAsync(() async {
+        c = GameController();
+        await c.load();
+      });
+      Sound.instance.enabled = false;
+      c.startLife(seed: 51);
+      c.updateProfile((p) => p.textScale = scale);
+      final l = c.life!
+        ..age = 29
+        ..money = 25000
+        ..fame = 40;
+      final key = GlobalKey();
+      await t.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: RelivableApp(controller: c),
+        ),
+      );
+      await _frames(t, 6);
+      startCareer(l, careerById('politician')!);
+      l.sceneQueue.clear();
+      c.notifyListeners();
+      await _frames(t, 30);
+      await _shot(t, key, 'header_money_$scale');
+    });
+  }
   for (final (id, tone, text) in const [
     ('actor', 'good', 'The director loved your read. You got the part.'),
     ('athlete', 'bad', 'You pushed too hard and were injured in training.'),
