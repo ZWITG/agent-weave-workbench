@@ -5,6 +5,7 @@ import 'dart:math';
 import 'actions.dart';
 import 'careers.dart';
 import 'life_events.dart' show onFired;
+import 'career_law.dart' show recordVotePenalty;
 import 'models.dart';
 import 'storylet.dart';
 import 'justice.dart' show convictions;
@@ -787,7 +788,8 @@ String _election(Life l, Career c, Random rng, int bonus, int cost) {
               (l.stats['karma'] - 50) ~/ 4 +
               bonus +
               rep +
-              (l.performance - 50) ~/ 5)
+              (l.performance - 50) ~/ 5 -
+              recordVotePenalty(convictions(l)))
           .clamp(5, 90);
   if (rng.nextInt(100) < odds) {
     final lines = <String>[];

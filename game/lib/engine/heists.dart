@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'justice.dart';
+import 'career_law.dart' show careerAfterCrime;
 import 'models.dart';
 import 'storylet.dart';
 
@@ -331,6 +332,7 @@ Storylet? heistScene(String id, List<String> args, Life l) {
             l.money += mine;
             addDirty(l, mine);
             l.cases.add({'crime': crimeId, 'age': l.age, 'evidence': ev});
+            careerAfterCrime(l, crimeById(crimeId));
             l.flags['heist'] = Memory(l.age, 'the ${t.name.toLowerCase()} job');
             remember(2, 'pulling off the ${t.name.toLowerCase()} job together');
             return 'Clean. Your share is ${_m(mine)}${cut > 0 ? ' after the crew\'s cut' : ''}. Nobody speaks on the drive home. $header';

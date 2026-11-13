@@ -348,6 +348,12 @@ class SettingsScreen extends StatelessWidget {
                 (v) => controller.updateProfile((p) => p.autoMiniGames = v),
               ),
               sw(
+                'Career looks',
+                'The game changes colour in special careers',
+                p.careerLooks,
+                (v) => controller.updateProfile((p) => p.careerLooks = v),
+              ),
+              sw(
                 'Reduce motion',
                 'Fewer animations and no bouncing',
                 p.reduceMotion,

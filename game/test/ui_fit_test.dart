@@ -11,6 +11,7 @@ import 'package:relivable/game_controller.dart';
 import 'package:relivable/main.dart';
 import 'package:relivable/sound.dart';
 import 'package:relivable/engine/actions.dart';
+import 'package:relivable/engine/careers.dart';
 import 'package:relivable/ui/activities.dart';
 import 'package:relivable/ui/intro.dart';
 import 'package:relivable/theme.dart';
@@ -516,6 +517,47 @@ void main() {
     await _tapText(t, 'White-collar');
     expect(find.text('Fraud'), findsOneWidget);
     expect(t.takeException(), isNull);
+  });
+
+  testWidgets('a special career plays the Curtain and wears its look', (
+    t,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.updateProfile((p) => p.textScale = 1.3);
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    expect(NF.career, isNull);
+    startCareer(c.life!, careerById('police')!);
+    c.notifyListeners();
+    await t.pump(const Duration(milliseconds: 1200));
+    expect(find.text('NOW WORKING AS'), findsOneWidget);
+    expect(find.text('Police cadet'), findsWidgets);
+    expect(find.text('BLUE LINE'), findsOneWidget);
+    expect(t.takeException(), isNull);
+    await t.pump(const Duration(seconds: 3));
+    await _pump(t);
+    expect(find.text('NOW WORKING AS'), findsNothing);
+    expect(NF.career, 'police');
+    expect(NF.bg, careerLooks['police']!.palette.bg);
+    // Settings can turn the looks off.
+    c.updateProfile((p) => p.careerLooks = false);
+    await _pump(t);
+    expect(NF.career, isNull);
+    c.updateProfile((p) => p.careerLooks = true);
+    // Prison wins: a conviction ends the career and the look with it.
+    c.life!.prison = Prison(crime: 'burglary', years: 2, since: 34);
+    c.life!.job = null;
+    c.life!.careerId = null;
+    c.notifyListeners();
+    await t.pump(const Duration(seconds: 6));
+    await _pump(t);
+    expect(NF.prison, isTrue);
+    expect(NF.career, isNull);
   });
 
   testWidgets('prison wears Yard Time, and release takes it off', (t) async {

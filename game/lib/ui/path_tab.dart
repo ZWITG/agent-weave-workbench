@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/actions.dart';
+import '../engine/career_law.dart' show copCrewNote;
 import '../engine/careers.dart';
 import '../engine/jobs.dart';
 import '../engine/models.dart';
@@ -411,6 +412,11 @@ class _PathTabState extends State<PathTab> {
                 : 'Watching you',
             color: dirt == 0 ? null : NF.danger,
           ),
+          if (copCrewNote(life) case final note?)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(note, style: NF.sora(12.5, color: NF.danger)),
+            ),
           if (crew != null)
             line(
               'Undercover',

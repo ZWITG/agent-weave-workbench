@@ -39,6 +39,9 @@ class Profile {
   bool confirmBig = true;
   bool autoMiniGames = false;
 
+  /// The game changes colour while you work in a special career.
+  bool careerLooks = true;
+
   // ---- Meta (meta.dart): kept across every life ----
   /// Achievement id -> date earned.
   final Map<String, String> achievements = {};
@@ -74,6 +77,7 @@ class Profile {
     'leftHanded': leftHanded,
     'confirmBig': confirmBig,
     'autoMiniGames': autoMiniGames,
+    'careerLooks': careerLooks,
     'achievements': achievements,
     'collections': collections,
     'sparks': sparks,
@@ -101,6 +105,7 @@ class Profile {
     ..leftHanded = j['leftHanded'] ?? false
     ..confirmBig = j['confirmBig'] ?? true
     ..autoMiniGames = j['autoMiniGames'] ?? false
+    ..careerLooks = j['careerLooks'] ?? true
     ..achievements.addAll(Map<String, String>.from(j['achievements'] ?? {}))
     ..collections.addAll({
       for (final e in Map<String, dynamic>.from(j['collections'] ?? {}).entries)

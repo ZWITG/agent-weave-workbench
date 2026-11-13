@@ -161,9 +161,16 @@ Rough size: similar to the Echelon update (about 5–7 working sessions).
    (`engine/policing.dart`): academy tests played as mini-games, casework on
    the same evidence scale, promotion by closed cases, crew bribes and
    Internal Affairs, undercover operations, and a badge card on Path.
-2. **Youth custody** (option 4) and **street hustle** (option 5) as a
+2. **Crime linked across careers: built 13 Nov 2026**
+   (`engine/career_law.dart`): job-based odds, convictions ending the
+   careers that cannot carry one, a cop's own crimes on the Internal Affairs
+   file and on their own desk, crews and the Most Wanted list for cops,
+   lawyers defending themselves and records costing votes. Each special
+   career also wears its own look (`theme.dart` `careerLooks`,
+   `ui/career_curtain.dart`) as groundwork for the special careers update.
+3. **Youth custody** (option 4) and **street hustle** (option 5) as a
    smaller update.
-3. **Country law** (option 7), once D1 and D2 are decided.
+4. **Country law** (option 7), once D1 and D2 are decided.
 
 ## 7. Sources
 

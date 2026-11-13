@@ -22,6 +22,7 @@ import 'music.dart';
 import 'births.dart' show birthScene;
 import 'life_events.dart' show lifeEventScene;
 import 'policing.dart' show policeScene;
+import 'career_law.dart' show ownCaseScene;
 import 'manhunt.dart' show manhuntScene;
 import 'underworld.dart' show underworldScene;
 import 'migration.dart' show migrationScene;
@@ -190,6 +191,7 @@ Storylet? buildScene(String id, Life life) {
     'mind' ||
     'rehab' => healthScene(parts.first, parts.sublist(1), life),
     'manhunt' => manhuntScene(parts.sublist(1), life),
+    'own_case' => ownCaseScene(parts.sublist(1), life),
     'academy' ||
     'beat_case' ||
     'case_build' ||

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'career_law.dart' show copCrimeYear;
 import 'careers.dart' show careerById;
 import 'jobs.dart' show leaveJob;
 import 'justice.dart' show crimeById;
@@ -56,6 +57,10 @@ int casesLost(Life l) => _count(l, 'cop_lost');
 
 /// Bribes taken and evidence planted: what Internal Affairs could find.
 int dirtyFile(Life l) => _count(l, 'cop_dirty');
+
+/// Adds to the Internal Affairs file (career_law.dart: your own crimes and
+/// your own cases).
+void addDirtyFile(Life l, int n) => _set(l, 'cop_dirty', dirtyFile(l) + n);
 
 bool academyDone(Life l) => l.marks.contains('academy_done');
 
@@ -114,6 +119,9 @@ String? nextRankNeeds(Life l) {
 
 List<String> policeYear(Life l, Random rng) {
   final feed = <String>[];
+  if (!isCop(l)) return feed;
+  // Your own crimes, your own crew and the Most Wanted list.
+  feed.addAll(copCrimeYear(l, rng));
   if (!isCop(l)) return feed;
   if (l.careerRank == 0) {
     if (!academyDone(l) && !l.sceneQueue.any((q) => q.startsWith('academy'))) {
@@ -559,7 +567,10 @@ Storylet? _undercover(String step, Life l) {
   switch (step) {
     case 'offer':
       if (crewId != null || l.careerRank < 3) return null;
-      final crew = crewList[(l.age + l.seed) % crewList.length];
+      // Never the crew you already belong to.
+      final own = l.crew['id'];
+      final pool = crewList.where((c) => c.id != own).toList();
+      final crew = pool[(l.age + l.seed) % pool.length];
       return _scene(
         'undercover',
         'Your superintendent closes the blinds. "${crew.name}. We have tried everything from the outside. We need someone inside. Two years, maybe more. Nobody can know, not even your family."',

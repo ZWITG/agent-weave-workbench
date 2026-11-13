@@ -6,6 +6,12 @@ import 'gangs.dart';
 import 'prison_life.dart';
 import 'actions.dart';
 import 'jobs.dart' show leaveJob;
+import 'career_law.dart'
+    show
+        careerAfterConviction,
+        careerAfterCrime,
+        careerCrimeOdds,
+        lawyerSelfSkill;
 import 'love.dart' show partnerOf, recircle;
 import 'underworld.dart' show crewOf, crewRank, informant;
 import 'models.dart';
@@ -473,6 +479,11 @@ bool onParole(Life l) {
     p += 5;
     why.add('Criminal record +5');
   }
+  // Your job: patrol routes, case law or a famous face (career_law.dart).
+  for (final (d, reason) in careerCrimeOdds(l)) {
+    p += d;
+    why.add(reason);
+  }
   if (c.id == 'embezzlement') {
     final open = l.cases.where((x) => x['crime'] == 'embezzlement').length;
     if (open > 0) {
@@ -526,6 +537,7 @@ ActionResult commitCrime(
   final gain = (_gain(l, c, rng) * gainMul).round();
   l.money += gain;
   addDirty(l, gain);
+  careerAfterCrime(l, c);
   l.notoriety += c.band == 'minor' ? 0 : 2;
   final ev = c.evidence + rng.nextInt(15) - 5;
   final open = l.cases.where((x) => x['crime'] == c.id).firstOrNull;
@@ -694,7 +706,10 @@ String convict(Life l, Crime c, int years, String how) {
     l.assets.removeWhere((a) => a.info['stolen'] == true);
     if (!l.has('car')) l.flags.remove('owns_car');
   }
-  final lost = seized ? ' Police took back the stolen car.' : '';
+  // Careers that cannot carry a conviction end here (career_law.dart).
+  final lost =
+      (seized ? ' Police took back the stolen car.' : '') +
+      careerAfterConviction(l, c);
   if (years == 0) return lost;
   enterPrison(l, c, years);
   return '$lost ${youth ? 'Youth detention' : 'Prison'}: $years ${years == 1 ? 'year' : 'years'}${violated ? ' (including time for breaking parole)' : ''}.';
@@ -957,10 +972,10 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
               : 'You met your lawyer ten minutes before the hearing.';
         },
       );
-      final self = ((l.stats['charisma'] + l.stats['smarts']) ~/ 2 - 10).clamp(
-        5,
-        80,
-      );
+      final own = lawyerSelfSkill(l);
+      final self =
+          own ??
+          ((l.stats['charisma'] + l.stats['smarts']) ~/ 2 - 10).clamp(5, 80);
       return _scene(
         id,
         'Who will stand next to you in court? A better lawyer can pick holes in the evidence ($ev/100).',
@@ -969,7 +984,9 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
             'Represent yourself',
             0,
             self,
-            'Skill $self (your Charisma and Smarts)',
+            own != null
+                ? 'Skill $self (your courtroom experience as ${l.job})'
+                : 'Skill $self (your Charisma and Smarts)',
           ),
           hire('Public defender (free)', 0, pd, 'Skill $pd · overworked'),
           hire('Mid-tier lawyer (\$15,000)', 15000, 65, 'Skill 65'),

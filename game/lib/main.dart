@@ -12,6 +12,7 @@ import 'ui/update_prompt.dart';
 import 'ui/colour_modes.dart';
 import 'ui/lockdown.dart';
 import 'ui/invitation.dart';
+import 'ui/career_curtain.dart';
 import 'engine/elite.dart' show upperEchelon;
 
 void main() {
@@ -53,6 +54,8 @@ class RelivableApp extends StatelessWidget {
       sunset: l != null && l.alive && controller.sunsetLook,
       // Activities › Crime and crime scenes wear Back Alley.
       alley: l != null && l.alive && controller.alleyLook,
+      // Special careers wear their own look (career_curtain.dart).
+      career: controller.profile.careerLooks ? careerLookId(l) : null,
     );
     return MaterialApp(
       title: 'Relivable',
@@ -80,7 +83,12 @@ class RelivableApp extends StatelessWidget {
                 child: Ascension(
                   controller: controller,
                   reduceMotion: p.reduceMotion,
-                  child: child!,
+                  // Starting a special career plays the Curtain.
+                  child: CareerCurtain(
+                    controller: controller,
+                    reduceMotion: p.reduceMotion,
+                    child: child!,
+                  ),
                 ),
               );
               return colourMatrices[p.colourMode] == null

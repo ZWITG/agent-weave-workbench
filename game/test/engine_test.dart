@@ -10,6 +10,10 @@ import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/crime_wall.dart';
 import 'package:relivable/engine/manhunt.dart';
 import 'package:relivable/engine/policing.dart';
+import 'package:relivable/engine/career_law.dart';
+import 'package:relivable/theme.dart';
+import 'package:relivable/ui/career_curtain.dart' show careerLookId;
+import 'package:flutter/painting.dart' show Color;
 import 'package:relivable/ui/back_alley.dart' show crimeStamp;
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
@@ -3004,6 +3008,156 @@ void main() {
       expect(undercoverIn(l), isNull);
     },
   );
+
+  test('crime and the careers: odds, convictions, own cases, votes', () {
+    final l = engine.newLife(seed: 302)..age = 30;
+    l.sceneQueue.clear();
+    // A police officer knows the patrol routes, and it shows in the odds.
+    final base = caughtOdds(l, crimeById('burglary'));
+    startCareer(l, careerById('police')!);
+    l.careerRank = 1;
+    l.job = 'Police officer';
+    l.marks.add('academy_done');
+    final cop = caughtOdds(l, crimeById('burglary'));
+    expect(cop.$2, contains('You know the patrol routes −8'));
+    expect(cop.$1, lessThan(base.$1));
+    // A crime you got away with goes on the Internal Affairs file.
+    l.cases.clear();
+    for (var i = 0; i < 30 && l.cases.isEmpty; i++) {
+      l.sceneQueue.clear();
+      commitCrime(l, crimeById('burglary'), Random(i));
+    }
+    expect(l.cases, isNotEmpty);
+    expect(dirtyFile(l), greaterThanOrEqualTo(1));
+    // It lands on your own desk; losing the file closes it.
+    final open = l.cases.first;
+    l.sceneQueue
+      ..clear()
+      ..add('own_case:${open['crime']}:${open['age']}');
+    var s = engine.nextScene(l)!;
+    expect(s.id, 'scene:own_case');
+    final dirt = dirtyFile(l);
+    engine.choose(l, s, s.choices.first);
+    expect(l.cases.contains(open), isFalse);
+    expect(dirtyFile(l), dirt + 1);
+    // A cop in a crew is asked for favours; undercover never targets it.
+    l.crew.addAll({'id': 'velvet', 'rank': 0, 'respect': 10, 'loyalty': 50});
+    l.sceneQueue.clear();
+    for (var i = 0; i < 20; i++) {
+      copCrimeYear(l, Random(i));
+    }
+    expect(l.sceneQueue, contains('bribe_offer:velvet'));
+    final under = Life.fromJson(l.toJson())
+      ..careerRank = 3
+      ..job = 'Detective';
+    for (var age = 30; age < 36; age++) {
+      under
+        ..age = age
+        ..sceneQueue.clear()
+        ..sceneQueue.add('undercover:offer');
+      final u = engine.nextScene(under)!;
+      expect(u.text.contains(crewById('velvet').name), isFalse);
+    }
+    // A clean cop gets no crew invitations.
+    final clean = engine.newLife(seed: 303)..age = 30;
+    startCareer(clean, careerById('police')!);
+    clean.notoriety = 200;
+    clean.sceneQueue.clear();
+    for (var i = 0; i < 40; i++) {
+      crewInviteYear(clean, Random(i));
+    }
+    expect(clean.sceneQueue.contains('crew_invite'), isFalse);
+    // Most Wanted: suspended and dismissed.
+    final wanted = Life.fromJson(l.toJson())..marks.add('most_wanted');
+    final feed = copCrimeYear(wanted, Random(1));
+    expect(feed.join(), contains('dismissed'));
+    expect(wanted.job, isNull);
+    // A conviction, even without prison, ends a police career.
+    final out = convict(l, crimeById('shoplifting'), 0, 'a fine');
+    expect(out, contains('handed in your badge'));
+    expect(l.job, isNull);
+    expect(convictions(l), greaterThan(0)); // the police job board is closed
+    // A minor conviction does not cost an office job.
+    final clerk = engine.newLife(seed: 304)..age = 30;
+    startCareer(
+      clerk,
+      careers.firstWhere((c) => !c.special && c.id != 'police'),
+    );
+    expect(convict(clerk, crimeById('shoplifting'), 0, 'a fine'), isEmpty);
+    expect(clerk.job, isNotNull);
+    // A serious one costs a doctor their licence.
+    final doc = engine.newLife(seed: 305)..age = 35;
+    startCareer(doc, careerById('doctor')!);
+    expect(
+      convict(doc, crimeById('assault'), 0, 'suspended'),
+      contains('struck you off'),
+    );
+    expect(doc.job, isNull);
+    // A lawyer defends themselves with courtroom skill.
+    final lawyer = engine.newLife(seed: 306)..age = 40;
+    startCareer(lawyer, careerById('lawyer')!);
+    lawyer.careerRank = 2;
+    lawyer.job = 'Partner';
+    lawyer.sceneQueue
+      ..clear()
+      ..add('lawyer:burglary:60');
+    s = engine.nextScene(lawyer)!;
+    expect(s.choices.first.risk, contains('courtroom experience'));
+    expect(s.choices.first.risk, contains('76'));
+    // And a struck-off lawyer is out of work.
+    expect(
+      convict(lawyer, crimeById('shoplifting'), 0, 'a fine'),
+      contains('struck off'),
+    );
+    // A record costs votes.
+    expect(recordVotePenalty(0), 0);
+    expect(recordVotePenalty(2), 16);
+    expect(recordVotePenalty(9), 24);
+  });
+
+  test('special careers wear their own look; prison and riches win', () {
+    final l = engine.newLife(seed: 307)..age = 30;
+    expect(careerLookId(l), isNull);
+    startCareer(l, careerById('actor')!);
+    expect(careerLookId(l), 'actor');
+    NF.look(prison: false, rich: false, career: careerLookId(l));
+    expect(NF.career, 'actor');
+    expect(NF.bg, careerLooks['actor']!.palette.bg);
+    NF.look(prison: false, rich: true, career: 'actor');
+    expect(NF.gilded, isTrue);
+    expect(NF.career, isNull);
+    NF.look(prison: true, rich: false, career: 'actor');
+    expect(NF.prison, isTrue);
+    NF.look(prison: false, rich: false, alley: true, career: 'actor');
+    expect(NF.alley, isTrue);
+    // Every special career (and the police) has a look.
+    for (final c in careers.where((c) => c.special || c.id == 'police')) {
+      expect(careerLooks, contains(c.id), reason: c.id);
+    }
+    // Text stays readable on every look's background.
+    double lum(Color c) {
+      double ch(double v) =>
+          v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4).toDouble();
+      return 0.2126 * ch(c.r) + 0.7152 * ch(c.g) + 0.0722 * ch(c.b);
+    }
+
+    double contrast(Color a, Color b) {
+      final x = lum(a), y = lum(b);
+      return (max(x, y) + 0.05) / (min(x, y) + 0.05);
+    }
+
+    for (final e in careerLooks.entries) {
+      final p = e.value.palette;
+      expect(contrast(p.text, p.card), greaterThan(7), reason: e.key);
+      expect(contrast(p.muted, p.card), greaterThan(4.5), reason: e.key);
+      expect(contrast(p.orange, p.surface), greaterThan(4.5), reason: e.key);
+      expect(contrast(p.blue, p.surface), greaterThan(4.5), reason: e.key);
+    }
+    // Retired, fired or in prison: back to the everyday look.
+    leaveJob(l);
+    expect(careerLookId(l), isNull);
+    NF.look(prison: false, rich: false);
+  });
 
   test('property tax is charged on every building you own', () {
     final l = engine.newLife(seed: 272)..age = 40;

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'actions.dart';
 import 'justice.dart';
+import 'career_law.dart' show careerAfterCrime;
 import 'models.dart';
 import 'storylet.dart';
 
@@ -355,6 +356,7 @@ String finishCrime(Life l, Crime c, Random rng, int odds, int gainPct) {
   _setSkill(l, skill + 4);
   final ev = (c.evidence + rng.nextInt(15) - 5 - skill ~/ 10).clamp(5, 95);
   l.cases.add({'crime': c.id, 'age': l.age, 'evidence': ev});
+  careerAfterCrime(l, c);
   if (c.id == 'car_theft' && gain > 0) {
     l.sceneQueue.insert(0, 'crime_car:$gain');
     return 'You got the car away clean. You left evidence behind: $ev/100. Street skill is now ${skillName(crimeSkill(l)).toLowerCase()}.';
@@ -536,6 +538,7 @@ String commitMurder(Life l, Npc n, Random rng, int odds, int cost) {
     95,
   );
   l.cases.add({'crime': c.id, 'age': l.age, 'evidence': ev});
+  careerAfterCrime(l, c);
   _setSkill(l, crimeSkill(l) + 6);
   return '$first is dead, and for now nobody knows it was you. At the funeral you stood at the back. A murder case never closes.';
 }

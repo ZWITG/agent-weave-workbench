@@ -4,6 +4,7 @@ import 'actions.dart';
 import 'crime_jobs.dart' show crimeSkill;
 import 'justice.dart';
 import 'models.dart';
+import 'policing.dart' show dirtyFile, isCop;
 import 'storylet.dart';
 import 'variants.dart';
 
@@ -483,6 +484,8 @@ void crewInviteYear(Life l, Random rng) {
       streetRep(l) + (l.worldMods['infamy'] ?? 0) < 30) {
     return;
   }
+  // Crews do not invite a police officer with a clean file.
+  if (isCop(l) && dirtyFile(l) == 0) return;
   // An infamous family name opens doors in the underworld.
   if (_roll(rng, 15 + (l.worldMods['infamy'] ?? 0))) {
     l.sceneQueue.add('crew_invite');

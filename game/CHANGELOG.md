@@ -208,3 +208,15 @@ The first public release, after a front-to-back audit of the game.
 - Settings has an About and legal section: privacy statement (saved on your device only; no accounts, ads or tracking), a fiction notice, the 16+ recommendation and the open-source licences page, including the fonts' licence.
 - The new-life screen states the mature themes and the 16+ recommendation.
 - The promo's "Coming next" card says "Planned features. Details may change."
+
+## "Career Looks" and the law at work (13 Nov)
+The groundwork for the special careers update: each special career now changes how the game looks, and crime and the police are wired into work.
+- Career looks: while you work in a special career the whole game wears its colours. Marquee (actor), Backstage (musician), Floodlights (athlete), Runway (model), Chamber (politician), Field Kit (armed forces), Mahogany (law), Night Shift (medicine), Flight Deck (pilot), Meadow (vet), Market Day (the street) and Blue Line (police). Every look keeps text readable (tested contrast).
+- Starting one plays the Curtain: the new look opens out of the middle of the screen like a spotlight, with the career's badge, your new title and the look's name. Tap to skip; Reduce motion makes it a fade.
+- Prison, the Crime and Real estate pages and the Gilded upper echelon still win over a career look. Settings › Career looks turns them off.
+- Your job moves the odds of a crime, shown with the reasons: a police officer knows the patrol routes (−8), a lawyer knows how cases are built (−4), a politician in office (+6) or a well-known performer or athlete (+4) gets recognised.
+- A conviction ends careers that cannot carry one: police officers are dismissed, lawyers struck off, judges removed from the bench, politicians resign; serious or violent crimes cost doctors and nurses their registration, pilots their licence, soldiers a dishonourable discharge, and teachers their job.
+- Police officers: crimes you get away with go on your Internal Affairs file (crimes, planned jobs, murders and heists alike); a case you committed can land on your own desk (lose the file, pin it on someone, or work it honestly); a crew you belong to asks for favours; undercover work never sends you into your own crew; crews do not invite a cop with a clean file; and a cop on the Most Wanted list is suspended and dismissed.
+- Lawyers representing themselves in court use their courtroom skill (62, plus 7 for each step up the ladder).
+- A criminal record costs votes: 8 points off the election odds for each conviction on file (up to 24).
+- tool/render_careers_test.dart renders the looks and the Curtain for visual checks.
