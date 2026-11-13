@@ -251,7 +251,9 @@ league) and D5 (the musician career runs on `music.dart`):
 | 2 Menu upgrades | **Done:** Hub cards on Path, the Career category in Activities, the way-in checklists, the meter chip in the header (`ui/career_marks.dart`) |
 | 3 Wave 1 careers | **Done:** actor, musician, athlete, politician (meters, activities, seasons, scenes). **Not yet:** contacts as NPCs; career mini-games reuse existing game engines with career wording (rhythm, memory, whack, reps, timing, breath, reaction), not new designs |
 | 4 Look upgrades | **Mostly done:** motifs on the Hub, the Curtain Call on promotion, the look's stamps on Work and Career results in its type accent (all twelve looks), the Final Bow on leaving a special career. **Not yet:** motifs outside the Hub, career pages in the Life Recap |
-| 5–7 | Not started |
+| 5 Wave 2 careers | **Done:** model, doctor, vet, pilot, armed forces, lawyer/judge, street hustler (`engine/career_hub_wave2.dart`): meters, activities with one played moment each, seasons, scenes and promotion rules; deployments, hospital cases and big cases move the meters. **Not yet:** defending people you know who are arrested, treating people you know, judges hearing cases from the crime list, contacts as NPCs |
+| 6 Astronaut and Fighter | Not started (waits on D1) |
+| 7 Full test run, ship | Tests and release fuzz pass after each step; screenshots reviewed (`tool/render_hub_test.dart`) |
 
 ### 6.6 Rules carried over
 

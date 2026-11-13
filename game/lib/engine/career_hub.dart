@@ -4,9 +4,12 @@ import 'actions.dart' show ActionResult, GameAction, statChange;
 import 'careers.dart' show careerById;
 import 'models.dart';
 import 'music.dart' show listenersOf, songwritingOf;
+import 'pets.dart' show petHealth, petsOf;
 import 'policing.dart'
     show academyDone, casesClosed, casesLost, dirtyFile, isCop;
 import 'storylet.dart';
+
+part 'career_hub_wave2.dart';
 
 // The Career Hub ("Calling", docs/phase-2/03): every special career gets
 // the same shape, filled with its own data.
@@ -89,13 +92,15 @@ const _police = HubSpec(
   details: _policeDetails,
 );
 
-/// Every special career with a Hub so far (wave 1).
+/// Every special career with a Hub (wave 1 here, wave 2 in
+/// career_hub_wave2.dart).
 const hubSpecs = <String, HubSpec>{
   'actor': _actor,
   'musician': _musician,
   'athlete': _athlete,
   'politician': _politician,
   'police': _police,
+  ..._wave2Specs,
 };
 
 /// The Hub for the career you are in, or null.
@@ -165,6 +170,9 @@ String? hubRankNeeds(Life l) {
   if (spec.id == 'actor' && l.careerRank >= 2 && l.hub['acclaimed'] == null) {
     return 'A well-reviewed release and ${spec.meter} $need';
   }
+  if (_wave2Needs(l, spec.id, spec.meter, need) case final extra?) {
+    return extra;
+  }
   if (have < need) return 'Reach ${spec.meter} $need (now $have)';
   return 'Ready: promotion comes with a good year';
 }
@@ -190,6 +198,13 @@ String _promote(Life l, String why) {
 List<String> hubYear(Life l, Random rng) {
   final spec = hubFor(l);
   if (spec == null) return const [];
+  // A career started before it had a Hub (an older save): set the Hub up,
+  // with a meter that fits the rank already reached.
+  if (l.hub['id'] != spec.id) {
+    final rank = l.careerRank;
+    startHub(l, spec.id);
+    if (spec.id != 'politician') l.hub['meter'] = min(80, 20 + rank * 15);
+  }
   final feed = <String>[];
   final beat = hubBeat(l);
   switch (spec.id) {
@@ -215,6 +230,8 @@ List<String> hubYear(Life l, Random rng) {
               : a < 50
               ? 2
               : 0);
+    default:
+      feed.addAll(_wave2Year(l, rng, spec.id, beat));
   }
   // Quiet years: the meter fades (not for meters worked out elsewhere).
   if (spec.meterOf == null &&
@@ -237,7 +254,7 @@ List<String> hubYear(Life l, Random rng) {
         'actor' => 'The phone has not stopped: the parts are getting bigger.',
         'musician' => 'The numbers do not lie: venues are getting bigger.',
         'athlete' => 'Your form earned you a step up.',
-        _ => 'Your work was noticed.',
+        _ => _wave2Promotion(spec.id),
       }),
     );
   }
@@ -269,7 +286,7 @@ Storylet? hubScene(List<String> args, Life l) {
     'athlete:final' => _finalScene(l),
     'athlete:contract' => _contractScene(l),
     'politician:bill' => _billScene(l, args.length > 2 ? args[2] : null),
-    _ => null,
+    _ => _wave2Scene(args, l),
   };
 }
 
@@ -1271,6 +1288,7 @@ final hubActions = <GameAction>[
   ..._athleteActions,
   ..._politicianActions,
   ..._policeActions,
+  ..._wave2Actions,
 ];
 
 const _prefixes = {
@@ -1279,6 +1297,7 @@ const _prefixes = {
   'ath_': 'athlete',
   'pol_': 'politician',
   'cop_': 'police',
+  ..._wave2Prefixes,
 };
 
 /// The career a Hub activity belongs to.

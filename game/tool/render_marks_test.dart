@@ -41,14 +41,15 @@ Future<void> _fonts() async {
   }
 }
 
-Future<void> _shot(WidgetTester t, GlobalKey key, String name) =>
-    t.runAsync(() async {
-      final b = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-      final img = await b.toImage(pixelRatio: 2);
-      final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
-      Directory(out).createSync(recursive: true);
-      File('$out/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
-    });
+Future<void> _shot(WidgetTester t, GlobalKey key, String name) => t.runAsync(
+  () async {
+    final b = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final img = await b.toImage(pixelRatio: 2);
+    final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+    Directory(out).createSync(recursive: true);
+    File('$out/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
+  },
+);
 
 Future<void> _frames(WidgetTester t, int n, [int ms = 150]) async {
   for (var i = 0; i < n; i++) {

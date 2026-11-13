@@ -117,6 +117,16 @@ Life simulate(GameEngine engine, int seed, Map<String, int> fired) {
   return life;
 }
 
+const _wave2Meters = {
+  'model': 'Portfolio',
+  'doctor': 'Ward trust',
+  'vet': 'Standing',
+  'pilot': 'Flight hours',
+  'military': 'Readiness',
+  'lawyer': 'Reputation',
+  'hustler': 'Street rep',
+};
+
 void main() {
   test('short money for tight spaces', () {
     expect(shortMoney(950, 'United States'), '\$950');
@@ -3167,6 +3177,145 @@ void main() {
     leaveJob(l);
     expect(careerLookId(l), isNull);
     NF.look(prison: false, rich: false);
+  });
+
+  test(
+    'Calling wave 2: every career plays its Hub for years without sticking',
+    () {
+      for (final id in [
+        'model',
+        'doctor',
+        'vet',
+        'pilot',
+        'military',
+        'lawyer',
+        'hustler',
+      ]) {
+        final l = engine.newLife(seed: 700 + id.length)..age = 24;
+        for (final k in [
+          'smarts',
+          'charisma',
+          'looks',
+          'discipline',
+          'athleticism',
+          'karma',
+          'creativity',
+        ]) {
+          l.stats.values[k] = 85;
+        }
+        l.money = 200000;
+        l.sceneQueue.clear();
+        startCareer(l, careerById(id)!);
+        final spec = hubFor(l)!;
+        expect(_wave2Meters[id], spec.meter, reason: id);
+        expect(spec.details!(l), isNotEmpty, reason: id);
+        final rng = Random(id.hashCode);
+        final mine = engine.actions
+            .where((a) => a.category == 'Career' && hubActionFits(l, a.id))
+            .toList();
+        expect(mine.length, greaterThanOrEqualTo(4), reason: id);
+        for (var year = 0; year < 14 && l.job != null; year++) {
+          l.usedActions.clear();
+          l.energy = 99;
+          for (final a in mine) {
+            if (a.lockReason(l) != null) continue;
+            engine.runAction(l, a, score: a.scored == null ? null : 0.9);
+            // Scenes the activity opened: answer them.
+            for (var i = 0; i < 6; i++) {
+              final s = engine.nextScene(l);
+              if (s == null) break;
+              engine.choose(l, s, s.choices[rng.nextInt(s.choices.length)]);
+            }
+          }
+          l.hub['active'] = l.age;
+          hubYear(l, rng);
+          for (var i = 0; i < 6; i++) {
+            final s = engine.nextScene(l);
+            if (s == null) break;
+            engine.choose(l, s, s.choices[rng.nextInt(s.choices.length)]);
+          }
+          // No Hub scene is left that cannot be shown.
+          expect(
+            l.sceneQueue.where((q) => q.startsWith('hub:')),
+            isEmpty,
+            reason: '$id year $year: ${l.sceneQueue}',
+          );
+          expect(hubMeter(l), inInclusiveRange(0, 100), reason: id);
+          l.age++;
+        }
+        expect(l.careerRank, greaterThanOrEqualTo(1), reason: '$id promoted');
+        // The Hub survives a save.
+        final back = Life.fromJson(jsonDecode(jsonEncode(l.toJson())));
+        expect(hubMeter(back), hubMeter(l), reason: id);
+      }
+    },
+  );
+
+  test('Calling wave 2: each career has its own way up', () {
+    GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
+    Life start(String id, int seed) {
+      final l = engine.newLife(seed: seed)..age = 30;
+      l.sceneQueue.clear();
+      startCareer(l, careerById(id)!);
+      l.sceneQueue.clear();
+      l.hub['meter'] = 95;
+      l.jobSince = l.age - 3;
+      return l;
+    }
+
+    // Pilots need a check ride for every seat.
+    final p = start('pilot', 801);
+    expect(promotionLock(p), contains('check ride'));
+    engine.runAction(p, act('pil_check'), score: 1.0);
+    expect(checkRidePassed(p), isTrue);
+    expect(promotionLock(p), startsWith('Ready'));
+    // Vets own their practice before they are its owner.
+    final v = start('vet', 802)..careerRank = 2;
+    expect(promotionLock(v), contains('practice'));
+    v.money = 100000;
+    engine.runAction(v, act('vet_practice'));
+    expect(ownsPractice(v), isTrue);
+    expect(hubYear(v, Random(1)).join(), contains('practice made'));
+    // Judges need karma; judges hear cases instead of taking them.
+    final j = start('lawyer', 803)..careerRank = 2;
+    j.stats.values['karma'] = 20;
+    expect(promotionLock(j), contains('Karma 50'));
+    j.careerRank = 3;
+    expect(act('law_case').lockReason(j), contains('Judges'));
+    expect(act('law_hear').lockReason(j), isNull);
+    engine.runAction(j, act('law_hear'));
+    final hearing = engine.nextScene(j)!;
+    engine.choose(j, hearing, hearing.choices[1]);
+    expect(j.hub['heard'], 1);
+    // Hustlers pick a pitch before they can work it.
+    final h = start('hustler', 804);
+    expect(act('hus_busk').lockReason(h), contains('pitch'));
+    engine.runAction(h, act('hus_pitch'));
+    final pitch = engine.nextScene(h)!;
+    engine.choose(h, pitch, pitch.choices[1]);
+    expect(hustlerPitch(h)?.$2, 'The covered market');
+    expect(act('hus_busk').lockReason(h), isNull);
+    // Officers need the course; a deployment moves Readiness.
+    final m = start('military', 805)..careerRank = 2;
+    expect(promotionLock(m), contains('officer course'));
+    m.hub['meter'] = 40;
+    m.sceneQueue.add('deployment');
+    final dep = engine.nextScene(m)!;
+    engine.choose(m, dep, dep.choices[1]);
+    expect(hubMeter(m), 44);
+    // Doctors choose a specialty, then publish.
+    final d = start('doctor', 806)..careerRank = 1;
+    expect(promotionLock(d), contains('specialty'));
+    hubYear(d, Random(2));
+    expect(d.sceneQueue, contains('hub:doctor:specialty'));
+    // Models need a campaign before the big names book them.
+    final mo = start('model', 807)..careerRank = 1;
+    expect(promotionLock(mo), contains('campaign'));
+    // An older save with a career already under way gets its Hub set up.
+    final old = start('pilot', 808)..careerRank = 2;
+    old.hub.clear();
+    hubYear(old, Random(3));
+    expect(hubMeter(old), greaterThanOrEqualTo(40));
   });
 
   test('the Career Hub: meters, activities, seasons and promotion', () {

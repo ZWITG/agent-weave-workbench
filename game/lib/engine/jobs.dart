@@ -7,7 +7,7 @@ import 'careers.dart';
 import 'life_events.dart' show onFired;
 import 'career_law.dart' show recordVotePenalty;
 import 'career_hub.dart'
-    show hubElectionBonus, hubSpecs, hubYear, spendWarChest;
+    show hubBoost, hubElectionBonus, hubSpecs, hubYear, spendWarChest;
 import 'models.dart';
 import 'storylet.dart';
 import 'justice.dart' show convictions;
@@ -679,6 +679,8 @@ Storylet? jobScene(String kind, Life l) {
                 life.age,
                 'earning a medal for bravery',
               );
+              life.hub['medals'] = ((life.hub['medals'] as int?) ?? 0) + 1;
+              hubBoost(life, 10);
               life.performance = min(100, life.performance + 20);
               return 'You came home with a medal for bravery and stories you do not tell at parties.';
             },
@@ -688,6 +690,7 @@ Storylet? jobScene(String kind, Life l) {
             outcome: '',
             run: (life, rng) {
               life.performance = min(100, life.performance + 5);
+              hubBoost(life, 4);
               return 'You spent six months keeping the base running. Unglamorous, essential and safe.';
             },
           ),
@@ -703,6 +706,7 @@ Storylet? jobScene(String kind, Life l) {
             outcome: '',
             run: (life, rng) {
               life.performance = min(100, life.performance + 6);
+              hubBoost(life, 5);
               return 'The extra tests found a rare tear in an artery. Your caution saved a life, and your boss noticed.';
             },
           ),
@@ -713,10 +717,12 @@ Storylet? jobScene(String kind, Life l) {
             run: (life, rng) {
               if (rng.nextInt(100) < life.stats['smarts'] - 10) {
                 life.performance = min(100, life.performance + 10);
+                hubBoost(life, 7);
                 return 'Your instinct was right. The patient walked out three days later and sent the ward a cake.';
               }
               life.performance = max(0, life.performance - 15);
               life.stats.add('happiness', -6);
+              hubBoost(life, -6);
               return 'Your first guess was wrong. The patient recovered, but there was a review, and it stung.';
             },
           ),
@@ -737,9 +743,13 @@ Storylet? jobScene(String kind, Life l) {
                 life.performance = min(100, life.performance + 20);
                 life.stats.add('karma', 4);
                 life.money += 15000;
+                life.hub['won'] = ((life.hub['won'] as int?) ?? 0) + 1;
+                hubBoost(life, 10);
                 return 'You won. The judge called your closing argument "devastating". The family hugged you on the court steps, and the bonus was not bad either.';
               }
               life.performance = max(0, life.performance - 8);
+              life.hub['lost'] = ((life.hub['lost'] as int?) ?? 0) + 1;
+              hubBoost(life, -3);
               return 'You lost on a technicality. The family thanked you anyway, which was somehow worse.';
             },
           ),

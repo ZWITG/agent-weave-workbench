@@ -54,6 +54,13 @@ const miniPools = <String, List<String>>{
   'mus_collab': ['memory', 'rhythm'],
   'ath_train': ['whack', 'reps'],
   'pol_speech': ['timing', 'breath'],
+  'mod_casting': ['timing', 'breath'],
+  'doc_triage': ['memory', 'reaction'],
+  'vet_clinic': ['memory', 'rhythm'],
+  'pil_check': ['timing', 'reaction'],
+  'mil_drill': ['reps', 'whack'],
+  'law_cross': ['memory', 'timing'],
+  'hus_busk': ['rhythm', 'memory'],
   'study': ['quiz', 'words'],
   'gym': ['reps', 'whack'],
   'shoplift': ['sneak', 'timing'],
@@ -108,6 +115,29 @@ const _intros = <String, Map<String, String>>{
   'pol_speech': {
     'breath':
         'Hold for the applause, let go when it peaks at the ring. Three lines.',
+  },
+  'mod_casting': {
+    'breath': 'Hold the pose, release at the end of the runway. Three turns.',
+  },
+  'doc_triage': {
+    'reaction': 'The monitor alarms: respond the moment it turns green.',
+  },
+  'vet_clinic': {
+    'rhythm':
+        'A busy waiting room: see each patient the moment they are called.',
+  },
+  'pil_check': {
+    'reaction': 'Engine failure on take-off: react the moment the light shows.',
+  },
+  'mil_drill': {
+    'whack':
+        'Live-fire range: hit the targets as they pop up. Not the civilians.',
+  },
+  'law_cross': {
+    'timing': 'Object at the right moment: tap while the marker is on the contradiction.',
+  },
+  'hus_busk': {
+    'memory': 'Learn the tune a passer-by requests, then play it back.',
   },
   'study': {
     'words':
@@ -342,6 +372,43 @@ final miniThemes = <String, MiniTheme>{
     'Land your lines: tap while the marker is in the applause zone. Three lines, each harder.',
     button: 'Deliver',
     stat: 'charisma',
+  ),
+  'mod_casting': _t(
+    'The walk: turn at the end of the runway while the marker is in the light. Three castings, each faster.',
+    button: 'Turn',
+    stat: 'looks',
+  ),
+  'doc_triage': _t(
+    'Triage: watch the order patients need you in, then see them in that order. Each round, one more arrives.',
+    pads: ['Chest pain', 'Fracture', 'Fever', 'Head injury'],
+    button: 'Respond',
+    stat: 'smarts',
+  ),
+  'vet_clinic': _t(
+    'Diagnose: remember which sign goes with which patient, then play them back in order.',
+    pads: ['Limp', 'Cough', 'Off food', 'Itching'],
+    stat: 'smarts',
+  ),
+  'mil_drill': _t(
+    'The obstacle course: tap GO as fast as you can for 6 seconds. Walls, nets, ropes.',
+    button: 'GO',
+    stat: 'athleticism',
+  ),
+  'law_cross': _t(
+    'Remember the testimony, then play it back in order and catch where the story changed.',
+    pads: ['Time', 'Place', 'Car', 'Witness'],
+    button: 'Objection!',
+    stat: 'smarts',
+  ),
+  'hus_busk': _t(
+    'Busk: hit each note as it lights up, on the beat. Keep the crowd.',
+    pads: ['Strum', 'Pick', 'Slap', 'Stomp'],
+    stat: 'creativity',
+  ),
+  'pil_check': _t(
+    'Crosswind landing: flare while the marker is over the centreline. Three approaches, each gustier.',
+    button: 'Flare',
+    stat: 'discipline',
   ),
 };
 

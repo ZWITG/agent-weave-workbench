@@ -639,7 +639,20 @@ void main() {
     addTearDown(() => CareerCurtain.enabled = true);
     await t.pumpWidget(RelivableApp(controller: c));
     await _pump(t);
-    for (final id in ['actor', 'athlete', 'politician', 'musician', 'police']) {
+    for (final id in [
+      'actor',
+      'athlete',
+      'politician',
+      'musician',
+      'police',
+      'model',
+      'doctor',
+      'vet',
+      'pilot',
+      'military',
+      'lawyer',
+      'hustler',
+    ]) {
       startCareer(c.life!, careerById(id)!);
       c.life!.sceneQueue.clear();
       c.notifyListeners();
