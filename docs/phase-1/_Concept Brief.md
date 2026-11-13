@@ -3,7 +3,7 @@ title: "Concept Brief"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-27
+updated: 2026-11-13
 tags: [relivable, phase-1, brief]
 ---
 
@@ -99,6 +99,15 @@ Decisions the owner made while playing the Phase 2 prototype. They extend the li
 All research notes live in `research_notes/Life sim game phase 1/` and `research_notes/BitLife complete feature guide/`, plus the report `reports/BitLife complete feature guide.md`. Research was gathered through web search (full reports and Reddit could not be reviewed directly), so figures are shown as estimates with sources.
 
 ## Change log
+
+**2026-11-13 (investor pack and status refresh)**
+- **New investor pack** in `docs/investor/` ([[00 Investor Pack Home]]). It contains:
+  - the memo, a 13-slide deck script and the use of funds;
+  - product and traction, and a due-diligence FAQ;
+  - `Relivable Financial Model.xlsx`, with three scenarios for 2027–2029, unit economics and the use of funds.
+- **Proposed raise (owner to confirm):** $1.245M in two tranches. Tranche 1 is $450K to soft launch. Tranche 2 is $795K, released only if Gate 4 passes. It is built on the Low (hybrid team) budget in [[11 Roadmap Team and Budget]] and the go-to-market budget in [[10 Go-to-Market]]. The base case is EBITDA-positive in 2028 (about $1.3M). The conservative case needs Gate 4 to stop spending.
+- **Status refreshed** in [[01 Executive Summary]], [[10 Go-to-Market]], [[11 Roadmap Team and Budget]], [[12 Risks and KPIs]] and [[13 Client Pitch Script and FAQ]]. In `phase-2/`, the Development Route, Open Items and the Special Careers note were refreshed. The prototype is past the plan, with the "Calling" update (14 career Hubs) and two social batches built.
+- **Risk changes:** the name risk is raised (RELIVABLE is a registered US mark, open item A7). A new risk covers the AI-assisted development process and key-person dependency.
 
 **2026-10-27 (Phase 2, owner requests)**
 - Added Phase 2 decisions 21–32 above. Specs updated: [[05 UX and Screen Map]] (tab contents, Activities panel S15, result pop-up S18, mini-game S19, newspaper S64, Night Feed direction, Path and Wealth prototype layouts), [[04 App Breakdown - Core Life Systems]] (a "Phase 2 prototype" section in Modules 3, 4, 5, 6, 7, 8 and 11), [[04 App Breakdown - Social, Meta and Premium]] (people's life updates in §1; Activities panel and mini-games in §7), [[08 Technical Architecture]] (world save, distribution and auto-update), the feature matrix and the Phase 2 route.

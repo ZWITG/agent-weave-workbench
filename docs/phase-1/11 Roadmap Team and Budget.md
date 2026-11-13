@@ -3,13 +3,19 @@ title: "11 Roadmap Team and Budget"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-11-13
 tags: [relivable, phase-1, roadmap, team, budget, content-plan, gantt]
 ---
 
 # 11 Roadmap, Team and Budget
 
 *Purpose:* Lays out the phased roadmap, the team needed in each phase, the budget estimates and the content-volume plan, ending with the Phase 2 checklist.
+
+> [!info] Actuals against this plan (13 Nov 2026)
+> - **Phase 2 is effectively done early.** It was built founder-led with AI-assisted engineering, from 26 Oct to 13 Nov, and goes well past the planned vertical slice ([[00 Phase 2 Development Route]]). It did not use the planned ~3 FTE team or the $25–60K budget.
+> - **Still to do from Phase 2:** playtests and the Gate 2 readout.
+> - **For investors,** Phases 3–4 are costed at this note's **Low** column ($480K excluding UA), which matches how the game is being built. That sits inside a proposed $1.245M two-tranche raise with go-to-market, a LiveOps buffer and contingency ([[04 Use of Funds and Milestones]]).
+> - **The calendar below is unchanged:** soft launch on 17 May 2027, global launch on 12 Oct 2027. It is set by writing volume, store accounts, legal work and soft-launch data, not by code.
 
 > [!summary] Headline (estimates, not quotes)
 > | Phase | Duration | Team (avg FTE) | Budget, low to high *(excl. UA)* | US-team reference |

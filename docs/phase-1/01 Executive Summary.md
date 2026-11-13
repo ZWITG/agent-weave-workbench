@@ -3,7 +3,7 @@ title: "01 Executive Summary"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-11-13
 tags: [relivable, phase-1, executive-summary, client]
 ---
 
@@ -13,6 +13,9 @@ tags: [relivable, phase-1, executive-summary, client]
 
 > [!note] Status and scope
 > One-page client summary of the Phase 1 plan. Source of truth: [[_Concept Brief]]. Details sit in the linked notes. **Relivable** is a working title and needs a trademark and App Store name check before public use. Relivable is an original game *inspired by the text life-sim genre*. It is not affiliated with, endorsed by or derived from BitLife or Candywriter, and it will ship with no copied text, names, UI or assets.
+
+> [!info] Progress since this summary (13 Nov 2026)
+> The Phase 2 prototype went past its plan in under three weeks at a fraction of its $25–60K budget. A 1.0 release candidate runs on Android, Windows, iPhone/iPad and the web, with 14 special careers, prison, the Echelon, dynasties and a living world ([[00 Phase 2 Development Route]]). No real players have tested it yet. For investors, this summary is replaced by [[01 Investor Memo]], which proposes a $1.25M raise in two tranches gated on soft-launch retention ([[04 Use of Funds and Milestones]]).
 
 ## The opportunity
 Text life sims are a proven, profitable mobile niche, and the category leader has no real challenger. BitLife launched in 2018. It has 50M+ Google Play installs and about 1.3M reviews averaging 4.4 ([Google Play](https://play.google.com/store/apps/eventdetails/4830152244864270285)). It brought Candywriter about $26M of revenue at a 59% EBIT margin in 2019 ([PocketGamer.biz](https://www.pocketgamer.biz/news/73190/stillfront-group-acquires-bitlife-developer-candywriter/)). Today it earns roughly SEK 95–110M (about US$9–11M) per quarter for Stillfront ([Stillfront Q2 2026](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)).

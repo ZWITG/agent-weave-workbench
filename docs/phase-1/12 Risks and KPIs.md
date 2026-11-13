@@ -3,7 +3,7 @@ title: "12 Risks and KPIs"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-11-13
 tags: [relivable, phase-1, risks, kpis, stage-gates, metrics]
 ---
 
@@ -17,6 +17,9 @@ tags: [relivable, phase-1, risks, kpis, stage-gates, metrics]
 > - **Status of all targets:** **targets** are hypotheses calibrated against public benchmarks, to be re-based on prototype and soft-launch data. They are not forecasts.
 
 Related: [[_Concept Brief]] · [[01 Executive Summary]] · [[06 Monetization and Economy]] · [[07 Retention and LiveOps]] · [[08 Technical Architecture]] · [[09 Compliance and Ratings]] · [[10 Go-to-Market]] · [[11 Roadmap Team and Budget]].
+
+> [!info] Investor view (13 Nov 2026)
+> [[06 Investor FAQ and Due Diligence]] ranks these risks for investors. The proposed raise ties tranche 2 to **Gate 4** below ([[04 Use of Funds and Milestones]]). Gate 1 is passed in practice: the owner went straight into the prototype. Gate 2 now waits only on playtests.
 
 ---
 
@@ -35,7 +38,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 | R7 | **Save or purchase loss incidents** destroy trust (a top BitLife complaint) ([Google Play review](https://play.google.com/store/apps/eventdetails/4831791308351315470)) | 2 | 3 | 🔴 6 | Offline-first + cloud sync. No silent overwrite. Migration tests. RevenueCat server verification. Restore on sign-in | Tech Lead | Any `save_conflict` data-loss report. Restore success < 99.9% |
 | R8 | **Accessibility regression** ships (BitLife's history) ([AppleVis](https://www.applevis.com/comment/135452)) | 2 | 3 | 🔴 6 | CI guideline checks. A manual screen-reader release gate. Blind testers. External audit | QA Lead | Any P0 a11y bug in a release candidate |
 | R9 | **IP or clone claim** from the incumbent (which showed DMCA aggressiveness in 2023) ([AppleVis](https://applevis.com/comment/144257)) | 2 | 3 | 🔴 6 | Original text and art, a banned-terms list, writer attestations, plagiarism checks, distinct trade dress. Counsel review of store assets | Producer + Counsel | Takedown notice or C&D |
-| R10 | **Name unavailable**: "Relivable" is a working title | 2 | 2 | 🟠 4 | Clearance in Phase 2 with 3 backup names. Working-title handles | Client | Search finds conflicts |
+| R10 | **Name unavailable**: "RELIVABLE" is already a registered US trademark of a third party (classes 41 and 42; open item A7 in [[01 Phase 2 Open Items]], 1 Nov 2026) | 3 | 2 | 🔴 6 | IP counsel opinion before any paid promotion or store listing: keep, license or rename. 3 backup names. Present as a working title to investors. $25K reserved in the raise | Owner + Counsel | **Triggered:** conflict found 1 Nov 2026 |
 | R11 | **Monetization too generous**: all careers free plus one ~$9.99 unlock gives ARPDAU < $0.12 | 2 | 3 | 🔴 6 | Season Pass + Story Packs + capped rewarded ads. Price-ladder A/B tests via Remote Config. Web shop margin. Pillar 3 stays non-negotiable | Product Owner | SL ARPDAU < $0.12 or payer conversion < 1.5% |
 | R12 | **Paid UA dependence / rising CPIs**: Meta and TikTok CPI +15–20% YoY ([Admiral](https://admiral.media/mobile-game-marketing-benchmarks/)). BitLife fell 19% when it cut UA ([Stillfront](https://www.stillfront.com/en/stillfronts-interim-report-q2-2026-strengthened-profitability-and-continued-revenue-stability/)) | 3 | 2 | 🔴 6 | Organic-first: Life Recap, seeds, creators, Discord. Scale gate LTV ≥ 1.2× CPI ([[10 Go-to-Market]] §10) | UA Lead | Blended CPI > D90 LTV |
 | R13 | **AI backlash or AI policy breach** (inZOI review-bombing; Apple 1.2 and 5.1.2(i); Google report button) | 2 | 2 | 🟠 4 | AI optional, off by default, rewording only. Moderation, report button, consent. Never in headline marketing | Tech Lead | Negative-review spike mentioning AI. Store rejection |
@@ -47,6 +50,7 @@ Scale: **L**ikelihood and **I**mpact are each 1 (low) to 3 (high). Score = L × 
 | R19 | **Key-person risk** (tech lead or narrative lead) | 2 | 3 | 🔴 6 | Documented engine (pure Dart pkg), style bible, pairing, contract back-up writers | Producer | Resignation / extended absence |
 | R20 | **Budget overrun** (scope creep from "parity + better") | 2 | 2 | 🟠 4 | Gates with scope levers (cut era mode or async social to Phase 5). 5–10% contingency. Monthly burn review | Producer | Burn > plan by 10% for 2 months |
 | R21 | **Performance on low-end Android** (5,000-event tick, memory) | 1 | 2 | 🟢 2 | Precompiled condition indices. Budgets in CI ([[08 Technical Architecture]] §8) | Tech Lead | Tick > 120 ms p95 on the reference device |
+| R23 | **Development-process dependency**: the game is built founder-led with AI-assisted engineering, so velocity depends on the founder and on tool access (added 13 Nov 2026) | 2 | 2 | 🟠 4 | Ordinary Flutter codebase, 176 automated tests, CI on every push, a written plan and change log; hire a narrative lead and a part-time engineer from the raise | Owner | Velocity drops for 2+ weeks; tooling terms change |
 | R22 | **UGC / Creator Mode moderation** (teen exposure, Apple 1.2) | 2 | 2 | 🟠 4 | Phase 5 only. Report/block, pre-moderation for featured scenarios, publishing limited to adults *(recommendation)* | Product + Counsel | Report volume above SLA |
 
 ---

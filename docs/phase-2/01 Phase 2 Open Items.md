@@ -3,7 +3,7 @@ title: "01 Phase 2 Open Items"
 project: Relivable
 phase: 2
 status: open
-updated: 2026-11-01
+updated: 2026-11-13
 tags: [relivable, phase-2, release, decisions]
 ---
 
@@ -17,6 +17,12 @@ need **accounts, money, people, legal review or a decision**.
 
 How to read it: **Needs** is what only the owner (or a hired person) can
 provide. Items are ordered by how much they block a public store launch.
+
+> [!info] Since 1 Nov 2026
+> - **Built:** Hot Pursuit (police manhunts with three new mini-games), and the "Calling" update (14 special careers with Hubs, looks, people and Life Recap pages; [[03 Special Careers - Next Update]]).
+> - **Made:** two Instagram batches and Reels from real gameplay.
+> - **Written:** an investor pack ([[00 Investor Pack Home]]).
+> - **Still open:** none of the items below has closed. They need accounts, money, people, legal advice or a decision. The investor pack's tranche 1 funds most of them ([[04 Use of Funds and Milestones]]).
 
 ## A. Store launch (blocks Google Play and the App Store)
 
@@ -51,8 +57,8 @@ provide. Items are ordered by how much they block a public store launch.
 
 | # | Item | Today | Needs from you |
 |---|---|---|---|
-| D1 | **Event volume** | About 157 data events plus about 50 coded scene families with many branches; the plan targets 1,500–3,000 events at global launch | Writers (or more sessions with me) and **your review** of tone; a style bible and banned-terms list (plan checklist) |
-| D2 | **Avatars and art** | Initials in rings; drawn decals for prison and the Echelon; no character art | An art direction decision and an illustrator, or approve a generated-shape avatar system |
+| D1 | **Event volume** | About 157 data events plus about 50 coded scene families with many branches, plus the 14 career Hubs' seasons and scenes (13 Nov); the plan targets 1,500–3,000 events at global launch | Writers (or more sessions with me) and **your review** of tone; a style bible and banned-terms list (plan checklist) |
+| D2 | **Avatars and art** | Initials in rings; drawn decals for prison and the Echelon, and an illustrated scene for each of the 14 career Hubs (13 Nov); no character art | An art direction decision and an illustrator, or approve a generated-shape avatar system |
 | D3 | **Music** | Sound effects only (all generated) | Whether to commission a soundtrack |
 | D4 | **Localisation** | English only (money is localised to 40+ currencies) | Which languages first (the plan says ES, PT-BR, DE, FR) and a translation budget |
 
@@ -74,6 +80,16 @@ provide. Items are ordered by how much they block a public store launch.
 | F2 | **In-game feedback form** | None | Where feedback should go (email, form, Discord) |
 | F3 | **Accessibility release gate** | Labels, text size, reduce motion, colour-vision modes and left-hand layout are in; no manual VoiceOver/TalkBack pass yet | A device test session, and later an external audit for the European Accessibility Act |
 | F4 | **Gate 2 readout** | Not written | Playtest data from F1 and C3 |
+
+## G. Fundraising (added 13 Nov 2026)
+
+| # | Item | Today | Needs from you |
+|---|---|---|---|
+| G1 | **Round structure** | Proposed: $1.245M in two tranches ($450K now, $795K after Gate 4) ([[04 Use of Funds and Milestones]]) | Confirm the amount, the instrument (SAFE or priced) and the terms, with a lawyer |
+| G2 | **Company and IP** | Not recorded in the repo | Entity, cap table, and founder-to-company IP assignment, including a statement on AI-assisted development |
+| G3 | **Team slide** | Placeholders marked [OWNER] in the investor pack | Founder bios, time commitment, advisers |
+| G4 | **Player evidence** | None (F1, C3) | Run playtests before or alongside the first meetings; it is the pack's biggest gap |
+| G5 | **Visual deck** | Script ready ([[02 Pitch Deck Script]]) | Build or approve the visual deck, then export it to PDF |
 
 ## Legal check (1 Nov 2026)
 

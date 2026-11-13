@@ -3,7 +3,7 @@ title: "00 Phase 2 Development Route"
 project: Relivable
 phase: 2
 status: in progress
-updated: 2026-10-27
+updated: 2026-11-13
 tags: [relivable, phase-2, roadmap]
 ---
 
@@ -35,8 +35,27 @@ tags: [relivable, phase-2, roadmap]
 | 5 · Content + polish | Reach about 150 events, Life Recap share card, accessibility pass (screen reader, text size), sound and haptics | Ready for playtests |
 | 6 · Playtests + Gate 2 | Analytics events, feedback form, playtest build, Gate 2 report | Real players test it |
 
-> [!note] Update 1 Nov 2026
-> The game is past this route: release 1.0 is prepared. What is still missing, and what each part needs from the owner, is in [[01 Phase 2 Open Items]].
+> [!note] Update 13 Nov 2026
+> The game is past this route. Release 1.0 was prepared on 1 Nov, and since then Hot Pursuit (police manhunts) and the "Calling" update (14 career Hubs) have shipped. What is still missing, and what each part needs from the owner, is in [[01 Phase 2 Open Items]].
+
+## Progress (13 Nov 2026)
+Every sprint's build goal is met, and the game is well past the planned slice (birth to 30). It covers a whole life, dynasties and 14 career worlds. **Only Sprint 6, playtests and the Gate 2 readout, is still open.**
+
+| Sprint | Status | What changed since 27 Oct |
+|---|---|---|
+| 0 · Setup | Done | iPhone/iPad build and home-screen web app added; versions are `1.0.<build>` everywhere |
+| 1 · Core loop | Done | Whole lifespan, birthday summaries, Rewind, settings |
+| 2 · Storylet engine | Done | 157 data events plus about 50 coded scene families; release fuzz of 40,000+ simulated years |
+| 3 · Systems slice | Done (well beyond the slice) | School, careers, love and dynasties, crime, heists, prison life, police manhunts, the Echelon, 14 special-career Hubs ("Calling"), 19 mini-game engines |
+| 4 · World legacy | Done | As on 27 Oct, plus news that changes your life and history entries from career and crime |
+| 5 · Content + polish | Mostly done | Richer writing, accessibility settings (text size, reduce motion, colour-vision modes, left-hand layout), small-phone layouts, sound; the event count is past the ~150 target (D1 in [[01 Phase 2 Open Items]] tracks the MVP target) |
+| 6 · Playtests + Gate 2 | **Not started** | Needs 10–20 players and analytics (F1, C3) |
+
+**Marketing made during Phase 2:**
+- an 80-second promo and two intro videos;
+- Instagram batch 1 and batch 2 ("Calling"), with Reels (`game/media/`).
+
+**Investors:** the pack in `docs/investor/` ([[00 Investor Pack Home]]) presents this progress, and proposes playtests as the first funded milestone.
 
 ## Progress (27 Oct 2026)
 | Sprint | Status | What is built |

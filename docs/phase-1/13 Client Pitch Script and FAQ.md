@@ -3,7 +3,7 @@ title: "13 Client Pitch Script and FAQ"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-11-13
 tags: [relivable, phase-1, pitch, faq, client]
 ---
 
@@ -13,6 +13,9 @@ tags: [relivable, phase-1, pitch, faq, client]
 
 > [!note] How to use this note
 > A 12-slide, **~11-minute** talk track (10–12 minute window), followed by 20 likely client questions with crisp answers. Every number on a slide comes from [[01 Executive Summary]], [[02 Market and Competitors]] or [[03 Player Research and Wishlist]], where the sources are cited. **Say "estimate" or "target" out loud whenever a slide shows one.** The deck structure follows publisher and investor guidance: lead with the game, then proof, comps, model, budget and a clear ask; avoid unrealistic comps and math errors ([WN Hub](https://wnhub.io/news/analytics/item-2953); [80.lv](https://80.lv/articles/pitch-perfect-how-to-prepare-your-game-for-investors-and-publishers/); [Positech](https://www.positech.co.uk/cliffsblog/2015/01/06/how-to-pitch-your-indie-game-to-a-vc-investor/)).
+
+> [!tip] Pitching to investors?
+> Use [[02 Pitch Deck Script]] in `docs/investor/` instead. It is a 13-slide investor version that leads with the playable game and the proof of build speed, then the raise. The guardrails below still apply.
 
 > [!warning] Language guardrails for the presenter
 > - Say "inspired by the text life-sim genre". Never say "BitLife clone", "BitLife 2" or imply any link with BitLife, Candywriter or Stillfront.

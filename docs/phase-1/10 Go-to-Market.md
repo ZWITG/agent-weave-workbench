@@ -3,7 +3,7 @@ title: "10 Go-to-Market"
 project: Relivable
 phase: 1
 status: review
-updated: 2026-10-26
+updated: 2026-11-13
 tags: [relivable, phase-1, gtm, aso, ua, soft-launch, creators, community, pr]
 ---
 
@@ -17,6 +17,14 @@ tags: [relivable, phase-1, gtm, aso, ua, soft-launch, creators, community, pr]
 Related: [[_Concept Brief]] · [[01 Executive Summary]] · [[06 Monetization and Economy]] · [[07 Retention and LiveOps]] · [[11 Roadmap Team and Budget]] · [[12 Risks and KPIs]] · Source: `research_notes/Life sim game phase 1/ux_gtm_pitch.md`, `market_competitors.md`, `monetization_retention.md`, `reddit_player_wishlist.md`.
 
 ---
+
+> [!info] Assets already made (13 Nov 2026)
+> Creative from real gameplay exists before soft launch, all in `game/media/`:
+> - an 80-second promo ("One life, one take") and two intro videos;
+> - **Instagram batch 1**: 12 feed posts, a 5-slide carousel, 2 stories and 3 Reels;
+> - **batch 2, "Calling"**: 10 feed posts, an 11-slide carousel, 2 stories and a 12-second beat-cut Reel.
+>
+> Each batch has captions, alt text and a posting order in `CAPTIONS.md`, and the scripts in `game/tool/` regenerate it after any game update. The game's changing looks (Yard Time, Gilded, 14 career looks) are the core creative idea for §5.3. **Before any paid promotion,** the RELIVABLE trademark question (open item A7) must be settled. The investor case for organic-first growth is in [[03 Financial Plan]] §4.
 
 ## 1. Positioning and messaging
 

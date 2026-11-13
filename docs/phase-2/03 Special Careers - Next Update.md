@@ -2,7 +2,7 @@
 title: "03 Special Careers - Next Update"
 project: Relivable
 phase: 2
-status: wave 1 in progress (13 Nov 2026); defaults taken for D3–D5; D1 and D2 decided by the owner (13 Nov 2026)
+status: built ("Calling" update shipped 13 Nov 2026)
 updated: 2026-11-13
 tags: [relivable, phase-2, careers, special-careers, themes, plan]
 ---
@@ -249,11 +249,11 @@ league) and D5 (the musician career runs on `music.dart`):
 |---|---|
 | 1 Hub framework and screen, police on it | **Done** |
 | 2 Menu upgrades | **Done:** Hub cards on Path, the Career category in Activities, the way-in checklists, the meter chip in the header (`ui/career_marks.dart`) |
-| 3 Wave 1 careers | **Done:** actor, musician, athlete, politician (meters, activities, seasons, scenes). **Not yet:** contacts as NPCs; career mini-games reuse existing game engines with career wording (rhythm, memory, whack, reps, timing, breath, reaction), not new designs |
+| 3 Wave 1 careers | **Done:** actor, musician, athlete, politician (meters, activities, seasons, scenes); contacts as people followed in step 5. Career mini-games reuse existing game engines with career wording (rhythm, memory, whack, reps, timing, breath, reaction), not new designs |
 | 4 Look upgrades | **Mostly done:** motifs on the Hub, the Curtain Call on promotion, the look's stamps on Work and Career results in its type accent (all twelve looks), the Final Bow on leaving a special career. Then signature instruments, illustrated scenes, themed sections and career pages in the Life Recap (`ui/career_stage.dart`) |
 | 5 Wave 2 careers | **Done:** model, doctor, vet, pilot, armed forces, lawyer/judge, street hustler (`engine/career_hub_wave2.dart`): meters, activities with one played moment each, seasons, scenes and promotion rules; deployments, hospital cases and big cases move the meters. Contacts as people, defending and treating people you know and judges hearing the crime list followed (`engine/career_hub_people.dart`) |
 | 6 Astronaut and Fighter | **Done** (D1: yes; `engine/career_hub_wave3.dart`, `ui/minigames_calling.dart`): Astronaut (Orbit) with missions to the station, the Moon and Mars and a real, always-shown risk to life; Fighter (Fight Night), boxing or MMA, with the Fight Night mini-game, injuries, a title fight and crews offering to fix fights (fraud on the crime scale). D2: yes, street hustler scams run through the crime system |
-| 7 Full test run, ship | Tests and release fuzz pass after each step; screenshots reviewed (`tool/render_hub_test.dart`) |
+| 7 Full test run, ship | **Done:** tests and release fuzz pass after each step; screenshots reviewed (`tool/render_hub_test.dart`); shipped as the "Calling" update with Instagram batch 2 and the Reel (`game/media/social/calling/`) |
 
 ### 6.6 Rules carried over
 
