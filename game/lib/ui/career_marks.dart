@@ -147,7 +147,7 @@ Widget? hubMeterChip(Life l, {VoidCallback? onTap}) {
       // number (the screen reader still hears the name). With too little
       // room even for that (a huge fortune squeezing the name), the meter
       // stays on the Hub card rather than overflow.
-      if (box.maxWidth >= base + w(spec.meter)) {
+      if (box.maxWidth >= base + w(spec.meter) + 6) {
         return _chip(spec.meter, m, look.icon, style, accent, onTap);
       }
       if (box.maxWidth >= base) {
