@@ -5,11 +5,14 @@ import { authorizeConversation, authorizeLocalConversation } from "./conversatio
 import { createResponsesCall } from "./responses.server";
 import { withLovableAiGatewayRunIdHeader } from "./run-id";
 
+// Generous caps: the body is read before sign-in is checked, so it must not
+// be unbounded (oversized input, and the zod 3 large-collection advisory).
+const MAX_BODY_BYTES = 8 * 1024 * 1024;
 const inputSchema = z.object({
   agentId: z.string().uuid(),
-  invited: z.array(z.string().uuid()).default([]),
-  knowledge: z.string().default(""),
-  messages: z.array(z.unknown()),
+  invited: z.array(z.string().uuid()).max(20).default([]),
+  knowledge: z.string().max(200_000).default(""),
+  messages: z.array(z.unknown()).max(2_000),
 });
 export async function handleConversationChat(request: Request) {
   try {
@@ -20,7 +23,11 @@ export async function handleConversationChat(request: Request) {
       if (!isTrustedLocalRequest(request)) return new Response("Not found", { status: 404 });
     } else if (!token)
       return new Response("Please sign in to speak with an agent", { status: 401 });
-    const body = inputSchema.parse(await request.json());
+    const declared = Number(request.headers.get("content-length") ?? 0);
+    if (declared > MAX_BODY_BYTES) return new Response("Conversation too large", { status: 413 });
+    const raw = await request.text();
+    if (raw.length > MAX_BODY_BYTES) return new Response("Conversation too large", { status: 413 });
+    const body = inputSchema.parse(JSON.parse(raw));
     const ids = [...new Set([body.agentId, ...body.invited])];
     const context = local
       ? await authorizeLocalConversation(ids)

@@ -91,6 +91,9 @@ provide. Items are ordered by how much they block a public store launch.
 | G4 | **Player evidence** | None (F1, C3) | Run playtests before or alongside the first meetings; it is the pack's biggest gap |
 | G5 | **Visual deck** | Built: 15 slides with speaker notes (https://claude.ai/artifact/Vh7d3JooSz8GJR8trU4M4P) | Fill the Team and Ask placeholders; share it or export it to PDF |
 
+## Security (13 Nov 2026)
+A 20-point pre-launch security audit of the game and the web studio is in [[04 Pre-launch Security Checklist]]. The most urgent owner action is **storing the Android signing key as a repository secret**: today it can be lost when GitHub evicts the Actions cache, which would break every installed copy's updates.
+
 ## Legal check (1 Nov 2026)
 
 Done in code: real-world names made fictional (the Open Hand Pledge, the
