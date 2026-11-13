@@ -22,6 +22,7 @@ import 'echelon_screen.dart' show Gilt, GoldSeam;
 import '../engine/echelon.dart' show bigMoney;
 import '../engine/elite.dart' show upperEchelon;
 import 'meta_screens.dart';
+import 'minigames.dart' show showMiniGame;
 import 'social_screen.dart';
 import 'me_screens.dart';
 import 'update_prompt.dart';
@@ -1274,7 +1275,7 @@ class _EventCard extends StatelessWidget {
                 children: [
                   for (var i = 0; i < event.choices.length; i++) ...[
                     if (i > 0) const SizedBox(width: 8),
-                    Expanded(child: _choiceButton(i, life, engine)),
+                    Expanded(child: _choiceButton(context, i, life, engine)),
                   ],
                 ],
               )
@@ -1285,7 +1286,7 @@ class _EventCard extends StatelessWidget {
                     if (i > 0) const SizedBox(height: 8),
                     SizedBox(
                       width: double.infinity,
-                      child: _choiceButton(i, life, engine),
+                      child: _choiceButton(context, i, life, engine),
                     ),
                   ],
                 ],
@@ -1298,7 +1299,12 @@ class _EventCard extends StatelessWidget {
     );
   }
 
-  Widget _choiceButton(int i, Life life, GameEngine engine) {
+  Widget _choiceButton(
+    BuildContext context,
+    int i,
+    Life life,
+    GameEngine engine,
+  ) {
     final choice = event.choices[i];
     final lock = choice.lockReason(life);
     final hint = lock ?? choice.risk;
@@ -1323,7 +1329,26 @@ class _EventCard extends StatelessWidget {
               ),
             ],
           );
-    final onPressed = lock == null ? () => controller.choose(choice) : null;
+    final onPressed = lock == null
+        ? () async {
+            // Some choices are played: a chase, a break-in, a breakout.
+            final game = choice.miniGame;
+            if (game == null) return controller.choose(choice);
+            final score = controller.profile.autoMiniGames
+                ? 0.6
+                : await showMiniGame(
+                    context,
+                    game,
+                    age: life.age,
+                    title: engine.fill(choice.label, life),
+                    activity: game,
+                    life: life,
+                    game: game,
+                  );
+            if (score == null) return; // closed without playing
+            controller.choose(choice, score: score);
+          }
+        : null;
     return i == 0 && lock == null
         ? FilledButton(
             style: primaryButton(),

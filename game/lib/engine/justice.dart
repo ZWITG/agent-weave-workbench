@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'manhunt.dart' show chaseOdds;
 import 'crime_jobs.dart';
 import 'gangs.dart';
 import 'prison_life.dart';
@@ -833,9 +834,11 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
           Choice(
             label: 'Run for it',
             outcome: '',
-            risk: '$run% chance to get away (Athleticism, fitness)',
-            run: (l, rng) {
-              if (rng.nextInt(100) < run) {
+            risk:
+                '$run% chance to get away (Athleticism, fitness) · played as a chase',
+            miniGame: 'getaway',
+            scored: (l, rng, score) {
+              if (rng.nextInt(100) < chaseOdds(run, score)) {
                 l.notoriety += 5;
                 l.cases.add({'crime': c.id, 'age': l.age, 'evidence': 85});
                 return 'You vaulted a fence, cut through three gardens and lost them. But they know your name now, and they will be back.';
@@ -1220,10 +1223,11 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
           label: label,
           outcome: '',
           needsMoney: cost,
-          risk: '$odds% chance · security −$security',
-          run: (l, rng) {
+          risk: '$odds% chance · security −$security · played across the yard',
+          miniGame: 'breakout',
+          scored: (l, rng, score) {
             l.money -= cost;
-            if (rng.nextInt(100) < odds) {
+            if (rng.nextInt(100) < chaseOdds(odds, score)) {
               l.prison = null;
               l.npcs.removeWhere((n) => n.id == 'cellmate');
               l.notoriety += 15;

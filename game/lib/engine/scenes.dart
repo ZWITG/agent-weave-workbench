@@ -21,6 +21,7 @@ import 'country_life.dart';
 import 'music.dart';
 import 'births.dart' show birthScene;
 import 'life_events.dart' show lifeEventScene;
+import 'manhunt.dart' show manhuntScene;
 import 'underworld.dart' show underworldScene;
 import 'migration.dart' show migrationScene;
 import 'business_kinds.dart' show tradeEventScene;
@@ -187,6 +188,7 @@ Storylet? buildScene(String id, Life life) {
     'treat' ||
     'mind' ||
     'rehab' => healthScene(parts.first, parts.sublist(1), life),
+    'manhunt' => manhuntScene(parts.sublist(1), life),
     'heist' ||
     'heist_crew' ||
     'heist_intel' ||

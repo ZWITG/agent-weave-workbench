@@ -458,7 +458,7 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void choose(Choice choice) {
+  void choose(Choice choice, {double? score}) {
     // A second tap on a card that is already fading away does nothing.
     if (life == null ||
         pendingEvent == null ||
@@ -467,7 +467,7 @@ class GameController extends ChangeNotifier {
     }
     _propertyOutcome = _isPropertyScene(pendingEvent);
     _crimeOutcome = _isCrimeScene(pendingEvent);
-    lastOutcome = engine!.choose(life!, pendingEvent!, choice);
+    lastOutcome = engine!.choose(life!, pendingEvent!, choice, score: score);
     Sound.instance.outcome(
       lastOutcome!.tone,
       text: lastOutcome!.text,

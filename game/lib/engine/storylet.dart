@@ -188,6 +188,8 @@ class Choice {
     this.needsMoney = 0,
     this.lock,
     String? risk,
+    this.miniGame,
+    this.scored,
   }) : effects = effects ?? Effects(),
        risk = _local(hideOddsOrNull(risk));
 
@@ -209,6 +211,11 @@ class Choice {
 
   /// Odds hint shown on the button for risky choices ("Risky", "Likely").
   final String? risk;
+
+  /// A mini-game played before this choice resolves (ui/minigames.dart),
+  /// e.g. 'getaway'. Its score (0 to 1; Skip is 0.6) goes to [scored].
+  final String? miniGame;
+  final String? Function(Life life, Random rng, double score)? scored;
 
   /// Null when the choice can be taken, otherwise why not.
   String? lockReason(Life life) {

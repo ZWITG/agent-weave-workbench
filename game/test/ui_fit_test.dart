@@ -347,6 +347,67 @@ void main() {
     expect(score, inInclusiveRange(0, 1));
   });
 
+  testWidgets('Hot Pursuit games play to a score and fit small phones', (
+    t,
+  ) async {
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    final key = GlobalKey<NavigatorState>();
+    await t.pumpWidget(
+      MaterialApp(
+        navigatorKey: key,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(1.3)),
+          child: child!,
+        ),
+        home: const Scaffold(),
+      ),
+    );
+    for (final g in ['getaway', 'breakin', 'breakout']) {
+      double? score = -1;
+      showMiniGame(
+        key.currentContext!,
+        g,
+        age: 30,
+        title: g,
+        activity: g,
+        game: g,
+      ).then((v) => score = v);
+      await t.pump(const Duration(milliseconds: 400));
+      await t.pump(const Duration(milliseconds: 400));
+      expect(find.text(miniIntro(g, g)), findsOneWidget, reason: g);
+      // Nobody plays: the chase runs out or ends; the turn-based games
+      // end when you wait long enough (the house wakes, dawn breaks).
+      for (var i = 0; i < 120; i++) {
+        if (find.text('Continue').evaluate().isNotEmpty) break;
+        if (g == 'getaway') {
+          await t.pump(const Duration(milliseconds: 250));
+        } else {
+          await t.tap(find.text('Wait'));
+          await t.pump(const Duration(milliseconds: 50));
+        }
+      }
+      expect(find.text('Continue'), findsOneWidget, reason: g);
+      await t.tap(find.text('Continue'));
+      await t.pumpAndSettle();
+      expect(score, inInclusiveRange(0, 1), reason: g);
+    }
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+  });
+
   testWidgets('social media and fame are categories in Activities', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);

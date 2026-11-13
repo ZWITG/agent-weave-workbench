@@ -247,7 +247,23 @@ Storylet? goScene(List<String> args, Life l) {
     );
   }
 
+  // A burglary can be played: the Break-in floor plan. A good run lowers
+  // the risk and fills the bag; Skip keeps the odds of "Slow and careful".
+  final careful = (base - 8 - (l.stats['smarts'] - 50) ~/ 10).clamp(3, 90);
   return _scene('crime_go', 'The night comes. How do you do it?', [
+    if (c.id == 'burglary')
+      Choice(
+        label: 'Go in yourself',
+        outcome: '',
+        risk:
+            'Played on the floor plan · risk about $careful% at an average run',
+        miniGame: 'breakin',
+        scored: (l, rng, score) {
+          final odds = (careful - ((score - 0.6) * 80).round()).clamp(3, 90);
+          final take = (50 + score * 100).round();
+          return finishCrime(l, c, rng, odds, take);
+        },
+      ),
     how(
       'Slow and careful',
       'Smarts help · smaller take',

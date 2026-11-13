@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'echelon.dart' show echelonYear;
 import 'crime_wall.dart' show noteCrime;
+import 'manhunt.dart' show manhuntYear;
 import 'actions.dart';
 import 'currency.dart';
 import 'odds.dart';
@@ -333,6 +334,7 @@ class GameEngine {
       ...eliteYear(life, _rngFor(life, 113)),
       ...echelonYear(life, _rngFor(life, 117)),
       ...crewYear(life, _rngFor(life, 131)),
+      ...manhuntYear(life, _rngFor(life, 149)),
       ...migrationYear(life, _rngFor(life, 139)),
       ...petsYear(life, _rngFor(life, 103)),
       ?nameReaction(life, world, _rngFor(life, 89)),
@@ -465,7 +467,7 @@ class GameEngine {
     return eligible.last;
   }
 
-  Outcome choose(Life life, Storylet event, Choice choice) {
+  Outcome choose(Life life, Storylet event, Choice choice, {double? score}) {
     if (event.scene) life.currentScene = null;
     life.lastSeen[event.id] = life.age;
     final statsBefore = {for (final k in Stats.visible) k: life.stats[k]};
@@ -475,7 +477,11 @@ class GameEngine {
     life.reason = event.scene ? choice.label : 'Choice: ${choice.label}';
     final notes = choice.effects.apply(life);
     storyPets(life);
-    final custom = choice.run?.call(life, _rngFor(life, event.id.hashCode));
+    final rng0 = _rngFor(life, event.id.hashCode);
+    // A choice played as a mini-game resolves with its score (Skip: 0.6).
+    final custom = choice.scored != null
+        ? choice.scored!(life, rng0, (score ?? 0.6).clamp(0, 1).toDouble())
+        : choice.run?.call(life, rng0);
     checkDeeds(life);
     final statDeltas = <String, int>{
       for (final k in Stats.visible)
@@ -487,7 +493,7 @@ class GameEngine {
           n.name: n.bond - bondsBefore[n.id]!,
     };
     final moneyDelta = life.money - moneyBefore;
-    final score =
+    final balance =
         statDeltas.values.fold<int>(0, (a, b) => a + b) +
         bondDeltas.values.fold<int>(0, (a, b) => a + b) ~/ 3 +
         (moneyDelta > 0 ? 3 : (moneyDelta < 0 ? -2 : 0));
@@ -499,11 +505,11 @@ class GameEngine {
         statDeltas.values.any((v) => v < 0) ||
         bondDeltas.values.any((v) => v < 0) ||
         moneyDelta < 0;
-    final tone = hasGood && hasBad && score.abs() < 4
+    final tone = hasGood && hasBad && balance.abs() < 4
         ? 'mixed'
-        : score > 0
+        : balance > 0
         ? 'good'
-        : score < 0
+        : balance < 0
         ? 'bad'
         : 'neutral';
     const headlines = {

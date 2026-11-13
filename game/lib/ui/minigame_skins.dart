@@ -203,6 +203,24 @@ const _skins = <String, MiniSkin>{
     target: Icons.android_rounded,
     decoy: Icons.person_rounded,
   ),
+  // Night streets: sodium amber on wet tarmac.
+  'getaway': MiniSkin(
+    top: Color(0xFF15181D),
+    bottom: Color(0xFF07080A),
+    panel: Color(0xFF2A2D33),
+    accent: Color(0xFFFFB547),
+    zone: Color(0xFF59F2A6),
+    scene: 'road',
+  ),
+  // A dark house: torchlight yellow.
+  'breakin': MiniSkin(
+    top: Color(0xFF15161B),
+    bottom: Color(0xFF07080A),
+    panel: Color(0xFF23252C),
+    accent: Color(0xFFFFB547),
+    zone: Color(0xFF59F2A6),
+    scene: 'plain',
+  ),
   // Tarmac, lane markings and road-sign yellow.
   'driving_lessons': MiniSkin(
     top: Color(0xFF34393D),
@@ -245,7 +263,9 @@ const _cellSkin = MiniSkin(
 );
 
 MiniSkin skinFor(String? activity) => NF.prison
-    ? (activity == 'prison_gym' ? _yardSkin : _cellSkin)
+    ? (activity == 'prison_gym' || activity == 'breakout'
+          ? _yardSkin
+          : _cellSkin)
     : _skins[activity == 'write_song' ? 'instrument' : activity] ?? _plainSkin;
 
 class _SkinScope extends InheritedWidget {

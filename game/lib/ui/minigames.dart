@@ -9,6 +9,7 @@ import '../theme.dart';
 
 part 'minigame_skins.dart';
 part 'minigames_more.dart';
+part 'minigames_crime.dart';
 
 /// Short mini-games for some activities. Each returns a score from 0 to 1,
 /// or null if the player closes it. "Skip" always resolves at 0.6, so
@@ -216,6 +217,18 @@ final _defaults = <String, MiniTheme>{
   'whack': _t('Tap the targets as they pop up. Not the grey ones.'),
   'rhythm': _t('Tap each pad as it lights up, on the beat.'),
   'words': _t('Unscramble the words before time runs out.'),
+  'getaway': _t(
+    'Lose the police and reach the motorway (M). Steer with the arrows or swipe; a tunnel breaks their line of sight, and the garage swaps your car.',
+    stat: 'athleticism',
+  ),
+  'breakin': _t(
+    'Grab what you can and get out. One square at a time: stay out of the torchlight, and watch the noise meter (a heavy bag is louder; Wait lets it settle).',
+    stat: 'willpower',
+  ),
+  'breakout': _t(
+    'Cross the yard to the gap in the fence before dawn. One square a turn: keep out of the searchlight (the dotted square is where it goes next) and out of the guards\' sight.',
+    stat: 'smarts',
+  ),
 };
 
 /// Themes by activity id.
@@ -349,6 +362,9 @@ class _MiniGameScreen extends StatelessWidget {
         decoy: skinFor(activity).decoy,
       ),
       'rhythm' => _RhythmGame(onDone: finish, names: theme.pads, ease: ease),
+      'getaway' => _GetawayGame(onDone: finish, ease: ease),
+      'breakin' => _BreakInGame(onDone: finish, ease: ease),
+      'breakout' => _BreakoutGame(onDone: finish, ease: ease),
       'words' => _WordsGame(
         onDone: finish,
         words: _wordLists[activity] ?? _wordLists['study']!,

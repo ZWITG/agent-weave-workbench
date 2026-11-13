@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'justice.dart' show crimeById, convictions, onParole;
+import 'manhunt.dart' show informer, mostWanted;
 import 'models.dart';
 import 'underworld.dart';
 
@@ -66,6 +67,19 @@ List<String> scannerLines(Life l) {
     lines.add(
       'All units, be on the lookout: ${l.fullName}, ${l.age}, last seen in ${l.city}. Approach with caution.',
     );
+  }
+  if (mostWanted(l)) {
+    lines.insert(
+      0,
+      'Task force briefing: $who stays top of the Most Wanted board. Overtime approved.',
+    );
+    final rat = informer(l);
+    if (rat != null) {
+      lines.insert(
+        1,
+        'Tip line: a caller asking how big the reward on $who is. Says they know where $who sleeps.',
+      );
+    }
   }
   for (final c in l.cases.take(2)) {
     final label = crimeById(c['crime'] as String).label.toLowerCase();

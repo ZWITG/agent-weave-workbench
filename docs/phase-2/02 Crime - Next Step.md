@@ -2,7 +2,7 @@
 title: "02 Crime - Next Step"
 project: Relivable
 phase: 2
-status: proposal
+status: built (Hot Pursuit, 13 Nov 2026)
 updated: 2026-11-13
 tags: [relivable, phase-2, crime, prison, plan]
 ---

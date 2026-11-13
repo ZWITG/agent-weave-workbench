@@ -8,6 +8,7 @@ import 'package:relivable/engine/careers.dart';
 import 'package:relivable/engine/celebrity.dart';
 import 'package:relivable/engine/dynasty.dart';
 import 'package:relivable/engine/crime_wall.dart';
+import 'package:relivable/engine/manhunt.dart';
 import 'package:relivable/ui/back_alley.dart' show crimeStamp;
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
@@ -2234,7 +2235,7 @@ void main() {
     scene = engine.nextScene(out)!;
     var seed = 0;
     while (out.prison != null && seed < 50) {
-      scene.choices.first.run!(out, Random(seed++));
+      scene.choices.first.scored!(out, Random(seed++), 0.6);
       if (out.prison != null && out.prison!.solitary > 0) {
         expect(out.prison!.solitary, 1); // a failed try is a year in solitary
         out.prison!.solitary = 0;
@@ -2318,7 +2319,12 @@ void main() {
     engine.choose(l, scene, scene.choices[2]); // the mansion
     scene = engine.nextScene(l)!;
     expect(scene.id, 'scene:crime_go');
-    expect(scene.choices[2].lock!(l), isNotNull); // no lookout yet
+    // Burglary can be played on the floor plan (Break-in).
+    expect(scene.choices.first.miniGame, 'breakin');
+    expect(
+      scene.choices.firstWhere((c) => c.label == 'Bring a lookout').lock!(l),
+      isNotNull,
+    ); // no lookout yet
     l.sceneQueue.add('crime_twist:burglary:0:100');
     scene = engine.nextScene(l)!;
     expect(scene.choices.first.label, contains('Grab'));
@@ -2847,6 +2853,75 @@ void main() {
     expect(crimeStamp('The police arrested you outside.', 'bad'), 'BUSTED');
     expect(crimeStamp('You got away clean.', 'good', paid: true), 'PAYDAY');
     expect(crimeStamp('You got away clean.', 'good'), 'CLEAN GETAWAY');
+  });
+
+  test('Hot Pursuit: the Most Wanted list, events, informers and chases', () {
+    final l = engine.newLife(seed: 291)..age = 30;
+    l.sceneQueue.clear();
+    expect(chaseOdds(50, 0.6), 50);
+    expect(chaseOdds(50, 1.0), greaterThan(50));
+    expect(chaseOdds(50, 0.0), lessThan(50));
+    // Red hot: on the list, with an announcement.
+    l.notoriety = 25;
+    l.cases.add({'crime': 'burglary', 'evidence': 60, 'age': 29});
+    manhuntYear(l, Random(1));
+    expect(mostWanted(l), isTrue);
+    expect(l.sceneQueue, contains('manhunt:listed'));
+    // Every manhunt scene builds, and every choice resolves (played ones
+    // at their best and worst scores).
+    for (final kind in ['listed', 'roadblock', 'raid', 'hunter', 'appeal']) {
+      for (final pick in [0, 1, 2, 3]) {
+        for (final score in [0.0, 1.0]) {
+          final t = Life.fromJson(l.toJson())
+            ..money = 100000
+            ..dirty = 50000
+            ..sceneQueue.clear();
+          t.sceneQueue.add('manhunt:$kind');
+          final scene = engine.nextScene(t);
+          expect(scene, isNotNull, reason: kind);
+          if (pick >= scene!.choices.length) continue;
+          final c = scene.choices[pick];
+          if (c.lockReason(t) != null) continue;
+          final out = engine.choose(t, scene, c, score: score);
+          expect(out.text, isNotEmpty, reason: '$kind $pick');
+        }
+      }
+    }
+    // An informer is named a year ahead, then acts unless won back.
+    final friend = Npc(
+      id: 'rat',
+      role: 'Friend',
+      name: 'Toni Vega',
+      birthYear: l.year - 31,
+      circle: 'Friends',
+      bond: 20,
+    );
+    l.npcs.add(friend);
+    for (var i = 0; i < 30 && informer(l) == null; i++) {
+      manhuntYear(l, Random(i));
+    }
+    expect(informer(l)?.id, 'rat');
+    expect(scannerLines(l).any((x) => x.contains('reward')), isTrue);
+    final won = Life.fromJson(l.toJson())..sceneQueue.clear();
+    won.npcs.firstWhere((n) => n.id == 'rat').affection = 100;
+    won.npcs.firstWhere((n) => n.id == 'rat').trust = 100;
+    won.npcs.firstWhere((n) => n.id == 'rat').respect = 100;
+    won.npcs.firstWhere((n) => n.id == 'rat').familiarity = 100;
+    final wonFeed = manhuntYear(won, Random(3));
+    expect(wonFeed.join(), contains('stopped asking'));
+    expect(won.sceneQueue.any((q) => q.startsWith('manhunt:tip')), isFalse);
+    l.sceneQueue.clear();
+    manhuntYear(l, Random(3));
+    expect(l.sceneQueue, contains('manhunt:tip:rat'));
+    final tip = engine.nextScene(l)!;
+    engine.choose(l, tip, tip.choices.last); // hands up
+    expect(l.flags.containsKey('betrayed'), isTrue);
+    // Cooled off: off the list.
+    l.notoriety = 0;
+    l.cases.clear();
+    l.dirty = 0;
+    manhuntYear(l, Random(4));
+    expect(mostWanted(l), isFalse);
   });
 
   test('property tax is charged on every building you own', () {
