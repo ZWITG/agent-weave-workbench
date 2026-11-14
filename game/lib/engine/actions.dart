@@ -23,6 +23,7 @@ import 'realty.dart';
 import 'shopping.dart' show shopAction;
 import 'recap.dart';
 import 'community.dart';
+import 'faith.dart';
 import 'identity.dart';
 import 'pets.dart';
 import 'social.dart';
@@ -466,6 +467,7 @@ final allActions = <GameAction>[
   ...justiceActions,
   ...healthActions,
   ...identityActions,
+  ...faithActions,
   ...communityActions,
   ...socialActions,
   ...celebrityActions,

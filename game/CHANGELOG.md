@@ -277,3 +277,10 @@ Finishing the special careers update to its full plan (docs/phase-2/03), and a y
 - The youth unit: under-18s serve their time on a youth unit instead of an adult prison, with no gangs, riots, yard fights or contraband. Go to lessons (two years earn a school diploma), talk to your key worker, and meet the person you harmed, which can take a year off.
 - Second acts can end into a third: step away from a role like Head Coach or TV Pundit and one more door can open (General Manager, Network Anchor...), the same way the first second act did. Every second act has its own next step; nothing comes after that.
 - Adults can take a restorative justice meeting in prison, the grown-up counterpart to the youth unit's one. How it goes is a reason the parole board reads at your next hearing, shown with the rest (behaviour, programmes, family support).
+
+## Faith, given real content (14 Nov)
+The Faith tab had two generic actions and nothing behind them. Now it's a real path through the game, non-denominational throughout (it never names a specific religion, matching how "Pray or reflect" and "Join a community gathering" were already written):
+- A formative moment at 14: whether you were raised with a faith around you or without one, you work out where you actually stand — keep walking the path you were raised in, keep parts of it in your own way, stay searching, or decide it was never yours.
+- Your family reacts the way they would to anything that matters to you: some are glad you told them, some need a few years before they come round, same as the game already does for coming out.
+- It can connect you to people: a community gathering can introduce a new friend if faith is part of your life.
+- Revisit it any time after 16 — faith isn't fixed at 14.

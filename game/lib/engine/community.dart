@@ -7,7 +7,6 @@ import 'underworld.dart' show leaveCrewForMove;
 import 'health.dart' show exposeTo;
 import 'jobs.dart' show leaveJob;
 import 'justice.dart' show caughtInTheAct, convictions, hasSeriousRecord;
-import 'minigame_rules.dart';
 import 'models.dart';
 import 'possessions.dart' show hostingCapacity;
 import 'school.dart' show inSchool;
@@ -477,56 +476,6 @@ final communityActions = <GameAction>[
     run: (l, rng) {
       l.sceneQueue.add('black_market');
       return ActionResult('You text a number a friend gave you.');
-    },
-  ),
-  GameAction(
-    id: 'reflect',
-    miniGame: 'timing',
-    scored: reflectScored,
-    label: 'Pray or reflect',
-    category: 'Faith',
-    keywords: [
-      'pray',
-      'prayer',
-      'reflect',
-      'faith',
-      'quiet',
-      'church',
-      'mosque',
-      'temple',
-    ],
-    minAge: 4,
-    run: (l, rng) {
-      l.stress = l.stress - 5;
-      return statChange(
-        l,
-        'You took a quiet moment to pray or simply be still. Whatever you believe, it helped you breathe.',
-        {'happiness': 2, 'willpower': 1},
-      );
-    },
-  ),
-  GameAction(
-    id: 'community_service',
-    label: 'Join a community gathering',
-    category: 'Faith',
-    keywords: [
-      'community',
-      'service',
-      'gathering',
-      'congregation',
-      'faith',
-      'festival',
-    ],
-    minAge: 4,
-    run: (l, rng) {
-      for (final n in l.npcs.where((n) => n.alive && n.circle == 'Family')) {
-        n.addFacets(affection: 1);
-      }
-      return statChange(
-        l,
-        'You joined a community gathering: shared food, old songs and people who asked how you were and meant it.',
-        {'happiness': 3, 'karma': 1},
-      );
     },
   ),
   GameAction(

@@ -94,6 +94,28 @@ another being built first, except where noted.
 | N1 | **Player choices become headlines beyond crime/politics**: a business going public, an Echelon scandal, a championship win — feeding the newspaper from more systems than just crime and politics | `engine/world.dart` (newspaper generation), hooks from `engine/career_hub*.dart`, `engine/echelon.dart` | Medium — the newspaper pipeline exists; this is wiring more systems into it |
 | N2 | **Archive search**: pull up any past year's front page from the Timeline, not only the existing "From the archive" snippets | `engine/world.dart`, `engine/lifespan.dart` (Timeline) | Small — the archive data likely already exists per year; this is a search UI over it |
 
+## Features that existed but had no real content (14 Nov audit)
+
+A different kind of gap from the rest of this doc: not "deepen a working
+system" but "this is a tab in the Activities panel with almost nothing
+behind it." Found by counting `GameAction`s per real player-facing
+category (`lib/ui/activities.dart`'s category list, not internal
+lowercase tags) across the whole engine:
+
+| Category | Actions | Verdict |
+|---|---|---|
+| **Faith** | 2 | **Thin, confirmed.** No file of its own, no scenes, no state on `Life`, no tie to any other system. Two generic flavour actions ("Pray or reflect", "Join a community gathering") and nothing else. **Built out 14 Nov** — see the changelog and `engine/faith.dart`: a formative scene at 14 (`faithPath` on `Life`, four paths, non-denominational throughout), family reactions reusing `identity.dart`'s `outlookOf`, a revisit action, and a tie into People (a community gathering can introduce a friend) |
+| Identity | 2 | Looks thin by count alone, but `identity.dart` carries real depth via scenes (`coming_out`, `name_change`) not counted here — not actually thin |
+| Pets | 3 | `engine/pets.dart` is 854 lines with its own scene system — not thin, just few top-level menu actions |
+| Social media | 3 | Backed by `celebrity.dart` (611 lines) and `social.dart` (675 lines) — not thin |
+| Law | 3 | Backed by `career_law.dart` and the `sue`/`sue_lawyer` scenes — not thin |
+| Licences | 3 | A licence is meant to be a small gate (driving, flying), not a content hub — correctly minimal, not a gap |
+
+If another category starts to look suspiciously thin later, run the same
+check first (`grep -rh "category: '<Name>'" lib/engine/*.dart | wc -l`,
+then check for a scene system behind it) before assuming it needs work —
+most low counts here turned out to be backed by real systems elsewhere.
+
 ## Suggested order
 
 Cheapest and most self-contained first, since none of these blocks another:

@@ -30,6 +30,7 @@ import 'migration.dart' show migrationScene;
 import 'business_kinds.dart' show tradeEventScene;
 import 'elite.dart';
 import 'community.dart';
+import 'faith.dart';
 import 'identity.dart';
 import 'justice.dart';
 import 'family.dart';
@@ -263,6 +264,7 @@ Storylet? buildScene(String id, Life life) {
     'stray' => petScene(parts.first, parts.sublist(1), life),
     'coming_out' ||
     'name_change' => identityScene(parts.first, parts.sublist(1), life),
+    'faith_path' => faithScene(parts.first, parts.sublist(1), life),
     'emigrate' ||
     'shop' ||
     'party' ||

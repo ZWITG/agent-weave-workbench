@@ -16,6 +16,7 @@ import 'package:relivable/theme.dart';
 import 'package:relivable/ui/career_curtain.dart' show careerLookId;
 import 'package:flutter/painting.dart' show Color;
 import 'package:relivable/ui/back_alley.dart' show crimeStamp;
+import 'package:relivable/engine/faith.dart';
 import 'package:relivable/engine/family.dart';
 import 'package:relivable/engine/finance.dart';
 import 'package:relivable/engine/community.dart';
@@ -1222,6 +1223,58 @@ void main() {
     expect(life.flags.containsKey('came_out'), isTrue);
     setIdentity(life, orientation: 'Gay');
     expect(life.attractedTo, life.gender == 'male' ? 'men' : 'women');
+  });
+
+  test('faith: a formative scene at 14, family reactions and a tie to people', () {
+    final life = engine.newLife(seed: 125, family: 'two')..age = 13;
+    expect(life.faithPath, isEmpty);
+    expect(faithYear(life, Random(1)), isEmpty); // not yet 14
+    expect(life.sceneQueue, isNot(contains('faith_path')));
+
+    life.age = 14;
+    faithYear(life, Random(1));
+    expect(life.sceneQueue, contains('faith_path'));
+    var scene = engine.nextScene(life)!;
+    expect(scene.choices, hasLength(4));
+    final happiness = life.stats['happiness'];
+    engine.choose(life, scene, scene.choices[2]); // Still figuring it out
+    expect(life.faithPath, 'Searching');
+    expect(life.stats['happiness'], greaterThanOrEqualTo(happiness));
+    expect(life.flags.containsKey('faith_path'), isTrue);
+
+    // Resolved once; it doesn't requeue itself on its own.
+    life.sceneQueue.clear();
+    faithYear(life, Random(1));
+    expect(life.sceneQueue, isNot(contains('faith_path')));
+
+    // Revisiting is available from 16, and goes through the same scene.
+    final change = allActions.firstWhere((a) => a.id == 'faith_change');
+    life.age = 16;
+    expect(change.lockReason(life), isNull);
+    engine.runAction(life, change);
+    expect(life.sceneQueue, contains('faith_path'));
+    scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first);
+    expect(life.faithPath, 'Devout');
+
+    // A connected life can meet someone through a community gathering.
+    final gathering = allActions.firstWhere((a) => a.id == 'community_service');
+    for (var i = 0; i < 60 && life.npcs.every((n) => !n.role.contains('community')); i++) {
+      life.usedActions.clear();
+      life.energy = 10;
+      life.age += 1; // a fresh rng roll each try (it's seeded off age)
+      engine.runAction(life, gathering);
+    }
+    expect(life.npcs.any((n) => n.role.contains('community')), isTrue);
+
+    // Reconciliation follow-up, mirroring identity.dart's.
+    final mom = life.npc('mother')!;
+    final before = mom.affection;
+    life.marks.add('faith_reconcile:${mom.id}:${life.age}');
+    final feed = faithYear(life, Random(1));
+    expect(feed, isNotEmpty);
+    expect(mom.affection, greaterThan(before));
+    expect(life.marks, isNot(contains('faith_reconcile:${mom.id}:${life.age}')));
   });
 
   test('moving abroad shows visa odds and changes country rules', () {

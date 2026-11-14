@@ -23,6 +23,7 @@ import 'underworld.dart' show crewYear, crewInviteYear;
 import 'migration.dart' show migrationYear;
 import 'elite.dart';
 import 'community.dart';
+import 'faith.dart';
 import 'identity.dart';
 import 'justice.dart';
 import 'family.dart';
@@ -326,6 +327,7 @@ class GameEngine {
       ...healthYear(life, _rngFor(life, 79)),
       ...npcAging(life, _rngFor(life, 83)),
       ...identityYear(life),
+      ...faithYear(life, _rngFor(life, 151)),
       ...lawYear(life, _rngFor(life, 107)),
       ...fameYear(life, _rngFor(life, 101)),
       ...celebrityYear(life, _rngFor(life, 103)),

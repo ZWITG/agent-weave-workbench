@@ -893,6 +893,10 @@ class Life {
   String pronouns = '';
   String orientation = '';
 
+  // ---- Faith (faith.dart) ----
+  /// Empty until the faith_path scene (age 14+) is resolved.
+  String faithPath = '';
+
   /// One stress meter for school and work (plan Module 2).
   int get stress => school.stress;
   set stress(int v) => school.stress = v.clamp(0, 100);
@@ -1149,6 +1153,7 @@ class Life {
     'cancelledUntil': cancelledUntil,
     'pronouns': pronouns,
     'orientation': orientation,
+    'faithPath': faithPath,
     'feed': feed.map((f) => f.toJson()).toList(),
     'flags': flags.map((k, v) => MapEntry(k, v.toJson())),
     'lastSeen': lastSeen,
@@ -1328,7 +1333,8 @@ class Life {
       ..deal = j['deal'] == null ? null : Map<String, dynamic>.from(j['deal'])
       ..cancelledUntil = j['cancelledUntil']
       ..pronouns = j['pronouns'] ?? ''
-      ..orientation = j['orientation'] ?? '';
+      ..orientation = j['orientation'] ?? ''
+      ..faithPath = j['faithPath'] ?? '';
     return life;
   }
 }
