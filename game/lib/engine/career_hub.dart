@@ -340,6 +340,9 @@ Storylet? hubScene(List<String> args, Life l) {
   if (args.length >= 2 && args[0] == 'second') {
     return _secondActScene(args[1], l);
   }
+  if (args.length >= 2 && args[0] == 'third') {
+    return _thirdActScene(args[1], l);
+  }
   if (args.length < 2 || l.careerId != args[0] || hubFor(l) == null) {
     return null;
   }

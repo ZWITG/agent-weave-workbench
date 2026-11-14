@@ -2229,6 +2229,60 @@ void main() {
     expect(l.prison!.courses, contains('degree'));
   });
 
+  test('restorative justice meeting: adult-only, and the board reads how it went', () {
+    final restorative = prisonCourses.firstWhere((c) => c.id == 'restorative');
+
+    // Youth units have their own meeting (youth_custody.dart); this one is
+    // for adults only.
+    final y = inmate(240)
+      ..prison = Prison(crime: 'burglary', years: 2, since: 15, youth: true);
+    expect(courseLock(y, restorative), contains('own meeting'));
+
+    final l = inmate(241);
+    expect(courseLock(l, restorative), isNull);
+    expect(restorativeBonus(l), 0);
+    expect(restorativeReason(l), '');
+
+    l.sceneQueue.add('prison_course');
+    var scene = engine.nextScene(l)!;
+    final choice = scene.choices.firstWhere(
+      (c) => c.label == 'Restorative justice meeting',
+    );
+    engine.choose(l, scene, choice);
+    // Picking it opens the meeting rather than resolving on the spot.
+    expect(l.sceneQueue, contains('victim_meeting'));
+    expect(l.prison!.courses, contains('restorative'));
+    expect(courseLock(l, restorative), 'Done');
+
+    scene = engine.nextScene(l)!;
+    final karma = l.stats['karma'];
+    final behaviour = l.prison!.behaviour;
+    engine.choose(l, scene, scene.choices.first); // listen and answer honestly
+    expect(l.stats['karma'], greaterThan(karma));
+    expect(l.prison!.behaviour, greaterThan(behaviour));
+    expect(restorativeBonus(l), 0.08);
+    expect(restorativeReason(l), contains('went well'));
+
+    // The parole hearing reads both functions straight from the flag
+    // (justice.dart's parole case), so this is the integration point.
+    l.sceneQueue.add('parole');
+    expect(engine.nextScene(l), isNotNull);
+
+    // Shutting the meeting down instead costs the bonus.
+    final m = inmate(242);
+    m.sceneQueue.add('prison_course');
+    var ms = engine.nextScene(m)!;
+    engine.choose(
+      m,
+      ms,
+      ms.choices.firstWhere((c) => c.label == 'Restorative justice meeting'),
+    );
+    ms = engine.nextScene(m)!;
+    engine.choose(m, ms, ms.choices.last); // say almost nothing
+    expect(restorativeBonus(m), -0.04);
+    expect(restorativeReason(m), contains('shut down'));
+  });
+
   test('solitary locks most activities, then ends', () {
     final l = inmate(233);
     l.prison!.solitary = 1;
@@ -3628,6 +3682,51 @@ void main() {
     final o = start('office', 993);
     leaveJob(o);
     expect(o.sceneQueue, isNot(contains(startsWith('hub:second'))));
+  });
+
+  test('Calling: a second act ending offers a third act', () {
+    for (final role in thirdActs.keys) {
+      expect(secondActs.values.expand((l) => l).map((a) => a.$1),
+          contains(role), reason: role);
+    }
+
+    final a = engine.newLife(seed: 995)..age = 38;
+    a.sceneQueue.clear();
+    startCareer(a, careerById('athlete')!);
+    a.sceneQueue.clear();
+    a.fame = 30;
+    leaveJob(a);
+    final first = engine.nextScene(a)!;
+    engine.choose(a, first, first.choices[1]); // TV pundit
+    expect(a.job, 'TV pundit');
+
+    // Leaving the second act itself offers a third.
+    leaveJob(a);
+    expect(a.sceneQueue, contains('hub:third:TV pundit'));
+    final second = engine.nextScene(a)!;
+    expect(second.choices, hasLength(2));
+    a.fame = 30;
+    engine.choose(a, second, second.choices[0]);
+    expect(a.job, 'Network anchor');
+    expect(thirdAct(a), contains('Network anchor'));
+    expect(hubHistory(a).last['log'].first, contains('anchor'));
+
+    // The third act has no fourth of its own.
+    leaveJob(a);
+    expect(a.sceneQueue, isNot(contains(startsWith('hub:third'))));
+
+    // Stepping away cleanly from a second act queues no third act.
+    final b = engine.newLife(seed: 996)..age = 38;
+    b.sceneQueue.clear();
+    startCareer(b, careerById('actor')!);
+    b.sceneQueue.clear();
+    b.fame = 20;
+    leaveJob(b);
+    final s = engine.nextScene(b)!;
+    engine.choose(b, s, s.choices.last); // Step away from it all
+    expect(b.job, isNull);
+    leaveJob(b);
+    expect(b.sceneQueue, isNot(contains(startsWith('hub:third'))));
   });
 
   test('Calling wave 2: each career has its own way up', () {

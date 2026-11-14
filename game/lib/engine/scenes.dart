@@ -228,6 +228,7 @@ Storylet? buildScene(String id, Life life) {
     'visit_pick' ||
     'visit' ||
     'prison_course' ||
+    'victim_meeting' ||
     'trustee' ||
     'on_the_run' ||
     'parole_checkin' ||

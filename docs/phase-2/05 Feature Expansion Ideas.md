@@ -2,7 +2,7 @@
 title: "05 Feature Expansion Ideas"
 project: Relivable
 phase: 2
-status: proposed
+status: "E3 and C2 built (14 Nov 2026); rest proposed"
 updated: 2026-11-14
 tags: [relivable, phase-2, roadmap, ideas]
 ---
@@ -45,7 +45,7 @@ another being built first, except where noted.
 |---|---|---|---|
 | E1 | **Authored unlock paths**: school clubs/electives that lower a special career's entry bar (drama club → easier Actor entry) instead of only a flat stat gate | `engine/school.dart` (electives), `engine/careers.dart` (entry rules) | Small — mostly data: electives already exist, this wires them into entry-rule checks |
 | E2 | **Mentor/protégé**: once senior in a career, take on a junior coworker; investing in them becomes an ally later, mirroring the Calling hubs' existing rival/ally pattern | `engine/jobs.dart`, `engine/career_hub_people.dart` (the existing cast/ally/rival pattern is the template) | Medium — reuses a proven pattern from the Calling update |
-| E3 | **Third acts**: let a second act end into a third (coach → front-office executive), so the chain started by Second Acts doesn't flatten after one hop | `engine/career_hub_second.dart` directly — extends `secondActs` to be keyed off *any* job, not only an original special career, and `leaveJob` to re-queue | Small — the second-act machinery already generalises; this is new data plus one guard removed (today `job != null` blocks a second second act) |
+| E3 | ~~**Third acts**~~ — **Built 14 Nov.** `thirdActs` in `career_hub_second.dart`, keyed by second-act title; `leaveJob` (`jobs.dart`) queues it when a second-act job ends. One third act per second act, no fourth | `engine/career_hub_second.dart`, `engine/career_hub.dart` (dispatcher), `engine/jobs.dart` | — |
 | E4 | **Franchise businesses**: multi-location businesses once a single business crosses a wealth threshold, with a manager-hire mechanic instead of micromanaging every site | business system (`engine/` business, wherever S33 lives) | Large — closest in shape to a new system, not an extension |
 
 ## Wealth
@@ -71,7 +71,7 @@ another being built first, except where noted.
 | # | Adds | Touches | Size |
 |---|---|---|---|
 | C1 | **Crews remember botched jobs**: a crew member burned by a failed heist refuses to work with you again, pushing toward recruiting new ones or repairing trust | `engine/heists.dart`, `engine/underworld.dart` (crew/loyalty state) | Small–medium — crew and loyalty state already exist; this adds a grudge flag per member |
-| C2 | **Parole persuasion beat**: extend the youth unit's "meet the person you harmed" mechanic (just shipped) to adult parole hearings as a persuasion scene | `engine/justice.dart`, `game/lib/ui/lockdown.dart` and whatever the youth-unit scene lives in (per CHANGELOG, "Calling: Encore") | Small — adapts a mechanic that already exists rather than inventing one |
+| C2 | ~~**Parole persuasion beat**~~ — **Built 14 Nov.** A "Restorative justice meeting" prison course (adults only; youth units keep their own) opens a scene whose outcome sets `restorativeBonus`/`restorativeReason`, read by the parole hearing's chance and shown reasons alongside behaviour, programmes and family support | `engine/prison_life.dart` (course + scene), `engine/justice.dart` (parole case), `engine/scenes.dart` (dispatch) | — |
 | C3 | **Going-legit arc**: a retirement path for career criminals, where an old heat level keeps haunting background checks for years after you stop | `engine/underworld.dart` (heat), `engine/jobs.dart` (background checks on hiring) | Medium |
 
 ## The Echelon
@@ -97,8 +97,8 @@ another being built first, except where noted.
 ## Suggested order
 
 Cheapest and most self-contained first, since none of these blocks another:
-**E3** (reuses Second Acts directly, ships fast) → **C2** (reuses the youth
-unit directly) → **L1, P2, M2, N2** (small, UI-forward, no new systems) →
-**EC2/EC3** (gives the Echelon real depth cheaply) → the Medium items →
-**E4** (business franchising) last, since it's the one item here closer to
-a new system than an extension.
+~~**E3**~~ (reuses Second Acts directly) and ~~**C2**~~ (reuses the youth
+unit directly) are built (14 Nov) — next: **L1, P2, M2, N2** (small,
+UI-forward, no new systems) → **EC2/EC3** (gives the Echelon real depth
+cheaply) → the Medium items → **E4** (business franchising) last, since
+it's the one item here closer to a new system than an extension.

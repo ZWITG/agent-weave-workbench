@@ -13,7 +13,9 @@ import 'career_hub.dart'
         hubSpecs,
         hubYear,
         queueSecondAct,
-        spendWarChest;
+        queueThirdAct,
+        spendWarChest,
+        thirdActs;
 import 'models.dart';
 import 'storylet.dart';
 import 'justice.dart' show convictions;
@@ -87,8 +89,13 @@ void leaveWorkplace(Life l) {
 
 /// Ends the current job for any reason.
 void leaveJob(Life l, {bool fired = false}) {
-  // A special career ending offers a second act (career_hub_second.dart).
-  if (l.careerId != null) queueSecondAct(l, l.careerId!);
+  // A special career ending offers a second act, and a second act ending
+  // offers a third (career_hub_second.dart).
+  if (l.careerId != null) {
+    queueSecondAct(l, l.careerId!);
+  } else if (l.job != null && thirdActs.containsKey(l.job)) {
+    queueThirdAct(l, l.job!);
+  }
   leaveWorkplace(l);
   l.job = null;
   l.salary = 0;

@@ -5,6 +5,11 @@ part of 'career_hub.dart';
 // grows out of it: the athlete who coaches, the model who designs, the
 // actor who directs. A second act is a job without a ladder; its line goes
 // on the career's Life Recap page.
+//
+// A second act can end into a third: leaving one of the roles in
+// [thirdActs] (below) offers one more step, keyed off the second act's
+// own title rather than the original career. Third acts have no fourth
+// act of their own, so the chain ends there on its own.
 
 typedef SecondAct = (
   String role,
@@ -135,6 +140,179 @@ final Map<String, List<SecondAct>> secondActs = {
   ],
 };
 
+/// Keyed by the second act's own title, so a third act grows out of the
+/// second regardless of which career led to it.
+final Map<String, SecondAct> thirdActs = {
+  'Film director': (
+    'Studio executive',
+    150000,
+    'You green-light other people\'s dreams now.',
+    null,
+  ),
+  'Drama teacher': (
+    'School principal',
+    70000,
+    'You run the whole building now, not just the stage.',
+    null,
+  ),
+  'Record producer': (
+    'Label owner',
+    130000,
+    'Your name is on the building now.',
+    null,
+  ),
+  'Music teacher': (
+    'Conservatory dean',
+    75000,
+    'You set the whole curriculum now.',
+    null,
+  ),
+  'Head coach': (
+    'General manager',
+    140000,
+    'You build the roster now, not just the game plan.',
+    null,
+  ),
+  'TV pundit': (
+    'Network anchor',
+    150000,
+    'You lead the whole broadcast now.',
+    (l) => _famous(l, 30),
+  ),
+  'Fashion designer': (
+    'Creative director',
+    160000,
+    'You answer to no one but the board.',
+    null,
+  ),
+  'Agency owner': (
+    'Fashion week organiser',
+    120000,
+    'You decide who gets seen this season.',
+    null,
+  ),
+  'Lobbyist': (
+    'Party strategist',
+    180000,
+    'You write the playbook now, not just the pitch.',
+    null,
+  ),
+  'Charity director': (
+    'Foundation chair',
+    90000,
+    'You decide which causes get the money.',
+    null,
+  ),
+  'Security consultant': (
+    'Risk firm partner',
+    160000,
+    'Your name is on the letterhead now.',
+    null,
+  ),
+  'Veterans\' charity worker': (
+    'National charity director',
+    80000,
+    'You run the whole organisation now.',
+    null,
+  ),
+  'Law lecturer': (
+    'Dean of law',
+    110000,
+    'You shape every lawyer the school turns out.',
+    null,
+  ),
+  'Mediator': (
+    'Arbitration chair',
+    130000,
+    'The biggest disputes come to you first.',
+    null,
+  ),
+  'Medical school lecturer': (
+    'Dean of medicine',
+    150000,
+    'You run the whole faculty now.',
+    null,
+  ),
+  'Health columnist': (
+    'Medical correspondent',
+    110000,
+    'You are the face health news turns to.',
+    (l) => _famous(l, 15),
+  ),
+  'Flight instructor': (
+    'Chief flight examiner',
+    95000,
+    'You decide who else gets to teach.',
+    null,
+  ),
+  'Air accident investigator': (
+    'Head of the investigation board',
+    120000,
+    'You sign off on every finding now.',
+    null,
+  ),
+  'Animal charity director': (
+    'National charity chair',
+    90000,
+    'You run the whole network of shelters now.',
+    null,
+  ),
+  'Farm adviser': (
+    'Agricultural board member',
+    85000,
+    'Policy now, for every farm like the ones you advised.',
+    null,
+  ),
+  'Market stall owner': (
+    'Market hall manager',
+    60000,
+    'You hand out the pitches now.',
+    null,
+  ),
+  'Street theatre director': (
+    'Festival director',
+    70000,
+    'You book every act in town.',
+    null,
+  ),
+  'Private investigator': (
+    'Detective agency owner',
+    90000,
+    'Your name is on the door now.',
+    null,
+  ),
+  'Crime novelist': (
+    'Bestselling author',
+    120000,
+    'Your books are the ones airports stock.',
+    (l) => _famous(l, 10),
+  ),
+  'Space agency director': (
+    'Agency administrator',
+    180000,
+    'You answer to the government now, for the whole program.',
+    null,
+  ),
+  'Science presenter': (
+    'Documentary host',
+    140000,
+    'Your own series now, not just the studio segment.',
+    (l) => _famous(l, 25),
+  ),
+  'Gym owner': (
+    'Gym franchise owner',
+    110000,
+    'Your name is over doors in three cities now.',
+    null,
+  ),
+  'Fight commentator': (
+    'Lead broadcaster',
+    140000,
+    'You call the main event now, every time.',
+    (l) => _famous(l, 25),
+  ),
+};
+
 /// Queued by leaveJob when a special career ends.
 void queueSecondAct(Life l, String careerId) {
   if (!secondActs.containsKey(careerId) || l.age >= 80) return;
@@ -142,8 +320,18 @@ void queueSecondAct(Life l, String careerId) {
   l.sceneQueue.add('hub:second:$careerId');
 }
 
+/// Queued by leaveJob when a second act itself ends.
+void queueThirdAct(Life l, String role) {
+  if (!thirdActs.containsKey(role) || l.age >= 80) return;
+  l.sceneQueue.removeWhere((q) => q.startsWith('hub:third:'));
+  l.sceneQueue.add('hub:third:$role');
+}
+
 /// The second act you took, if any.
 String? secondAct(Life l) => l.flags['second_act']?.label;
+
+/// The third act you took, if any.
+String? thirdAct(Life l) => l.flags['third_act']?.label;
 
 Storylet? _secondActScene(String careerId, Life l) {
   final acts = secondActs[careerId];
@@ -186,6 +374,47 @@ Storylet? _secondActScene(String careerId, Life l) {
         run: (l, rng) {
           l.stats.add('happiness', 2);
           return 'You let the phone ring. The job board will be there when you want it.';
+        },
+      ),
+    ],
+  );
+}
+
+Storylet? _thirdActScene(String role, Life l) {
+  final act = thirdActs[role];
+  // Moved on to something else already, retired for good, in prison, or dead.
+  if (act == null || l.job != null || l.retired || !l.alive || l.prison != null) {
+    return null;
+  }
+  final (newRole, pay, line, lock) = act;
+  return _scene(
+    'third_${role.hashCode}',
+    'The ${role.toLowerCase()} years are behind you too, but one more door is open. What now?',
+    [
+      Choice(
+        label: 'Become a ${newRole.toLowerCase()}',
+        outcome: '',
+        risk: '${_m(pay)} a year',
+        lock: lock,
+        run: (l, rng) {
+          l.job = newRole;
+          l.salary = pay;
+          l.careerId = null;
+          l.careerRank = 0;
+          l.jobSince = l.age;
+          l.performance = 60;
+          l.flags['third_act'] = Memory(l.age, 'a third act as $newRole');
+          _log(l, 'went on to become a ${newRole.toLowerCase()}');
+          l.stats.add('happiness', 4);
+          return '$line You are now a ${newRole.toLowerCase()} (${_m(pay)} a year).';
+        },
+      ),
+      Choice(
+        label: 'Step away from it all',
+        outcome: '',
+        run: (l, rng) {
+          l.stats.add('happiness', 2);
+          return 'You let the phone ring. Some doors only open once.';
         },
       ),
     ],

@@ -169,6 +169,11 @@ const prisonCourses = <Course>[
     name: 'Degree by correspondence',
     effect: 'Three years of study for a real degree',
   ),
+  (
+    id: 'restorative',
+    name: 'Restorative justice meeting',
+    effect: 'Meet someone you harmed; the board notices how it went',
+  ),
 ];
 
 String? courseLock(Life l, Course c) {
@@ -188,6 +193,7 @@ String? courseLock(Life l, Course c) {
           : const {'none', 'primary', 'secondary'}.contains(l.education)
           ? 'Needs a school diploma first'
           : null,
+    'restorative' => p.youth ? 'Your unit has its own meeting' : null,
     _ => null,
   };
 }
@@ -233,6 +239,10 @@ Storylet? courseScene(Life l) {
                   l.recovery[k] = l.age;
                 }
                 return 'The programme was hard and honest. You are in recovery now, one day at a time.';
+              case 'restorative':
+                p.courses.add('restorative');
+                l.sceneQueue.add('victim_meeting');
+                return 'Your case worker sets up a time.';
               default:
                 p.degreeYears++;
                 if (p.degreeYears >= 3) {
@@ -246,6 +256,62 @@ Storylet? courseScene(Life l) {
           },
         ),
       Choice(label: 'Not this year', outcome: 'You decided to wait.'),
+    ],
+  );
+}
+
+// ---------------- Restorative justice meeting (adult) ----------------
+// The adult counterpart to the youth unit's own meeting
+// (youth_custody.dart): how it goes leaves a mark the parole board reads
+// (restorativeBonus in justice.dart), shown as a reason like any other.
+
+Storylet? victimMeetingScene(Life l) {
+  final p = l.prison;
+  if (p == null || p.youth) return null;
+  return _scene(
+    'victim_meeting',
+    'A small room, a box of tissues, your case worker in the corner. Across the table is the person whose life your crime changed. They have questions. The room is very quiet.',
+    [
+      Choice(
+        label: 'Listen without interrupting, then answer honestly',
+        outcome: '',
+        risk: 'The hardest option; the board weighs it most',
+        run: (l, rng) {
+          l.stats.add('karma', 6);
+          l.stats.add('happiness', -2);
+          p.behaviour = min(100, p.behaviour + 6);
+          l.flags['restorative_meeting'] = Memory(
+            l.age,
+            'a restorative meeting that went well',
+          );
+          return 'They asked what you were thinking, and you told them, without excuses. Nobody expected it to end in a handshake, but it did. Your case worker made a note for the file.';
+        },
+      ),
+      Choice(
+        label: 'Give the answers that sound right',
+        outcome: '',
+        run: (l, rng) {
+          l.stats.add('karma', 1);
+          l.flags['restorative_meeting'] = Memory(
+            l.age,
+            'a restorative meeting that was polite but thin',
+          );
+          return 'You said the things people say in that room. Everyone nodded. Nobody quite believed it, including you.';
+        },
+      ),
+      Choice(
+        label: 'Say almost nothing',
+        outcome: '',
+        run: (l, rng) {
+          p.behaviour = max(0, p.behaviour - 4);
+          l.stats.add('karma', -3);
+          l.flags['restorative_meeting'] = Memory(
+            l.age,
+            'a restorative meeting you shut down',
+          );
+          return 'You looked at the table. They waited. Eventually your case worker ended it early.';
+        },
+      ),
     ],
   );
 }
@@ -654,6 +720,7 @@ Storylet? prisonLifeScene(String id, List<String> args, Life l) => switch (id) {
   'visit_pick' => visitPickScene(l),
   'visit' => visitScene(args, l),
   'prison_course' => courseScene(l),
+  'victim_meeting' => victimMeetingScene(l),
   'trustee' => trusteeScene(l),
   'on_the_run' => onTheRunScene(l),
   'parole_checkin' => checkinScene(l),

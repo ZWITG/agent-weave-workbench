@@ -568,6 +568,25 @@ void caughtInTheAct(Life l, String crimeId) {
   l.sceneQueue.add('arrest:$crimeId:${min(95, c.evidence + 30)}');
 }
 
+// ---------------- The restorative meeting (prison_life.dart) ----------------
+// Adults can take the "Restorative justice meeting" course; how it went
+// leaves a flag the next parole hearing reads, the same way behaviour and
+// family support do.
+
+double restorativeBonus(Life l) {
+  final how = l.flags['restorative_meeting']?.label ?? '';
+  if (how.contains('went well')) return 0.08;
+  if (how.contains('shut down')) return -0.04;
+  return 0;
+}
+
+String restorativeReason(Life l) {
+  final how = l.flags['restorative_meeting']?.label ?? '';
+  if (how.contains('went well')) return ', a restorative meeting that went well';
+  if (how.contains('shut down')) return ', a restorative meeting you shut down';
+  return '';
+}
+
 // ---------------- Yearly: investigations, records, parole ----------------
 
 List<String> justiceYear(Life l, Random rng) {
@@ -1092,12 +1111,13 @@ Storylet? justiceScene(String id, List<String> args, Life l) {
           p.programmes * 0.05 +
           support / 400 -
           l.notoriety / 300 -
-          gangParolePenalty(p);
+          gangParolePenalty(p) +
+          restorativeBonus(l);
       String hearing(Life l, Random rng, double bonus, String how) {
         p.lastHearing = l.age;
         final chance = (base + bonus).clamp(0.02, 0.9);
         final reasons =
-            'behaviour ${p.behaviour}%, ${p.programmes} programmes, family support $support%${p.gang ? ', ${gangRanks[p.gangRank].toLowerCase()} in a gang' : ''}${l.notoriety > 20 ? ', notoriety' : ''}';
+            'behaviour ${p.behaviour}%, ${p.programmes} programmes, family support $support%${p.gang ? ', ${gangRanks[p.gangRank].toLowerCase()} in a gang' : ''}${l.notoriety > 20 ? ', notoriety' : ''}${restorativeReason(l)}';
         if (rng.nextDouble() < chance) {
           return '$how ${release(l, parole: true)} (Chance was ${(chance * 100).round()}%: $reasons.)';
         }
