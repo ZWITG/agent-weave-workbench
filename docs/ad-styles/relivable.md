@@ -99,6 +99,26 @@ collage CTA close) — two things change:
 - Everything else (color-per-career, typography, eyebrow tag, no flat
   grid background) is unchanged from the mobile frames.
 
+## Lessons from batch 3 (Encore / A long life, 14 Nov 2026)
+
+`game/tool/make_batch3_posts.py`, output in `game/media/social/batch3/`.
+- **Show the moment, not the instructions.** A full-height screenshot in a
+  4:5 frame shows only the top of the screen, and for mini-games that's the
+  rules text. Cut the real screenshot into bands (title bar, progress, then
+  prompt + answer buttons) with `cut()` so the phone shows the decision.
+  Still a real screen, just with the empty middle removed.
+- **Anchor the phone above the brand band** (`paste_phone_above_band`):
+  the answer buttons must not sit under the bottom gradient; shrink the
+  phone when a three-line headline needs the room.
+- **Non-career looks:** the Life hub uses the game's own Night Feed
+  (navy, amber accent); the newspaper uses `press`: sepia ink fading to
+  near-black, cream accent, serif. Same radial glow, no flat fills.
+- **Check what the screen actually says** before writing the headline
+  (the triage card was "Man, 65", not the planned line), and skip any
+  rendered newspaper whose lead story is about AI (messaging guardrail).
+- Videos: the same 120 bpm beat grid and collage close as the Calling
+  reel; 6–9 s each, one file for both Reels and TikTok.
+
 ## Things to not do
 
 - Don't default to a flat black background with a neon grid and a bold
