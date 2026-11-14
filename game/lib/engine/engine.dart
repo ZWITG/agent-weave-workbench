@@ -32,6 +32,7 @@ import 'jobs.dart';
 import 'news_impact.dart';
 import 'lifespan.dart';
 import 'npc_life.dart';
+import 'watchlist.dart';
 import 'models.dart';
 import 'shopping.dart';
 import 'kin.dart';
@@ -404,6 +405,9 @@ class GameEngine {
     }
     if (life.education == 'university' && life.school.major == null) {
       life.sceneQueue.add('choose_major');
+    }
+    for (final line in watchYear(life)) {
+      life.feed.add(FeedEntry(life.age, line, kind: 'watch'));
     }
     // The news reaching your life follows the year's event instead of
     // replacing it (news_impact.dart).

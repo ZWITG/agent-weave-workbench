@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +34,7 @@ import 'widgets.dart';
 import 'yard_time.dart';
 import 'career_hub_screen.dart' show CareerStrip, openCareerHub;
 import 'career_marks.dart' show hubMeterChip;
+import '../engine/watchlist.dart';
 
 /// The web version running on an iPhone or iPad.
 bool get _iosWeb => kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
@@ -848,8 +850,10 @@ class _LifeTab extends StatefulWidget {
 /// Story filters: which feed kinds each chip shows.
 const _feedFilters = <String, Set<String>?>{
   'All': null,
+  // Built from the whole life by turningPoints(), not the 60-entry feed.
+  'Turning points': null,
   'Big moments': {'milestone', 'summary', 'report'},
-  'People': {'npc', 'bond'},
+  'People': {'npc', 'bond', 'watch'},
   'News': {'world'},
 };
 
@@ -880,10 +884,16 @@ class _LifeTabState extends State<_LifeTab> {
   Widget build(BuildContext context) {
     final life = controller.life!;
     final kinds = _feedFilters[_filter];
-    final feed = life.feed.reversed
-        .where((e) => kinds == null || kinds.contains(e.kind))
-        .take(60)
-        .toList();
+    final engine = controller.engine;
+    final feed = _filter == 'Turning points'
+        ? turningPoints(
+            life,
+            fill: engine == null ? null : (s) => engine.fill(s, life),
+          )
+        : life.feed.reversed
+              .where((e) => kinds == null || kinds.contains(e.kind))
+              .take(60)
+              .toList();
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       children: [
@@ -937,6 +947,7 @@ class _LifeTabState extends State<_LifeTab> {
                 )
               : const SizedBox.shrink(key: ValueKey('none')),
         ),
+        _Pinned(controller: controller),
         const SizedBox(height: 12),
         SizedBox(
           height: 40,
@@ -962,6 +973,8 @@ class _LifeTabState extends State<_LifeTab> {
             child: Text(switch (_filter) {
               'People' => 'News about the people in your life shows up here.',
               'News' => 'World news shows up here once a year.',
+              'Turning points' =>
+                'The moments that shape your life will be collected here.',
               _ => 'Your big moments will be collected here.',
             }, style: NF.sora(14, color: NF.muted)),
           ),
@@ -980,6 +993,97 @@ class _LifeTabState extends State<_LifeTab> {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// The pinned watchlist: pinned people and deadlines with where they
+/// stand, plus one-tap pins for deadlines that exist right now.
+class _Pinned extends StatelessWidget {
+  const _Pinned({required this.controller});
+  final GameController controller;
+
+  static const _deadlineLabels = {
+    'release': 'Pin your release date',
+    'parole': 'Pin the end of your parole',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final life = controller.life!;
+    final items = watchlist(life);
+    final offers = [
+      for (final k in pinnableDeadlines(life))
+        if (!isPinned(life, k)) k,
+    ];
+    if (items.isEmpty && offers.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (items.isNotEmpty) ...[
+            Text(
+              'Pinned',
+              style: NF.sora(12, weight: FontWeight.w700, color: NF.muted),
+            ),
+            const SizedBox(height: 6),
+            for (final i in items)
+              Container(
+                margin: const EdgeInsets.only(bottom: 6),
+                padding: const EdgeInsets.fromLTRB(12, 6, 4, 6),
+                decoration: BoxDecoration(
+                  color: NF.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: NF.border),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.push_pin_rounded, size: 15, color: NF.orange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            i.title,
+                            style: NF.sora(13, weight: FontWeight.w700),
+                          ),
+                          Text(i.status, style: NF.sora(12, color: NF.muted)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Unpin ${i.title}',
+                      icon: Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: NF.muted,
+                      ),
+                      onPressed: () => controller.togglePinned(i.key),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+          if (offers.isNotEmpty)
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final k in offers)
+                  ActionChip(
+                    avatar: Icon(
+                      Icons.push_pin_outlined,
+                      size: 16,
+                      color: NF.orange,
+                    ),
+                    label: Text(_deadlineLabels[k]!),
+                    onPressed: () => controller.togglePinned(k),
+                  ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }
@@ -1055,7 +1159,10 @@ class _FeedBubble extends StatelessWidget {
     if (entry.kind == 'world') return _newsBubble();
     if (entry.kind == 'npc') return _npcBubble();
     if (entry.kind == 'summary') return _summaryBubble();
-    final milestone = entry.kind == 'milestone';
+    // Remembered moments (turningPoints) read like milestones.
+    final remembered = entry.kind == 'turning';
+    final pinned = entry.kind == 'watch';
+    final milestone = entry.kind == 'milestone' || remembered || pinned;
     final action = entry.kind == 'action';
     // The news reaching your life (news_impact.dart).
     final news = entry.kind == 'news';
@@ -1086,6 +1193,10 @@ class _FeedBubble extends StatelessWidget {
               child: Icon(
                 news
                     ? Icons.newspaper_rounded
+                    : remembered
+                    ? Icons.bookmark_rounded
+                    : pinned
+                    ? Icons.push_pin_rounded
                     : milestone
                     ? Icons.star_rounded
                     : (action ? Icons.bolt_rounded : Icons.chat_bubble_rounded),

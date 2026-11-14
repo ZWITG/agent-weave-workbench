@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,7 @@ import 'engine/profile.dart';
 import 'engine/scenes.dart';
 import 'engine/world.dart';
 import 'sound.dart';
+import 'engine/watchlist.dart';
 
 /// Holds the current life, talks to the engine and saves on the device
 /// after every change (offline-first; cloud sync comes in Phase 3).
@@ -403,6 +405,14 @@ class GameController extends ChangeNotifier {
   /// The big things from the last birthday (deaths, arrests, diagnoses,
   /// births...), shown in a pop-up so they are not lost in the feed.
   List<String> yearHighlights = const [];
+
+  /// Pins or unpins a watchlist item (watchlist.dart).
+  void togglePinned(String key) {
+    if (life == null) return;
+    togglePin(life!, key);
+    _save();
+    notifyListeners();
+  }
 
   void ageUp() {
     if (life == null || pendingEvent != null) return;

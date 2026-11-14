@@ -295,3 +295,10 @@ The founding wizard listed 25+ industries in the plan but only had 12 built. Six
 - **Pet care** (athleticism): a bite between two dogs in daycare, a cat gone missing overnight from boarding.
 
 Remaining from the plan's list (clinic/dental split, brewery, logistics, fashion label, beauty brand, security firm, travel agency, zoo, film studio, record label) are tracked in docs/phase-2/05 Feature Expansion Ideas.md for a later wave.
+
+## Keeping track of a long life (14 Nov)
+Four small additions that make a long life, and a long dynasty, easier to follow:
+- **Pinned:** pin anyone from their profile, and while you are inside, your release date or the end of your parole. Pins sit above the Life feed with where each one stands (bond and when you last saw them, years to release, the next parole hearing), and the feed flags the year something comes due: their news, a round birthday, "you haven't seen her in 3 years", one year left. A pin that no longer points at anything (a death, a sentence served) is reported once and removed.
+- **Turning points:** a new Life feed filter that collects the whole life's big moments plus every remembered one (marrying, going to prison, your first flat…), from birth on, without the usual 60-line limit.
+- **Back issues:** the newspaper can open any earlier year's front page, searchable by year or by a word in its stories, including the years your ancestors lived. "From the archive" headlines open their paper too.
+- **Notable ancestors:** a family tree toggle that highlights ancestors who reached the upper echelon or earned a Rare or Legendary Life Title, and says which.

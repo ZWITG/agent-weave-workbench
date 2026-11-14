@@ -22,6 +22,10 @@ import 'package:relivable/theme.dart';
 import 'package:relivable/ui/yard_time.dart';
 import 'package:relivable/ui/minigames.dart';
 import 'package:relivable/ui/shop_screen.dart';
+import 'package:relivable/engine/watchlist.dart';
+import 'package:relivable/ui/me_screens.dart' show FamilyTree;
+import 'package:relivable/ui/newspaper.dart' show openNewspaper;
+import 'package:relivable/ui/people.dart' show openPersonSheet;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Every main screen at small phone sizes and large text: nothing may be
@@ -1168,6 +1172,95 @@ void main() {
     await _pump(t);
     await t.tap(find.text('Wealth').first);
     await _pump(t);
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+  });
+
+  testWidgets('pins, turning points, back issues and notable ancestors fit '
+      'a small phone', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    c.updateProfile((p) => p.textScale = 1.3);
+    final problems = <String>[];
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add(msg.split('\n').first);
+      } else {
+        old?.call(d);
+      }
+    };
+    final l = c.life!;
+    final mom = l.npc('mother')!;
+    l.flags['married'] = Memory(30, 'marrying someone with a very long name');
+    l.lineage.add({
+      'name': 'Great-grandma Carter',
+      'born': 1900,
+      'died': 1980,
+      'title': 'The Quiet Life',
+      'echelon': true,
+      'job': 'Retired',
+    });
+    for (final y in [l.year - 3, l.year - 2, l.year - 1]) {
+      c.engine!.world.ensureYear(y, l.country, l.city);
+    }
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+
+    // Pin a person from their sheet; the Life tab lists them.
+    openPersonSheet(t.element(find.byType(Scaffold).first), c, mom);
+    await _pump(t);
+    await t.tap(find.byTooltip('Pin ${mom.name} to your Life feed'));
+    await _pump(t);
+    expect(isPinned(l, 'npc:${mom.id}'), isTrue);
+    Navigator.of(t.element(find.byType(Scaffold).first)).pop();
+    await _pump(t);
+    expect(find.text('Pinned'), findsOneWidget);
+    expect(find.text(mom.name), findsWidgets);
+
+    // Turning points shows remembered moments.
+    final chip = find.text('Turning points');
+    await t.scrollUntilVisible(
+      chip,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await _pump(t);
+    await t.tap(chip);
+    await _pump(t);
+    expect(
+      find.text('Marrying someone with a very long name'),
+      findsOneWidget,
+    );
+
+    // Back issues: search and open one.
+    openNewspaper(t.element(find.byType(Scaffold).first), c);
+    await _pump(t);
+    await t.tap(find.byTooltip('Back issues'));
+    await _pump(t);
+    await t.enterText(find.byType(TextField), '${l.year - 2}');
+    await _pump(t);
+    await t.tap(find.textContaining('${l.year - 2} ·').first);
+    await _pump(t);
+    expect(find.text('Back issue · ${l.year - 2}'), findsOneWidget);
+
+    // Notable ancestors highlights the upper echelon.
+    await t.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: ListView(children: [FamilyTree(life: l)])),
+      ),
+    );
+    await _pump(t);
+    expect(find.text('Upper echelon'), findsNothing);
+    await t.tap(find.text('Notable ancestors'));
+    await _pump(t);
+    expect(find.text('Upper echelon'), findsOneWidget);
+
     FlutterError.onError = old;
     expect(problems, isEmpty, reason: problems.join('\n'));
   });

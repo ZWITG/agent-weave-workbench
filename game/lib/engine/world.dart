@@ -267,6 +267,13 @@ class World {
     return all;
   }
 
+  /// Years before [before] with a printed paper, newest first: every life
+  /// in this world, so a dynasty can read its ancestors' front pages.
+  List<int> backIssueYears(int before) => [
+    for (final e in stories.entries)
+      if (e.key < before && e.value.isNotEmpty) e.key,
+  ]..sort((a, b) => b.compareTo(a));
+
   /// The single headline shown in the Life feed for the year.
   WorldStory? headlineFor(int y, String country, String city) {
     final s = storiesFor(y, country, city);

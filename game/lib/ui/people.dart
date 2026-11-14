@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import '../engine/models.dart';
@@ -10,6 +11,7 @@ import 'activities.dart'
 import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
+import '../engine/watchlist.dart';
 
 /// People tab (04 Social, Module 1), shaped like the Activities panel: a
 /// search box, "Suggested for you" (people who need you), and each circle
@@ -378,6 +380,19 @@ class _PersonSheet extends StatelessWidget {
                 ],
               ),
             ),
+            if (npc.alive)
+              IconButton(
+                tooltip: isPinned(life, 'npc:${npc.id}')
+                    ? 'Unpin ${npc.name}'
+                    : 'Pin ${npc.name} to your Life feed',
+                icon: Icon(
+                  isPinned(life, 'npc:${npc.id}')
+                      ? Icons.push_pin_rounded
+                      : Icons.push_pin_outlined,
+                  color: isPinned(life, 'npc:${npc.id}') ? NF.orange : NF.muted,
+                ),
+                onPressed: () => controller.togglePinned('npc:${npc.id}'),
+              ),
           ],
         ),
         const SizedBox(height: 16),

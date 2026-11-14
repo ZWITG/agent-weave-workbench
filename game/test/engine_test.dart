@@ -68,6 +68,7 @@ import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/youth_custody.dart';
 import 'package:relivable/engine/world.dart';
 import 'package:relivable/engine/world_data.dart';
+import 'package:relivable/engine/watchlist.dart';
 import 'package:relivable/sound.dart';
 
 /// Price from a listing label like "Flat · Old Town · $180,000".
@@ -1275,6 +1276,101 @@ void main() {
     expect(feed, isNotEmpty);
     expect(mom.affection, greaterThan(before));
     expect(life.marks, isNot(contains('faith_reconcile:${mom.id}:${life.age}')));
+  });
+
+  test('turning points: milestones plus remembered moments, whole life', () {
+    final life = engine.newLife(seed: 126);
+    life.feed.add(FeedEntry(3, 'An early milestone', kind: 'milestone'));
+    for (var i = 0; i < 80; i++) {
+      life.feed.add(FeedEntry(4, 'Filler $i'));
+    }
+    life.flags['bit_sibling'] = Memory(2, 'biting {sibling}');
+    life.flags['married'] = Memory(30, 'marrying Sam');
+    final points = turningPoints(life, fill: (s) => engine.fill(s, life));
+    // Old moments survive however long the feed grows; filler never shows.
+    expect(points.map((e) => e.text), contains('An early milestone'));
+    expect(points.any((e) => e.text.startsWith('Filler')), isFalse);
+    expect(points.first.text, 'Marrying Sam');
+    expect(points.first.kind, 'turning');
+    final bit = points.firstWhere((e) => e.text.startsWith('Biting'));
+    expect(bit.text, isNot(contains('{')));
+    // Newest first.
+    for (var i = 1; i < points.length; i++) {
+      expect(points[i].age, lessThanOrEqualTo(points[i - 1].age));
+    }
+  });
+
+  test('back issues: every printed year before this one, newest first', () {
+    final world = World(seed: 9);
+    for (final y in [1990, 2001, 1995, 2010]) {
+      world.ensureYear(y, 'Portugal', 'Porto');
+    }
+    expect(world.backIssueYears(2010), [2001, 1995, 1990]);
+    expect(world.backIssueYears(1990), isEmpty);
+    expect(world.storiesFor(1995, 'Portugal', 'Porto'), isNotEmpty);
+  });
+
+  test('notable ancestors: echelon or a rare title, old records included', () {
+    final rare = lifeTitles.firstWhere((t) => t.rarity == 'Rare');
+    final common = lifeTitles.firstWhere((t) => t.rarity == 'Common');
+    expect(notableAncestor({'title': common.name}), isNull);
+    expect(
+      notableAncestor({'title': common.name, 'echelon': true}),
+      'Upper echelon',
+    );
+    // A record saved before rarity was stored looks it up by name.
+    expect(notableAncestor({'title': rare.name}), 'Rare title');
+
+    // A new heir's lineage records rarity and echelon membership.
+    final old = engine.newLife(seed: 127, family: 'two')..age = 70;
+    old.flags['upper_echelon'] = Memory(50, 'joining the upper echelon');
+    final child = newChild(old, Random(3), ageNow: 40);
+    old.npcs.add(child);
+    final next = heirLife(old, child);
+    final g = next.lineage.last;
+    expect(g['echelon'], isTrue);
+    expect(g['rarity'], isA<String>());
+    expect(notableAncestor(g), 'Upper echelon');
+  });
+
+  test('watchlist: pinned people and deadlines surface in the year they matter', () {
+    final life = engine.newLife(seed: 128, family: 'two')..age = 30;
+    final mom = life.npc('mother')!;
+    togglePin(life, 'npc:${mom.id}');
+    expect(isPinned(life, 'npc:${mom.id}'), isTrue);
+    expect(watchlist(life).single.title, mom.name);
+
+    // Not seen for three years: a reminder.
+    mom.lastContactAge = 27;
+    mom.news.clear();
+    final turning = mom.ageIn(life.year);
+    final lines = watchYear(life);
+    expect(lines.single, startsWith('Pinned:'));
+    if (turning % 10 != 0) expect(lines.single, contains('3 years'));
+
+    // Their news this year wins over the reminder.
+    mom.news.add('Age 30: ${mom.name} took up painting.');
+    expect(watchYear(life).single, 'Pinned: ${mom.name} took up painting.');
+
+    // A death is reported once, then the pin goes.
+    mom.alive = false;
+    expect(watchYear(life).single, contains('has died'));
+    expect(isPinned(life, 'npc:${mom.id}'), isFalse);
+
+    // Prison release: pinnable while inside, counted down, dropped on release.
+    life.prison = Prison(crime: 'theft', years: 3, since: 29)..served = 2;
+    expect(pinnableDeadlines(life), contains('release'));
+    togglePin(life, 'release');
+    expect(watchlist(life).single.status, contains('At 31'));
+    expect(watchYear(life).single, contains('one year until your release'));
+    life.prison = null;
+    expect(watchYear(life).single, contains('you are out'));
+    expect(isPinned(life, 'release'), isFalse);
+
+    // Unpinning is a toggle.
+    togglePin(life, 'parole');
+    togglePin(life, 'parole');
+    expect(life.marks.any((m) => m.startsWith('pin:')), isFalse);
   });
 
   test('moving abroad shows visa odds and changes country rules', () {

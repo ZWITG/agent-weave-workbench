@@ -120,6 +120,36 @@ String chapterFor(Life life) {
   return 'The Long View';
 }
 
+// ---------------- Turning points ----------------
+
+/// The whole life's turning points, newest first: milestone feed entries
+/// plus every remembered moment (`life.flags`) as a 'turning' entry, so a
+/// long life can be read without scrolling every year. [fill] resolves
+/// storylet placeholders such as {sibling} in remembered labels.
+List<FeedEntry> turningPoints(Life life, {String Function(String)? fill}) {
+  final out = <FeedEntry>[
+    for (final e in life.feed)
+      if (e.kind == 'milestone') e,
+    for (final m in life.flags.values)
+      if (m.label.trim().isNotEmpty)
+        FeedEntry(
+          m.age,
+          _capFirst((fill ?? (s) => s)(m.label)),
+          kind: 'turning',
+        ),
+  ];
+  // Within an age, newest added first, matching the reversed feed.
+  final indexed = out.indexed.toList()
+    ..sort((a, b) {
+      final byAge = b.$2.age.compareTo(a.$2.age);
+      return byAge != 0 ? byAge : b.$1.compareTo(a.$1);
+    });
+  return [for (final (_, e) in indexed) e];
+}
+
+String _capFirst(String s) =>
+    s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+
 // ---------------- Life Titles ----------------
 
 class LifeTitle {

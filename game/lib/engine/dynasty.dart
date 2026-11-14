@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'echelon.dart' show inheritEchelon;
+import 'elite.dart' show upperEchelon;
 import 'actions.dart';
 import 'careers.dart';
 import 'family.dart';
@@ -130,13 +131,16 @@ Life heirLife(Life old, Npc heir) {
         ..ironman = old.ironman
         ..classic = old.classic
         ..economy = old.economy;
+  final oldTitle = titleFor(old);
   life.lineage
     ..addAll(old.lineage)
     ..add({
       'name': old.fullName,
       'born': old.birthYear,
       'died': old.year,
-      'title': titleFor(old).name,
+      'title': oldTitle.name,
+      'rarity': oldTitle.rarity,
+      'echelon': upperEchelon(old),
       'cause': old.causeOfDeath ?? '',
       'job': old.job ?? (old.retired ? 'Retired' : ''),
     });
@@ -314,4 +318,16 @@ String? passFamilyHome(Life old, Life heir, int age) {
   );
   heir.flags['owns_house'] = Memory(age, 'inheriting the family home');
   return 'You inherited the family ${home.name.toLowerCase()} in ${home.info['area'] ?? old.city}, where ${old.firstName} lived. It came out of your share of the estate.';
+}
+
+/// Why an ancestor stands out in the family tree, or null: the upper
+/// echelon, or a Rare or Legendary Life Title. Records from before rarity
+/// was stored look the title up by name.
+String? notableAncestor(Map<String, dynamic> g) {
+  if (g['echelon'] == true) return 'Upper echelon';
+  final rarity =
+      g['rarity'] as String? ??
+      lifeTitles.where((t) => t.name == g['title']).firstOrNull?.rarity;
+  if (rarity == 'Legendary' || rarity == 'Rare') return '$rarity title';
+  return null;
 }

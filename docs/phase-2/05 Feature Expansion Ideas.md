@@ -2,7 +2,7 @@
 title: "05 Feature Expansion Ideas"
 project: Relivable
 phase: 2
-status: "E3 and C2 built (14 Nov 2026); rest proposed"
+status: "E3, C2, E5, L1, P2, M2 and N2 built (14 Nov 2026); rest proposed"
 updated: 2026-11-14
 tags: [relivable, phase-2, roadmap, ideas]
 ---
@@ -27,7 +27,7 @@ another being built first, except where noted.
 
 | # | Adds | Touches | Size |
 |---|---|---|---|
-| L1 | **Pinned watchlist**: pin a person, trial date or deadline from any card so the year feed surfaces it the year it matters, instead of it arriving unannounced in the scroll | `ui/life_hub.dart` (or equivalent feed widget), a small `watchlist` list on `Life`, read by whatever already schedules dated callbacks (justice trial dates, weddings) | Small — one data field plus a feed filter |
+| L1 | ~~**Pinned watchlist**~~ — **Built 14 Nov.** Pins live in `life.marks` (`pin:npc:<id>`, `pin:release`, `pin:parole`; no save change) via `engine/watchlist.dart`. A Pinned strip on the Life tab shows each pin's status; `watchYear` (called from `engine.ageUp`) adds a `watch` feed line when it comes due, and drops pins that no longer point at anything. The game has no dated trials or weddings to pin, so deadlines are prison release (with the next parole hearing) and parole's end | `engine/watchlist.dart`, `engine/engine.dart`, `ui/hub_screen.dart` (`_Pinned`), `ui/people.dart` (pin button) | — |
 | L2 | **Reactive suggestion cards**: a suggestion card type driven by relationship decay ("You haven't seen your mom in 3 years") rather than only canned/contextual content | `engine/social.dart` (bond decay is already tracked), the suggestion-card generator in the hub | Small–medium |
 
 ## People
@@ -35,7 +35,7 @@ another being built first, except where noted.
 | # | Adds | Touches | Size |
 |---|---|---|---|
 | P1 | **Bond history chart**: a real bond-over-time chart on the relationship detail screen, not just a sparkline; tapping a dip jumps to the Timeline entry that caused it | `ui/` relationship detail screen, `engine/social.dart` (bond deltas would need a lightweight history log per relationship), `engine/lifespan.dart` (Timeline linking already exists for "◆ Remembered" markers) | Medium — needs a bounded history log per NPC, not just the current bond number |
-| P2 | **Notable ancestors filter**: a family tree filter that highlights Life-Title holders and Echelon members across generations | `ui/` family tree screen, `engine/family.dart`, `engine/echelon.dart`, `engine/lifespan.dart` (titles) | Small — the data already exists per-life; this is a tree query and a highlight state |
+| P2 | ~~**Notable ancestors filter**~~ — **Built 14 Nov.** `notableAncestor` (`dynasty.dart`): upper echelon or a Rare/Legendary title. `heirLife` now records `rarity` and `echelon` per ancestor; older records look rarity up by title name. A "Notable ancestors" toggle on `FamilyTree` (`ui/me_screens.dart`) highlights them and says why | `engine/dynasty.dart`, `ui/me_screens.dart` | — |
 | P3 | **Standing annual parties**: a recurring party (an annual birthday bash) that auto-invites by bond threshold and resolves as a yearly outcome instead of rebuilding the guest list every time | wherever the party planner lives today (`ui/` + a scene in `engine/`), `engine/social.dart` for the auto-invite threshold | Small–medium |
 | P4 | **Exotic pet breeding/shows**: a small side economy for exotic pets, feeding into Wealth the way vehicles already do | pet system (`engine/` pets), `engine/wealth` equivalents (`realty.dart`/`possessions.dart` pattern) | Medium |
 
@@ -62,7 +62,7 @@ another being built first, except where noted.
 | # | Adds | Touches | Size |
 |---|---|---|---|
 | M1 | **Health ties into career stakes**: chronic conditions that interact with special careers directly — a pilot loses their medical, a boxer fails a pre-fight physical | `engine/health.dart`, `engine/career_hub*.dart` (per-career check, same shape as the existing doping/malpractice/investigation hooks from Calling: Encore) | Medium — one hook per affected career, reusing the Encore pattern |
-| M2 | **Timeline "turning points" filter**: filter the Life Timeline to rule- or AI-flagged major branches only, so a long life's recap doesn't require scrolling 80 years | `engine/lifespan.dart` (Timeline), a "major" flag already implicit in "◆ Remembered" markers — promote it to a filterable field | Small |
+| M2 | ~~**Timeline "turning points" filter**~~ — **Built 14 Nov.** There is no separate Timeline: the Life feed is it, and "◆ Remembered" is `life.flags`. `turningPoints` (`lifespan.dart`) merges milestone feed entries with every remembered moment for the whole life; it is the "Turning points" chip on the Life tab, uncapped (the other filters stop at 60 lines) | `engine/lifespan.dart`, `ui/hub_screen.dart` | — |
 | M3 | **Per-career title tracks**: career-specific Life Titles ("The Champion", "The Auteur") alongside the universal ones, now that every special career has a Recap page | `engine/lifespan.dart` (titles), `engine/career_hub.dart` (Recap pages) | Medium — one title set per career, 13 careers |
 | M4 | **Challenges seeded from shipped content**: weekly challenges built from real updates ("play the Calling: Encore update") to drive discovery post-launch | challenges hub (`engine/` or `ui/` wherever S59 lives) | Small — a content/ops task more than an engine task |
 | M5 | **Dynasty family trade bonus**: a small, visible bonus for the next heir who picks a special career that 3+ prior generations worked | `engine/family.dart` / dynasty tracking, `engine/career_hub.dart` (entry rules, as a bonus not a requirement) | Small–medium |
@@ -93,7 +93,7 @@ another being built first, except where noted.
 | # | Adds | Touches | Size |
 |---|---|---|---|
 | N1 | **Player choices become headlines beyond crime/politics**: a business going public, an Echelon scandal, a championship win — feeding the newspaper from more systems than just crime and politics | `engine/world.dart` (newspaper generation), hooks from `engine/career_hub*.dart`, `engine/echelon.dart` | Medium — the newspaper pipeline exists; this is wiring more systems into it |
-| N2 | **Archive search**: pull up any past year's front page from the Timeline, not only the existing "From the archive" snippets | `engine/world.dart`, `engine/lifespan.dart` (Timeline) | Small — the archive data likely already exists per year; this is a search UI over it |
+| N2 | ~~**Archive search**~~ — **Built 14 Nov.** `World.backIssueYears` lists every printed year in the world (ancestors' too); the newspaper has a Back issues button with a year/word search, opens any year as a back issue, and "From the archive" headlines open their year | `engine/world.dart`, `ui/newspaper.dart` | — |
 
 ## Features that existed but had no real content (14 Nov audit)
 
@@ -121,7 +121,7 @@ most low counts here turned out to be backed by real systems elsewhere.
 
 Cheapest and most self-contained first, since none of these blocks another:
 ~~**E3**~~ (reuses Second Acts directly) and ~~**C2**~~ (reuses the youth
-unit directly) are built (14 Nov) — next: **L1, P2, M2, N2** (small,
-UI-forward, no new systems) → **EC2/EC3** (gives the Echelon real depth
+unit directly) are built (14 Nov), and so are ~~**L1, P2, M2, N2**~~
+(14 Nov) — next: **EC2/EC3** (gives the Echelon real depth
 cheaply) → the Medium items → **E4** (business franchising) last, since
 it's the one item here closer to a new system than an extension.

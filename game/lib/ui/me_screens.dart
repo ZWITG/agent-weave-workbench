@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../engine/actions.dart' show ActionResult;
+import '../engine/dynasty.dart' show notableAncestor;
 import '../engine/family.dart' show childrenOf;
 import '../engine/identity.dart';
 import '../engine/world_data.dart' show countryProfile;
@@ -482,13 +483,24 @@ class _Head extends StatelessWidget {
 // ---------------- Family tree (plan Social §4) ----------------
 
 /// Me tab: earlier generations of this family, then your parents and
-/// siblings, you and your partner, and your children.
-class FamilyTree extends StatelessWidget {
+/// siblings, you and your partner, and your children. "Notable ancestors"
+/// highlights the upper echelon and Rare or Legendary Life Titles.
+class FamilyTree extends StatefulWidget {
   const FamilyTree({super.key, required this.life});
   final Life life;
 
   @override
+  State<FamilyTree> createState() => _FamilyTreeState();
+}
+
+class _FamilyTreeState extends State<FamilyTree> {
+  bool _notable = false;
+
+  Life get life => widget.life;
+
+  @override
   Widget build(BuildContext context) {
+    final anyNotable = life.lineage.any((g) => notableAncestor(g) != null);
     final elders = life.npcs.where((n) => n.circle == 'Family').toList();
     final partner = partnerOf(life);
     final kids = childrenOf(life);
@@ -512,15 +524,17 @@ class FamilyTree extends StatelessWidget {
               ),
             ],
           ),
-          for (final g in life.lineage) ...[
-            _row(
-              '${g['name']}',
-              '${g['born']}–${g['died']} · ${g['title']}'
-                  '${(g['job'] ?? '') != '' ? ' · ${g['job']}' : ''}',
-              dim: true,
+          if (anyNotable)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: FilterChip(
+                avatar: Icon(Icons.star_rounded, size: 16, color: NF.orange),
+                label: const Text('Notable ancestors'),
+                selected: _notable,
+                onSelected: (v) => setState(() => _notable = v),
+              ),
             ),
-            _link(),
-          ],
+          for (final g in life.lineage) ...[_ancestor(g), _link()],
           if (elders.isNotEmpty) ...[
             const SizedBox(height: 8),
             Wrap(
@@ -553,6 +567,56 @@ class FamilyTree extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _ancestor(Map<String, dynamic> g) {
+    final sub =
+        '${g['born']}–${g['died']} · ${g['title']}'
+        '${(g['job'] ?? '') != '' ? ' · ${g['job']}' : ''}';
+    final why = _notable ? notableAncestor(g) : null;
+    if (why == null) {
+      return Opacity(
+        opacity: _notable ? 0.5 : 1,
+        child: _row('${g['name']}', sub, dim: true),
+      );
+    }
+    return Semantics(
+      label: '${g['name']}, notable: $why. $sub',
+      excludeSemantics: true,
+      child: Container(
+        margin: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: NF.orange.withValues(alpha: 0.6)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, right: 8),
+              child: Icon(Icons.star_rounded, size: 16, color: NF.orange),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _row('${g['name']}', sub),
+                  Text(
+                    why,
+                    style: NF.sora(
+                      11,
+                      weight: FontWeight.w700,
+                      color: NF.orange,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
