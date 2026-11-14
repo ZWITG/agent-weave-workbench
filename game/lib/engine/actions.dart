@@ -15,6 +15,7 @@ import 'heists.dart';
 import 'crime_jobs.dart';
 import 'gangs.dart';
 import 'prison_life.dart';
+import 'youth_custody.dart' show youthActions;
 import 'kin.dart';
 import 'possessions.dart';
 import 'property.dart';
@@ -481,6 +482,7 @@ final allActions = <GameAction>[
   shopAction,
   ...gangActions,
   ...prisonLifeActions,
+  ...youthActions,
   ...crimeJobActions,
   ...hubActions,
 ];

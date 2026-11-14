@@ -88,6 +88,9 @@ final cellShopVariants = <ActionVariant>[
         final p = l.prison;
         if (p == null) return 'Only in prison';
         if (p.items.contains(item.id)) return 'Already on your shelf';
+        if (p.youth && item.contraband) {
+          return 'Not on the youth unit: staff search every room';
+        }
         if (p.stash < item.price) return 'Needs ${item.price} in your stash';
         return null;
       },

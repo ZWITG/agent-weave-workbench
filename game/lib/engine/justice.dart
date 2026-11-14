@@ -17,6 +17,7 @@ import 'underworld.dart' show crewOf, crewRank, informant;
 import 'models.dart';
 import 'storylet.dart';
 import 'world_data.dart';
+import 'youth_custody.dart' show youthYear;
 
 /// Crime and justice (plan Module 8): every crime shows its risk and the
 /// reasons behind it, leaves evidence the police may follow for years, and
@@ -1693,7 +1694,10 @@ List<String> prisonYear(Life l, Random rng) {
   p.served++;
   l.reason = 'Prison';
   l.stats.add('happiness', -3);
-  if (p.respect < 40 && !p.gang && rng.nextInt(100) < 20) {
+  // Under-18s are on a youth unit (youth_custody.dart): no yard fights,
+  // gangs or riots.
+  if (p.youth) feed.addAll(youthYear(l, rng));
+  if (!p.youth && p.respect < 40 && !p.gang && rng.nextInt(100) < 20) {
     if (p.items.contains('shank')) {
       // The shank on your shelf (cell.dart) ends it before it starts.
       p.respect = min(100, p.respect + 5);
@@ -1708,7 +1712,7 @@ List<String> prisonYear(Life l, Random rng) {
       );
     }
   }
-  if (p.solitary == 0) feed.addAll(gangYear(l, rng));
+  if (p.solitary == 0 && !p.youth) feed.addAll(gangYear(l, rng));
   feed.addAll(prisonLifeYear(l, rng));
   if (l.prison == null) return feed;
   p.behaviour = min(100, p.behaviour + (p.job != null ? 3 : 0));
@@ -1722,7 +1726,7 @@ List<String> prisonYear(Life l, Random rng) {
   )) {
     n.addFacets(affection: n.circle == 'Children' ? -4 : -2, familiarity: -3);
   }
-  if (rng.nextInt(100) < (p.security == 'maximum' ? 12 : 6)) {
+  if (!p.youth && rng.nextInt(100) < (p.security == 'maximum' ? 12 : 6)) {
     l.sceneQueue.add('riot');
   }
   final mate = l.npc('cellmate');
@@ -1732,6 +1736,14 @@ List<String> prisonYear(Life l, Random rng) {
           ? '${mate.name.split(' ').first} shared their contraband chocolate with you. Prison friendships are real.'
           : '${mate.name.split(' ').first} snores like a lawnmower.',
     );
+  }
+  if (p.youth) {
+    // The youth unit has a unit, not a yard.
+    for (var i = 0; i < feed.length; i++) {
+      feed[i] = feed[i]
+          .replaceAll('The yard', 'The unit')
+          .replaceAll('the yard', 'the unit');
+    }
   }
   if (p.served >= p.years) {
     feed.add(release(l));

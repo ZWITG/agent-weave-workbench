@@ -41,6 +41,7 @@ import 'property.dart';
 import 'realty.dart';
 import 'school.dart';
 import 'storylet.dart';
+import 'youth_custody.dart' show youthScene;
 
 /// Code-driven events ("scenes"): the same event card as storylets, but
 /// their choices run Dart code (interviews, trials, illnesses, births...).
@@ -194,6 +195,7 @@ Storylet? buildScene(String id, Life life) {
     'manhunt' => manhuntScene(parts.sublist(1), life),
     'own_case' => ownCaseScene(parts.sublist(1), life),
     'hub' => hubScene(parts.sublist(1), life),
+    'youth' => youthScene(parts.sublist(1), life),
     'academy' ||
     'beat_case' ||
     'case_build' ||

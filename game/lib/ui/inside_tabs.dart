@@ -449,7 +449,13 @@ class CaseFileTab extends StatelessWidget {
               style: NF.chalk(21, color: NF.soft),
             ),
           ),
-        ..._rows(context, c, ['prison_job', 'prison_study']),
+        ..._rows(context, c, [
+          'youth_lessons',
+          'key_worker',
+          'restorative',
+          'prison_job',
+          'prison_study',
+        ]),
         Wrap(
           spacing: 6,
           runSpacing: 6,

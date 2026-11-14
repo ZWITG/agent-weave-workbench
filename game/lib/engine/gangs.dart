@@ -421,7 +421,12 @@ final gangActions = <GameAction>[
         ? 'Nobody takes in a snitch'
         : 'Three crews, each with perks and risks',
     extraCheck: (l) =>
-        _inPrison(l) ?? (l.prison!.gang ? 'You are already in a gang' : null),
+        _inPrison(l) ??
+        (l.prison!.youth
+            ? 'There are no gangs on the youth unit'
+            : l.prison!.gang
+            ? 'You are already in a gang'
+            : null),
     run: (l, rng) {
       l.sceneQueue.add('gang_pick');
       return ActionResult('You start watching who sits where at lunch.');

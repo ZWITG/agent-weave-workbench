@@ -64,6 +64,7 @@ import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/engine/scenes.dart';
 import 'package:relivable/engine/school.dart';
 import 'package:relivable/engine/storylet.dart';
+import 'package:relivable/engine/youth_custody.dart';
 import 'package:relivable/engine/world.dart';
 import 'package:relivable/engine/world_data.dart';
 import 'package:relivable/sound.dart';
@@ -3545,6 +3546,50 @@ void main() {
       if (x.job == null) revoked++;
     }
     expect(revoked, inInclusiveRange(8, 32));
+  });
+
+  test('youth custody: a youth unit, not an adult prison', () {
+    GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
+    final l = engine.newLife(seed: 995)
+      ..age = 15
+      ..education = 'secondary';
+    l.sceneQueue.clear();
+    enterPrison(l, crimeById('burglary'), 6);
+    final p = l.prison!;
+    expect(p.youth, isTrue);
+    expect(onYouthUnit(l), isTrue);
+    expect(act('join_gang').lockReason(l), contains('no gangs'));
+    expect(act('restorative').lockReason(l), contains('key worker'));
+    // Years inside bring no gangs, riots or yard fights.
+    for (var i = 0; i < 2; i++) {
+      final feed = prisonYear(l, Random(i));
+      expect(feed.join(' '), isNot(contains('yard')));
+      expect(l.sceneQueue, isNot(contains('riot')));
+      expect(l.sceneQueue, isNot(contains('gang_pressure')));
+      if (l.prison == null) break;
+      l.usedActions.clear();
+      engine.runAction(l, act('youth_lessons'));
+      l.age++;
+    }
+    expect(youthLessons(l), 2);
+    expect(l.education, 'high school graduate');
+    // The key worker, then the meeting, which can take a year off.
+    final y = engine.newLife(seed: 996)..age = 16;
+    y.sceneQueue.clear();
+    enterPrison(y, crimeById('robbery'), 8);
+    final years = y.prison!.years;
+    engine.runAction(y, act('key_worker'));
+    expect(act('restorative').lockReason(y), isNull);
+    engine.runAction(y, act('restorative'));
+    final s = engine.nextScene(y)!;
+    engine.choose(y, s, s.choices.first);
+    expect(y.prison!.years, years - 1);
+    y.usedActions.clear();
+    expect(act('restorative').lockReason(y), contains('had your meeting'));
+    // Adults never see the youth unit's actions.
+    final a = engine.newLife(seed: 997)..age = 30;
+    enterPrison(a, crimeById('burglary'), 4);
+    expect(act('youth_lessons').lockReason(a), isNotNull);
   });
 
   test('Calling: a special career ending offers a second act', () {
