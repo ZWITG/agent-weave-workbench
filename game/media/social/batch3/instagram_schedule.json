@@ -1,0 +1,301 @@
+{
+ "account_note": "Instagram API with Instagram Login (graph.instagram.com). Files are fetched from the public repo through jsDelivr, pinned to `ref`.",
+ "repo": "zwitg/agent-weave-workbench",
+ "ref": "claude/bitlife-features-skills-yiz4s7",
+ "dir": "game/media/social/batch3",
+ "posts": [
+  {
+   "date": "2026-11-16",
+   "kind": "image",
+   "files": [
+    "01_every_job_its_own_game.jpg"
+   ],
+   "caption": "01"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "story",
+   "files": [
+    "story_3_encore.jpg"
+   ]
+  },
+  {
+   "date": "2026-11-17",
+   "kind": "reel",
+   "files": [
+    "reel_1_every_job.mp4"
+   ],
+   "caption": "reel_1"
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "carousel",
+   "files": [
+    "carousel_a_01.jpg",
+    "carousel_a_02.jpg",
+    "carousel_a_03.jpg",
+    "carousel_a_04.jpg",
+    "carousel_a_05.jpg",
+    "carousel_a_06.jpg",
+    "carousel_a_07.jpg",
+    "carousel_a_08.jpg",
+    "carousel_a_09.jpg",
+    "carousel_a_13.jpg"
+   ],
+   "caption": "carousel_a"
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "manual_story",
+   "files": [
+    "story_1_hold_or_rip.jpg"
+   ],
+   "note": "Poll sticker Actor / Doctor: post from the Instagram app."
+  },
+  {
+   "date": "2026-11-19",
+   "kind": "image",
+   "files": [
+    "02_coldread.jpg"
+   ],
+   "caption": "02"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "reel",
+   "files": [
+    "reel_2_cold_read.mp4"
+   ],
+   "caption": "reel_2"
+  },
+  {
+   "date": "2026-11-21",
+   "kind": "image",
+   "files": [
+    "03_triage.jpg"
+   ],
+   "caption": "03"
+  },
+  {
+   "date": "2026-11-22",
+   "kind": "manual_story",
+   "files": [
+    "story_2_pass_or_shoot.jpg"
+   ],
+   "note": "Poll sticker Athlete / Lawyer: post from the Instagram app."
+  },
+  {
+   "date": "2026-11-23",
+   "kind": "reel",
+   "files": [
+    "reel_3_triage.mp4"
+   ],
+   "caption": "reel_3"
+  },
+  {
+   "date": "2026-11-24",
+   "kind": "image",
+   "files": [
+    "05_objection.jpg"
+   ],
+   "caption": "05"
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "image",
+   "files": [
+    "04_crosswind.jpg"
+   ],
+   "caption": "04"
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "story",
+   "files": [
+    "story_6_runway.jpg"
+   ]
+  },
+  {
+   "date": "2026-11-26",
+   "kind": "reel",
+   "files": [
+    "reel_4_objection.mp4"
+   ],
+   "caption": "reel_4"
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "image",
+   "files": [
+    "06_debate.jpg"
+   ],
+   "caption": "06"
+  },
+  {
+   "date": "2026-11-28",
+   "kind": "reel",
+   "files": [
+    "reel_6_which_are_you.mp4"
+   ],
+   "caption": "reel_6"
+  },
+  {
+   "date": "2026-11-30",
+   "kind": "image",
+   "files": [
+    "07_soundcheck.jpg"
+   ],
+   "caption": "07"
+  },
+  {
+   "date": "2026-12-01",
+   "kind": "image",
+   "files": [
+    "08_runway.jpg"
+   ],
+   "caption": "08"
+  },
+  {
+   "date": "2026-12-02",
+   "kind": "image",
+   "files": [
+    "09_matchday.jpg"
+   ],
+   "caption": "09"
+  },
+  {
+   "date": "2026-12-03",
+   "kind": "reel",
+   "files": [
+    "reel_5_long_life.mp4"
+   ],
+   "caption": "reel_5"
+  },
+  {
+   "date": "2026-12-03",
+   "kind": "story",
+   "files": [
+    "story_5_pinned.jpg"
+   ]
+  },
+  {
+   "date": "2026-12-04",
+   "kind": "image",
+   "files": [
+    "10_obstacle.jpg"
+   ],
+   "caption": "10"
+  },
+  {
+   "date": "2026-12-05",
+   "kind": "image",
+   "files": [
+    "13_pinned.jpg"
+   ],
+   "caption": "13"
+  },
+  {
+   "date": "2026-12-06",
+   "kind": "image",
+   "files": [
+    "11_diagnose.jpg"
+   ],
+   "caption": "11"
+  },
+  {
+   "date": "2026-12-07",
+   "kind": "image",
+   "files": [
+    "12_pitch.jpg"
+   ],
+   "caption": "12"
+  },
+  {
+   "date": "2026-12-08",
+   "kind": "image",
+   "files": [
+    "14_turning_points.jpg"
+   ],
+   "caption": "14"
+  },
+  {
+   "date": "2026-12-09",
+   "kind": "carousel",
+   "files": [
+    "carousel_b_01.jpg",
+    "carousel_b_02.jpg",
+    "carousel_b_03.jpg",
+    "carousel_b_04.jpg",
+    "carousel_b_05.jpg",
+    "carousel_b_06.jpg"
+   ],
+   "caption": "carousel_b"
+  },
+  {
+   "date": "2026-12-09",
+   "kind": "manual_story",
+   "files": [
+    "story_4_born_year.jpg"
+   ],
+   "note": "Question sticker \"What year were you born?\": post from the Instagram app."
+  },
+  {
+   "date": "2026-12-10",
+   "kind": "image",
+   "files": [
+    "15_back_issue.jpg"
+   ],
+   "caption": "15"
+  },
+  {
+   "date": "2026-12-11",
+   "kind": "image",
+   "files": [
+    "16_front_page.jpg"
+   ],
+   "caption": "16"
+  },
+  {
+   "date": "2026-12-13",
+   "kind": "image",
+   "files": [
+    "17_whats_new.jpg"
+   ],
+   "caption": "17"
+  },
+  {
+   "date": "2026-12-13",
+   "kind": "story",
+   "files": [
+    "story_3_encore.jpg"
+   ]
+  }
+ ],
+ "captions": {
+  "01": "Every job. Its own game. 🎭🩺✈️\n11 careers just got a mini-game of their own: actors do a cold read, doctors triage the night's arrivals, pilots land in a crosswind. Every job plays like the job.\nWhich one are you trying first? 👇\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate #choicesmatter",
+  "02": "\"I'm fine. Really.\" 🎭\nShe has just lost the case. She is not fine. Read the note under the line, then pick the delivery: hold it back, play it straight, or let it rip.\nHow would you play it?\n\n#lifesim #indiegame #acting #mobilegame #choicesmatter",
+  "03": "Man, 65. Fell, hip pain, cannot stand. 🩺\nResus, majors or minors? Doctors now triage every arrival on the night shift. Under-triage costs most, and it gets faster.\nWhere are you sending him? Comment RESUS, MAJORS or MINORS.\n\n#lifesim #indiegame #doctor #mobilegame #choicesmatter",
+  "04": "Crab. Flare. Land. ✈️\nEvery seat in the cockpit needs a check ride now: a crosswind landing you fly yourself. Hold into the gusts, keep her on the centreline, flare low.\nEver landed one for real? 👀\n\n#lifesim #indiegame #aviation #mobilegame #careers",
+  "05": "Objection. ⚖️\n\"I was standing at the corner shop.\" Your notes say the café. Lawyers now cross-examine witnesses: object to what doesn't square with your notes, and to hearsay.\nLet it stand or object?\n\n#lifesim #indiegame #lawyer #mobilegame #choicesmatter",
+  "06": "Read the room. 🏛️\nPoliticians now debate live: pick the rebuttal the room wants to hear: the facts, a real story, hit back, or agree then pivot. Approval fills the seats.\nWhat's your move?\n\n#lifesim #indiegame #politics #mobilegame #choicesmatter",
+  "07": "Ride the faders. 🎸\nDoors are open and the room is filling up. Musicians now run their own soundcheck: vocals, guitar, bass and drums, and a needle you want in the red.\n\n#lifesim #indiegame #musician #mobilegame #careers",
+  "08": "Turn. Pose. Walk. 📸\nModels now walk the runway: turn to the press pit when someone shouts, then pose to the brief.\nPlayful or fierce? 👇\n\n#lifesim #indiegame #runway #mobilegame #careers",
+  "09": "Pass or shoot? ⚽\nYou have the ball. Centre is open, the rest are marked. Athletes now play match day: find the open teammate, or take it yourself.\n\n#lifesim #indiegame #football #mobilegame #choicesmatter",
+  "10": "Wall. Wire. Water. 🪖\nThe armed forces obstacle course: the right move for every obstacle, faster as you tire. A 2-metre wall, smooth, no footholds. What do you do?\n\n#lifesim #indiegame #mobilegame #careers #choicesmatter",
+  "11": "Two signs. One cause. 🐑\nVets now diagnose in the clinic: match two signs to their cause, with the handbook open.\n\n#lifesim #indiegame #vet #mobilegame #careers",
+  "12": "Not while he's looking. 🎪\nStreet hustlers now work the pitch: call out to people who are looking, never while an officer passes.\n\n#lifesim #indiegame #mobilegame #careers #choicesmatter",
+  "13": "You haven't seen your dad in 19 years. 📌\nPin anyone in your life and the Life feed keeps track: your bond, when you last saw them, their news, a round birthday coming up. In prison? Pin your release date and your next parole hearing.\nWho would you pin first?\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate",
+  "14": "Every big moment. One place. ⭐\nA new Life feed filter keeps every turning point from birth on: marrying, prison, your first flat, the box of family photographs. Nothing drops off.\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate",
+  "15": "Read any year's paper. 🗞️\nThe newspaper now keeps back issues: open any year's front page, search by year or by a word, even the years your ancestors lived.\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate",
+  "16": "Make the front page. 🗞️\nEvery year the world prints what happened, and what it means for you: jobs, house prices, taxes, crime. Sometimes the story is you.\n\n#lifesim #lifesimulator #indiegame #mobilegame #simulationgame",
+  "17": "What's new: 11 careers with their own mini-games, second acts when a career ends (coach, pundit, director, designer…), careers that reach into your life, a youth unit and restorative justice in prison, and pins, turning points and back issues to keep track of a long life.\nFree on Android, iPhone, Windows and the web. Link in bio.\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate #gamedev",
+  "carousel_a": "Swipe through the new games ›\nEvery career plays like the job now. Which one is yours? 👇\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate #careers",
+  "carousel_b": "Eighty years, eight generations. Here's how you keep track ›\nPin who matters, filter the big moments, and read any year's paper. Save this for your next long life. 📌\n\n#lifesim #lifesimulator #indiegame #mobilegame #newupdate",
+  "reel_1": "Every job. Its own game. 11 careers, 11 new mini-games. Which one are you? 👇\n\n#lifesim #indiegame #mobilegame #newupdate #choicesmatter",
+  "reel_2": "\"I'm fine. Really.\" She just lost the case. How do you play it: hold it back, play it straight, or let it rip? 🎭\n\n#lifesim #indiegame #acting #mobilegame",
+  "reel_3": "Man, 65. Fell, can't stand. Resus, majors or minors? Comment your call 🩺\n\n#lifesim #indiegame #doctor #mobilegame",
+  "reel_4": "\"I was at the corner shop.\" Your notes say otherwise. Object or let it go? ⚖️\n\n#lifesim #indiegame #lawyer #mobilegame",
+  "reel_5": "You haven't seen your dad in 19 years. Pin the people who matter, keep every turning point, read any year's paper. 📌\n\n#lifesim #lifesimulator #indiegame #mobilegame",
+  "reel_6": "Screenshot to pick your job. Which one did you get? 👇\n\n#lifesim #indiegame #mobilegame #careers"
+ }
+}
