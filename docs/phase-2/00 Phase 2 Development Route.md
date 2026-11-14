@@ -38,6 +38,9 @@ tags: [relivable, phase-2, roadmap]
 > [!note] Update 13 Nov 2026
 > The game is past this route. Release 1.0 was prepared on 1 Nov, and since then Hot Pursuit (police manhunts) and the "Calling" update (14 career Hubs) have shipped. What is still missing, and what each part needs from the owner, is in [[01 Phase 2 Open Items]].
 
+> [!note] Update 14 Nov 2026
+> A pass proposing one layer of depth for every shipped system (not new tabs, extensions) is in [[05 Feature Expansion Ideas]], with a suggested build order.
+
 ## Progress (13 Nov 2026)
 Every sprint's build goal is met, and the game is well past the planned slice (birth to 30). It covers a whole life, dynasties and 14 career worlds. **Only Sprint 6, playtests and the Gate 2 readout, is still open.**
 
