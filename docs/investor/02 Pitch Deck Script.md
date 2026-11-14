@@ -83,10 +83,10 @@ Show a Life feed screen with an event card next to them.
 
 ### Slide 6: Proof: built in under three weeks (1:15)
 **On screen:** "26 Oct → 13 Nov 2026" and a stat block:
-- About 80,700 lines of code.
-- 176 automated tests, including a 40,000-year fuzz test.
+- About 83,200 lines of code.
+- 180 automated tests, including a 40,000-year fuzz test.
 - 200+ story events and scenes.
-- 19 mini-game engines.
+- 30 mini-games.
 - 14 career worlds.
 - 4 platforms.
 - Promo video and two social batches.

@@ -20,6 +20,7 @@ tags: [relivable, investor, product, traction]
 | 1 Nov 2026 | **Release 1.0 candidate** after a front-to-back audit and a legal pass; 80-second promo video |
 | 7 Nov 2026 | Instagram batch 1 (feed posts, carousel, stories, three Reels) |
 | 13 Nov 2026 | Hot Pursuit (police manhunts); the **"Calling" update**: 14 special careers, each with its own Hub, look and people; Instagram batch 2 and the 12-second Reel |
+| 14 Nov 2026 | **"Calling: Encore"**: original mini-games for eleven careers, careers linked into the rest of the game (romance, doping bans, coalitions, malpractice, investigations), second acts after a career ends, and a youth unit for under-18s |
 
 Every named update is listed in `game/CHANGELOG.md`.
 
@@ -28,9 +29,9 @@ Every named update is listed in `game/CHANGELOG.md`.
 |---|---|
 | **Platforms** | Android APK that updates itself on launch; Windows installer and portable zip; iPhone/iPad (web app, plus an unsigned IPA); web. All built automatically by CI on every push |
 | **Engine** | Data-driven storylet engine with conditions, weights, flags and callbacks; people remember choices and hold grudges; validator; 500-life simulator |
-| **Code and tests** | About 80,700 lines of Dart in 114 source files; 176 automated tests, including a release fuzz test that plays whole dynasties (40,000+ simulated years) and checks that no screen overflows on small phones |
+| **Code and tests** | About 83,200 lines of Dart in about 120 source files; 180 automated tests, including a release fuzz test that plays whole dynasties (40,000+ simulated years) and checks that no screen overflows on small phones |
 | **Life systems** | Birth to death, 4 visible and 6 hidden stats, school routes, jobs and career ladders, a working economy (tax, loans, index fund, property), relationships with bond facets, love, children, adoption, fostering, surrogacy, health, pets, fame and social media, identity, migration between countries |
-| **Content** | 157 data events plus about 50 coded scene families with many branches; 56+ activities; **19 mini-game engines** themed to dozens of activities |
+| **Content** | 157 data events plus about 50 coded scene families with many branches; 56+ activities; **30 mini-games** themed to dozens of activities |
 | **Crime and justice** | Planned crimes and heists, lawsuits with retaliation, prison life (gangs, visits, riots, escapes), police manhunts with getaway, break-in and breakout mini-games |
 | **Special careers ("Calling")** | 14 careers (actor, musician, athlete, model, politician, armed forces, lawyer and judge, doctor, pilot, vet, street hustler, police, astronaut, fighter), each with its own Hub, signature instrument, seasons, people, stamped results and a Life Recap page |
 | **Looks** | The game repaints itself: Night Feed (default), Yard Time (prison), Gilded (the super-rich, entered through the "Molten" moment), and 14 career looks, all tested for readable contrast |

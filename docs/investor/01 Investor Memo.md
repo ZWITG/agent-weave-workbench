@@ -36,10 +36,10 @@ What makes it distinct on screen: **the game changes its whole look with the lif
 ## The proof: built in under three weeks
 Development started on 26 Oct 2026. By 13 Nov 2026 (details in [[05 Product and Traction]]):
 - **A complete, playable game** on Android (it updates itself), Windows, iPhone/iPad and the web.
-- **About 80,700 lines of engine and UI code** and **176 automated tests**, including a 500-life simulator and a release fuzz test of 40,000+ simulated years.
+- **About 83,200 lines of engine and UI code** and **180 automated tests**, including a 500-life simulator and a release fuzz test of 40,000+ simulated years.
 - **Content and systems:**
   - Over 200 story events and scene families.
-  - 19 mini-game engines.
+  - 30 mini-games.
   - 14 special careers, each with its own screen, look, people and Life Recap page.
   - Crime, heists, prison and manhunts.
   - An upper-class "Echelon".

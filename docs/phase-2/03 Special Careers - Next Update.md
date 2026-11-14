@@ -2,8 +2,8 @@
 title: "03 Special Careers - Next Update"
 project: Relivable
 phase: 2
-status: built ("Calling" update shipped 13 Nov 2026)
-updated: 2026-11-13
+status: built ("Calling" 13 Nov 2026, "Encore" 14 Nov 2026)
+updated: 2026-11-14
 tags: [relivable, phase-2, careers, special-careers, themes, plan]
 ---
 
@@ -253,6 +253,7 @@ league) and D5 (the musician career runs on `music.dart`):
 | 4 Look upgrades | **Mostly done:** motifs on the Hub, the Curtain Call on promotion, the look's stamps on Work and Career results in its type accent (all twelve looks), the Final Bow on leaving a special career. Then signature instruments, illustrated scenes, themed sections and career pages in the Life Recap (`ui/career_stage.dart`) |
 | 5 Wave 2 careers | **Done:** model, doctor, vet, pilot, armed forces, lawyer/judge, street hustler (`engine/career_hub_wave2.dart`): meters, activities with one played moment each, seasons, scenes and promotion rules; deployments, hospital cases and big cases move the meters. Contacts as people, defending and treating people you know and judges hearing the crime list followed (`engine/career_hub_people.dart`) |
 | 6 Astronaut and Fighter | **Done** (D1: yes; `engine/career_hub_wave3.dart`, `ui/minigames_calling.dart`): Astronaut (Orbit) with missions to the station, the Moon and Mars and a real, always-shown risk to life; Fighter (Fight Night), boxing or MMA, with the Fight Night mini-game, injuries, a title fight and crews offering to fix fights (fraud on the crime scale). D2: yes, street hustler scams run through the crime system |
+| 8 Encore (14 Nov 2026) | **Done:** the rest of the spec. Original mini-games for eleven careers (`ui/minigames_careers.dart`; the earlier reworded games stay as variety), the career motif along the top of the game (`CareerStrip`), the links in 6.2 (`engine/career_hub_links.dart`: co-star romance, doping and bans, coalitions and bills from the news, malpractice, pilot investigations) and second acts on leaving (`engine/career_hub_second.dart`, spec 6.1 Exit). Not built from 6.2, by choice: team ownership for athletes and the draft for the armed forces (both already exist elsewhere: `elite.dart`, `country_life.dart`), and the pilot's staff travel stays a Hub activity |
 | 7 Full test run, ship | **Done:** tests and release fuzz pass after each step; screenshots reviewed (`tool/render_hub_test.dart`); shipped as the "Calling" update with Instagram batch 2 and the Reel (`game/media/social/calling/`) |
 
 ### 6.6 Rules carried over

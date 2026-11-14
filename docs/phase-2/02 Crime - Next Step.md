@@ -3,7 +3,7 @@ title: "02 Crime - Next Step"
 project: Relivable
 phase: 2
 status: built (Hot Pursuit, 13 Nov 2026)
-updated: 2026-11-13
+updated: 2026-11-14
 tags: [relivable, phase-2, crime, prison, plan]
 ---
 
@@ -168,8 +168,13 @@ Rough size: similar to the Echelon update (about 5–7 working sessions).
    lawyers defending themselves and records costing votes. Each special
    career also wears its own look (`theme.dart` `careerLooks`,
    `ui/career_curtain.dart`) as groundwork for the special careers update.
-3. **Youth custody** (option 4) and **street hustle** (option 5) as a
-   smaller update.
+3. **Youth custody** (option 4): **built 14 Nov 2026**
+   (`engine/youth_custody.dart`): under-18s serve on a youth unit with no
+   gangs, riots, yard fights or contraband; lessons that earn a diploma, a
+   key worker, and a restorative meeting that can shorten the stay.
+   **Street hustle** (option 5): **built 13 Nov 2026** with the special
+   careers update (pitches chosen by footfall and fine risk, and scams
+   through the crime system).
 4. **Country law** (option 7), once D1 and D2 are decided.
 
 ## 7. Sources
