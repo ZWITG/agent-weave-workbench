@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'actions.dart' show ActionResult, GameAction, statChange;
 import 'careers.dart' show careerById;
+import 'jobs.dart' show leaveJob;
+import 'love.dart' show candidate, freshNpcId, loverOf, partnerOf;
 import 'models.dart';
 import 'music.dart' show listenersOf, songwritingOf;
 import 'pets.dart' show petHealth, petsOf;
@@ -15,6 +17,7 @@ import 'world_data.dart' show countryNamed;
 part 'career_hub_wave2.dart';
 part 'career_hub_people.dart';
 part 'career_hub_wave3.dart';
+part 'career_hub_links.dart';
 
 // The Career Hub ("Calling", docs/phase-2/03): every special career gets
 // the same shape, filled with its own data.
@@ -269,7 +272,14 @@ List<String> hubYear(Life l, Random rng) {
     case 'athlete':
       feed.addAll(_athleteYear(l, rng, beat));
     case 'politician':
-      if (rng.nextInt(100) < 55) l.sceneQueue.add('hub:politician:bill');
+      if (rng.nextInt(100) < 55) {
+        // Half the time, a bill written from this year's news.
+        l.sceneQueue.add(
+          newsBill(l) != null && rng.nextBool()
+              ? 'hub:politician:bill:news'
+              : 'hub:politician:bill',
+        );
+      }
       // Approval drifts back towards the middle.
       final a = hubMeter(l);
       l.hub['meter'] =
@@ -282,6 +292,7 @@ List<String> hubYear(Life l, Random rng) {
     default:
       feed.addAll(_wave2Year(l, rng, spec.id, beat));
   }
+  feed.addAll(_linksYear(l, rng));
   // Quiet years: the meter fades (not for meters worked out elsewhere).
   if (spec.meterOf == null &&
       spec.id != 'politician' &&
@@ -328,6 +339,8 @@ Storylet? hubScene(List<String> args, Life l) {
   if (args.length < 2 || l.careerId != args[0] || hubFor(l) == null) {
     return null;
   }
+  final link = _linkScene(args, l);
+  if (link != null) return link;
   return switch ('${args[0]}:${args[1]}') {
     'actor:agent' => _agentScene(l),
     'actor:offer' => _offerScene(l),
@@ -903,6 +916,12 @@ Storylet _sportScene(Life l) => _scene(
 );
 
 List<String> _athleteYear(Life l, Random rng, int beat) {
+  final ban = dopingBan(l);
+  if (ban > 0) {
+    return [
+      'Banned: you watched the season from the stands. $ban season${ban == 1 ? '' : 's'} left.',
+    ];
+  }
   final feed = <String>[];
   // The season: ten games, won on form, athleticism and rank.
   final p = ((hubMeter(l) + l.stats['athleticism']) / 220 + l.careerRank * 0.03)
@@ -1116,9 +1135,10 @@ List<(String, String)> _politicianDetails(Life l) => [
   if (l.careerId != 'politician') return (0, '');
   final a = (hubMeter(l) - 50) ~/ 2;
   final chest = min(10, warChest(l) ~/ 10000);
+  final coalition = coalitionBonus(l);
   return (
-    a + chest,
-    'approval ${hubMeter(l)} and a ${_m(warChest(l))} campaign fund',
+    a + chest + coalition,
+    'approval ${hubMeter(l)} and a ${_m(warChest(l))} campaign fund${coalition > 0 ? ', with your coalition partners' : ''}',
   );
 }
 
@@ -1126,8 +1146,11 @@ List<(String, String)> _politicianDetails(Life l) => [
 void spendWarChest(Life l) => l.hub['chest'] = 0;
 
 Storylet? _billScene(Life l, String? which) {
+  final news = which == 'news' ? newsBill(l) : null;
   final i = int.tryParse(which ?? '') ?? (l.age + l.seed) % _bills.length;
-  final (title, what, pop, karma) = _bills[i % _bills.length];
+  final (title, what, pop, karma) = news == null
+      ? _bills[i % _bills.length]
+      : (news.$1, news.$2, news.$3, news.$4);
   String vote(Life l, int approval, int k, String how) {
     l.hub['meter'] = (hubMeter(l) + approval).clamp(0, 100);
     l.hub['active'] = l.age;
@@ -1138,7 +1161,7 @@ Storylet? _billScene(Life l, String? which) {
 
   return _scene(
     'politician_bill',
-    'The vote on $title is tonight. It $what. ${pop > 0 ? 'Voters like it.' : 'Voters are not keen.'} Your party whips are watching.',
+    '${news == null ? '' : 'After this year\'s headline ("${news.$5}"), '}${news == null ? 'The' : 'the'} vote on $title is tonight. It $what. ${pop > 0 ? 'Voters like it.' : 'Voters are not keen.'} Your party whips are watching${l.hub['coalition'] != null ? ', and so are your coalition partners' : ''}.',
     [
       Choice(
         label: 'Vote for it',

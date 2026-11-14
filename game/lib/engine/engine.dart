@@ -748,6 +748,10 @@ class GameEngine {
     if (news != null) {
       life.feed.add(FeedEntry(life.age, news.headline, kind: 'world'));
     }
+    // Politicians vote on bills written from the news (career_hub_links).
+    if (life.careerId == 'politician' && news != null && !news.mine) {
+      life.hub['news'] = {'cat': news.category, 'headline': news.headline};
+    }
     // This year's stories reach your life: pay, homes, tax, and a choice.
     final fresh = [
       for (final s in world.storiesFor(year, life.country, life.city))

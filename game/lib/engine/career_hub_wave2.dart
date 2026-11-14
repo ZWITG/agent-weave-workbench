@@ -324,6 +324,7 @@ final _doctorActions = <GameAction>[
 
 ActionResult _triage(Life l, Random rng, double score) {
   _add(l, 'patients', 10 + (score * 20).round());
+  if (score < 0.4) l.hub['slip'] = l.age;
   final up = ((score - 0.4) * 14).round();
   return ActionResult(
     score >= 0.7
@@ -707,6 +708,7 @@ ActionResult _checkRide(Life l, Random rng, double score) {
       [_meterNote(l, 2), 'Check ride passed'],
     );
   }
+  if (score < 0.3) l.hub['incident'] = l.age;
   return ActionResult(
     'You floated half the runway and went around twice. The examiner wrote for a long time. Try again next year.',
     [_meterNote(l, -2)],
@@ -743,8 +745,9 @@ Storylet _divertScene(Life l) => _scene(
         }
         _bump(l, -12);
         l.performance = max(0, l.performance - 20);
-        _log(l, 'investigated after an engine incident');
-        return 'The engine failed over the sea. You landed safely, but the investigation said you should have diverted. Flight hours −12.';
+        _log(l, 'had an engine incident');
+        l.hub['incident'] = l.age;
+        return 'The engine failed over the sea. You landed safely on the other one, and the investigators will want to talk. Flight hours −12.';
       },
     ),
   ],

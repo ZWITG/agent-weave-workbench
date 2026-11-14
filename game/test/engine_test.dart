@@ -3465,6 +3465,88 @@ void main() {
     );
   });
 
+  test('Calling links: co-stars, doping, coalitions, news bills, malpractice, investigations', () {
+    Life start(String id, int seed) {
+      final l = engine.newLife(seed: seed)..age = 30;
+      l.sceneQueue.clear();
+      startCareer(l, careerById(id)!);
+      l.sceneQueue.clear();
+      return l;
+    }
+
+    Storylet scene(Life l, String q) {
+      l.sceneQueue.add(q);
+      return engine.nextScene(l)!;
+    }
+
+    // An actor who is single dates the co-star; a married one can have an
+    // affair, and only one at a time.
+    final a = start('actor', 980);
+    var s = scene(a, 'hub:actor:costar');
+    engine.choose(a, s, s.choices.first);
+    expect(partnerOf(a), isNotNull);
+    expect(partnerOf(a)!.info['job'], 'actor');
+    final a2 = start('actor', 981);
+    a2.npcs.add(candidate(a2, Random(1)));
+    s = scene(a2, 'hub:actor:costar');
+    engine.choose(a2, s, s.choices.first);
+    expect(loverOf(a2), isNotNull);
+    expect(a2.flags.containsKey('affair'), isTrue);
+
+    // Doping lifts form, gets tested, and a failed appeal is a long ban.
+    final at = start('athlete', 982)..hub['meter'] = 40;
+    s = scene(at, 'hub:athlete:doping');
+    engine.choose(at, s, s.choices.first);
+    expect(hubMeter(at), 48);
+    s = scene(at, 'hub:athlete:test');
+    engine.choose(at, s, s.choices.first);
+    expect(dopingBan(at), 2);
+    expect(hubMeter(at), 0);
+    expect(hubYear(at, Random(2)).first, contains('Banned'));
+    final clean = start('athlete', 983);
+    s = scene(clean, 'hub:athlete:doping');
+    engine.choose(clean, s, s.choices[1]);
+    for (var i = 0; i < 40; i++) {
+      hubYear(clean, Random(i));
+    }
+    expect(clean.sceneQueue, isNot(contains('hub:athlete:doping')));
+
+    // A coalition adds to election odds; a bill can come from the news.
+    final p = start('politician', 984)..hub['meter'] = 50;
+    final before = hubElectionBonus(p).$1;
+    s = scene(p, 'hub:politician:coalition');
+    engine.choose(p, s, s.choices.first);
+    expect(hubElectionBonus(p).$1, greaterThan(before));
+    p.hub['news'] = {'cat': 'weather', 'headline': 'Storm floods the coast'};
+    s = scene(p, 'hub:politician:bill:news');
+    expect(s.text, contains('Flood Defences'));
+    expect(s.text, contains('Storm floods the coast'));
+    p.hub['news'] = {'cat': 'people', 'headline': 'A local hero'};
+    expect(newsBill(p), isNull);
+
+    // A bad night on the ward can come back as a claim; losing costs money.
+    final d = start('doctor', 985)..hub['meter'] = 0;
+    final money = d.money;
+    s = scene(d, 'hub:doctor:malpractice');
+    expect(s.choices[1].risk, contains('Poor chances'));
+    engine.choose(d, s, s.choices.first);
+    expect(d.money, lessThan(money));
+
+    // An incident leads to an investigation; blaming others can cost the
+    // licence.
+    final pl = start('pilot', 986)..hub['incident'] = 30;
+    hubYear(pl, Random(3));
+    expect(pl.sceneQueue, contains('hub:pilot:investigation'));
+    var revoked = 0;
+    for (var i = 0; i < 40; i++) {
+      final x = start('pilot', 2000 + i);
+      final sc = scene(x, 'hub:pilot:investigation');
+      engine.choose(x, sc, sc.choices.last);
+      if (x.job == null) revoked++;
+    }
+    expect(revoked, inInclusiveRange(8, 32));
+  });
+
   test('Calling wave 2: each career has its own way up', () {
     GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
     Life start(String id, int seed) {
