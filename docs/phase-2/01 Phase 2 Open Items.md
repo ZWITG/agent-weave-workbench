@@ -26,6 +26,11 @@ provide. Items are ordered by how much they block a public store launch.
 
 ## A. Store launch (blocks Google Play and the App Store)
 
+> [!note] Steam
+> A1/A2 now have a dated execution plan, plus a Steam launch plan (not
+> previously tracked anywhere) and the marketing campaign around both, in
+> [[06 Steam and Mobile Launch Campaign]].
+
 | # | Item | Today | Needs from you |
 |---|---|---|---|
 | A1 | **Google Play listing** | APK is sideloaded from GitHub and updates itself (`REQUEST_INSTALL_PACKAGES`, which Play does not allow for games) | A Play developer account ($25 once), a store listing, and the go-ahead to build a Play variant without self-update |

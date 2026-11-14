@@ -41,6 +41,9 @@ tags: [relivable, phase-2, roadmap]
 > [!note] Update 14 Nov 2026
 > A pass proposing one layer of depth for every shipped system (not new tabs, extensions) is in [[05 Feature Expansion Ideas]], with a suggested build order.
 
+> [!note] Update 14 Nov 2026
+> A Steam launch plan (build pipeline, store page, pricing) plus the Google Play/Apple completion plan and the marketing campaign around both is in [[06 Steam and Mobile Launch Campaign]]. It is blocked on the same A7 trademark question as everywhere else — read that doc's warning before creating anything under the game's current name.
+
 ## Progress (13 Nov 2026)
 Every sprint's build goal is met, and the game is well past the planned slice (birth to 30). It covers a whole life, dynasties and 14 career worlds. **Only Sprint 6, playtests and the Gate 2 readout, is still open.**
 

@@ -80,6 +80,25 @@ Different structure from the hook/payoff frames:
   sans-serif (Baloo 2 or equivalent) — distinct from the headline face,
   never serif.
 
+## PC/Steam frame variant
+
+Added 14 Nov 2026 for the Steam launch campaign
+([[../phase-2/06 Steam and Mobile Launch Campaign]]). Same grammar as the
+mobile frames (eyebrow, wordmark, serif headline, per-moment accent,
+collage CTA close) — two things change:
+
+- **Device mockup**: a desktop monitor/window frame in place of the phone
+  mockup, still tilted a few degrees, still showing real in-game UI (the
+  game's own UI is responsive and works at desktop width, so this is a
+  wider crop of the same screens, not a different design).
+- **CTA pill**: the closing frame's CTA becomes `Wishlist on Steam` (solid
+  accent, same pill shape as `Play free · link in bio`) alongside, not
+  instead of, the mobile CTA — a dual-platform closing frame shows both
+  pills stacked or side by side, so the ad never implies Steam-only or
+  mobile-only.
+- Everything else (color-per-career, typography, eyebrow tag, no flat
+  grid background) is unchanged from the mobile frames.
+
 ## Things to not do
 
 - Don't default to a flat black background with a neon grid and a bold
