@@ -507,6 +507,55 @@ class _CareerHubScreenState extends State<CareerHubScreen>
   }
 }
 
+/// The career look's motif along the top of the game while you work in a
+/// special career, the way Gilded has its seam and prison its fence. It
+/// moves slowly; Reduce motion holds it still.
+class CareerStrip extends StatefulWidget {
+  const CareerStrip({super.key, required this.id});
+  final String id;
+
+  @override
+  State<CareerStrip> createState() => _CareerStripState();
+}
+
+class _CareerStripState extends State<CareerStrip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _t = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 8),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _t.stop();
+      _t.value = 0.3;
+    } else if (!_t.isAnimating) {
+      _t.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _t.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: SizedBox(
+      height: 18,
+      width: double.infinity,
+      child: AnimatedBuilder(
+        animation: _t,
+        builder: (context, _) =>
+            CustomPaint(painter: CareerMotif(widget.id, _t.value)),
+      ),
+    ),
+  );
+}
+
 /// Each career look's motif, drawn as a strip: marquee bulbs, VU meters, a
 /// pitch, camera flashes, a ballot ribbon, dog tags, wood grain, a heart
 /// trace, an artificial horizon, a hedgerow, a chalk board, a light bar.

@@ -31,7 +31,7 @@ import 'wealth_tab.dart';
 import 'people.dart';
 import 'widgets.dart';
 import 'yard_time.dart';
-import 'career_hub_screen.dart' show openCareerHub;
+import 'career_hub_screen.dart' show CareerStrip, openCareerHub;
 import 'career_marks.dart' show hubMeterChip;
 
 /// The web version running on an iPhone or iPad.
@@ -125,7 +125,9 @@ class _HubScreenState extends State<HubScreen> {
           if (NF.prison)
             const FenceStrip()
           else if (NF.gilded)
-            const GoldSeam(),
+            const GoldSeam()
+          else if (NF.career != null)
+            CareerStrip(id: NF.career!),
           _Header(
             life: life,
             // Tapping your money opens the Wealth tab.
