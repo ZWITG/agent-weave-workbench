@@ -413,6 +413,93 @@ void main() {
     expect(problems, isEmpty, reason: problems.join('\n'));
   });
 
+  testWidgets('career mini-games play to a score, timed and turn-based', (
+    t,
+  ) async {
+    t.view.physicalSize = const Size(320, 568);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    final problems = <String>[];
+    var current = '';
+    final old = FlutterError.onError;
+    FlutterError.onError = (d) {
+      final msg = d.exceptionAsString();
+      if (msg.contains('overflowed')) {
+        problems.add('$current: ${msg.split('\n').first}');
+      } else {
+        old?.call(d);
+      }
+    };
+    const games = {
+      'act_audition': 'coldread',
+      'mus_rehearse': 'soundcheck',
+      'ath_train': 'matchday',
+      'pol_speech': 'debate',
+      'mod_casting': 'runway',
+      'doc_triage': 'triage',
+      'vet_clinic': 'diagnose',
+      'pil_check': 'crosswind',
+      'mil_drill': 'obstacle',
+      'law_cross': 'objection',
+      'hus_busk': 'pitch',
+    };
+    for (final turnBased in [false, true]) {
+      final key = GlobalKey<NavigatorState>();
+      await t.pumpWidget(
+        MaterialApp(
+          navigatorKey: key,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(1.3),
+              disableAnimations: turnBased,
+            ),
+            child: child!,
+          ),
+          home: const Scaffold(),
+        ),
+      );
+      for (final MapEntry(key: activity, value: g) in games.entries) {
+        expect(miniPools[activity]!.first, g, reason: activity);
+        current = '$g${turnBased ? ' (turn-based)' : ''}';
+        double? score = -1;
+        showMiniGame(
+          key.currentContext!,
+          g,
+          age: 30,
+          title: g,
+          activity: activity,
+          game: g,
+        ).then((v) => score = v);
+        await t.pump(const Duration(milliseconds: 400));
+        await t.pump(const Duration(milliseconds: 400));
+        expect(find.text(miniIntro(activity, g)), findsOneWidget, reason: g);
+        for (var i = 0; i < 400; i++) {
+          if (find.text('Continue').evaluate().isNotEmpty) break;
+          if (turnBased) {
+            // Take the first choice each turn (or wait, where there is one).
+            final wait = find.text('Leave it').evaluate().isNotEmpty
+                ? find.text('Leave it')
+                : find.text('Hold').evaluate().isNotEmpty
+                ? find.text('Hold')
+                : find.text('Wait').evaluate().isNotEmpty
+                ? find.text('Wait')
+                : find.byType(FilledButton).first;
+            await t.tap(wait);
+            await t.pump(const Duration(milliseconds: 50));
+          } else {
+            await t.pump(const Duration(milliseconds: 250));
+          }
+        }
+        expect(find.text('Continue'), findsOneWidget, reason: '$g $turnBased');
+        await t.tap(find.text('Continue'));
+        await t.pumpAndSettle();
+        expect(score, inInclusiveRange(0, 1), reason: g);
+      }
+    }
+    FlutterError.onError = old;
+    expect(problems, isEmpty, reason: problems.join('\n'));
+  });
+
   testWidgets('social media and fame are categories in Activities', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(390, 844);

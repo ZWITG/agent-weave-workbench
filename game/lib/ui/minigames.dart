@@ -11,6 +11,7 @@ part 'minigame_skins.dart';
 part 'minigames_more.dart';
 part 'minigames_crime.dart';
 part 'minigames_calling.dart';
+part 'minigames_careers.dart';
 
 /// Short mini-games for some activities. Each returns a score from 0 to 1,
 /// or null if the player closes it. "Skip" always resolves at 0.6, so
@@ -50,18 +51,18 @@ Future<double?> showMiniGame(
 /// always the same game.
 const miniPools = <String, List<String>>{
   // The Career Hub (career_hub.dart).
-  'act_audition': ['rhythm', 'memory'],
-  'mus_rehearse': ['rhythm', 'memory'],
-  'mus_collab': ['memory', 'rhythm'],
-  'ath_train': ['whack', 'reps'],
-  'pol_speech': ['timing', 'breath'],
-  'mod_casting': ['timing', 'breath'],
-  'doc_triage': ['memory', 'reaction'],
-  'vet_clinic': ['memory', 'rhythm'],
-  'pil_check': ['timing', 'reaction'],
-  'mil_drill': ['reps', 'whack'],
-  'law_cross': ['memory', 'timing'],
-  'hus_busk': ['rhythm', 'memory'],
+  'act_audition': ['coldread', 'memory'],
+  'mus_rehearse': ['soundcheck', 'rhythm'],
+  'mus_collab': ['soundcheck', 'memory'],
+  'ath_train': ['matchday', 'whack'],
+  'pol_speech': ['debate', 'timing'],
+  'mod_casting': ['runway', 'timing'],
+  'doc_triage': ['triage', 'reaction'],
+  'vet_clinic': ['diagnose', 'memory'],
+  'pil_check': ['crosswind', 'reaction'],
+  'mil_drill': ['obstacle', 'whack'],
+  'law_cross': ['objection', 'memory'],
+  'hus_busk': ['pitch', 'rhythm'],
   'fig_fight': ['fight', 'reaction'],
   'fig_train': ['reps', 'whack'],
   'ast_sim': ['docking', 'timing'],
@@ -107,28 +108,25 @@ const _intros = <String, Map<String, String>>{
     'memory': 'Learn the scene: watch the beats, then play them back in order.',
   },
   'mus_rehearse': {
-    'memory':
-        'Learn the new arrangement, then play it back. Each round adds a part.',
+    'rhythm': 'Run the set: tap each part as it lights up, on the beat.',
   },
   'mus_collab': {
-    'rhythm': 'Lock in with their groove: tap each pad as it lights up.',
+    'memory': 'Learn their part, then play it back. Each round adds a bar.',
   },
   'ath_train': {
-    'reps': 'Sprints: tap GO as many times as you can in 6 seconds.',
+    'whack': 'Drills: hit the cones as they pop up. Not the grey ones.',
   },
   'pol_speech': {
-    'breath':
-        'Hold for the applause, let go when it peaks at the ring. Three lines.',
+    'timing': 'Land your lines: tap while the marker is in the applause zone. Three lines, each harder.',
   },
   'mod_casting': {
-    'breath': 'Hold the pose, release at the end of the runway. Three turns.',
+    'timing': 'The walk: turn at the end of the runway while the marker is in the light. Three castings, each faster.',
   },
   'doc_triage': {
     'reaction': 'The monitor alarms: respond the moment it turns green.',
   },
   'vet_clinic': {
-    'rhythm':
-        'A busy waiting room: see each patient the moment they are called.',
+    'memory': 'Remember which sign goes with which patient, then play them back in order.',
   },
   'fig_fight': {
     'reaction':
@@ -145,10 +143,11 @@ const _intros = <String, Map<String, String>>{
         'Live-fire range: hit the targets as they pop up. Not the civilians.',
   },
   'law_cross': {
-    'timing': 'Object at the right moment: tap while the marker is on the contradiction.',
+    'memory': 'Remember the testimony, then play it back in order and catch where the story changed.',
   },
   'hus_busk': {
-    'memory': 'Learn the tune a passer-by requests, then play it back.',
+    'rhythm':
+        'Busk: hit each note as it lights up, on the beat. Keep the crowd.',
   },
   'study': {
     'words':
@@ -286,6 +285,20 @@ final _defaults = <String, MiniTheme>{
     stat: 'athleticism',
   ),
   'docking': _t('Centre the port and brake to arrive slowly.', stat: 'smarts'),
+  'coldread': _t(
+    'Read the note under each line, then pick the delivery.',
+    stat: 'charisma',
+  ),
+  'debate': _t('Read the room and answer each claim.', stat: 'charisma'),
+  'objection': _t('Object to testimony that does not square with your notes.'),
+  'triage': _t('Send each patient to the right bay.'),
+  'diagnose': _t('Match the signs to their cause.'),
+  'matchday': _t('Pass to the open teammate, or shoot.', stat: 'athleticism'),
+  'runway': _t('Turn to the press pit, then pose to the brief.', stat: 'looks'),
+  'obstacle': _t('The right move for each obstacle.', stat: 'athleticism'),
+  'soundcheck': _t('Ride the faders to the marks.', stat: 'creativity'),
+  'crosswind': _t('Stay on the centreline, then flare.', stat: 'discipline'),
+  'pitch': _t('Call out to people who are looking.', stat: 'charisma'),
   'getaway': _t(
     'Lose the police and reach the motorway (M). Steer with the arrows or swipe; a tunnel breaks their line of sight, and the garage swaps your car.',
     stat: 'athleticism',
@@ -366,58 +379,58 @@ final miniThemes = <String, MiniTheme>{
     stat: 'willpower',
   ), // The Career Hub (career_hub.dart).
   'act_audition': _t(
-    'A cold read: hit each line as it lights up, on the beat. Miss a beat and the casting director looks at the clock.',
+    'A cold read: each line has something underneath it. Read the note, then hold it back, play it straight or let it rip.',
     pads: ['Line', 'Pause', 'Look', 'Line'],
     stat: 'charisma',
   ),
   'mus_rehearse': _t(
-    'Run the set: tap each part as it lights up, on the beat.',
+    'Soundcheck: ride the four faders to the marks the room needs. The marks move as the room fills up.',
     pads: ['Intro', 'Verse', 'Chorus', 'Outro'],
     stat: 'creativity',
   ),
   'mus_collab': _t(
-    'Learn their part, then play it back. Each round adds a bar.',
+    'Soundcheck with their band: ride the faders to the marks. The marks move as the room fills up.',
     pads: ['Their hook', 'Your verse', 'Harmony', 'Drop'],
     stat: 'creativity',
   ),
   'ath_train': _t(
-    'Drills: hit the cones as they pop up. Not the grey ones.',
+    'Match day: find the open teammate before the defence closes, or shoot when the keeper is off his line.',
     stat: 'athleticism',
   ),
   'pol_speech': _t(
-    'Land your lines: tap while the marker is in the applause zone. Three lines, each harder.',
+    'Debate: read the room, then answer each claim with the facts, a real story, a hit back, or agree and pivot.',
     button: 'Deliver',
     stat: 'charisma',
   ),
   'mod_casting': _t(
-    'The walk: turn at the end of the runway while the marker is in the light. Three castings, each faster.',
+    "The runway: at each mark, turn to the press pit, not to whoever shouts. Then pose to the designer's brief.",
     button: 'Turn',
     stat: 'looks',
   ),
   'doc_triage': _t(
-    'Triage: watch the order patients need you in, then see them in that order. Each round, one more arrives.',
+    'Triage: send each arrival to resus, majors or minors. Under-triage costs most. It gets faster.',
     pads: ['Chest pain', 'Fracture', 'Fever', 'Head injury'],
     button: 'Respond',
     stat: 'smarts',
   ),
   'vet_clinic': _t(
-    'Diagnose: remember which sign goes with which patient, then play them back in order.',
+    "Diagnose: match each patient's two signs to their cause. The handbook is above.",
     pads: ['Limp', 'Cough', 'Off food', 'Itching'],
     stat: 'smarts',
   ),
   'mil_drill': _t(
-    'The obstacle course: tap GO as fast as you can for 6 seconds. Walls, nets, ropes.',
+    'The obstacle course: the right move for each obstacle, before you reach it. You tire as you go.',
     button: 'GO',
     stat: 'athleticism',
   ),
   'law_cross': _t(
-    'Remember the testimony, then play it back in order and catch where the story changed.',
+    'Cross-examination: check each line of testimony against your notes. Object to what does not square, and to hearsay.',
     pads: ['Time', 'Place', 'Car', 'Witness'],
     button: 'Objection!',
     stat: 'smarts',
   ),
   'hus_busk': _t(
-    'Busk: hit each note as it lights up, on the beat. Keep the crowd.',
+    'Your pitch: call out to people who are looking your way. Never while an officer is passing.',
     pads: ['Strum', 'Pick', 'Slap', 'Stomp'],
     stat: 'creativity',
   ),
@@ -435,7 +448,7 @@ final miniThemes = <String, MiniTheme>{
     stat: 'smarts',
   ),
   'pil_check': _t(
-    'Crosswind landing: flare while the marker is over the centreline. Three approaches, each gustier.',
+    'Crosswind landing: hold left or right to crab into the gusts and stay on the centreline, then flare low over the runway.',
     button: 'Flare',
     stat: 'discipline',
   ),
@@ -515,7 +528,7 @@ class _MiniGameScreen extends StatelessWidget {
         words: _wordLists[activity] ?? _wordLists['study']!,
         ease: ease,
       ),
-      _ => const SizedBox.shrink(),
+      _ => _careerGame(id, finish, ease) ?? const SizedBox.shrink(),
     };
     final skin = skinFor(activity);
     return Scaffold(
