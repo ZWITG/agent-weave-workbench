@@ -18,6 +18,7 @@ part 'career_hub_wave2.dart';
 part 'career_hub_people.dart';
 part 'career_hub_wave3.dart';
 part 'career_hub_links.dart';
+part 'career_hub_second.dart';
 
 // The Career Hub ("Calling", docs/phase-2/03): every special career gets
 // the same shape, filled with its own data.
@@ -335,6 +336,9 @@ Storylet _scene(String id, String text, List<Choice> choices) => Storylet(
 Storylet? hubScene(List<String> args, Life l) {
   if (args.length >= 2 && args[0] == 'people' && hubFor(l) != null) {
     return _peopleScene(args, l);
+  }
+  if (args.length >= 2 && args[0] == 'second') {
+    return _secondActScene(args[1], l);
   }
   if (args.length < 2 || l.careerId != args[0] || hubFor(l) == null) {
     return null;

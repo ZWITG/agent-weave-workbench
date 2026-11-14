@@ -7,7 +7,13 @@ import 'careers.dart';
 import 'life_events.dart' show onFired;
 import 'career_law.dart' show recordVotePenalty;
 import 'career_hub.dart'
-    show hubBoost, hubElectionBonus, hubSpecs, hubYear, spendWarChest;
+    show
+        hubBoost,
+        hubElectionBonus,
+        hubSpecs,
+        hubYear,
+        queueSecondAct,
+        spendWarChest;
 import 'models.dart';
 import 'storylet.dart';
 import 'justice.dart' show convictions;
@@ -81,6 +87,8 @@ void leaveWorkplace(Life l) {
 
 /// Ends the current job for any reason.
 void leaveJob(Life l, {bool fired = false}) {
+  // A special career ending offers a second act (career_hub_second.dart).
+  if (l.careerId != null) queueSecondAct(l, l.careerId!);
   leaveWorkplace(l);
   l.job = null;
   l.salary = 0;

@@ -3547,6 +3547,44 @@ void main() {
     expect(revoked, inInclusiveRange(8, 32));
   });
 
+  test('Calling: a special career ending offers a second act', () {
+    Life start(String id, int seed) {
+      final l = engine.newLife(seed: seed)..age = 38;
+      l.sceneQueue.clear();
+      startCareer(l, careerById(id)!);
+      l.sceneQueue.clear();
+      return l;
+    }
+
+    for (final id in secondActs.keys) {
+      expect(careerById(id), isNotNull, reason: id);
+    }
+    final a = start('athlete', 990)..fame = 30;
+    leaveJob(a);
+    expect(a.sceneQueue, contains('hub:second:athlete'));
+    final s = engine.nextScene(a)!;
+    expect(s.choices, hasLength(3));
+    engine.choose(a, s, s.choices[1]);
+    expect(a.job, 'TV pundit');
+    expect(a.careerId, isNull);
+    expect(secondAct(a), contains('TV pundit'));
+    expect(hubHistory(a).last['log'].first, contains('pundit'));
+
+    // Not after a conviction, and not once you have taken another job.
+    final p = start('pilot', 991);
+    leaveJob(p, fired: true);
+    p.flags['career_ended_by_crime'] = Memory(p.age, 'a conviction');
+    expect(engine.nextScene(p), isNull);
+    final m = start('model', 992);
+    leaveJob(m);
+    startCareer(m, careerById('office')!);
+    expect(engine.nextScene(m)?.id ?? '', isNot(contains('second')));
+    // An ordinary career has no second act.
+    final o = start('office', 993);
+    leaveJob(o);
+    expect(o.sceneQueue, isNot(contains(startsWith('hub:second'))));
+  });
+
   test('Calling wave 2: each career has its own way up', () {
     GameAction act(String id) => engine.actions.firstWhere((a) => a.id == id);
     Life start(String id, int seed) {
