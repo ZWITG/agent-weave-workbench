@@ -4525,6 +4525,72 @@ void main() {
     expect(life.businesses, isEmpty);
   });
 
+  test('six more industries: real estate, law, clinic, farm, dealership, pet care', () {
+    final added = [
+      'real_estate',
+      'law_firm',
+      'clinic',
+      'farm',
+      'car_dealership',
+      'pet_care',
+    ];
+    for (final id in added) {
+      expect(industryById(id).id, id, reason: id);
+      expect(bizKinds[id], isNotNull, reason: id);
+    }
+
+    final life = engine.newLife(seed: 332)..age = 30;
+    life.money = 1000000;
+    final lawIndex = industries.indexWhere((i) => i.id == 'law_firm');
+    life.sceneQueue.add('biz_found');
+    var scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices[lawIndex]);
+    scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first); // a tier
+    scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first); // a name
+    while (engine.nextScene(life) != null) {}
+    final firm = life.business!;
+    expect(firm.industry, 'law_firm');
+
+    // Its signature move costs money and only once a year.
+    final money = life.money;
+    runSignature(life, Random(1));
+    expect(life.money, money - 3000);
+    expect(signatureLock(life), 'Done this year');
+
+    // Settling the malpractice event costs exactly what it says.
+    final before = life.money;
+    final mal = tradeEventScene(['law_malpractice', firm.name], life)!;
+    engine.choose(life, mal, mal.choices.first); // settle quietly
+    expect(life.money, before - 5000);
+
+    // The star-hire event needs the money it names.
+    final hire = tradeEventScene(['law_star_hire', firm.name], life)!;
+    final quality = firm.quality;
+    final paidMoney = life.money;
+    engine.choose(life, hire, hire.choices.first); // pay the bonus
+    expect(life.money, paidMoney - 15000);
+    expect(firm.quality, quality + 10);
+
+    // Pet care's lost-cat event never leaves the business in a bad state.
+    life.sceneQueue.add('biz_found');
+    scene = engine.nextScene(life)!;
+    final petIndex = industries.indexWhere((i) => i.id == 'pet_care');
+    engine.choose(life, scene, scene.choices[petIndex]);
+    scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first);
+    scene = engine.nextScene(life)!;
+    engine.choose(life, scene, scene.choices.first);
+    while (engine.nextScene(life) != null) {}
+    final kennel = life.businesses.last;
+    expect(kennel.industry, 'pet_care');
+    final lost = tradeEventScene(['pet_lost', kennel.name], life)!;
+    expect(lost.choices, hasLength(2));
+    engine.choose(life, lost, lost.choices.last); // file and wait
+    expect(kennel.satisfaction, inInclusiveRange(0, 100));
+  });
+
   test('logic fixes: people, prison, trophies and businesses', () {
     final l = engine.newLife(seed: 401)..age = 30;
     l.money = 100000;

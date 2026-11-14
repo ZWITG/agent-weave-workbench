@@ -284,3 +284,14 @@ The Faith tab had two generic actions and nothing behind them. Now it's a real p
 - Your family reacts the way they would to anything that matters to you: some are glad you told them, some need a few years before they come round, same as the game already does for coming out.
 - It can connect you to people: a community gathering can introduce a new friend if faith is part of your life.
 - Revisit it any time after 16 — faith isn't fixed at 14.
+
+## Six more businesses (14 Nov)
+The founding wizard listed 25+ industries in the plan but only had 12 built. Six more, each with its own three upgrades, a yearly signature move and two trade-specific events, the same as every existing trade:
+- **Real estate agency** (charisma): lowball offers, bidding wars between buyers.
+- **Law firm** (smarts): a malpractice threat, a star litigator wanting a signing bonus.
+- **Clinic** (smarts): a malpractice claim, a flu outbreak overwhelming the waiting room.
+- **Farm** (discipline): drought burning through the crop, a supermarket chain's lowball supply contract.
+- **Car dealership** (charisma): a manufacturer recall, a customer convinced they bought a lemon.
+- **Pet care** (athleticism): a bite between two dogs in daycare, a cat gone missing overnight from boarding.
+
+Remaining from the plan's list (clinic/dental split, brewery, logistics, fashion label, beauty brand, security firm, travel agency, zoo, film studio, record label) are tracked in docs/phase-2/05 Feature Expansion Ideas.md for a later wave.

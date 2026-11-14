@@ -539,6 +539,233 @@ final bizKinds = <String, BizKind>{
     ),
     events: ['podcast_sponsor', 'podcast_cancel'],
   ),
+  'real_estate': (
+    blurb: 'Open houses and closings. Charisma gets the signature.',
+    role: 'owner and lead agent',
+    perks: [
+      _perk(
+        'listings_site',
+        'A polished listings website',
+        'About 8% more buyers walk in',
+        12000,
+        demand: 0.08,
+      ),
+      _perk(
+        'staging',
+        'A home-staging service',
+        'Quality +10, faster sales',
+        18000,
+        quality: 10,
+      ),
+      _perk(
+        'referral',
+        'A referral network with lenders',
+        'Brand +8, more repeat business',
+        10000,
+        brand: 8,
+        satisfaction: 5,
+      ),
+    ],
+    signature: (
+      label: 'Host an open house weekend',
+      detail: '\$1,500 · brand and customers up',
+      cost: 1500,
+      run: (l, b, rng) {
+        _bump(b, brand: 7, satisfaction: 4, morale: 3);
+        return 'Balloons on the mailbox and fresh cookies in the oven. Six offers by Monday.';
+      },
+    ),
+    events: ['realty_lowball', 'realty_bidding_war'],
+  ),
+  'law_firm': (
+    blurb: 'Billable hours and reputation. Smarts wins the case.',
+    role: 'managing partner',
+    perks: [
+      _perk(
+        'research_db',
+        'A legal research subscription',
+        'Quality +10',
+        15000,
+        quality: 10,
+      ),
+      _perk(
+        'paralegals',
+        'Hire paralegal support',
+        'About 10% more cases closed',
+        20000,
+        demand: 0.10,
+      ),
+      _perk(
+        'pro_bono',
+        'A pro bono programme',
+        'Brand +10, goodwill for the firm',
+        6000,
+        brand: 10,
+        satisfaction: 4,
+      ),
+    ],
+    signature: (
+      label: 'Take a headline case for free',
+      detail: '\$3,000 · brand up',
+      cost: 3000,
+      run: (l, b, rng) {
+        _bump(b, brand: 10, satisfaction: -2, morale: 2);
+        return 'You took the case the papers were already covering, win or lose. The waiting room has not been this full in years.';
+      },
+    ),
+    events: ['law_malpractice', 'law_star_hire'],
+  ),
+  'clinic': (
+    blurb: 'Patients trust you with their health. Smarts and a steady hand.',
+    role: 'owner and lead physician',
+    perks: [
+      _perk(
+        'imaging',
+        'An imaging suite',
+        'Quality +15, more referrals',
+        60000,
+        quality: 15,
+        demand: 0.05,
+      ),
+      _perk(
+        'extra_rooms',
+        'Extra consultation rooms',
+        'About 12% more patients seen',
+        25000,
+        demand: 0.12,
+      ),
+      _perk(
+        'insurance_deals',
+        'Sign with more insurers',
+        'Brand +8, steadier demand',
+        15000,
+        brand: 8,
+      ),
+    ],
+    signature: (
+      label: 'Run a free health-screening day',
+      detail: '\$2,500 · brand and goodwill up',
+      cost: 2500,
+      run: (l, b, rng) {
+        _bump(b, brand: 8, satisfaction: 6, morale: 3);
+        return 'A line out the door by eight. Three people found out something they needed to know.';
+      },
+    ),
+    events: ['clinic_malpractice', 'clinic_outbreak'],
+  ),
+  'farm': (
+    blurb: 'Weather decides more than you do. Discipline keeps it running.',
+    role: 'owner and farmer',
+    perks: [
+      _perk(
+        'irrigation',
+        'A proper irrigation system',
+        'Quality +10, less weather risk',
+        35000,
+        quality: 10,
+      ),
+      _perk(
+        'cold_storage',
+        'Cold storage',
+        'Less spoilage, about 8% more sales',
+        20000,
+        demand: 0.08,
+      ),
+      _perk(
+        'organic_cert',
+        'Go certified organic',
+        'Brand +10, higher prices',
+        15000,
+        brand: 10,
+      ),
+    ],
+    signature: (
+      label: 'Open the farm for a harvest festival',
+      detail: '\$1,000 · brand and customers up',
+      cost: 1000,
+      run: (l, b, rng) {
+        _bump(b, brand: 7, satisfaction: 5, morale: 4);
+        return 'Hay rides, a pumpkin patch and more mud than anyone expected. The town showed up anyway.';
+      },
+    ),
+    events: ['farm_drought', 'farm_contract'],
+  ),
+  'car_dealership': (
+    blurb: 'Big numbers, bigger risk. Charisma closes the deal.',
+    role: 'owner and lead salesperson',
+    perks: [
+      _perk(
+        'showroom',
+        'Renovate the showroom',
+        'Quality +10',
+        50000,
+        quality: 10,
+      ),
+      _perk(
+        'finance_desk',
+        'An in-house finance desk',
+        'About 10% more sales close',
+        30000,
+        demand: 0.10,
+      ),
+      _perk(
+        'trade_in',
+        'A trade-in programme',
+        'Brand +8, more foot traffic',
+        20000,
+        brand: 8,
+      ),
+    ],
+    signature: (
+      label: 'Run a weekend sales event',
+      detail: '\$5,000 · a surge in customers',
+      cost: 5000,
+      run: (l, b, rng) {
+        b.boost += 10;
+        _bump(b, brand: 6, satisfaction: 3, morale: 2);
+        return 'Balloons, a tent, and a sound system playing the same five songs all weekend. It worked.';
+      },
+    ),
+    events: ['dealer_recall', 'dealer_lemon'],
+  ),
+  'pet_care': (
+    blurb: 'Dogs, cats and the occasional iguana. Athleticism keeps up with the walks.',
+    role: 'owner and lead handler',
+    perks: [
+      _perk(
+        'play_yard',
+        'A proper play yard',
+        'Quality +10',
+        12000,
+        quality: 10,
+      ),
+      _perk(
+        'grooming_bay',
+        'Add a grooming bay',
+        'About 10% more clients',
+        10000,
+        demand: 0.10,
+      ),
+      _perk(
+        'webcams',
+        'Webcams for worried owners',
+        'Brand +8, satisfaction +5',
+        6000,
+        brand: 8,
+        satisfaction: 5,
+      ),
+    ],
+    signature: (
+      label: 'Host a "yappy hour" meetup',
+      detail: '\$800 · brand and customers up',
+      cost: 800,
+      run: (l, b, rng) {
+        _bump(b, brand: 6, satisfaction: 5, morale: 3);
+        return 'Twelve dogs, one terrified cat in a stroller, and a great afternoon. Three new regulars signed up on the spot.';
+      },
+    ),
+    events: ['pet_bite', 'pet_lost'],
+  ),
 };
 
 BizKind? kindOf(Business b) => bizKinds[b.industry];
@@ -1067,6 +1294,214 @@ Storylet? tradeEventScene(List<String> args, Life l) {
           b.boost -= 15;
           return 'Two sponsors pulled out the same day.';
         }, risk: 'Could go either way'),
+      ],
+    ),
+    'realty_lowball' => _scene(
+      'realty_lowball',
+      'A buyer offered half the asking price on a listing that has sat for months at ${b.name}.',
+      [
+        c('Push back and hold firm', (l, b, rng) {
+          if (odds(rng, 45 + b.brand ~/ 2)) {
+            _bump(b, brand: 5);
+            return 'They came back a week later at 90%. Patience paid.';
+          }
+          _bump(b, satisfaction: -5);
+          return 'They walked. The listing sat another month.';
+        }, risk: 'Could cost the sale'),
+        c('Take the deal to keep things moving', (l, b, rng) {
+          _bump(b, satisfaction: 3);
+          return 'Quick and clean, if underwhelming.';
+        }),
+      ],
+    ),
+    'realty_bidding_war' => _scene(
+      'realty_bidding_war',
+      'Three buyers want the same house ${b.name} is listing, and the sellers are loving it.',
+      [
+        c('Run an open bidding round', (l, b, rng) {
+          if (odds(rng, 50 + b.quality ~/ 2)) {
+            _bump(b, brand: 8);
+            return 'The final price smashed the estimate. Your name was in the local paper.';
+          }
+          _bump(b, satisfaction: -4);
+          return 'One buyer dropped out furious, accusing you of favouritism.';
+        }, risk: 'Could get messy'),
+        c('Pick the cleanest offer quietly', (l, b, rng) {
+          _bump(b, satisfaction: 4);
+          return 'No drama, a fair price, a quiet closing.';
+        }),
+      ],
+    ),
+    'law_malpractice' => _scene(
+      'law_malpractice',
+      'A former client is threatening to sue ${b.name} over a missed filing deadline.',
+      [
+        c('Settle quietly (${_m(5000)})', (l, b, rng) {
+          l.money -= 5000;
+          _bump(b, satisfaction: 2);
+          return 'Expensive, but it stays out of the papers.';
+        }, needsMoney: 5000),
+        c('Fight it in court', (l, b, rng) {
+          if (odds(rng, 40 + b.quality ~/ 2)) {
+            _bump(b, brand: 6);
+            return 'You won. The case even won you a client or two.';
+          }
+          l.money -= 8000;
+          _bump(b, brand: -10);
+          return 'You lost, and lost badly. The firm\'s name took a hit.';
+        }, risk: 'Could cost more and your reputation'),
+      ],
+    ),
+    'law_star_hire' => _scene(
+      'law_star_hire',
+      'A star litigator from a rival firm wants to jump ship to ${b.name} — for a signing bonus.',
+      [
+        c('Pay the bonus (${_m(15000)})', (l, b, rng) {
+          l.money -= 15000;
+          _bump(b, quality: 10, brand: 5);
+          return 'Worth every cent. Cases started closing faster.';
+        }, needsMoney: 15000),
+        c('Let them go to a rival', (l, b, rng) {
+          _bump(b, morale: 1);
+          return 'You kept the budget and let the rumour mill do the rest.';
+        }),
+      ],
+    ),
+    'clinic_malpractice' => _scene(
+      'clinic_malpractice',
+      'A patient is alleging a missed diagnosis at ${b.name}.',
+      [
+        c('Settle through insurance', (l, b, rng) {
+          _bump(b, satisfaction: -3);
+          return 'Insurance covered it, but the review board still asked questions.';
+        }),
+        c('Contest the claim', (l, b, rng) {
+          if (odds(rng, 45 + b.quality ~/ 2)) {
+            _bump(b, brand: 6);
+            return 'The board cleared you completely.';
+          }
+          l.money -= 10000;
+          _bump(b, brand: -12);
+          return 'The finding went against you. Patients noticed.';
+        }, risk: 'Could cost money and your name'),
+      ],
+    ),
+    'clinic_outbreak' => _scene(
+      'clinic_outbreak',
+      'A flu outbreak has the waiting room at ${b.name} overflowing for weeks.',
+      [
+        c('Bring in locum staff (${_m(8000)})', (l, b, rng) {
+          l.money -= 8000;
+          _bump(b, satisfaction: 6);
+          return 'Extra hands kept wait times down. Patients were grateful.';
+        }, needsMoney: 8000),
+        c('Push through as you are', (l, b, rng) {
+          _bump(b, morale: -8, satisfaction: -5);
+          return 'The regular staff ran themselves ragged. Two quit the week after.';
+        }),
+      ],
+    ),
+    'farm_drought' => _scene(
+      'farm_drought',
+      'The worst dry spell in years is burning through this season\'s crop at ${b.name}.',
+      [
+        c('Buy emergency water, trucked in (${_m(6000)})', (l, b, rng) {
+          l.money -= 6000;
+          _bump(b, quality: 3);
+          return 'Expensive, but the crop survived.';
+        }, needsMoney: 6000),
+        c('Let the weak fields go', (l, b, rng) {
+          _bump(b, satisfaction: -4);
+          b.boost -= 8;
+          return 'You saved what you could. It was not enough to sell at full volume.';
+        }),
+      ],
+    ),
+    'farm_contract' => _scene(
+      'farm_contract',
+      'A supermarket chain wants to sign ${b.name} as a regular supplier — at a price that barely covers costs.',
+      [
+        c('Sign the contract for steady income', (l, b, rng) {
+          b.boost += 10;
+          _bump(b, satisfaction: -3);
+          return 'Steady money, thin margins. At least the trucks come every week now.';
+        }),
+        c('Hold out for a better deal', (l, b, rng) {
+          if (odds(rng, 40 + b.brand ~/ 2)) {
+            _bump(b, brand: 8);
+            return 'A smaller, better-paying buyer came along instead.';
+          }
+          _bump(b, satisfaction: -5);
+          return 'The chain went elsewhere. The harvest sat a while longer than you liked.';
+        }, risk: 'Could lose the buyer'),
+      ],
+    ),
+    'dealer_recall' => _scene(
+      'dealer_recall',
+      'A manufacturer recall hits a batch of cars already sold from ${b.name}.',
+      [
+        c('Handle every repair personally (${_m(7000)})', (l, b, rng) {
+          l.money -= 7000;
+          _bump(b, brand: 8);
+          return 'Customers remembered how you handled it, not that it happened.';
+        }, needsMoney: 7000),
+        c('Point customers to the manufacturer', (l, b, rng) {
+          _bump(b, satisfaction: -8, brand: -6);
+          return 'Technically correct. It did not feel that way to the people waving the paperwork.';
+        }),
+      ],
+    ),
+    'dealer_lemon' => _scene(
+      'dealer_lemon',
+      'A customer is convinced the car they bought at ${b.name} is a lemon, and they are loud about it.',
+      [
+        c('Buy it back, no argument (${_m(4000)})', (l, b, rng) {
+          l.money -= 4000;
+          _bump(b, brand: 5);
+          return 'Cost you a sale, bought you a good review.';
+        }, needsMoney: 4000),
+        c('Stand by the sale', (l, b, rng) {
+          if (odds(rng, 45 + b.quality ~/ 2)) {
+            _bump(b, brand: 3);
+            return 'An inspection backed you up completely.';
+          }
+          _bump(b, satisfaction: -10);
+          return 'The story made the local Facebook group. Everyone saw it.';
+        }, risk: 'Could go public'),
+      ],
+    ),
+    'pet_bite' => _scene(
+      'pet_bite',
+      'A dog in daycare at ${b.name} bit another dog — and both owners are furious.',
+      [
+        c('Cover the vet bill and apologise properly (${_m(1500)})', (l, b, rng) {
+          l.money -= 1500;
+          _bump(b, satisfaction: 4);
+          return 'Both owners calmed down. One even came back.';
+        }, needsMoney: 1500),
+        c('Say it was nobody\'s fault', (l, b, rng) {
+          _bump(b, satisfaction: -8, brand: -5);
+          return 'Neither owner came back. One left a review everyone saw.';
+        }),
+      ],
+    ),
+    'pet_lost' => _scene(
+      'pet_lost',
+      'A cat went missing from boarding at ${b.name} overnight.',
+      [
+        c('Drop everything to find it', (l, b, rng) {
+          if (odds(rng, 55)) {
+            _bump(b, satisfaction: 5);
+            return 'Found hiding in the ceiling tiles by morning. The owner cried with relief.';
+          }
+          l.money -= 3000;
+          _bump(b, satisfaction: -10);
+          return 'Gone for good. You paid for the owner\'s loss and lost a client.';
+        }, risk: 'The cat could still be gone'),
+        c('File the incident report and wait', (l, b, rng) {
+          _bump(b, satisfaction: -6);
+          return 'It turned up two days later, three streets over. The owner never boarded with you again.';
+        }),
       ],
     ),
     _ => null,

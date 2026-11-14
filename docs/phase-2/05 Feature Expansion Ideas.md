@@ -47,6 +47,7 @@ another being built first, except where noted.
 | E2 | **Mentor/protégé**: once senior in a career, take on a junior coworker; investing in them becomes an ally later, mirroring the Calling hubs' existing rival/ally pattern | `engine/jobs.dart`, `engine/career_hub_people.dart` (the existing cast/ally/rival pattern is the template) | Medium — reuses a proven pattern from the Calling update |
 | E3 | ~~**Third acts**~~ — **Built 14 Nov.** `thirdActs` in `career_hub_second.dart`, keyed by second-act title; `leaveJob` (`jobs.dart`) queues it when a second-act job ends. One third act per second act, no fourth | `engine/career_hub_second.dart`, `engine/career_hub.dart` (dispatcher), `engine/jobs.dart` | — |
 | E4 | **Franchise businesses**: multi-location businesses once a single business crosses a wealth threshold, with a manager-hire mechanic instead of micromanaging every site | business system (`engine/` business, wherever S33 lives) | Large — closest in shape to a new system, not an extension |
+| E5 | ~~**Six more business industries**~~ — **Built 14 Nov.** Real estate agency, law firm, clinic, farm, car dealership, pet care, each with 3 perks, a signature move and 2 trade events (`business_kinds.dart`), registered in `industries` (`finance.dart`). The plan's list still has clinic/dental as a split, brewery, logistics, fashion label, beauty brand, security firm, travel agency, zoo, film studio, record label — same shape of work, pick up any time | `engine/business_kinds.dart`, `engine/finance.dart` | — |
 
 ## Wealth
 
