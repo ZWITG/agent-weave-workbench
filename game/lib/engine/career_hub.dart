@@ -19,6 +19,7 @@ part 'career_hub_people.dart';
 part 'career_hub_wave3.dart';
 part 'career_hub_links.dart';
 part 'career_hub_second.dart';
+part 'career_seasons.dart';
 
 // The Career Hub ("Calling", docs/phase-2/03): every special career gets
 // the same shape, filled with its own data.

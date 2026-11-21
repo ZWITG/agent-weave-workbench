@@ -7,7 +7,7 @@ import '../engine/careers.dart';
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
-import 'activities.dart' show actionRow;
+import 'activities.dart' show actionRow, runActionFlow;
 import 'career_stage.dart';
 import 'people.dart' show openPersonSheet;
 import 'widgets.dart';
@@ -337,7 +337,7 @@ class _CareerHubScreenState extends State<CareerHubScreen>
         ),
       ),
       const SizedBox(height: 12),
-      _seasonStrip(l, spec, p),
+      _seasonStrip(context, l, spec, p),
       const SizedBox(height: 12),
       NFCard(
         child: Column(
@@ -443,67 +443,162 @@ class _CareerHubScreenState extends State<CareerHubScreen>
     ];
   }
 
-  Widget _seasonStrip(Life l, HubSpec spec, NFPalette p) {
+  // The season tabs: tap one to make it this year's focus (career_seasons
+  // .dart). The highlighted tab is the season now and counts for more.
+  Widget _seasonStrip(
+    BuildContext context,
+    Life l,
+    HubSpec spec,
+    NFPalette p,
+  ) {
     final beat = hubBeat(l);
+    final chosen = hubSeasonChosen(l);
     final look = careerLooks[l.careerId];
-    return Semantics(
-      label: 'Season: ${spec.seasons.join(', ')}. Now: ${spec.seasons[beat]}',
-      excludeSemantics: true,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < spec.seasons.length; i++) ...[
-              if (i > 0) const SizedBox(width: 6),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: i == beat
-                        ? LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              p.orange.withValues(alpha: 0.30),
-                              p.orange.withValues(alpha: 0.08),
-                            ],
-                          )
-                        : null,
-                    color: i == beat ? null : NF.surface,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: i == beat ? p.orange : NF.border,
-                      width: i == beat ? 1.5 : 1,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < spec.seasons.length; i++) ...[
+                if (i > 0) const SizedBox(width: 6),
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    selected: chosen == i,
+                    label:
+                        '${spec.seasons[i]}${i == beat ? ', in season' : ''}'
+                        '${chosen == i ? ', this year\'s focus' : ''}',
+                    excludeSemantics: true,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        key: ValueKey('season-$i'),
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: () => _pickSeason(context, l, spec, i),
+                        child: Opacity(
+                          opacity: chosen != null && chosen != i ? 0.45 : 1,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: i == beat || chosen == i
+                                  ? LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        p.orange.withValues(
+                                          alpha: chosen == i ? 0.55 : 0.30,
+                                        ),
+                                        p.orange.withValues(alpha: 0.08),
+                                      ],
+                                    )
+                                  : null,
+                              color: i == beat || chosen == i
+                                  ? null
+                                  : NF.surface,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: i == beat || chosen == i
+                                    ? p.orange
+                                    : NF.border,
+                                width: i == beat || chosen == i ? 1.5 : 1,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (chosen == i) ...[
+                                  Icon(
+                                    Icons.check_circle_rounded,
+                                    size: 14,
+                                    color: p.orange,
+                                  ),
+                                  const SizedBox(height: 3),
+                                ] else if (i == beat) ...[
+                                  Icon(look?.icon, size: 14, color: p.orange),
+                                  const SizedBox(height: 3),
+                                ] else
+                                  Text(
+                                    '${i + 1}',
+                                    style: NF.sora(10, color: NF.muted),
+                                  ),
+                                Text(
+                                  spec.seasons[i],
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  style: i == beat || chosen == i
+                                      ? hubFace(l.careerId!, 12, NF.text)
+                                      : NF.sora(11, color: NF.muted),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (i == beat) ...[
-                        Icon(look?.icon, size: 14, color: p.orange),
-                        const SizedBox(height: 3),
-                      ] else
-                        Text('${i + 1}', style: NF.sora(10, color: NF.muted)),
-                      Text(
-                        spec.seasons[i],
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        style: i == beat
-                            ? hubFace(l.careerId!, 12, NF.text)
-                            : NF.sora(11, color: NF.muted),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
+              ],
             ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          chosen == null
+              ? 'Tap a tab to make it this year\'s focus. ${spec.seasons[beat]} is in season and counts for more.'
+              : 'This year\'s focus: ${spec.seasons[chosen]}. Pick again next year.',
+          style: NF.sora(12, color: NF.muted),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickSeason(
+    BuildContext context,
+    Life l,
+    HubSpec spec,
+    int i,
+  ) async {
+    final action = hubSeasonAction(l, i);
+    final lock = action.lockReason(l);
+    final go = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: NF.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              spec.seasons[i],
+              style: hubFace(l.careerId!, 20, NF.text),
+            ),
+            const SizedBox(height: 6),
+            Text(hubSeasonHint(l, i), style: NF.sora(14, color: NF.soft)),
+            const SizedBox(height: 16),
+            if (lock != null)
+              Text(lock, style: NF.sora(13, color: NF.muted))
+            else
+              FilledButton(
+                key: const ValueKey('season-go'),
+                style: primaryButton(),
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text('Focus on ${spec.seasons[i]} this year'),
+              ),
           ],
         ),
       ),
     );
+    if (go != true || !context.mounted) return;
+    await runActionFlow(context, c, action, closeSheet: false);
   }
 }
 

@@ -302,3 +302,11 @@ Four small additions that make a long life, and a long dynasty, easier to follow
 - **Turning points:** a new Life feed filter that collects the whole life's big moments plus every remembered one (marrying, going to prison, your first flat…), from birth on, without the usual 60-line limit.
 - **Back issues:** the newspaper can open any earlier year's front page, searchable by year or by a word in its stories, including the years your ancestors lived. "From the archive" headlines open their paper too.
 - **Notable ancestors:** a family tree toggle that highlights ancestors who reached the upper echelon or earned a Rare or Legendary Life Title, and says which.
+
+## Season tabs you can play (21 Nov)
+The four season tabs on every career page (Training · Exercises · Deployment · Leave for the armed forces, Write · Record · Release · Tour for musicians, and so on for all 14 special careers) were only a marker. Now each one is a choice:
+- Once a year, tap a tab to make it the year's focus. A sheet says what it does before you commit, and the result pops up like any activity (it costs energy and goes in the feed).
+- Each tab is one of four kinds: steady work (the meter always goes up), real work (up, more if it goes well), the big moment (Deployment, Premiere, Play-offs, Fight night, Trial, Launch window...: odds grow with the meter; a win jumps the meter, lifts performance, pays and counts a medal or title, a loss costs meter and a little health) and time off (Leave, Recovery, Off-season...: happiness and health come back, the meter slips).
+- The highlighted tab is the season now and counts for more ("In season").
+- A focus year is not a quiet year, so the meter does not fade on top.
+- Musicians grow listeners and police close cases, since their meters come from those.
