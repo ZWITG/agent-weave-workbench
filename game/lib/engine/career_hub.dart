@@ -8,7 +8,7 @@ import 'models.dart';
 import 'music.dart' show listenersOf, songwritingOf;
 import 'pets.dart' show petHealth, petsOf;
 import 'policing.dart'
-    show academyDone, casesClosed, casesLost, dirtyFile, isCop;
+    show academyDone, addDirtyFile, casesClosed, casesLost, dirtyFile, isCop;
 import 'storylet.dart';
 import 'justice.dart' show commitCrime, crimeById, crimes;
 import 'underworld.dart' show crewOf;

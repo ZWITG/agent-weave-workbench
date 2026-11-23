@@ -8,6 +8,7 @@ import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart' show actionRow, runActionFlow;
+import 'career_signature.dart';
 import 'career_stage.dart';
 import 'people.dart' show openPersonSheet;
 import 'widgets.dart';
@@ -337,6 +338,8 @@ class _CareerHubScreenState extends State<CareerHubScreen>
         ),
       ),
       const SizedBox(height: 12),
+      CareerSignature(life: l),
+      const SizedBox(height: 12),
       _seasonStrip(context, l, spec, p),
       const SizedBox(height: 12),
       NFCard(
@@ -445,12 +448,7 @@ class _CareerHubScreenState extends State<CareerHubScreen>
 
   // The season tabs: tap one to make it this year's focus (career_seasons
   // .dart). The highlighted tab is the season now and counts for more.
-  Widget _seasonStrip(
-    BuildContext context,
-    Life l,
-    HubSpec spec,
-    NFPalette p,
-  ) {
+  Widget _seasonStrip(BuildContext context, Life l, HubSpec spec, NFPalette p) {
     final beat = hubBeat(l);
     final chosen = hubSeasonChosen(l);
     final look = careerLooks[l.careerId];
@@ -563,42 +561,14 @@ class _CareerHubScreenState extends State<CareerHubScreen>
     HubSpec spec,
     int i,
   ) async {
-    final action = hubSeasonAction(l, i);
-    final lock = action.lockReason(l);
-    final go = await showModalBottomSheet<bool>(
-      context: context,
-      backgroundColor: NF.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              spec.seasons[i],
-              style: hubFace(l.careerId!, 20, NF.text),
-            ),
-            const SizedBox(height: 6),
-            Text(hubSeasonHint(l, i), style: NF.sora(14, color: NF.soft)),
-            const SizedBox(height: 16),
-            if (lock != null)
-              Text(lock, style: NF.sora(13, color: NF.muted))
-            else
-              FilledButton(
-                key: const ValueKey('season-go'),
-                style: primaryButton(),
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text('Focus on ${spec.seasons[i]} this year'),
-              ),
-          ],
-        ),
-      ),
+    final opt = await showSeasonSheet(context, l, i);
+    if (opt == null || !context.mounted) return;
+    await runActionFlow(
+      context,
+      c,
+      hubSeasonAction(l, i, opt),
+      closeSheet: false,
     );
-    if (go != true || !context.mounted) return;
-    await runActionFlow(context, c, action, closeSheet: false);
   }
 }
 

@@ -310,3 +310,21 @@ The four season tabs on every career page (Training · Exercises · Deployment �
 - The highlighted tab is the season now and counts for more ("In season").
 - A focus year is not a quiet year, so the meter does not fade on top.
 - Musicians grow listeners and police close cases, since their meters come from those.
+
+## Every career plays its own way (23 Nov)
+The season tabs now open a sheet of choices that belong to the career, and every career has a signature mechanic of its own, drawn on its page:
+- Armed forces: boot prints of fatigue fill with each course, route and posting and make the next one riskier; Leave clears them. Exercises is a route across the moor (road, ridge or bog); Deployment is a posting (peacekeeping, frontline, rescue), and the family misses you while you are away.
+- Athlete: a Form vs Fatigue scoreboard with an injury zone and your last five results. Pick the training block, play every minute or rotate, take the decisive shot in the play-offs, then stay loyal, push for a transfer or sign a sponsor.
+- Musician: a taped-up setlist. Write songs by mood (each rated in stars), record the newest in a bedroom, indie or major studio, pick how to drop it, then a tour route on a map; a better setlist plays better.
+- Actor: a typecast film strip. Read for one of four scripts; three roles in one genre and you are typecast, so your type lands more often and the rest gets harder. Red-carpet looks set your reviews.
+- Politician: a balance scale between the whip and your conscience, a budget bar to split, a recess and a campaign. Debates go best near the middle.
+- Police: a personnel file stamped CLEAN or MARKED and an evidence board. Shortcuts close cases faster but mark your file.
+- Doctor: a burnout heartbeat line. Triage four patients at once; over 80 burnout, mistakes happen; a holiday brings it down.
+- Lawyer: a brass won–lost plaque and an ethics bar. Pick from three client files; trials and appeals go on the record; principled lawyers make partner more easily.
+- Model: an image dial from wholesome to edgy and three magazine-cover campaign offers. Luxury houses want balance; controversial brands want edge.
+- Vet: four farms with hearts of trust. At harvest you can only reach two; the others drift away.
+- Pilot: a logbook of airport stamps. A full page of eight pays a bonus and a holiday. Winter ops is a storm on the radar: push on, hold or divert.
+- Street hustler: a chalkboard of corners. Busy ones pay more, but the police move you on.
+- Astronaut: a countdown ring. Selection and training count down to a crew; only then is GO open in the launch window.
+- Fighter: a body damage chart and tonight's opponent. Strike beats grapple, grapple beats defend, defend beats strike.
+Choices show what they move as chips (meter, stats, money, the signature, and how likely it is, in words). Many play a mini-game, and a good score raises the odds. Still once a year, and the tab in season still counts for more.

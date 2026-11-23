@@ -15,7 +15,8 @@ import 'package:relivable/engine/careers.dart';
 import 'package:relivable/ui/career_hub_screen.dart';
 import 'package:relivable/ui/career_curtain.dart';
 import 'package:relivable/ui/career_marks.dart';
-import 'package:relivable/engine/career_hub.dart' show hubMeter;
+import 'package:relivable/engine/career_hub.dart'
+    show hubMeter, hubSeasonChosen, hubSeasonPicked;
 import 'package:relivable/ui/activities.dart';
 import 'package:relivable/ui/intro.dart';
 import 'package:relivable/theme.dart';
@@ -787,6 +788,49 @@ void main() {
     expect(problems, isEmpty);
   });
 
+  testWidgets('a season tab opens its options and one becomes the focus', (
+    t,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    t.view.physicalSize = const Size(390, 844);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    late GameController c;
+    await t.runAsync(() async => c = await _game());
+    CareerCurtain.enabled = false;
+    addTearDown(() => CareerCurtain.enabled = true);
+    await t.pumpWidget(RelivableApp(controller: c));
+    await _pump(t);
+    final l = c.life!;
+    startCareer(l, careerById('military')!);
+    l.sceneQueue.clear();
+    c.notifyListeners();
+    await _pump(t);
+    openCareerHub(t.element(find.byType(Scaffold).first), c);
+    await _pump(t);
+    expect(find.byKey(const ValueKey('career-signature')), findsOneWidget);
+    await t.ensureVisible(find.byKey(const ValueKey('season-3')));
+    await t.tap(find.byKey(const ValueKey('season-3')));
+    await _pump(t);
+    // Leave: three ways to spend it, none with a mini-game.
+    expect(find.byKey(const ValueKey('season-opt-home')), findsOneWidget);
+    expect(find.byKey(const ValueKey('season-opt-wild')), findsOneWidget);
+    await t.tap(find.byKey(const ValueKey('season-opt-home')));
+    await _pump(t);
+    await _tapText(t, 'Continue');
+    await _pump(t);
+    expect(hubSeasonChosen(l), 3);
+    expect(hubSeasonPicked(l), 'home');
+    // The rest of the year's tabs now say so (once the toast has gone).
+    await t.pump(const Duration(seconds: 6));
+    await t.ensureVisible(find.byKey(const ValueKey('season-1')));
+    await t.drag(find.byType(ListView).last, const Offset(0, 200));
+    await _pump(t);
+    await t.tap(find.byKey(const ValueKey('season-1')));
+    await _pump(t);
+    expect(find.textContaining('This year\'s focus is done'), findsOneWidget);
+  });
+
   testWidgets('prison wears Yard Time, and release takes it off', (t) async {
     SharedPreferences.setMockInitialValues({});
     t.view.physicalSize = const Size(320, 568);
@@ -1233,10 +1277,7 @@ void main() {
     await _pump(t);
     await t.tap(chip);
     await _pump(t);
-    expect(
-      find.text('Marrying someone with a very long name'),
-      findsOneWidget,
-    );
+    expect(find.text('Marrying someone with a very long name'), findsOneWidget);
 
     // Back issues: search and open one.
     openNewspaper(t.element(find.byType(Scaffold).first), c);
@@ -1252,7 +1293,9 @@ void main() {
     // Notable ancestors highlights the upper echelon.
     await t.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: ListView(children: [FamilyTree(life: l)])),
+        home: Scaffold(
+          body: ListView(children: [FamilyTree(life: l)]),
+        ),
       ),
     );
     await _pump(t);
