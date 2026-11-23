@@ -306,11 +306,13 @@ void main() {
       final lose = beats[foe]!;
       final a = start('fighter', 17), b = start('fighter', 17);
       if (hubSeasonPick(a, Random(i), 2, opt(a, 2, win)).text ==
-          opt(a, 2, win).win)
+          opt(a, 2, win).win) {
         right++;
+      }
       if (hubSeasonPick(b, Random(i), 2, opt(b, 2, lose)).text ==
-          opt(b, 2, lose).win)
+          opt(b, 2, lose).win) {
         wrong++;
+      }
     }
     expect(right, greaterThan(wrong));
     final l = start('fighter', 18);
