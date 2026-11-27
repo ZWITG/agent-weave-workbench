@@ -324,6 +324,19 @@ class GameController extends ChangeNotifier {
     return ActionResult(text);
   }
 
+  /// The law, health and faith in an era life (era_justice, era_health,
+  /// era_faith): like [eraAct], and a hearing it queues opens at once on
+  /// the Life tab.
+  ActionResult eraLifeAct(String Function(Life, EraRules, Random) act) {
+    final r = eraAct(act);
+    if (life != null && life!.sceneQueue.isNotEmpty) {
+      _sceneAfterAction();
+      _save();
+      notifyListeners();
+    }
+    return r;
+  }
+
   /// The past the last finished Legend life left behind, ready to link.
   PastRecord? lastLegendPast;
 

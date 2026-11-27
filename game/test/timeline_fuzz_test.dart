@@ -130,7 +130,9 @@ void main() {
       checkLife(life, era, bad, 'ordinary $seed');
     }
     expect(regions.length, era.regions.length, reason: '$regions');
-    expect(journeys, greaterThan(50));
+    // Fewer adults travel since 2C (era illness and plague years shorten
+    // some lives), but journeys stay common.
+    expect(journeys, greaterThan(25));
     expect(jsonEncode(world.toJson()), before, reason: 'modern world changed');
   });
 }

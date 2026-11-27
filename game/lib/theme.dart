@@ -499,7 +499,8 @@ class NF {
   }) => TextStyle(
     fontFamily: _font,
     // Signs a period face lacks (−, ★) fall back to Sora.
-    fontFamilyFallback: _font == 'Sora' ? null : const ['Sora'],
+    // and Sora's missing ƒ (the florin) falls back to Playfair.
+    fontFamilyFallback: _font == 'Sora' ? const ['Playfair'] : const ['Sora'],
     fontSize: size,
     fontWeight: weight,
     fontVariations: [FontVariation('wght', weight.value.toDouble())],
@@ -513,6 +514,8 @@ class NF {
       brightness: light ? Brightness.light : Brightness.dark,
       scaffoldBackgroundColor: bg,
       fontFamily: _font,
+      // Sora has no ƒ (the florin of era lives): Playfair draws it.
+      fontFamilyFallback: const ['Playfair', 'Sora'],
       // Plain ripple: avoids loading the ink_sparkle shader on the web.
       splashFactory: InkRipple.splashFactory,
       colorScheme: light

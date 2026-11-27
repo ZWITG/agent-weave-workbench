@@ -4064,60 +4064,1521 @@
  },
  "health": {
   "lifeExpectancy": 48,
-  "plague": 0.025
+  "note": "Plague strikes in the real plague years of each place; other years carry only a small chance of a local outbreak.",
+  "plagues": [
+   {
+    "regions": [
+     "florence"
+    ],
+    "years": [
+     1457,
+     1478,
+     1479,
+     1497,
+     1498,
+     1522,
+     1523,
+     1527,
+     1528,
+     1529,
+     1630,
+     1631
+    ]
+   },
+   {
+    "regions": [
+     "milan"
+    ],
+    "years": [
+     1451,
+     1484,
+     1485,
+     1524,
+     1576,
+     1577,
+     1629,
+     1630,
+     1631
+    ]
+   },
+   {
+    "regions": [
+     "venice"
+    ],
+    "years": [
+     1456,
+     1478,
+     1575,
+     1576,
+     1577,
+     1630,
+     1631
+    ]
+   },
+   {
+    "regions": [
+     "rome"
+    ],
+    "years": [
+     1476,
+     1522,
+     1523
+    ]
+   },
+   {
+    "regions": [
+     "naples"
+    ],
+    "years": [
+     1527,
+     1528
+    ]
+   },
+   {
+    "regions": [
+     "sicily"
+    ],
+    "years": [
+     1575,
+     1576,
+     1624
+    ]
+   },
+   {
+    "regions": [
+     "malta"
+    ],
+    "years": [
+     1592,
+     1593
+    ]
+   },
+   {
+    "regions": [
+     "england"
+    ],
+    "years": [
+     1563,
+     1593,
+     1603,
+     1625,
+     1636
+    ]
+   },
+   {
+    "regions": [
+     "fez"
+    ],
+    "years": [
+     1521,
+     1522,
+     1599,
+     1600,
+     1601,
+     1602,
+     1603
+    ]
+   },
+   {
+    "regions": [
+     "cairo"
+    ],
+    "years": [
+     1460,
+     1476,
+     1492,
+     1513
+    ]
+   }
+  ],
+  "outbreak": {
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "iberia",
+    "maghreb",
+    "egypt"
+   ],
+   "chance": 0.004
+  },
+  "ailments": [
+   {
+    "id": "fever",
+    "name": "A fever",
+    "about": "Hot and cold by turns, for weeks",
+    "chance": 0.05,
+    "harm": 8,
+    "heal": {
+     "rest": 0.55,
+     "physician": 0.5,
+     "apothecary": 0.45,
+     "wise": 0.4,
+     "nganga": 0.5,
+     "hospital": 0.55
+    }
+   },
+   {
+    "id": "roman_fever",
+    "name": "The Roman fever",
+    "about": "The marsh fever: it comes back every other day",
+    "chance": 0.07,
+    "regions": [
+     "rome"
+    ],
+    "harm": 10,
+    "heal": {
+     "rest": 0.35,
+     "physician": 0.35,
+     "apothecary": 0.3,
+     "hospital": 0.4
+    }
+   },
+   {
+    "id": "smallpox",
+    "name": "The smallpox",
+    "about": "Spots, fever, and marks for life if you live",
+    "chance": 0.03,
+    "maxAge": 14,
+    "harm": 18,
+    "heal": {
+     "rest": 0.6,
+     "wise": 0.6,
+     "nganga": 0.6,
+     "hospital": 0.62
+    }
+   },
+   {
+    "id": "flux",
+    "name": "The bloody flux",
+    "about": "Bad water and bad bread",
+    "chance": 0.03,
+    "harm": 12,
+    "heal": {
+     "rest": 0.55,
+     "apothecary": 0.6,
+     "physician": 0.5,
+     "nganga": 0.6,
+     "hospital": 0.6
+    }
+   },
+   {
+    "id": "bone",
+    "name": "A broken bone",
+    "about": "A fall from a ladder, a cart, a horse",
+    "chance": 0.025,
+    "minAge": 6,
+    "harm": 6,
+    "heal": {
+     "barber": 0.9,
+     "nganga": 0.8,
+     "wise": 0.5,
+     "rest": 0.35,
+     "hospital": 0.85
+    }
+   },
+   {
+    "id": "stone",
+    "name": "The stone",
+    "about": "A stone in the bladder: cutting for it is dangerous",
+    "chance": 0.012,
+    "minAge": 40,
+    "sex": "male",
+    "harm": 8,
+    "heal": {
+     "barber": 0.6,
+     "physician": 0.3,
+     "apothecary": 0.25
+    },
+    "risk": {
+     "barber": 0.12
+    }
+   },
+   {
+    "id": "consumption",
+    "name": "Consumption",
+    "about": "A cough that will not go, and you grow thin",
+    "chance": 0.01,
+    "minAge": 16,
+    "harm": 6,
+    "chronic": true,
+    "heal": {
+     "rest": 0.1,
+     "physician": 0.15
+    }
+   },
+   {
+    "id": "pox",
+    "name": "The French disease",
+    "about": "The new pox that came with the armies of 1495",
+    "chance": 0.004,
+    "minAge": 18,
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia"
+    ],
+    "from": 1495,
+    "harm": 5,
+    "chronic": true,
+    "heal": {
+     "physician": 0.12,
+     "apothecary": 0.12
+    }
+   },
+   {
+    "id": "sweat",
+    "name": "The sweating sickness",
+    "about": "The English sweat: well in the morning, dead by night",
+    "chance": 0.12,
+    "regions": [
+     "england"
+    ],
+    "years": [
+     1485,
+     1508,
+     1517,
+     1528,
+     1551
+    ],
+    "harm": 20,
+    "heal": {
+     "rest": 0.7
+    }
+   }
+  ],
+  "healers": [
+   {
+    "id": "barber",
+    "name": "Barber-surgeon",
+    "about": "Sets bones, pulls teeth, lets blood",
+    "fee": 1,
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia"
+    ]
+   },
+   {
+    "id": "barber",
+    "name": "Barber and cupper",
+    "about": "Sets bones and cups the blood",
+    "fee": 1,
+    "groups": [
+     "maghreb",
+     "sahel",
+     "egypt"
+    ]
+   },
+   {
+    "id": "apothecary",
+    "name": "Apothecary",
+    "about": "Theriac, syrups and remedies",
+    "fee": 2,
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia"
+    ]
+   },
+   {
+    "id": "apothecary",
+    "name": "Druggist ('attar)",
+    "about": "Herbs, spices and remedies from the souk",
+    "fee": 2,
+    "groups": [
+     "maghreb",
+     "egypt",
+     "iberia"
+    ]
+   },
+   {
+    "id": "physician",
+    "name": "Physician",
+    "about": "University trained: Galen, the humours and the urine flask",
+    "fee": 6,
+    "groups": [
+     "italy",
+     "islands",
+     "england"
+    ]
+   },
+   {
+    "id": "physician",
+    "name": "Physician (tabib)",
+    "about": "Trained in Avicenna's Canon of Medicine",
+    "fee": 6,
+    "groups": [
+     "maghreb",
+     "egypt",
+     "iberia"
+    ]
+   },
+   {
+    "id": "physician",
+    "name": "A scholar who heals",
+    "about": "Prayers, herbs and the medicine of the books",
+    "fee": 3,
+    "groups": [
+     "sahel"
+    ]
+   },
+   {
+    "id": "nganga",
+    "name": "The nganga",
+    "about": "A healer who knows the plants and the spirits",
+    "fee": 1,
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "id": "wise",
+    "name": "A wise woman",
+    "about": "Herbs and old remedies",
+    "fee": 0,
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "sahel",
+     "egypt"
+    ]
+   }
+  ],
+  "hospitals": {
+   "Florence": "Santa Maria Nuova",
+   "Rome": "Santo Spirito",
+   "Milan": "the Ospedale Maggiore",
+   "Naples": "the Incurabili",
+   "London": "St Bartholomew's",
+   "Cairo": "the Mansuri hospital",
+   "Fez": "the Sidi Frej hospital",
+   "Siena": "Santa Maria della Scala",
+   "Venice": "the hospital of the Pietà"
+  },
+  "hospitalsFrom": {
+   "Milan": 1456,
+   "Naples": 1519
+  },
+  "lazaretto": {
+   "Venice": "the Lazzaretto",
+   "Florence": "the pest house at San Miniato",
+   "Milan": "the Lazzaretto",
+   "London": "the pest house"
+  },
+  "lazarettoFrom": {
+   "Milan": 1488,
+   "London": 1594
+  }
  },
  "news": {
   "name": "Avvisi",
-  "headlines": {
-   "1453": [
-    "Constantinople has fallen to Sultan Mehmed. Greek scholars are arriving with their books."
+  "papers": [
+   {
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "to": 1499,
+    "kind": "crier",
+    "title": "Proclamation",
+    "line": "Cried in the piazza",
+    "lead": "From the Signoria"
+   },
+   {
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "from": 1500,
+    "to": 1639,
+    "kind": "avvisi",
+    "title": "Avvisi di {city}",
+    "line": "Handwritten · from our correspondent"
+   },
+   {
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "from": 1640,
+    "kind": "printed",
+    "title": "Gazzetta di {city}",
+    "line": "Printed"
+   },
+   {
+    "groups": [
+     "england"
+    ],
+    "to": 1620,
+    "kind": "crier",
+    "title": "Proclamation",
+    "line": "Cried at the market cross"
+   },
+   {
+    "groups": [
+     "england"
+    ],
+    "from": 1621,
+    "kind": "printed",
+    "title": "Coranto",
+    "line": "Newes from Italy, Germany and elsewhere · printed in London"
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "to": 1491,
+    "kind": "word",
+    "title": "Word in the souk",
+    "line": "What the merchants are saying"
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "from": 1492,
+    "kind": "crier",
+    "title": "Pregón",
+    "line": "Cried in the plaza"
+   },
+   {
+    "groups": [
+     "maghreb",
+     "sahel"
+    ],
+    "kind": "word",
+    "title": "Word from the caravans",
+    "line": "What the merchants are saying"
+   },
+   {
+    "groups": [
+     "egypt"
+    ],
+    "kind": "word",
+    "title": "Word in the khans",
+    "line": "What the merchants are saying"
+   },
+   {
+    "regions": [
+     "luanda"
+    ],
+    "kind": "crier",
+    "title": "Pregão",
+    "line": "Cried by the governor's crier"
+   },
+   {
+    "groups": [
+     "kongo"
+    ],
+    "kind": "crier",
+    "title": "The court crier",
+    "line": "Spoken before the people"
+   }
+  ],
+  "stories": [
+   {
+    "year": 1453,
+    "text": "Constantinople has fallen to Sultan Mehmed. Greek scholars are fleeing west with their books.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "sahel",
+     "egypt"
+    ]
+   },
+   {
+    "year": 1492,
+    "text": "A Genoese sailor in the service of Castile has sailed west across the Ocean Sea.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1498,
+    "text": "Portuguese ships have rounded Africa and reached India.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "egypt",
+     "kongo"
+    ]
+   },
+   {
+    "year": 1517,
+    "text": "Sultan Selim's Ottoman army has taken Cairo. Egypt now answers to Istanbul.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "sahel",
+     "egypt"
+    ]
+   },
+   {
+    "year": 1522,
+    "text": "The last ship of Magellan's fleet has come home, having sailed around the world.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia"
+    ]
+   },
+   {
+    "year": 1543,
+    "text": "A canon of Frombork, Copernicus, prints a book that puts the Sun at the centre.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia"
+    ]
+   },
+   {
+    "year": 1571,
+    "text": "The Holy League has beaten the Ottoman fleet at Lepanto.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "egypt"
+    ]
+   },
+   {
+    "year": 1609,
+    "text": "In Padua, Galileo has turned a spyglass on the Moon and seen mountains.",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia"
+    ]
+   },
+   {
+    "year": 1609,
+    "text": "Spain orders every Morisco out of the kingdom.",
+    "groups": [
+     "iberia",
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1454,
+    "text": "Peace is signed at Lodi. Milan, Venice and Florence stop fighting, for now.",
+    "groups": [
+     "italy"
+    ]
+   },
+   {
+    "year": 1464,
+    "text": "Cosimo de' Medici is dead. The Signoria names him Father of his Country.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1469,
+    "text": "Lorenzo de' Medici, twenty years old, takes up his father's place.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1471,
+    "text": "Verrocchio's gilded ball is raised onto the lantern of the Duomo.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1476,
+    "text": "Duke Galeazzo Maria Sforza is stabbed to death in the church of Santo Stefano.",
+    "regions": [
+     "milan"
+    ]
+   },
+   {
+    "year": 1478,
+    "text": "Giuliano de' Medici is murdered in the Duomo at Mass. Lorenzo escaped, wounded. The conspirators have been taken.",
+    "regions": [
+     "florence"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1478,
+    "text": "War with the Pope and Naples after the Pazzi plot. Bread is dearer.",
+    "regions": [
+     "florence"
+    ],
+    "effect": {
+     "prices": 4
+    }
+   },
+   {
+    "year": 1479,
+    "text": "Lorenzo sails to Naples to make peace with King Ferrante.",
+    "regions": [
+     "florence",
+     "naples"
+    ]
+   },
+   {
+    "year": 1482,
+    "text": "War between Venice and Ferrara. The price of salt rises in the market.",
+    "groups": [
+     "italy"
+    ],
+    "effect": {
+     "prices": 4
+    }
+   },
+   {
+    "year": 1484,
+    "text": "Plague in Milan. The Duke's health office shuts the gates.",
+    "regions": [
+     "milan"
+    ],
+    "effect": {
+     "plague": 1
+    }
+   },
+   {
+    "year": 1492,
+    "text": "Lorenzo the Magnificent is dead at Careggi.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1492,
+    "text": "Rodrigo Borgia is Pope, as Alexander VI.",
+    "regions": [
+     "rome"
+    ]
+   },
+   {
+    "year": 1494,
+    "text": "King Charles of France rides into Italy with his army. Piero de' Medici has fled Florence.",
+    "groups": [
+     "italy"
+    ],
+    "effect": {
+     "prices": 5
+    }
+   },
+   {
+    "year": 1495,
+    "text": "A new pox is spreading through the armies at Naples. They call it the French disease.",
+    "groups": [
+     "italy",
+     "islands"
+    ]
+   },
+   {
+    "year": 1497,
+    "text": "Friar Savonarola's boys burn mirrors, cards and paintings in the Piazza.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1498,
+    "text": "Savonarola is put to death in the Piazza della Signoria.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1499,
+    "text": "The French have taken Milan. Duke Ludovico has fled to the Emperor.",
+    "regions": [
+     "milan"
+    ]
+   },
+   {
+    "year": 1504,
+    "text": "Michelangelo's giant David is set up before the Palazzo della Signoria.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1506,
+    "text": "Pope Julius lays the first stone of a new St Peter's.",
+    "regions": [
+     "rome"
+    ]
+   },
+   {
+    "year": 1508,
+    "text": "The League of Cambrai makes war on Venice.",
+    "regions": [
+     "venice"
+    ],
+    "effect": {
+     "prices": 4
+    }
+   },
+   {
+    "year": 1512,
+    "text": "The Medici are back in Florence with Spanish troops.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1513,
+    "text": "Cardinal Giovanni de' Medici is Pope, as Leo X. Bonfires all night.",
+    "regions": [
+     "florence",
+     "rome"
+    ]
+   },
+   {
+    "year": 1516,
+    "text": "The Senate orders the Jews of Venice to live in the Ghetto Nuovo.",
+    "regions": [
+     "venice"
+    ]
+   },
+   {
+    "year": 1525,
+    "text": "The French king is taken prisoner at Pavia.",
+    "regions": [
+     "milan"
+    ]
+   },
+   {
+    "year": 1527,
+    "text": "The Emperor's soldiers have sacked Rome. The Pope is shut in Castel Sant'Angelo.",
+    "groups": [
+     "italy"
+    ],
+    "effect": {
+     "prices": 6
+    }
+   },
+   {
+    "year": 1530,
+    "text": "Florence surrenders after a long siege. The Medici return as dukes.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1537,
+    "text": "Duke Alessandro de' Medici is murdered by his cousin. Cosimo, seventeen, takes his place.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1545,
+    "text": "The bishops gather at Trent for a council of the Church.",
+    "groups": [
+     "italy"
+    ]
+   },
+   {
+    "year": 1555,
+    "text": "Pope Paul IV orders the Jews of Rome into a walled ghetto.",
+    "regions": [
+     "rome"
+    ]
+   },
+   {
+    "year": 1559,
+    "text": "Peace at Cateau-Cambrésis. Spain holds Milan and Naples.",
+    "groups": [
+     "italy"
+    ]
+   },
+   {
+    "year": 1565,
+    "text": "The Ottoman siege of Malta has failed. The Knights hold Birgu.",
+    "groups": [
+     "islands",
+     "italy"
+    ]
+   },
+   {
+    "year": 1566,
+    "text": "Grand Master de Valette lays the first stone of a new city, Valletta.",
+    "regions": [
+     "malta"
+    ]
+   },
+   {
+    "year": 1569,
+    "text": "The Pope makes Cosimo de' Medici Grand Duke of Tuscany.",
+    "regions": [
+     "florence"
+    ]
+   },
+   {
+    "year": 1576,
+    "text": "Plague in Venice. Titian is dead of it, they say.",
+    "regions": [
+     "venice"
+    ],
+    "effect": {
+     "plague": 1
+    }
+   },
+   {
+    "year": 1576,
+    "text": "Plague in Milan. Archbishop Borromeo walks barefoot through the streets.",
+    "regions": [
+     "milan"
+    ],
+    "effect": {
+     "plague": 1
+    }
+   },
+   {
+    "year": 1582,
+    "text": "The Pope's new calendar: ten days are skipped this October.",
+    "groups": [
+     "italy",
+     "islands",
+     "iberia"
+    ]
+   },
+   {
+    "year": 1590,
+    "text": "Famine. The grain office rations bread.",
+    "groups": [
+     "italy"
+    ],
+    "effect": {
+     "prices": 8
+    }
+   },
+   {
+    "year": 1600,
+    "text": "Giordano Bruno is put to death in the Campo de' Fiori.",
+    "regions": [
+     "rome"
+    ]
+   },
+   {
+    "year": 1610,
+    "text": "Galileo's Starry Messenger is in every bookshop.",
+    "groups": [
+     "italy"
+    ]
+   },
+   {
+    "year": 1626,
+    "text": "The new St Peter's is consecrated.",
+    "regions": [
+     "rome"
+    ]
+   },
+   {
+    "year": 1630,
+    "text": "Plague in the cities of the north. The health boards shut the houses.",
+    "groups": [
+     "italy"
+    ],
+    "effect": {
+     "plague": 1,
+     "prices": 6
+    }
+   },
+   {
+    "year": 1633,
+    "text": "Galileo is made to kneel before the Inquisition in Rome.",
+    "groups": [
+     "italy"
+    ]
+   },
+   {
+    "year": 1647,
+    "text": "The fishermen of Naples rise with Masaniello against the fruit tax.",
+    "regions": [
+     "naples"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1455,
+    "text": "The lords take up arms at St Albans: York against Lancaster.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1461,
+    "text": "Edward of York is crowned king after Towton.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1476,
+    "text": "William Caxton has set up a printing press at Westminster.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1485,
+    "text": "King Richard is dead at Bosworth. Henry Tudor is king.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1485,
+    "text": "A new sickness, the sweat, kills in a day.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1509,
+    "text": "King Henry VIII is crowned.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1534,
+    "text": "Parliament makes the king Supreme Head of the Church in England.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1536,
+    "text": "The king's men are closing the monasteries.",
+    "groups": [
+     "england"
+    ],
+    "effect": {
+     "prices": 3
+    }
+   },
+   {
+    "year": 1539,
+    "text": "A Great Bible in English is to be set in every church.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1547,
+    "text": "King Henry is dead. The boy Edward is king.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1553,
+    "text": "Queen Mary is crowned. The Mass is back.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1558,
+    "text": "Queen Mary is dead. Elizabeth is queen.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1576,
+    "text": "James Burbage has built a playhouse called the Theatre at Shoreditch.",
+    "cities": [
+     "London"
+    ]
+   },
+   {
+    "year": 1588,
+    "text": "The Spanish Armada is scattered in the Channel.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1593,
+    "text": "Plague in London. The playhouses are shut.",
+    "cities": [
+     "London"
+    ],
+    "effect": {
+     "plague": 1
+    }
+   },
+   {
+    "year": 1596,
+    "text": "A wet year and a failed harvest. Bread is dear.",
+    "groups": [
+     "england"
+    ],
+    "effect": {
+     "prices": 8
+    }
+   },
+   {
+    "year": 1599,
+    "text": "The Lord Chamberlain's Men have built the Globe on Bankside.",
+    "cities": [
+     "London"
+    ]
+   },
+   {
+    "year": 1601,
+    "text": "The Earl of Essex rode into London in rebellion and failed.",
+    "groups": [
+     "england"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1603,
+    "text": "Queen Elizabeth is dead. King James of Scotland comes south.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1605,
+    "text": "A plot to blow up Parliament is found. Barrels of powder under the Lords.",
+    "groups": [
+     "england"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1611,
+    "text": "The King's new Bible in English is printed.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1620,
+    "text": "A ship called the Mayflower has sailed for Virginia.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1625,
+    "text": "King James is dead. Charles is king, and plague is in London.",
+    "groups": [
+     "england"
+    ],
+    "effect": {
+     "plague": 1
+    }
+   },
+   {
+    "year": 1642,
+    "text": "The King has raised his standard at Nottingham. Civil war.",
+    "groups": [
+     "england"
+    ],
+    "effect": {
+     "prices": 5
+    }
+   },
+   {
+    "year": 1649,
+    "text": "King Charles has been put to death at Whitehall.",
+    "groups": [
+     "england"
+    ]
+   },
+   {
+    "year": 1469,
+    "text": "Isabel of Castile has married Fernando of Aragon.",
+    "groups": [
+     "iberia"
+    ]
+   },
+   {
+    "year": 1482,
+    "text": "Castile's army has taken Alhama. War has come to the kingdom.",
+    "groups": [
+     "iberia"
+    ],
+    "effect": {
+     "prices": 5
+    }
+   },
+   {
+    "year": 1492,
+    "text": "Granada has surrendered. Sultan Muhammad has handed the keys of the Alhambra to the Catholic kings.",
+    "groups": [
+     "iberia",
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1492,
+    "text": "The Catholic kings order every Jew out of their kingdoms.",
+    "groups": [
+     "iberia",
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1499,
+    "text": "Rising in the Albaicín against forced baptisms.",
+    "groups": [
+     "iberia"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1568,
+    "text": "The Moriscos of the Alpujarras have risen against the king.",
+    "groups": [
+     "iberia"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1465,
+    "text": "The last Marinid sultan has been killed in Fez.",
+    "groups": [
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1472,
+    "text": "The Wattasids rule in Fez.",
+    "groups": [
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1497,
+    "text": "Refugees from Granada are building new houses in Fez.",
+    "groups": [
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1554,
+    "text": "The Saadi sharif has taken Fez.",
+    "groups": [
+     "maghreb"
+    ]
+   },
+   {
+    "year": 1578,
+    "text": "Three kings dead at the battle of Wadi al-Makhazin. Ahmad al-Mansur is sultan.",
+    "groups": [
+     "maghreb",
+     "england",
+     "iberia"
+    ]
+   },
+   {
+    "year": 1591,
+    "text": "The sultan's army has crossed the Sahara and beaten the Songhai at Tondibi.",
+    "groups": [
+     "maghreb",
+     "sahel"
+    ]
+   },
+   {
+    "year": 1603,
+    "text": "Sultan Ahmad al-Mansur is dead of the plague.",
+    "groups": [
+     "maghreb"
+    ],
+    "effect": {
+     "plague": 1
+    }
+   },
+   {
+    "year": 1468,
+    "text": "Sonni Ali's horsemen have taken Timbuktu.",
+    "groups": [
+     "sahel"
+    ]
+   },
+   {
+    "year": 1493,
+    "text": "Askia Muhammad rules the Songhai.",
+    "groups": [
+     "sahel"
+    ]
+   },
+   {
+    "year": 1497,
+    "text": "Askia Muhammad has set out for Mecca on pilgrimage, with a great train.",
+    "groups": [
+     "sahel",
+     "egypt"
+    ]
+   },
+   {
+    "year": 1528,
+    "text": "Askia Muhammad, old and blind, has been set aside by his son.",
+    "groups": [
+     "sahel"
+    ]
+   },
+   {
+    "year": 1549,
+    "text": "Askia Dawud rules the Songhai. Scholars come from far to Timbuktu.",
+    "groups": [
+     "sahel"
+    ]
+   },
+   {
+    "year": 1591,
+    "text": "Moroccan musketeers have beaten the Songhai at Tondibi. Gao has fallen.",
+    "groups": [
+     "sahel"
+    ],
+    "effect": {
+     "prices": 8
+    }
+   },
+   {
+    "year": 1593,
+    "text": "The Moroccan pasha has arrested the scholars of Timbuktu.",
+    "groups": [
+     "sahel"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1468,
+    "text": "Sultan Qaitbay rules from the Citadel.",
+    "groups": [
+     "egypt"
+    ]
+   },
+   {
+    "year": 1501,
+    "text": "The sultan Qansuh al-Ghawri builds his great mosque and market.",
+    "groups": [
+     "egypt"
+    ]
+   },
+   {
+    "year": 1516,
+    "text": "Sultan al-Ghawri is dead at Marj Dabiq, fighting the Ottomans.",
+    "groups": [
+     "egypt"
+    ]
+   },
+   {
+    "year": 1517,
+    "text": "Tumanbay, the last Mamluk sultan, is put to death at the Zuwayla gate.",
+    "groups": [
+     "egypt"
+    ]
+   },
+   {
+    "year": 1483,
+    "text": "Strange ships with white sails at the mouth of the river.",
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1491,
+    "text": "King Nzinga a Nkuwu is baptised, as João.",
+    "regions": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1506,
+    "text": "Afonso is king of Kongo after a battle for the throne.",
+    "regions": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1509,
+    "text": "King Afonso opens a school for the sons of the nobles.",
+    "regions": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1526,
+    "text": "King Afonso has written to Portugal to protest the trade in people.",
+    "regions": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1568,
+    "text": "Raiders from the east have burned Mbanza Kongo. The king has fled.",
+    "effect": {
+     "prices": 8
+    },
+    "regions": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1576,
+    "text": "The Portuguese have founded a town at Luanda.",
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1596,
+    "text": "Mbanza Kongo, now São Salvador, has its own bishop.",
+    "regions": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1617,
+    "text": "Portuguese soldiers march on Ndongo with Imbangala allies.",
+    "groups": [
+     "kongo"
+    ],
+    "effect": {
+     "watch": 1
+    }
+   },
+   {
+    "year": 1622,
+    "text": "Nzinga, sister of the ngola, has gone to Luanda to talk peace.",
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1624,
+    "text": "Nzinga rules Ndongo.",
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1631,
+    "text": "Queen Nzinga rules from Matamba.",
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1641,
+    "text": "The Dutch have taken Luanda.",
+    "groups": [
+     "kongo"
+    ]
+   },
+   {
+    "year": 1648,
+    "text": "The Portuguese are back in Luanda.",
+    "groups": [
+     "kongo"
+    ]
+   }
+  ],
+  "local": {
+   "italy": [
+    "{court} fined a dozen men for carrying arms after the bell.",
+    "{Drum} held {n} denunciations this week.",
+    "A merchant's mule train came in from Bologna.",
+    "The guilds walked in procession for their saint."
    ],
-   "1464": [
-    "Cosimo de' Medici is dead. The Signoria names him Father of his Country."
+   "islands": [
+    "{court} fined men for carrying arms after dark.",
+    "Corsairs were seen off the coast. The watch towers lit their fires.",
+    "Grain ships came in from the south."
    ],
-   "1469": [
-    "Lorenzo de' Medici, twenty years old, takes up his father's place."
+   "england": [
+    "{court} set two men in the stocks for drunkenness.",
+    "The watch took a cutpurse at the fair.",
+    "A ship came in with wine from Bordeaux."
    ],
-   "1471": [
-    "Verrocchio's gilded ball is raised onto the lantern of the Duomo."
+   "iberia": [
+    "{court} fined men for gaming.",
+    "Silk merchants came in from the Alpujarras."
    ],
-   "1478": [
-    "Giuliano de' Medici murdered in the Duomo at Mass. Lorenzo escaped, wounded. The Pazzi hang from the Palazzo windows."
+   "maghreb": [
+    "The muhtasib checked the weights in the market and fined two bakers.",
+    "A caravan came in from Sijilmasa with gold.",
+    "The Qarawiyyin's scholars debated late into the night."
    ],
-   "1479": [
-    "Plague in the city. Lorenzo sails to Naples to make peace with King Ferrante."
+   "sahel": [
+    "A salt caravan came in from Taghaza.",
+    "The scholars of Sankore copied new books.",
+    "The river is high. The boats come and go to Djenné."
    ],
-   "1492": [
-    "Lorenzo the Magnificent is dead at Careggi.",
-    "A Genoese sailor in the service of Castile has sailed west."
+   "egypt": [
+    "The muhtasib fined a cloth seller for short measures.",
+    "The Nile flood was good. Grain is cheaper.",
+    "Pilgrims gathered for the caravan to Mecca."
    ],
-   "1494": [
-    "King Charles of France rides into Florence. Piero de' Medici has fled."
-   ],
-   "1497": [
-    "Friar Savonarola's boys burn mirrors, cards and paintings in the Piazza."
-   ],
-   "1498": [
-    "Savonarola hanged and burned in the Piazza della Signoria."
-   ],
-   "1499": [
-    "The French have taken Milan. Duke Ludovico has fled to the Emperor."
-   ],
-   "1504": [
-    "Michelangelo's giant David is set up before the Palazzo della Signoria."
-   ],
-   "1512": [
-    "The Medici are back in Florence with Spanish troops."
-   ],
-   "1513": [
-    "Cardinal Giovanni de' Medici is Pope, as Leo X. Bonfires all night."
+   "kongo": [
+    "Traders came in from the coast with cloth.",
+    "The nobles met at court.",
+    "The market was full of raffia cloth and salt."
    ]
   },
   "quiet": [
-   "A quiet year. The Arno rose, then fell again.",
-   "The year went by between the market and the church bells.",
-   "Nothing the Avvisi would print, but a good year at home."
-  ]
+   "A quiet year. The river rose, then fell again.",
+   "The year went by between the market and the prayers.",
+   "Nothing the criers would cry, but a good year at home."
+  ],
+  "cityNames": {
+   "Florence": "Firenze",
+   "Venice": "Venezia",
+   "Rome": "Roma",
+   "Milan": "Milano",
+   "Naples": "Napoli",
+   "Padua": "Padova",
+   "Syracuse": "Siracusa",
+   "Mdina": "Mdina",
+   "Valletta": "Valletta",
+   "Birgu": "Birgu"
+  }
  },
  "anachronisms": [
   "phone",
@@ -4134,7 +5595,14 @@
   "university loan",
   "app",
   "laptop",
-  "Instagram"
+  "Instagram",
+  "insurance",
+  "police",
+  "newspaper",
+  "antibiotics",
+  "vaccine",
+  "ambulance",
+  "pharmacy"
  ],
  "events": [
   {
@@ -4447,5 +5915,748 @@
   "model": "Painter's model and muse",
   "vet": "Horse master",
   "hustler": "Merchant and broker"
+ },
+ "law": {
+  "courts": [
+   {
+    "regions": [
+     "florence"
+    ],
+    "court": "the Otto di Guardia",
+    "officers": "the sbirri",
+    "drum": "the tamburo",
+    "drumAbout": "Anyone can drop an unsigned denunciation in the drum. Each one adds heat to your name.",
+    "named": "Someone dropped your name in the tamburo."
+   },
+   {
+    "regions": [
+     "venice"
+    ],
+    "court": "the Signori di Notte",
+    "officers": "the night guards",
+    "drum": "the lion's mouths",
+    "drumAbout": "Letters of accusation are posted through the stone lion's mouths. Each one adds heat to your name.",
+    "named": "A letter naming you went into a lion's mouth."
+   },
+   {
+    "regions": [
+     "milan"
+    ],
+    "court": "the Captain of Justice",
+    "officers": "the Captain's men",
+    "drum": "secret denunciations",
+    "drumAbout": "The Captain of Justice listens to secret denunciations. Each one adds heat to your name.",
+    "named": "Someone denounced you to the Captain of Justice."
+   },
+   {
+    "regions": [
+     "rome"
+    ],
+    "court": "the Governor of Rome",
+    "officers": "the sbirri",
+    "drum": "denunciations",
+    "drumAbout": "The Governor's notaries write down every denunciation. Each one adds heat to your name.",
+    "named": "Someone denounced you to the Governor's notaries."
+   },
+   {
+    "regions": [
+     "naples"
+    ],
+    "court": "the Vicaria",
+    "officers": "the Vicaria's men",
+    "drum": "denunciations",
+    "drumAbout": "The great court of the Vicaria hears every denunciation. Each one adds heat to your name.",
+    "named": "Someone denounced you at the Vicaria."
+   },
+   {
+    "regions": [
+     "sicily"
+    ],
+    "court": "the Captain of Justice",
+    "officers": "the Captain's men",
+    "drum": "denunciations",
+    "drumAbout": "Each denunciation to the Captain adds heat to your name.",
+    "named": "Someone denounced you to the Captain of Justice."
+   },
+   {
+    "regions": [
+     "malta"
+    ],
+    "to": 1529,
+    "court": "the Captain of the Rod",
+    "officers": "the Captain's men",
+    "drum": "denunciations",
+    "drumAbout": "Each denunciation to the Captain of the Rod adds heat to your name.",
+    "named": "Someone denounced you to the Captain of the Rod."
+   },
+   {
+    "regions": [
+     "malta"
+    ],
+    "from": 1530,
+    "court": "the Knights' court (the Castellania)",
+    "officers": "the Knights' guards",
+    "drum": "denunciations",
+    "drumAbout": "Each denunciation to the Castellania adds heat to your name.",
+    "named": "Someone denounced you to the Castellania."
+   },
+   {
+    "groups": [
+     "england"
+    ],
+    "court": "the Justices of the Peace",
+    "officers": "the constable and the watch",
+    "drum": "an informer's word",
+    "drumAbout": "Informers carry tales to the Justice of the Peace. Each one adds heat to your name.",
+    "named": "An informer carried your name to the Justice of the Peace."
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "to": 1491,
+    "court": "the qadi's court",
+    "officers": "the muhtasib's men",
+    "drum": "complaints",
+    "drumAbout": "Neighbours bring complaints to the qadi and the market inspector. Each one adds heat to your name.",
+    "named": "A neighbour complained of you to the qadi."
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "from": 1492,
+    "court": "the corregidor of Granada",
+    "officers": "the alguaciles",
+    "drum": "denunciations",
+    "drumAbout": "Each denunciation to the corregidor adds heat to your name.",
+    "named": "Someone denounced you to the corregidor."
+   },
+   {
+    "groups": [
+     "maghreb",
+     "egypt",
+     "sahel"
+    ],
+    "court": "the qadi's court",
+    "officers": "the muhtasib's men",
+    "drum": "complaints",
+    "drumAbout": "Neighbours bring complaints to the qadi and the market inspector (muhtasib). Each one adds heat to your name.",
+    "named": "A neighbour complained of you to the qadi."
+   },
+   {
+    "regions": [
+     "kongo"
+    ],
+    "court": "the king's judges",
+    "officers": "the mani's men",
+    "drum": "accusations",
+    "drumAbout": "Accusations are spoken before the elders and the judges. Each one adds heat to your name.",
+    "named": "Someone accused you before the elders."
+   },
+   {
+    "regions": [
+     "ndongo",
+     "matamba"
+    ],
+    "court": "the ngola's court",
+    "officers": "the ngola's men",
+    "drum": "accusations",
+    "drumAbout": "Accusations are spoken before the elders. Each one adds heat to your name.",
+    "named": "Someone accused you before the elders."
+   },
+   {
+    "regions": [
+     "luanda"
+    ],
+    "court": "the governor's court",
+    "officers": "the governor's soldiers",
+    "drum": "denunciations",
+    "drumAbout": "Each denunciation to the governor adds heat to your name.",
+    "named": "Someone denounced you to the governor."
+   }
+  ],
+  "prisons": [
+   {
+    "cities": [
+     "Florence"
+    ],
+    "name": "the Stinche",
+    "feast": "Some prisoners are freed as an offering on the feast of St John."
+   },
+   {
+    "cities": [
+     "Venice"
+    ],
+    "to": 1599,
+    "name": "the prisons by the Doge's Palace"
+   },
+   {
+    "cities": [
+     "Venice"
+    ],
+    "from": 1600,
+    "name": "the New Prisons"
+   },
+   {
+    "cities": [
+     "Rome"
+    ],
+    "name": "Tor di Nona"
+   },
+   {
+    "cities": [
+     "Naples"
+    ],
+    "name": "the Vicaria prison"
+   },
+   {
+    "cities": [
+     "London"
+    ],
+    "name": "Newgate",
+    "debt": "the Counter"
+   },
+   {
+    "groups": [
+     "england"
+    ],
+    "name": "the county gaol"
+   },
+   {
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "name": "the city prison"
+   },
+   {
+    "groups": [
+     "iberia",
+     "maghreb",
+     "egypt",
+     "sahel"
+    ],
+    "name": "the qadi's prison"
+   },
+   {
+    "regions": [
+     "luanda"
+    ],
+    "name": "the fortress prison"
+   }
+  ],
+  "galleys": [
+   {
+    "regions": [
+     "venice"
+    ],
+    "name": "the galleys of Venice"
+   },
+   {
+    "regions": [
+     "florence"
+    ],
+    "from": 1562,
+    "name": "the galleys of the Knights of St Stephen"
+   },
+   {
+    "regions": [
+     "rome"
+    ],
+    "name": "the Pope's galleys"
+   },
+   {
+    "regions": [
+     "naples",
+     "sicily"
+    ],
+    "name": "the galleys of Naples"
+   },
+   {
+    "regions": [
+     "malta"
+    ],
+    "from": 1530,
+    "name": "the galleys of the Knights"
+   }
+  ],
+  "jailerFee": 3,
+  "crimes": [
+   {
+    "id": "blade",
+    "label": "Carry a blade after curfew",
+    "labels": {
+     "england": "Carry a sword after the curfew bell",
+     "kongo": "Carry a knife into the king's market",
+     "maghreb": "Go armed through the souk at night",
+     "egypt": "Go armed through the souk at night",
+     "sahel": "Go armed through the souk at night",
+     "iberia": "Go armed through the souk at night"
+    },
+    "about": "Fine · a few nights inside",
+    "heat": 1,
+    "catch": 0.3,
+    "minAge": 14,
+    "joy": 3,
+    "sentence": {
+     "kind": "fine",
+     "amount": 2
+    }
+   },
+   {
+    "id": "brawl",
+    "label": "Pick a brawl",
+    "about": "Fine",
+    "heat": 1,
+    "catch": 0.4,
+    "minAge": 14,
+    "joy": 2,
+    "hurt": 4,
+    "sentence": {
+     "kind": "fine",
+     "amount": 2
+    }
+   },
+   {
+    "id": "dice",
+    "label": "Play forbidden dice",
+    "labels": {
+     "england": "Dice in an alehouse during the sermon",
+     "maghreb": "Gamble with dice in a back room",
+     "egypt": "Gamble with dice in a back room",
+     "sahel": "Gamble with dice in a back room",
+     "iberia": "Gamble with dice in a back room"
+    },
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "sahel",
+     "egypt"
+    ],
+    "about": "Fine",
+    "heat": 1,
+    "catch": 0.25,
+    "minAge": 14,
+    "gamble": true,
+    "sentence": {
+     "kind": "fine",
+     "amount": 1
+    }
+   },
+   {
+    "id": "theft",
+    "label": "Steal at the market",
+    "about": "Prison",
+    "heat": 2,
+    "catch": 0.35,
+    "minAge": 10,
+    "gain": [
+     1,
+     4
+    ],
+    "sentence": {
+     "kind": "prison",
+     "years": 1
+    }
+   },
+   {
+    "id": "smuggle",
+    "label": "Smuggle salt past the gabelle",
+    "labels": {
+     "england": "Smuggle wool past the customs",
+     "maghreb": "Slip goods past the market tolls",
+     "egypt": "Slip goods past the market tolls",
+     "sahel": "Slip salt past the toll-takers",
+     "iberia": "Slip goods past the market tolls",
+     "kongo": "Gather nzimbu shells on the royal island"
+    },
+    "about": "Fine or prison",
+    "heat": 2,
+    "catch": 0.3,
+    "minAge": 16,
+    "gain": [
+     3,
+     8
+    ],
+    "sentence": {
+     "kind": "fine",
+     "amount": 10,
+     "orPrison": 1
+    }
+   },
+   {
+    "id": "clip",
+    "label": "Clip silver from coins",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "iberia",
+     "maghreb",
+     "sahel",
+     "egypt"
+    ],
+    "about": "The galleys or years in prison",
+    "heat": 3,
+    "catch": 0.3,
+    "minAge": 16,
+    "gain": [
+     4,
+     10
+    ],
+    "sentence": {
+     "kind": "galleys",
+     "years": 3,
+     "orPrison": 2
+    }
+   }
+  ],
+  "bribe": {
+   "label": "Bribe a clerk of {court}",
+   "labels": {
+    "florence": "Bribe a notary of the Otto"
+   },
+   "about": "Clears one denunciation",
+   "cost": 8,
+   "catch": 0.15
+  },
+  "sanctuary": {
+   "groups": [
+    "italy",
+    "islands",
+    "iberia"
+   ],
+   "englandTo": 1539
+  }
+ },
+ "faith": {
+  "faiths": {
+   "catholic": {
+    "name": "Catholic",
+    "born": "Born into the Catholic Church, baptised at {church}.",
+    "practices": [
+     {
+      "id": "mass",
+      "label": "Mass and confession at Easter",
+      "about": "Happiness, standing with neighbours"
+     },
+     {
+      "id": "confraternity",
+      "label": "Join a confraternity",
+      "about": "Feasts, processions, help in hard times",
+      "once": true,
+      "standing": 2
+     },
+     {
+      "id": "feast",
+      "label": "Walk in the saint's day procession",
+      "about": "Candles, banners and the whole city"
+     }
+    ]
+   },
+   "english": {
+    "name": "Church of England",
+    "born": "Born into the church of the realm, baptised at {church}.",
+    "practices": [
+     {
+      "id": "sermon",
+      "label": "Sunday service and the sermon",
+      "about": "Happiness, standing with neighbours"
+     },
+     {
+      "id": "bible",
+      "label": "Read the English Bible",
+      "about": "In your own tongue",
+      "reads": "read",
+      "from": 1539,
+      "smarts": 2
+     }
+    ]
+   },
+   "muslim": {
+    "name": "Muslim",
+    "born": "Born into a Muslim family. The call to prayer is the first sound you knew.",
+    "practices": [
+     {
+      "id": "jumua",
+      "label": "Friday prayer at the mosque",
+      "about": "Happiness, standing with neighbours"
+     },
+     {
+      "id": "ramadan",
+      "label": "Keep the fast of Ramadan",
+      "about": "Hunger by day, feasts at night",
+      "health": -1
+     },
+     {
+      "id": "zakat",
+      "label": "Give zakat",
+      "about": "A fortieth of what you have, to those in need",
+      "zakat": true
+     }
+    ]
+   },
+   "morisco": {
+    "name": "Morisco",
+    "born": "Baptised by law, as every Muslim of Granada must be since 1501. At home your family keeps the old faith.",
+    "practices": [
+     {
+      "id": "secret",
+      "label": "Pray at home, behind shutters",
+      "about": "The old faith, in secret",
+      "risk": 0.08
+     },
+     {
+      "id": "mass",
+      "label": "Go to Mass as the law demands",
+      "about": "Fewer questions from neighbours"
+     }
+    ]
+   },
+   "jewish": {
+    "name": "Jewish",
+    "born": "Born into a Jewish family of {city}.",
+    "practices": [
+     {
+      "id": "shabbat",
+      "label": "Keep Shabbat",
+      "about": "Candles, rest, the family at table"
+     },
+     {
+      "id": "pesach",
+      "label": "Passover with the family",
+      "about": "The story told again"
+     },
+     {
+      "id": "tzedakah",
+      "label": "Give to the community chest (tzedakah)",
+      "about": "For the poor of the community",
+      "cost": 1
+     }
+    ]
+   },
+   "kongo": {
+    "name": "Kongo religion",
+    "born": "Born under the protection of the ancestors, as Kongo families are.",
+    "practices": [
+     {
+      "id": "ancestors",
+      "label": "Honour the ancestors at the graves",
+      "about": "The dead watch over the living"
+     },
+     {
+      "id": "nganga",
+      "label": "Consult the nganga",
+      "about": "Advice from the one who knows",
+      "cost": 1,
+      "health": 2
+     }
+    ]
+   },
+   "kongo_catholic": {
+    "name": "Catholic, with Kongo beliefs",
+    "born": "Baptised in the Church of Kongo. The ancestors are honoured too.",
+    "practices": [
+     {
+      "id": "mass",
+      "label": "Mass at the royal church",
+      "about": "Happiness, standing with neighbours"
+     },
+     {
+      "id": "ancestors",
+      "label": "Honour the ancestors at the graves",
+      "about": "The dead watch over the living"
+     }
+    ]
+   },
+   "mbundu": {
+    "name": "Mbundu religion",
+    "born": "Born under the protection of the ancestors and the spirits of the land.",
+    "practices": [
+     {
+      "id": "ancestors",
+      "label": "Honour the ancestors",
+      "about": "The dead watch over the living"
+     },
+     {
+      "id": "nganga",
+      "label": "Consult the nganga",
+      "about": "Advice from the one who knows",
+      "cost": 1,
+      "health": 2
+     }
+    ]
+   }
+  },
+  "names": {
+   "english": {
+    "1450": "Catholic",
+    "1534": "Church of England",
+    "1553": "Catholic",
+    "1559": "Church of England"
+   }
+  },
+  "birth": [
+   {
+    "cities": [
+     "Venice"
+    ],
+    "from": 1516,
+    "faith": "jewish",
+    "share": 0.04
+   },
+   {
+    "cities": [
+     "Rome",
+     "Ancona"
+    ],
+    "faith": "jewish",
+    "share": 0.04
+   },
+   {
+    "cities": [
+     "Fez",
+     "Marrakesh",
+     "Meknes"
+    ],
+    "faith": "jewish",
+    "share": 0.06
+   },
+   {
+    "cities": [
+     "Cairo",
+     "Alexandria"
+    ],
+    "faith": "jewish",
+    "share": 0.04
+   },
+   {
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "faith": "catholic"
+   },
+   {
+    "groups": [
+     "england"
+    ],
+    "faith": "english"
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "to": 1491,
+    "faith": "muslim"
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "from": 1492,
+    "to": 1500,
+    "faith": "muslim",
+    "share": 0.7
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "from": 1501,
+    "faith": "morisco",
+    "share": 0.6
+   },
+   {
+    "groups": [
+     "iberia"
+    ],
+    "faith": "catholic"
+   },
+   {
+    "groups": [
+     "maghreb",
+     "egypt",
+     "sahel"
+    ],
+    "faith": "muslim"
+   },
+   {
+    "regions": [
+     "kongo"
+    ],
+    "to": 1490,
+    "faith": "kongo"
+   },
+   {
+    "regions": [
+     "kongo"
+    ],
+    "faith": "kongo_catholic"
+   },
+   {
+    "regions": [
+     "luanda"
+    ],
+    "faith": "kongo_catholic"
+   },
+   {
+    "groups": [
+     "kongo"
+    ],
+    "faith": "mbundu"
+   }
+  ],
+  "churches": {
+   "Florence": "San Giovanni",
+   "Pisa": "the Pisa baptistery",
+   "Rome": "St John Lateran",
+   "Venice": "San Marco",
+   "Milan": "the Duomo",
+   "London": "St Paul's",
+   "Mbanza Kongo": "the royal church",
+   "Vinci": "Santa Croce in Vinci"
+  },
+  "notes": [
+   {
+    "faith": "jewish",
+    "cities": [
+     "Venice"
+    ],
+    "from": 1516,
+    "text": "Since 1516 the Jews of Venice live in the Ghetto, locked at night."
+   },
+   {
+    "faith": "jewish",
+    "cities": [
+     "Rome"
+    ],
+    "from": 1555,
+    "text": "Since 1555 the Jews of Rome live in a walled ghetto by the river."
+   },
+   {
+    "faith": "jewish",
+    "cities": [
+     "Fez"
+    ],
+    "text": "The Jews of Fez live in the mellah, the quarter by the royal palace."
+   },
+   {
+    "faith": "english",
+    "from": 1559,
+    "text": "The law asks everyone to come to church on Sunday. Those who keep the old faith are called recusants and pay fines."
+   },
+   {
+    "faith": "english",
+    "from": 1534,
+    "to": 1558,
+    "text": "The Crown has changed the church more than once in your lifetime."
+   }
+  ],
+  "recusantFine": 3
  }
 }

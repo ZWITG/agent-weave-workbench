@@ -1,4 +1,13 @@
 import 'era_path_tab.dart';
+import 'era_faith_screen.dart';
+import 'era_health_screen.dart';
+import 'era_law_screen.dart';
+import 'era_news_screen.dart';
+import 'era_prison_tabs.dart';
+import '../engine/era_justice.dart' show eraInside, eraHeat;
+import '../engine/era_faith.dart' show eraFaithName;
+import '../engine/era_health.dart' show eraIllnesses;
+import '../engine/eras.dart' show eraRegistry;
 import 'legend_soon.dart';
 import '../engine/causes.dart';
 import '../engine/legends.dart';
@@ -69,8 +78,13 @@ class _HubScreenState extends State<HubScreen> {
 
   // Outside the five tabs are Life, People, Path, Wealth and Me; inside
   // prison they become Cell, Visits, File, Canteen and ID (inside_tabs.dart).
-  static List<(IconData, IconData, String)> get _destinations {
+  List<(IconData, IconData, String)> get _destinations {
     if (NF.prison) return insideDestinations;
+    // An era life held in prison or on the galleys (era_prison_tabs.dart).
+    final l = c.life;
+    if (l != null && l.era != null && eraInside(l)) {
+      return eraInsideDestinations;
+    }
     // A Legend keeps the five tabs, drawn with its own icons.
     final look = activeLegendLook;
     if (look == null) return _outside;
@@ -118,9 +132,14 @@ class _HubScreenState extends State<HubScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _nextToast());
     }
     final inside = NF.prison && life.prison != null;
+    final eraHeld = life.era != null && eraInside(life);
     final tabs = [
       _LifeTab(controller: c),
-      if (inside) ...[
+      if (eraHeld) ...[
+        EraPrisonTab(controller: c),
+        EraVisitorsTab(controller: c),
+        _MeTab(controller: c),
+      ] else if (inside) ...[
         VisitsTab(controller: c),
         CaseFileTab(controller: c),
         CanteenTab(controller: c),
@@ -140,6 +159,8 @@ class _HubScreenState extends State<HubScreen> {
     ];
     // Desktop and other wide windows: tabs down the left, the game in the
     // middle and Activities always open on the right.
+    // Going into (or out of) an era prison changes how many tabs there are.
+    if (_tab >= tabs.length) _tab = 0;
     final wide = MediaQuery.sizeOf(context).width >= 1000;
     final game = ConstrainedBox(
       constraints: BoxConstraints(maxWidth: wide ? 720 : 560),
@@ -1079,7 +1100,13 @@ class _LifeTabState extends State<_LifeTab> {
                 ? prisonStamp(feed[i].text)
                 : null,
             entry: feed[i],
-            onTap: feed[i].kind == 'world' && feed[i].age == life.age
+            onTap: feed[i].kind == 'world' && life.era != null
+                ? () => openEraNews(
+                    context,
+                    controller,
+                    year: life.birthYear + feed[i].age,
+                  )
+                : feed[i].kind == 'world' && feed[i].age == life.age
                 ? () => _readPaper(context, controller)
                 : null,
           ),
@@ -1715,6 +1742,11 @@ class _MeTabState extends State<_MeTab> {
 
   void _go(BuildContext context, String id) {
     Widget? screen = switch (id) {
+      'health' when controller.life!.era != null => EraHealthScreen(
+        controller: controller,
+      ),
+      'law' => EraLawScreen(controller: controller),
+      'faith' => EraFaithScreen(controller: controller),
       'health' => HealthScreen(controller: controller),
       'fame' => FameScreen(controller: controller),
       'goals' => GoalsScreen(controller: controller),
@@ -1759,15 +1791,52 @@ class _MeTabState extends State<_MeTab> {
           alert: false,
           dim: false,
         ),
-      (
-        id: 'health',
-        icon: Icons.monitor_heart_rounded,
-        label: 'Health',
-        status: sick ? 'Needs attention' : 'Body and mind',
-        about: 'Conditions, insurance, fitness, addictions and your mind',
-        alert: sick,
-        dim: false,
-      ),
+      if (life.era == null)
+        (
+          id: 'health',
+          icon: Icons.monitor_heart_rounded,
+          label: 'Health',
+          status: sick ? 'Needs attention' : 'Body and mind',
+          about: 'Conditions, insurance, fitness, addictions and your mind',
+          alert: sick,
+          dim: false,
+        )
+      else ...[
+        // An era life (Phase 2C): era health, the law and faith.
+        (
+          id: 'health',
+          icon: Icons.monitor_heart_rounded,
+          label: 'Health',
+          status: eraIllnesses(life).isNotEmpty
+              ? 'Needs attention'
+              : 'Healers and humours',
+          about: 'What ails you, the healers of your city and the plague',
+          alert: eraIllnesses(life).isNotEmpty,
+          dim: false,
+        ),
+        (
+          id: 'law',
+          icon: Icons.gavel_rounded,
+          label: 'The law',
+          status: eraHeat(life) == 0
+              ? 'Nothing against you'
+              : 'Heat ${eraHeat(life)} of 5',
+          about: 'Denunciations, the night streets and your record',
+          alert: eraHeat(life) >= 3,
+          dim: false,
+        ),
+        (
+          id: 'faith',
+          icon: Icons.brightness_5_rounded,
+          label: 'Faith',
+          status: eraRegistry[life.era] == null
+              ? ''
+              : eraFaithName(life, eraRegistry[life.era]!),
+          about: 'Your faith, its practices and your standing',
+          alert: false,
+          dim: false,
+        ),
+      ],
       (
         id: 'fame',
         icon: Icons.star_rounded,

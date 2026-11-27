@@ -9,6 +9,8 @@ import 'dart:math';
 
 import 'causes.dart';
 import 'era_path.dart';
+import 'era_faith.dart' show eraFaithAtBirth;
+import 'era_justice.dart' show eraLegendLaw;
 import 'eras.dart';
 import 'models.dart';
 import 'storylet.dart';
@@ -272,6 +274,8 @@ Life startLegend(Legend legend, Timeline t, {int? seed}) {
         ..chronicle = 100
         ..chapter = legend.chapterFor(legend.birthYear);
   life.eraPath.addAll(legend.eraStart);
+  final era = eraRegistry[legend.era];
+  if (era != null) eraFaithAtBirth(life, era, Random(s ^ 0xFA17));
   life.feed.add(
     FeedEntry(
       0,
@@ -333,6 +337,7 @@ Life startTimelineLife(
         ..era = era.id
         ..timelineId = t.id;
   eraBirth(life, era, rng);
+  eraFaithAtBirth(life, era, Random(s ^ 0xFA17));
   life.feed.add(
     FeedEntry(
       0,
@@ -384,6 +389,8 @@ List<String> afterTimelineChoice(
         : kind;
     life.codex.add(event.pivot!);
     life.chronicle = chronicleOf(life);
+    // A turning point before the law (the drum of 1476) goes on the record.
+    eraLegendLaw(life, event.pivot!, kind == 'rewritten');
     final title = legend?.point(event.pivot!)?.title ?? 'A turning point';
     echoes.add(
       kind == 'canon'

@@ -898,6 +898,11 @@ class Life {
   /// An era life's work and schooling (era_path.dart): birth status,
   /// legitimacy, reading, job and ladder step, years in the trade, school.
   /// Empty in the modern world, and never saved there.
+  /// Health, the law, prison, faith and the year's news in an era life
+  /// (era_health, era_justice, era_faith, era_news). Saved only in era
+  /// lives, so modern saves are unchanged.
+  final Map<String, dynamic> eraWorld = {};
+
   final Map<String, dynamic> eraPath = {};
 
   bool get isTimeline => era != null;
@@ -1198,6 +1203,7 @@ class Life {
     if (codex.isNotEmpty) 'codex': codex.toList(),
     if (fate != null) 'fate': fate,
     if (eraPath.isNotEmpty) 'eraPath': eraPath,
+    if (eraWorld.isNotEmpty) 'eraWorld': eraWorld,
     'hub': hub,
     'crew': crew,
     'dirty': dirty,
@@ -1383,6 +1389,7 @@ class Life {
       ..timelineId = j['timelineId']
       ..era = j['era']
       ..eraPath.addAll(Map<String, dynamic>.from(j['eraPath'] ?? const {}))
+      ..eraWorld.addAll(Map<String, dynamic>.from(j['eraWorld'] ?? const {}))
       ..causes.addAll({
         for (final e in Map<String, dynamic>.from(
           j['causes'] ?? const {},

@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'causes.dart';
 import 'echelon.dart' show echelonYear;
+import 'era_health.dart' show eraDeathCause;
+import 'era_justice.dart' show eraInside, eraInsideOf;
 import 'eras.dart';
 import 'past.dart';
 import 'legends.dart';
@@ -551,9 +553,10 @@ class GameEngine {
     }
     if (life.stats['health'] <= 0 || rng.nextDouble() < dies) {
       life.alive = false;
-      life.causeOfDeath = life.stats['health'] <= 0
-          ? 'Illness'
-          : (life.age > 60 ? 'Old age' : 'Fever');
+      life.causeOfDeath = eraDeathCause(
+        life,
+        frail: life.stats['health'] <= 0,
+      );
       life.feed.add(
         FeedEntry(
           life.age,
@@ -575,6 +578,19 @@ class GameEngine {
     }
     final due = dueTurningPoint(life, storylets);
     if (due != null) return due;
+    // A hearing before the era's court (era_justice.dart).
+    if (life.sceneQueue.contains('era_hearing')) {
+      final hearing = nextScene(life);
+      if (hearing != null) return hearing;
+    }
+    // Inside a prison or on the galleys, the everyday events of the city
+    // pass you by.
+    if (eraInside(life)) {
+      life.feed.add(
+        FeedEntry(life.age, 'Another year in ${eraInsideOf(life)!['name']}.'),
+      );
+      return null;
+    }
     final event = pickStorylet(life, rng);
     if (event == null) {
       final quiet = era?.quietYears ?? const <String>[];

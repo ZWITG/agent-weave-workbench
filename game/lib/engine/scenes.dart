@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'era_justice.dart' show eraHearingScene;
 import 'echelon.dart' show echelonScene, takeoverScene;
 import 'lifespan.dart';
 import 'dynasty.dart';
@@ -89,6 +90,8 @@ Storylet? buildScene(String id, Life life) {
   final arg = parts.length > 1 ? parts.sublist(1).join(':') : '';
   return switch (parts.first) {
     'illness' => _illness(id, arg, life),
+    // An era life's hearing (era_justice.dart); never queued in modern lives.
+    'era_hearing' => eraHearingScene(life),
     'retire_offer' => _retireOffer(id, life),
     'apply_uni' => applyUniScene(life),
     'choose_major' => life.school.major == null ? chooseMajorScene() : null,

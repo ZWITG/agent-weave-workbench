@@ -7,6 +7,10 @@ library;
 import 'dart:math';
 
 import 'currency.dart';
+import 'era_faith.dart';
+import 'era_health.dart';
+import 'era_justice.dart';
+import 'era_news.dart';
 import 'era_path.dart';
 import 'models.dart';
 import 'storylet.dart';
@@ -463,7 +467,19 @@ class EraRules {
     this.storylets = const [],
     this.currencies = const {},
     this.inflation = const [],
+    this.healthData = const {},
+    this.lawData = const {},
+    this.faithData = const {},
+    this.newsData = const {},
   });
+
+  /// Phase 2C data, read by era_health, era_justice, era_faith and
+  /// era_news: plague years, ailments and healers; courts, crimes and
+  /// prisons; faiths and practices; news-sheets and dated stories.
+  final Map<String, dynamic> healthData;
+  final Map<String, dynamic> lawData;
+  final Map<String, dynamic> faithData;
+  final Map<String, dynamic> newsData;
 
   /// The era's moneys by id ("florin", "lsd", "nzimbu").
   final Map<String, EraCurrency> currencies;
@@ -616,6 +632,10 @@ class EraRules {
         for (final p in (money['inflation'] as List?) ?? const [])
           ((p as List)[0] as int, (p[1] as num).toDouble()),
       ],
+      healthData: health,
+      lawData: Map<String, dynamic>.from(j['law'] ?? const {}),
+      faithData: Map<String, dynamic>.from(j['faith'] ?? const {}),
+      newsData: news,
       storylets: [
         for (final s in (j['events'] as List?) ?? const [])
           Storylet.fromJson({'era': j['id'], ...Map<String, dynamic>.from(s)}),
@@ -654,36 +674,43 @@ List<String> eraYear(Life life, EraRules era, Timeline t, Random rng) {
       ruler != region.rulerIn(life.year - 1)) {
     out.add('Criers in ${life.city} announce a new ruler: $ruler.');
   }
-  // Work and school (era_path.dart): years in the trade, fees, finishing.
-  out.addAll(eraPathYear(life, era, rng));
-  if (life.job != null && life.salary > 0) {
+  // In prison or on the galleys (era_justice.dart), work, school and pay
+  // stop until you are out.
+  final inside = eraInside(life);
+  if (!inside) {
+    // Work and school (era_path.dart): years in the trade, fees, finishing.
+    out.addAll(eraPathYear(life, era, rng));
+  }
+  if (life.job != null && life.salary > 0 && !inside) {
     life.money += life.salary;
     life.lastYear = [(life.job!, life.salary)];
   } else {
     life.lastYear = [];
   }
-  // A modest cost of living from 16, at the place's prices and the year's
-  // price level.
-  if (life.age >= 16) {
-    final bread = era.price('living_year', region, life.year);
-    if (bread > 0) {
-      final paid = min(bread, max(0, life.money));
-      life.money -= paid;
-      if (paid > 0) life.lastYear.add(('Living', -paid));
-    }
+  // The year's news (era_news.dart): its small effects apply this year.
+  final issue = eraIssue(life, era);
+  life.eraWorld['news'] = {'year': life.year, ...issue.effects};
+  final headline = eraHeadline(life, era);
+  if (headline != null && life.age >= 6) {
+    life.feed.add(FeedEntry(life.age, headline, kind: 'world'));
   }
-  final news = era.headlines[life.year];
-  if (news != null && news.isNotEmpty && life.age >= 6) {
-    out.add('${era.newsName}: ${news[rng.nextInt(news.length)]}');
+  // A modest cost of living from 16, at the place's prices, the year's
+  // price level and this year's news ("Prices +4%").
+  if (life.age >= 16 && !inside) {
+    final bread =
+        (era.price('living_year', region, life.year) *
+                (100 + (issue.effects['prices'] ?? 0)) /
+                100)
+            .round();
+    final paid = min(bread, max(0, life.money));
+    life.money -= paid;
+    if (paid > 0) life.lastYear.add(('Living', -paid));
   }
-  if (rng.nextDouble() < era.plagueChance) {
-    life.reason = 'Plague year';
-    life.stats.add('health', -(8 + rng.nextInt(12)));
-    life.stats.add('happiness', -6);
-    out.add(
-      'Plague came to ${life.city}. Shops closed and carts went past at night.',
-    );
-  }
+  // Faith (era_faith.dart), the law and prison (era_justice.dart), and
+  // health and plague (era_health.dart).
+  out.addAll(eraFaithYear(life, era, rng));
+  out.addAll(eraLawYear(life, era, rng));
+  out.addAll(eraHealthYear(life, era, rng));
   return out;
 }
 
@@ -815,19 +842,62 @@ double eraDeathChance(Life life, EraRules era) {
   final a = life.age;
   final shift = (era.lifeExpectancy - 48) / 2;
   double base;
-  if (a < 5) {
-    base = 0.015;
-  } else if (a < 40 + shift) {
-    base = 0.006;
-  } else if (a < 55 + shift) {
+  if (a < 2) {
+    base = 0.035;
+  } else if (a < 5) {
     base = 0.018;
+  } else if (a < 40 + shift) {
+    base = 0.005;
+  } else if (a < 55 + shift) {
+    base = 0.016;
   } else if (a < 70 + shift) {
-    base = 0.05;
+    base = 0.045;
   } else {
     base = 0.12 + (a - 70 - shift) * 0.01;
   }
   final h = life.stats['health'];
   if (h < 30) base *= 2.2;
   if (h > 75) base *= 0.6;
+  // This year's plague, ailments and childbirth (era_health.dart).
+  base += ((life.eraWorld['risk'] as num?) ?? 0).toDouble();
   return base.clamp(0.0, 0.6);
+}
+
+/// Whether an era data entry applies to this life now: its `groups`,
+/// `regions` and `cities` (any match; none means everywhere), its `from`
+/// and `to` years, and its exact `years` if it has them.
+bool eraScoped(Map j, Life l, EraRules era, {int? year}) {
+  final y = year ?? l.year;
+  final region = era.regionOf(l);
+  final groups = (j['groups'] as List?) ?? const [];
+  final regions = (j['regions'] as List?) ?? const [];
+  final cities = (j['cities'] as List?) ?? const [];
+  if (groups.isNotEmpty || regions.isNotEmpty || cities.isNotEmpty) {
+    if (!groups.contains(region.group) &&
+        !regions.contains(region.id) &&
+        !cities.contains(l.city)) {
+      return false;
+    }
+  }
+  final from = j['from'] as int?, to = j['to'] as int?;
+  if (from != null && y < from) return false;
+  if (to != null && y > to) return false;
+  final years = j['years'] as List?;
+  if (years != null && !years.contains(y)) return false;
+  return true;
+}
+
+/// The first entry of [list] that applies to this life now.
+Map<String, dynamic>? eraFirst(List? list, Life l, EraRules era) {
+  for (final e in list ?? const []) {
+    if (eraScoped(e as Map, l, era)) return Map<String, dynamic>.from(e);
+  }
+  return null;
+}
+
+/// Spends a once-a-year era action; false if it was already used.
+bool eraOnce(Life l, String id) {
+  if (l.usedActions.contains(id)) return false;
+  l.usedActions.add(id);
+  return true;
 }
