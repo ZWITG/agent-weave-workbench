@@ -148,7 +148,7 @@ void main() {
     await t.pump(const Duration(seconds: 10));
   });
 
-  for (final paper in [false, true])
+  for (final paper in [false, true]) {
   testWidgets('modern life with a linked past $paper', (t) async {
     final (c, key) = await _app(t, h: paper ? 2300 : 844);
     await t.runAsync(c.toggleSamplePast);
@@ -171,15 +171,13 @@ void main() {
       await t.pump(const Duration(seconds: 10));
       return;
     }
-    final ctx = key.currentContext!;
-    final navCtx = t.element(find.byType(Navigator).first);
-    openNewspaper(navCtx, c);
-    expect(ctx, isNotNull);
+    openNewspaper(t.element(find.byType(Navigator).first), c);
     await _shot(t, key, '6_newspaper_from_history');
     // ignore: avoid_print
     print('assets ${l.assets.map((a) => a.name)} npcs ${l.npcs.map((n) => n.name)}');
     await t.pump(const Duration(seconds: 10));
   });
+  }
 
   // ---- Release preview screens ----
 
