@@ -336,3 +336,9 @@ The first Legend, free as a prologue preview: live Leonardo's life in Renaissanc
 - The Codex keeps "What really happened" cards for each turning point and discovery, and the Fate your Leonardo met.
 - When the life ends, you can make it your world's history: modern lives are born into the world it left behind, with its family, rivals, companies and inventions.
 - A preview: Path, Wealth and Activities show what the era has so far. Workshops, commissions, markets and the era's mini-games come with the Renaissance update.
+
+## Renaissance world: places, money and journeys (27 Nov)
+- Leonardo's world now knows its places: sixteen of them, from Florence, Venice and London to Fez, Timbuktu, Cairo, Kongo and Ndongo, each with its real rulers year by year, its faith, its language and its own money.
+- Town criers announce a new ruler, and places change their names as history did (Florence becomes the Grand Duchy of Tuscany in 1569).
+- Prices rise after 1550, faster than pay, as they did in the price revolution.
+- Make a journey from the Activities card: by road, by ship, or with a caravan across the Sahara, with a cost, a number of days and a risk on the way.
