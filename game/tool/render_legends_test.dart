@@ -16,6 +16,7 @@ import 'package:relivable/sound.dart';
 import 'package:relivable/ui/codex.dart';
 import 'package:relivable/ui/career_curtain.dart';
 import 'package:relivable/ui/intro.dart';
+import 'package:relivable/ui/legend_intro.dart';
 import 'package:relivable/ui/newspaper.dart' show openNewspaper;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,8 +54,12 @@ Storylet? _playTo(GameController c, int year, {bool war = true}) {
     if (s == null) continue;
     if (l.year >= year) return s;
     final shown = visibleChoices(l, s);
-    var i = war ? shown.indexWhere((x) => x.rewrites == 'leo_engineer_milan') : -1;
-    if (war && i < 0) i = shown.indexWhere((x) => (x.adds['military'] ?? 0) > 0);
+    var i = war
+        ? shown.indexWhere((x) => x.rewrites == 'leo_engineer_milan')
+        : -1;
+    if (war && i < 0) {
+      i = shown.indexWhere((x) => (x.adds['military'] ?? 0) > 0);
+    }
     if (i < 0) i = shown.indexWhere((x) => x.canon);
     if (i < 0) i = 0;
     e.choose(l, s, shown[i]);
@@ -76,7 +81,10 @@ Future<void> _shot(WidgetTester t, GlobalKey key, String name) async {
   });
 }
 
-Future<(GameController, GlobalKey)> _app(WidgetTester t, {double h = 844}) async {
+Future<(GameController, GlobalKey)> _app(
+  WidgetTester t, {
+  double h = 844,
+}) async {
   // ignore: invalid_use_of_visible_for_testing_member
   SharedPreferences.setMockInitialValues({});
   await t.runAsync(_fonts);
@@ -101,10 +109,17 @@ void main() {
     c.startLegendLife('leonardo', seed: 3);
     final s = _playTo(c, 1478);
     c.pendingEvent = null;
-    if (s != null) c.engine!.choose(c.life!, s, visibleChoices(c.life!, s).first);
+    if (s != null) {
+      c.engine!.choose(c.life!, s, visibleChoices(c.life!, s).first);
+    }
     c.lastOutcome = null;
     c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
     await _shot(t, key, '1_legend_home');
     await t.pump(const Duration(seconds: 10));
   });
@@ -116,7 +131,12 @@ void main() {
     expect(s?.pivot, 'letter_1482');
     c.pendingEvent = s;
     c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
     await _shot(t, key, '2_turning_point');
     // Take the rewrite, and show the outcome.
     final rw = s!.choices.firstWhere((x) => x.rewrites != null);
@@ -130,53 +150,76 @@ void main() {
     for (var seed = 3; seed < 60; seed++) {
       c.startLegendLife('leonardo', seed: seed);
       _playTo(c, 1600, war: true);
-      if (c.life!.fate == 'engineer_of_milan' && c.life!.codex.length >= 4) break;
+      if (c.life!.fate == 'engineer_of_milan' && c.life!.codex.length >= 4) {
+        break;
+      }
     }
     final l = c.life!;
     expect(l.alive, isFalse);
     c.pendingEvent = null;
     c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
     for (var i = 0; i < 6; i++) {
       await t.pump(const Duration(milliseconds: 150));
     }
     // ignore: avoid_print
     print('fate ${l.fate} chronicle ${l.chronicle} pivots ${l.pivots}');
     final nav = t.state<NavigatorState>(find.byType(Navigator).first);
-    nav.push(MaterialPageRoute(builder: (_) => CodexScreen(life: l, legend: c.legend!)));
+    nav.push(
+      MaterialPageRoute(
+        builder: (_) => CodexScreen(life: l, legend: c.legend!),
+      ),
+    );
     await _shot(t, key, '4_codex_fate');
     await t.pump(const Duration(seconds: 10));
   });
 
   for (final paper in [false, true]) {
-  testWidgets('modern life with a linked past $paper', (t) async {
-    final (c, key) = await _app(t, h: paper ? 2300 : 844);
-    await t.runAsync(c.toggleSamplePast);
-    c.startLife(seed: 21, country: 'Italy');
-    // A member of the house, born so the 525th anniversary of 1499 falls
-    // in their childhood.
-    final e = c.engine!;
-    c.life = e.newLife(seed: 21, countryName: 'Italy', startYear: 2016, descendant: true);
-    final l = c.life!;
-    while (l.year < 2024) {
-      final s = e.ageUp(l);
-      if (s != null) e.choose(l, s, visibleChoices(l, s).first);
-    }
-    c.pendingEvent = null;
-    c.lastOutcome = null;
-    c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
-    if (!paper) {
-      await _shot(t, key, '5_modern_linked_past');
+    testWidgets('modern life with a linked past $paper', (t) async {
+      final (c, key) = await _app(t, h: paper ? 2300 : 844);
+      await t.runAsync(c.toggleSamplePast);
+      c.startLife(seed: 21, country: 'Italy');
+      // A member of the house, born so the 525th anniversary of 1499 falls
+      // in their childhood.
+      final e = c.engine!;
+      c.life = e.newLife(
+        seed: 21,
+        countryName: 'Italy',
+        startYear: 2016,
+        descendant: true,
+      );
+      final l = c.life!;
+      while (l.year < 2024) {
+        final s = e.ageUp(l);
+        if (s != null) e.choose(l, s, visibleChoices(l, s).first);
+      }
+      c.pendingEvent = null;
+      c.lastOutcome = null;
+      c.notifyListeners();
+      await t.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: RelivableApp(controller: c),
+        ),
+      );
+      if (!paper) {
+        await _shot(t, key, '5_modern_linked_past');
+        await t.pump(const Duration(seconds: 10));
+        return;
+      }
+      openNewspaper(t.element(find.byType(Navigator).first), c);
+      await _shot(t, key, '6_newspaper_from_history');
+      // ignore: avoid_print
+      print(
+        'assets ${l.assets.map((a) => a.name)} npcs ${l.npcs.map((n) => n.name)}',
+      );
       await t.pump(const Duration(seconds: 10));
-      return;
-    }
-    openNewspaper(t.element(find.byType(Navigator).first), c);
-    await _shot(t, key, '6_newspaper_from_history');
-    // ignore: avoid_print
-    print('assets ${l.assets.map((a) => a.name)} npcs ${l.npcs.map((n) => n.name)}');
-    await t.pump(const Duration(seconds: 10));
-  });
+    });
   }
 
   // ---- Release preview screens ----
@@ -185,7 +228,12 @@ void main() {
     final (c, key) = await _app(t, h: 1000);
     c.life = null;
     c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
     await _shot(t, key, '7_new_life_legends_button');
     await t.pump(const Duration(seconds: 10));
   });
@@ -194,11 +242,18 @@ void main() {
     final (c, key) = await _app(t);
     c.startLegendLife('leonardo', seed: 3);
     final s = _playTo(c, 1478);
-    if (s != null) c.engine!.choose(c.life!, s, visibleChoices(c.life!, s).first);
+    if (s != null) {
+      c.engine!.choose(c.life!, s, visibleChoices(c.life!, s).first);
+    }
     c.pendingEvent = null;
     c.lastOutcome = null;
     c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
     await _shot(t, key, '0_warmup');
     await t.tap(find.byType(NavigationDestination).at(2));
     await _shot(t, key, '8_path_preview');
@@ -224,11 +279,65 @@ void main() {
     c.pendingEvent = null;
     c.lastOutcome = null;
     c.notifyListeners();
-    await t.pumpWidget(RepaintBoundary(key: key, child: RelivableApp(controller: c)));
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
     await _shot(t, key, '12_recap_history_button');
     await t.tap(find.text("Make this your world's history"));
     await t.pump(const Duration(milliseconds: 300));
     expect(c.pastLinked, isTrue);
+    await t.pump(const Duration(seconds: 10));
+  });
+
+  // ---- Legend selector and opening ----
+
+  testWidgets('legend selector card and opening frames', (t) async {
+    final (c, key) = await _app(t);
+    c.life = null;
+    c.notifyListeners();
+    await t.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: RelivableApp(controller: c),
+      ),
+    );
+    await _shot(t, key, '13_selector_card');
+    final card = find.byType(LegendSelectCard);
+    final at = t.getCenter(card);
+    final nav = t.state<NavigatorState>(find.byType(Navigator).first);
+    for (final (i, f) in [(1, 0.08), (2, 0.4), (3, 0.62), (4, 0.9)]) {
+      nav.push(
+        PageRouteBuilder<void>(
+          opaque: false,
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+          pageBuilder: (_, _, _) => LegendIntro(
+            legend: c.playableLegends.first,
+            from: at,
+            onStart: () {},
+            at: f,
+          ),
+        ),
+      );
+      await _shot(t, key, '14_opening_$i');
+      nav.pop();
+      await t.pump(const Duration(milliseconds: 500));
+    }
+    // The real thing: tap, and the life starts after the opening.
+    await t.tap(card);
+    for (var i = 0; i < 20; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+    expect(c.life, isNull);
+    for (var i = 0; i < 25 && c.life == null; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+    expect(c.life?.legendId, 'leonardo');
+    await t.pump(const Duration(milliseconds: 700));
+    await _shot(t, key, '15_into_the_life');
     await t.pump(const Duration(seconds: 10));
   });
 }
