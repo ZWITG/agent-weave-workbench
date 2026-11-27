@@ -14,6 +14,7 @@
   "city": "Vinci",
   "money": 0,
   "skipEvents": ["ren_dowry", "ren_wool", "ren_abacus"],
+  "eraPath": {"status": 2, "illegit": true, "sendTo": "abacus"},
   "legacy": {
     "heirlooms": [
       {"id": "mirror_page", "name": "A notebook page in mirror writing", "value": 250000, "story": "Kept by the da Vinci family since Leonardo's day"}

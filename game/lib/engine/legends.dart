@@ -8,6 +8,7 @@ library;
 import 'dart:math';
 
 import 'causes.dart';
+import 'era_path.dart';
 import 'eras.dart';
 import 'models.dart';
 import 'storylet.dart';
@@ -117,11 +118,15 @@ class Legend {
     this.test = false,
     this.skipEvents = const [],
     this.legacy = const {},
+    this.eraStart = const {},
   });
 
   /// What this Legend leaves the modern world (past.dart): heirlooms,
   /// buildings, companies, institutions, rivals, descendants, trades.
   final Map<String, dynamic> legacy;
+
+  /// Birth status, legitimacy and reading at the start (era_path.dart).
+  final Map<String, dynamic> eraStart;
 
   /// Everyday era events that do not fit this person (ids).
   final List<String> skipEvents;
@@ -187,6 +192,7 @@ class Legend {
       test: j['test'] ?? false,
       skipEvents: List<String>.from(j['skipEvents'] ?? const []),
       legacy: Map<String, dynamic>.from(j['legacy'] ?? const {}),
+      eraStart: Map<String, dynamic>.from(j['eraPath'] ?? const {}),
       money: j['money'] ?? 0,
       stats: Map<String, int>.from(j['stats'] ?? const {}),
       npcs: [
@@ -265,6 +271,7 @@ Life startLegend(Legend legend, Timeline t, {int? seed}) {
         ..timelineId = t.id
         ..chronicle = 100
         ..chapter = legend.chapterFor(legend.birthYear);
+  life.eraPath.addAll(legend.eraStart);
   life.feed.add(
     FeedEntry(
       0,
@@ -325,6 +332,7 @@ Life startTimelineLife(
         )
         ..era = era.id
         ..timelineId = t.id;
+  eraBirth(life, era, rng);
   life.feed.add(
     FeedEntry(
       0,

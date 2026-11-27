@@ -1971,46 +1971,2090 @@
  ],
  "jobs": [
   {
-   "title": "Workshop garzone",
-   "pay": 4,
-   "minAge": 10
-  },
-  {
-   "title": "Wool carder",
-   "pay": 14,
-   "minAge": 12
-  },
-  {
-   "title": "Dyer's hand",
-   "pay": 18,
-   "minAge": 14
-  },
-  {
-   "title": "Notary",
-   "pay": 60,
-   "minAge": 21,
-   "needs": {
-    "smarts": ">=60"
+   "id": "painter",
+   "name": "Painter",
+   "ladder": [
+    {
+     "title": "Painter's garzone",
+     "pay": 4
+    },
+    {
+     "title": "Journeyman painter",
+     "pay": 20
+    },
+    {
+     "title": "Master painter with a workshop",
+     "pay": 45
+    }
+   ],
+   "guild": "the painters' guild",
+   "groups": [
+    "italy",
+    "england"
+   ],
+   "minAge": 10,
+   "years": [
+    5,
+    5
+   ],
+   "fees": [
+    1,
+    30
+   ],
+   "rise": [
+    "Join the painters' guild",
+    "Open your own workshop"
+   ],
+   "extra": "Take on a commission",
+   "aliases": {
+    "Garzone in Verrocchio's workshop": 0,
+    "Painter of the Guild of St Luke": 1
    }
   },
   {
-   "title": "Painter of the Guild of St Luke",
-   "pay": 40,
-   "minAge": 18
+   "id": "engineer",
+   "name": "Engineer",
+   "ladder": [
+    {
+     "title": "Engineer's assistant",
+     "pay": 8
+    },
+    {
+     "title": "Military engineer",
+     "pay": 50
+    },
+    {
+     "title": "Ducal engineer",
+     "pay": 120
+    }
+   ],
+   "groups": [
+    "italy"
+   ],
+   "minAge": 16,
+   "reads": [
+    "reckon"
+   ],
+   "minStatus": 1,
+   "years": [
+    3,
+    4
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Ask to be named engineer",
+    "Seek a duke's patent"
+   ],
+   "extra": "Survey a fortress",
+   "hub": "military",
+   "aliases": {
+    "Ducal engineer of Milan": 2
+   },
+   "hubName": "Military engineer"
   },
   {
-   "title": "Merchant's factor",
-   "pay": 50,
+   "id": "goldsmith",
+   "name": "Goldsmith",
+   "ladder": [
+    {
+     "title": "Goldsmith's apprentice",
+     "pay": 3
+    },
+    {
+     "title": "Journeyman goldsmith",
+     "pay": 22
+    },
+    {
+     "title": "Master goldsmith",
+     "pay": 60
+    }
+   ],
+   "guild": "the goldsmiths' guild",
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "egypt"
+   ],
+   "minAge": 11,
+   "sex": "male",
+   "years": [
+    7,
+    4
+   ],
+   "fees": [
+    2,
+    35
+   ],
+   "rise": [
+    "Join the guild",
+    "Make your masterpiece"
+   ],
+   "extra": "Set a jewel for a client"
+  },
+  {
+   "id": "wool",
+   "name": "Wool trade",
+   "ladder": [
+    {
+     "title": "Wool carder",
+     "pay": 14
+    },
+    {
+     "title": "Wool weaver",
+     "pay": 20
+    },
+    {
+     "title": "Wool merchant",
+     "pay": 90
+    }
+   ],
+   "guild": "the wool guild (Arte della Lana)",
+   "groups": [
+    "italy",
+    "england"
+   ],
+   "minAge": 12,
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    1,
+    60
+   ],
+   "rise": [
+    "Take a loom of your own",
+    "Buy into the cloth trade"
+   ],
+   "extra": "Work through the night",
+   "aliases": {
+    "Wool carder": 0
+   }
+  },
+  {
+   "id": "silk",
+   "name": "Silk trade",
+   "ladder": [
+    {
+     "title": "Silk winder",
+     "pay": 6
+    },
+    {
+     "title": "Silk weaver",
+     "pay": 18
+    },
+    {
+     "title": "Master silk weaver",
+     "pay": 40
+    }
+   ],
+   "guild": "the silk guild",
+   "groups": [
+    "italy",
+    "egypt"
+   ],
+   "minAge": 9,
+   "years": [
+    4,
+    6
+   ],
+   "fees": [
+    1,
+    25
+   ],
+   "rise": [
+    "Take a loom of your own",
+    "Open a silk shop"
+   ],
+   "extra": "Weave a length of brocade"
+  },
+  {
+   "id": "dyer",
+   "name": "Dyer",
+   "ladder": [
+    {
+     "title": "Dyer's hand",
+     "pay": 10
+    },
+    {
+     "title": "Dyer",
+     "pay": 20
+    },
+    {
+     "title": "Master dyer",
+     "pay": 45
+    }
+   ],
+   "groups": [
+    "italy",
+    "maghreb",
+    "egypt"
+   ],
+   "minAge": 12,
+   "sex": "male",
+   "years": [
+    4,
+    6
+   ],
+   "fees": [
+    1,
+    25
+   ],
+   "rise": [
+    "Join the dyers",
+    "Open a dyehouse"
+   ],
+   "extra": "Dye a rush order of cloth",
+   "aliases": {
+    "Dyer's hand": 0
+   }
+  },
+  {
+   "id": "notary",
+   "name": "Notary",
+   "ladder": [
+    {
+     "title": "Notary's clerk",
+     "pay": 8
+    },
+    {
+     "title": "Notary",
+     "pay": 60
+    },
+    {
+     "title": "Consul of the notaries' guild",
+     "pay": 110
+    }
+   ],
+   "guild": "the guild of judges and notaries",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "minAge": 16,
+   "sex": "male",
+   "legit": true,
+   "minStatus": 2,
+   "reads": [
+    "latin"
+   ],
+   "years": [
+    4,
+    12
+   ],
+   "fees": [
+    5,
+    20
+   ],
+   "rise": [
+    "Pass the guild's examination",
+    "Stand for consul"
+   ],
+   "extra": "Draw up a will",
+   "hub": "lawyer",
+   "closedLegit": "the notaries' guild does not take sons born outside marriage",
+   "aliases": {
+    "Notary": 1
+   }
+  },
+  {
+   "id": "scrivener",
+   "name": "Scrivener",
+   "ladder": [
+    {
+     "title": "Scrivener's apprentice",
+     "pay": 5
+    },
+    {
+     "title": "Scrivener",
+     "pay": 30
+    },
+    {
+     "title": "Master of the Scriveners",
+     "pay": 70
+    }
+   ],
+   "guild": "the Scriveners' Company",
+   "groups": [
+    "england"
+   ],
+   "minAge": 14,
+   "sex": "male",
+   "reads": [
+    "latin"
+   ],
+   "years": [
+    6,
+    10
+   ],
+   "fees": [
+    3,
+    20
+   ],
+   "rise": [
+    "Take the Company's freedom",
+    "Stand for master"
+   ],
+   "extra": "Draw up a will",
+   "hub": "lawyer",
+   "hubName": "Scrivener"
+  },
+  {
+   "id": "banker",
+   "name": "Banking",
+   "ladder": [
+    {
+     "title": "Banker's garzone",
+     "pay": 5
+    },
+    {
+     "title": "Banker's clerk",
+     "pay": 30
+    },
+    {
+     "title": "Partner in a bank",
+     "pay": 150
+    }
+   ],
+   "guild": "the bankers' guild (Arte del Cambio)",
+   "groups": [
+    "italy"
+   ],
+   "minAge": 12,
+   "minStatus": 1,
+   "reads": [
+    "reckon"
+   ],
+   "years": [
+    4,
+    10
+   ],
+   "fees": [
+    0,
+    120
+   ],
+   "rise": [
+    "Ask for a clerk's desk",
+    "Buy a share of the bank"
+   ],
+   "extra": "Carry a bill of exchange"
+  },
+  {
+   "id": "merchant",
+   "name": "Merchant",
+   "ladder": [
+    {
+     "title": "Shop helper",
+     "pay": 4
+    },
+    {
+     "title": "Merchant's factor",
+     "pay": 50
+    },
+    {
+     "title": "Merchant",
+     "pay": 120
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "egypt",
+    "iberia",
+    "kongo"
+   ],
+   "minAge": 10,
+   "reads": [
+    "reckon"
+   ],
+   "years": [
+    5,
+    7
+   ],
+   "fees": [
+    0,
+    80
+   ],
+   "rise": [
+    "Ask to go abroad as a factor",
+    "Trade on your own account"
+   ],
+   "extra": "Haggle over a cargo",
+   "hub": "hustler",
+   "aliases": {
+    "Merchant's factor": 1,
+    "Shop boy": 0
+   }
+  },
+  {
+   "id": "printer",
+   "name": "Printing",
+   "ladder": [
+    {
+     "title": "Printer's apprentice",
+     "pay": 3
+    },
+    {
+     "title": "Compositor",
+     "pay": 16
+    },
+    {
+     "title": "Master printer",
+     "pay": 50
+    }
+   ],
+   "groups": [
+    "italy",
+    "england"
+   ],
+   "minAge": 12,
+   "reads": [
+    "read"
+   ],
+   "years": [
+    5,
+    6
+   ],
+   "fees": [
+    0,
+    40
+   ],
+   "rise": [
+    "Set type at the case",
+    "Buy a press of your own"
+   ],
+   "extra": "Print a pamphlet overnight",
+   "fromBy": {
+    "italy": 1465,
+    "england": 1476
+   }
+  },
+  {
+   "id": "condottiere",
+   "name": "Soldiering",
+   "ladder": [
+    {
+     "title": "Foot soldier",
+     "pay": 12
+    },
+    {
+     "title": "Captain",
+     "pay": 40
+    },
+    {
+     "title": "Condottiere",
+     "pay": 300
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "minAge": 15,
+   "sex": "male",
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    60
+   ],
+   "rise": [
+    "Ask for a company to lead",
+    "Sign a condotta with a state"
+   ],
+   "extra": "Drill the men",
+   "hub": "military"
+  },
+  {
+   "id": "soldier",
+   "name": "Soldiering",
+   "ladder": [
+    {
+     "title": "Soldier",
+     "pay": 12
+    },
+    {
+     "title": "Captain",
+     "pay": 40
+    },
+    {
+     "title": "Commander",
+     "pay": 150
+    }
+   ],
+   "groups": [
+    "england",
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia"
+   ],
+   "minAge": 15,
+   "sex": "male",
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Ask for men to lead",
+    "Win the ruler's favour"
+   ],
+   "extra": "Drill the men",
+   "hub": "military",
+   "hubName": "Commander"
+  },
+  {
+   "id": "sailor",
+   "name": "Sailing",
+   "ladder": [
+    {
+     "title": "Ship's boy",
+     "pay": 3
+    },
+    {
+     "title": "Sailor",
+     "pay": 12
+    },
+    {
+     "title": "Ship's pilot",
+     "pay": 40
+    }
+   ],
+   "regions": [
+    "venice",
+    "naples",
+    "sicily",
+    "malta",
+    "england",
+    "florence",
+    "luanda",
+    "cairo",
+    "fez"
+   ],
+   "minAge": 10,
+   "sex": "male",
+   "years": [
+    3,
+    6
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Sign on as a sailor",
+    "Learn the pilot's art"
+   ],
+   "extra": "Sign on for a long voyage",
+   "hub": "pilot"
+  },
+  {
+   "id": "servant",
+   "name": "Service",
+   "ladder": [
+    {
+     "title": "Servant",
+     "pay": 5
+    },
+    {
+     "title": "Head servant",
+     "pay": 10
+    },
+    {
+     "title": "Steward of a great house",
+     "pay": 25
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia",
+    "kongo"
+   ],
+   "minAge": 9,
+   "years": [
+    5,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Ask to run the household",
+    "Seek a stewardship"
+   ],
+   "extra": "Serve at a great feast"
+  },
+  {
+   "id": "farm",
+   "name": "Farming",
+   "ladder": [
+    {
+     "title": "Farm labourer",
+     "pay": 4
+    },
+    {
+     "title": "Sharecropper",
+     "pay": 8
+    },
+    {
+     "title": "Farmer with land",
+     "pay": 20
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia",
+    "kongo"
+   ],
+   "minAge": 8,
+   "years": [
+    5,
+    8
+   ],
+   "fees": [
+    0,
+    40
+   ],
+   "rise": [
+    "Take a farm on shares",
+    "Buy land of your own"
+   ],
+   "extra": "Bring in the harvest"
+  },
+  {
+   "id": "scholar",
+   "name": "Scholarship",
+   "ladder": [
+    {
+     "title": "Tutor in a great house",
+     "pay": 15
+    },
+    {
+     "title": "Lecturer",
+     "pay": 40
+    },
+    {
+     "title": "Professor",
+     "pay": 120
+    }
+   ],
+   "groups": [
+    "italy",
+    "england"
+   ],
+   "minAge": 16,
+   "sex": "male",
+   "reads": [
+    "latin"
+   ],
+   "years": [
+    3,
+    6
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Ask for a lectureship",
+    "Seek a chair"
+   ],
+   "riseSchool": {
+    "0": "university"
+   },
+   "extra": "Write a learned letter",
+   "hub": "astronaut"
+  },
+  {
+   "id": "priest",
+   "name": "The Church",
+   "ladder": [
+    {
+     "title": "Cleric in minor orders",
+     "pay": 3
+    },
+    {
+     "title": "Parish priest",
+     "pay": 15
+    },
+    {
+     "title": "Canon of the cathedral",
+     "pay": 60
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "kongo",
+    "iberia"
+   ],
+   "faith": "Catholic",
+   "minAge": 14,
+   "sex": "male",
+   "reads": [
+    "latin"
+   ],
+   "years": [
+    4,
+    10
+   ],
+   "fees": [
+    0,
+    10
+   ],
+   "rise": [
+    "Be ordained",
+    "Seek a canon's stall"
+   ],
+   "extra": "Say masses for the dead"
+  },
+  {
+   "id": "parson",
+   "name": "The Church",
+   "ladder": [
+    {
+     "title": "Curate",
+     "pay": 6
+    },
+    {
+     "title": "Parson",
+     "pay": 18
+    },
+    {
+     "title": "Dean",
+     "pay": 60
+    }
+   ],
+   "groups": [
+    "england"
+   ],
+   "faith": "Church of England",
    "minAge": 18,
-   "needs": {
-    "smarts": ">=55"
+   "sex": "male",
+   "reads": [
+    "latin"
+   ],
+   "years": [
+    4,
+    10
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Take a parish",
+    "Seek a deanery"
+   ],
+   "extra": "Preach at the market cross"
+  },
+  {
+   "id": "nun",
+   "name": "The convent",
+   "ladder": [
+    {
+     "title": "Novice",
+     "pay": 0
+    },
+    {
+     "title": "Nun",
+     "pay": 2
+    },
+    {
+     "title": "Abbess",
+     "pay": 20
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "iberia"
+   ],
+   "faith": "Catholic",
+   "minAge": 12,
+   "sex": "female",
+   "years": [
+    2,
+    15
+   ],
+   "fees": [
+    30,
+    0
+   ],
+   "rise": [
+    "Take your vows",
+    "Stand for abbess"
+   ],
+   "extra": "Copy a book for the convent",
+   "entryFee": 30,
+   "entryWhy": "a dowry for the convent"
+  },
+  {
+   "id": "courtier",
+   "name": "The court",
+   "ladder": [
+    {
+     "title": "Page",
+     "pay": 5
+    },
+    {
+     "title": "Courtier",
+     "pay": 60
+    },
+    {
+     "title": "Ambassador",
+     "pay": 200
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "minAge": 10,
+   "minStatus": 3,
+   "years": [
+    5,
+    8
+   ],
+   "fees": [
+    0,
+    30
+   ],
+   "rise": [
+    "Ask for a place at court",
+    "Seek an embassy"
+   ],
+   "extra": "Dance at a court ball",
+   "hub": "politician"
+  },
+  {
+   "id": "player",
+   "name": "The playhouse",
+   "ladder": [
+    {
+     "title": "Boy player",
+     "pay": 4
+    },
+    {
+     "title": "Player",
+     "pay": 20
+    },
+    {
+     "title": "Sharer in the company",
+     "pay": 60
+    }
+   ],
+   "cities": [
+    "London"
+   ],
+   "fromBy": {
+    "england": 1576
+   },
+   "minAge": 10,
+   "sex": "male",
+   "years": [
+    4,
+    5
+   ],
+   "fees": [
+    0,
+    50
+   ],
+   "rise": [
+    "Play the men's parts",
+    "Buy a share of the company"
+   ],
+   "extra": "Learn a new part overnight",
+   "hub": "actor"
+  },
+  {
+   "id": "musician",
+   "name": "Music",
+   "ladder": [
+    {
+     "title": "Music pupil",
+     "pay": 2
+    },
+    {
+     "title": "Musician",
+     "pay": 15
+    },
+    {
+     "title": "Master of the chapel",
+     "pay": 50
+    }
+   ],
+   "groups": [
+    "italy",
+    "england",
+    "maghreb",
+    "egypt"
+   ],
+   "minAge": 8,
+   "years": [
+    5,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Play for pay",
+    "Seek a court post"
+   ],
+   "extra": "Play at a wedding feast",
+   "hub": "musician"
+  },
+  {
+   "id": "barber",
+   "name": "Barber-surgery",
+   "ladder": [
+    {
+     "title": "Barber's boy",
+     "pay": 3
+    },
+    {
+     "title": "Barber-surgeon",
+     "pay": 20
+    },
+    {
+     "title": "Master barber-surgeon",
+     "pay": 40
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "egypt",
+    "iberia"
+   ],
+   "minAge": 11,
+   "sex": "male",
+   "years": [
+    6,
+    6
+   ],
+   "fees": [
+    2,
+    20
+   ],
+   "rise": [
+    "Join the barber-surgeons",
+    "Open your own shop"
+   ],
+   "extra": "Let blood on market day",
+   "hub": "doctor",
+   "hubName": "Barber-surgeon"
+  },
+  {
+   "id": "physician",
+   "name": "Medicine",
+   "ladder": [
+    {
+     "title": "Young physician",
+     "pay": 30
+    },
+    {
+     "title": "Physician",
+     "pay": 70
+    },
+    {
+     "title": "Court physician",
+     "pay": 200
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "egypt",
+    "iberia"
+   ],
+   "minAge": 20,
+   "sex": "male",
+   "needsSchool": "university",
+   "years": [
+    4,
+    10
+   ],
+   "fees": [
+    10,
+    0
+   ],
+   "rise": [
+    "Join the physicians' college",
+    "Seek a prince's favour"
+   ],
+   "extra": "Visit a rich patient",
+   "hub": "doctor"
+  },
+  {
+   "id": "apothecary",
+   "name": "Apothecary",
+   "ladder": [
+    {
+     "title": "Apothecary's apprentice",
+     "pay": 3
+    },
+    {
+     "title": "Apothecary",
+     "pay": 25
+    },
+    {
+     "title": "Master apothecary",
+     "pay": 55
+    }
+   ],
+   "guild": "the guild of physicians and apothecaries",
+   "groups": [
+    "italy",
+    "england",
+    "maghreb",
+    "egypt"
+   ],
+   "minAge": 11,
+   "reads": [
+    "read"
+   ],
+   "years": [
+    7,
+    6
+   ],
+   "fees": [
+    2,
+    30
+   ],
+   "rise": [
+    "Join the guild",
+    "Open your own shop"
+   ],
+   "extra": "Mix theriac for the plague season",
+   "aliases": {
+    "Apothecary's boy": 0
+   }
+  },
+  {
+   "id": "midwife",
+   "name": "Midwifery",
+   "ladder": [
+    {
+     "title": "Midwife's helper",
+     "pay": 2
+    },
+    {
+     "title": "Midwife",
+     "pay": 10
+    },
+    {
+     "title": "Sworn midwife",
+     "pay": 18
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia",
+    "kongo"
+   ],
+   "minAge": 16,
+   "sex": "female",
+   "years": [
+    5,
+    10
+   ],
+   "fees": [
+    0,
+    2
+   ],
+   "rise": [
+    "Deliver on your own",
+    "Take the midwife's oath"
+   ],
+   "extra": "Sit up through a hard birth"
+  },
+  {
+   "id": "sbirro",
+   "name": "The watch",
+   "ladder": [
+    {
+     "title": "Sbirro",
+     "pay": 10
+    },
+    {
+     "title": "Corporal of the sbirri",
+     "pay": 18
+    },
+    {
+     "title": "Bargello",
+     "pay": 60
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "minAge": 18,
+   "sex": "male",
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Ask for a corporal's post",
+    "Seek the bargello's staff"
+   ],
+   "extra": "Walk the night rounds",
+   "hub": "police"
+  },
+  {
+   "id": "watch",
+   "name": "The watch",
+   "ladder": [
+    {
+     "title": "Watchman",
+     "pay": 4
+    },
+    {
+     "title": "Constable",
+     "pay": 10
+    },
+    {
+     "title": "High constable",
+     "pay": 25
+    }
+   ],
+   "groups": [
+    "england"
+   ],
+   "minAge": 18,
+   "sex": "male",
+   "years": [
+    3,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Take the constable's staff",
+    "Stand for high constable"
+   ],
+   "extra": "Walk the night rounds",
+   "hub": "police",
+   "hubName": "Constable"
+  },
+  {
+   "id": "farrier",
+   "name": "Horses",
+   "ladder": [
+    {
+     "title": "Stable boy",
+     "pay": 2
+    },
+    {
+     "title": "Farrier",
+     "pay": 14
+    },
+    {
+     "title": "Master of horse",
+     "pay": 40
+    }
+   ],
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia"
+   ],
+   "minAge": 9,
+   "sex": "male",
+   "years": [
+    5,
+    8
+   ],
+   "fees": [
+    1,
+    0
+   ],
+   "rise": [
+    "Take a forge of your own",
+    "Seek a lord's stables"
+   ],
+   "extra": "Break a young horse",
+   "hub": "vet",
+   "hubName": "Horse master"
+  },
+  {
+   "id": "fencing",
+   "name": "Fencing",
+   "ladder": [
+    {
+     "title": "Fencing pupil",
+     "pay": 0
+    },
+    {
+     "title": "Fencing master's assistant",
+     "pay": 8
+    },
+    {
+     "title": "Fencing master",
+     "pay": 30
+    }
+   ],
+   "groups": [
+    "italy",
+    "england"
+   ],
+   "minAge": 14,
+   "sex": "male",
+   "years": [
+    3,
+    6
+   ],
+   "fees": [
+    1,
+    10
+   ],
+   "rise": [
+    "Teach the beginners",
+    "Open a fencing school"
+   ],
+   "extra": "Fight a public bout",
+   "hub": "fighter",
+   "hubName": "Fencing master"
+  },
+  {
+   "id": "alim",
+   "name": "Islamic scholarship",
+   "ladder": [
+    {
+     "title": "Student (talib)",
+     "pay": 0
+    },
+    {
+     "title": "Teacher",
+     "pay": 15
+    },
+    {
+     "title": "Qadi (judge)",
+     "pay": 60
+    }
+   ],
+   "groups": [
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia"
+   ],
+   "minAge": 12,
+   "sex": "male",
+   "reads": [
+    "arabic"
+   ],
+   "years": [
+    6,
+    10
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Win your teacher's licence (ijaza)",
+    "Be named a qadi"
+   ],
+   "riseSchool": {
+    "0": "university"
+   },
+   "extra": "Copy and teach a text",
+   "hub": "lawyer",
+   "toBy": {
+    "iberia": 1501
+   },
+   "hubName": "Qadi"
+  },
+  {
+   "id": "copyist",
+   "name": "Books",
+   "ladder": [
+    {
+     "title": "Copyist's pupil",
+     "pay": 2
+    },
+    {
+     "title": "Manuscript copyist",
+     "pay": 10
+    },
+    {
+     "title": "Bookseller",
+     "pay": 30
+    }
+   ],
+   "groups": [
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia"
+   ],
+   "minAge": 10,
+   "reads": [
+    "arabic"
+   ],
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    25
+   ],
+   "rise": [
+    "Copy for pay",
+    "Open a book stall"
+   ],
+   "extra": "Copy manuscripts for pay",
+   "toBy": {
+    "iberia": 1501
+   }
+  },
+  {
+   "id": "caravan",
+   "name": "The caravan trade",
+   "ladder": [
+    {
+     "title": "Camel driver",
+     "pay": 4
+    },
+    {
+     "title": "Caravan trader",
+     "pay": 25
+    },
+    {
+     "title": "Caravan master",
+     "pay": 90
+    }
+   ],
+   "groups": [
+    "sahel",
+    "maghreb",
+    "egypt"
+   ],
+   "minAge": 12,
+   "sex": "male",
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    60
+   ],
+   "rise": [
+    "Trade on your own account",
+    "Lead a caravan"
+   ],
+   "extra": "Carry salt south and gold north",
+   "hub": "hustler",
+   "hubName": "Caravan master"
+  },
+  {
+   "id": "leather",
+   "name": "Leather",
+   "ladder": [
+    {
+     "title": "Tannery hand",
+     "pay": 3
+    },
+    {
+     "title": "Leatherworker",
+     "pay": 12
+    },
+    {
+     "title": "Master leatherworker",
+     "pay": 30
+    }
+   ],
+   "groups": [
+    "maghreb",
+    "sahel"
+   ],
+   "minAge": 10,
+   "years": [
+    5,
+    6
+   ],
+   "fees": [
+    1,
+    15
+   ],
+   "rise": [
+    "Work the hides yourself",
+    "Open your own shop"
+   ],
+   "extra": "Finish a rush of fine leather",
+   "aliases": {
+    "Tannery boy": 0
+   }
+  },
+  {
+   "id": "official",
+   "name": "The court",
+   "ladder": [
+    {
+     "title": "Page at court",
+     "pay": 3
+    },
+    {
+     "title": "Court official",
+     "pay": 40
+    },
+    {
+     "title": "Provincial governor",
+     "pay": 150
+    }
+   ],
+   "groups": [
+    "maghreb",
+    "sahel",
+    "egypt",
+    "kongo"
+   ],
+   "minAge": 12,
+   "minStatus": 3,
+   "years": [
+    5,
+    10
+   ],
+   "fees": [
+    0,
+    40
+   ],
+   "rise": [
+    "Ask for an office",
+    "Seek a province"
+   ],
+   "extra": "Hear petitions at the gate",
+   "hub": "politician",
+   "hubName": "Court official"
+  },
+  {
+   "id": "smith",
+   "name": "Smithing",
+   "ladder": [
+    {
+     "title": "Smith's boy",
+     "pay": 2
+    },
+    {
+     "title": "Smith",
+     "pay": 14
+    },
+    {
+     "title": "Master smith",
+     "pay": 35
+    }
+   ],
+   "groups": [
+    "kongo",
+    "sahel"
+   ],
+   "minAge": 10,
+   "sex": "male",
+   "years": [
+    5,
+    8
+   ],
+   "fees": [
+    1,
+    10
+   ],
+   "rise": [
+    "Work your own forge",
+    "Become a master smith"
+   ],
+   "extra": "Forge hoes for the planting",
+   "note": "In Kongo the smith's craft is honoured: the first king was remembered as a smith."
+  },
+  {
+   "id": "raffia",
+   "name": "Cloth weaving",
+   "ladder": [
+    {
+     "title": "Weaver's apprentice",
+     "pay": 2
+    },
+    {
+     "title": "Raffia cloth weaver",
+     "pay": 10
+    },
+    {
+     "title": "Master weaver",
+     "pay": 25
+    }
+   ],
+   "groups": [
+    "kongo"
+   ],
+   "minAge": 10,
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    10
+   ],
+   "rise": [
+    "Weave on your own",
+    "Weave for the nobles"
+   ],
+   "extra": "Weave fine cloth for a feast"
+  },
+  {
+   "id": "market",
+   "name": "Market trade",
+   "ladder": [
+    {
+     "title": "Market seller",
+     "pay": 3
+    },
+    {
+     "title": "Market trader",
+     "pay": 12
+    },
+    {
+     "title": "Head of the market",
+     "pay": 30
+    }
+   ],
+   "groups": [
+    "kongo",
+    "sahel",
+    "maghreb",
+    "egypt"
+   ],
+   "minAge": 10,
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    15
+   ],
+   "rise": [
+    "Take a stall of your own",
+    "Stand for head of the market"
+   ],
+   "extra": "Haggle on market day",
+   "hub": "hustler",
+   "hubName": "Market trader"
+  },
+  {
+   "id": "warrior",
+   "name": "War",
+   "ladder": [
+    {
+     "title": "Young warrior",
+     "pay": 3
+    },
+    {
+     "title": "Warrior",
+     "pay": 10
+    },
+    {
+     "title": "War captain",
+     "pay": 40
+    }
+   ],
+   "groups": [
+    "kongo"
+   ],
+   "minAge": 15,
+   "sex": "male",
+   "years": [
+    3,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Fight in the line",
+    "Lead the warriors"
+   ],
+   "extra": "Drill with bow and shield",
+   "hub": "military",
+   "hubName": "War captain"
+  },
+  {
+   "id": "kongo_teacher",
+   "name": "Teaching",
+   "ladder": [
+    {
+     "title": "Pupil teacher",
+     "pay": 2
+    },
+    {
+     "title": "Teacher at the royal school",
+     "pay": 15
+    },
+    {
+     "title": "Royal secretary",
+     "pay": 50
+    }
+   ],
+   "cities": [
+    "Mbanza Kongo"
+   ],
+   "fromBy": {
+    "kongo": 1509
+   },
+   "minAge": 14,
+   "reads": [
+    "read"
+   ],
+   "years": [
+    3,
+    8
+   ],
+   "fees": [
+    0,
+    0
+   ],
+   "rise": [
+    "Teach a class",
+    "Write the king's letters"
+   ],
+   "extra": "Teach the young nobles"
+  },
+  {
+   "id": "fisher",
+   "name": "Fishing",
+   "ladder": [
+    {
+     "title": "Fisher's helper",
+     "pay": 2
+    },
+    {
+     "title": "Fisherman",
+     "pay": 8
+    },
+    {
+     "title": "Boat owner",
+     "pay": 20
+    }
+   ],
+   "regions": [
+    "venice",
+    "naples",
+    "sicily",
+    "malta",
+    "england",
+    "luanda",
+    "kongo",
+    "cairo",
+    "fez"
+   ],
+   "minAge": 8,
+   "years": [
+    4,
+    8
+   ],
+   "fees": [
+    0,
+    15
+   ],
+   "rise": [
+    "Fish on your own",
+    "Buy a boat"
+   ],
+   "extra": "Go out before dawn",
+   "aliases": {
+    "Fisher's boy": 0
    }
   }
  ],
  "school": [
-  "abacus school",
-  "Latin grammar school",
-  "a workshop apprenticeship"
+  {
+   "id": "abacus",
+   "name": "Abacus school",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "ages": [
+    7,
+    12
+   ],
+   "years": 3,
+   "cost": 1,
+   "gives": [
+    "read",
+    "reckon"
+   ],
+   "minStatus": 1
+  },
+  {
+   "id": "petty",
+   "name": "Petty school",
+   "groups": [
+    "england"
+   ],
+   "ages": [
+    5,
+    9
+   ],
+   "years": 2,
+   "cost": 1,
+   "gives": [
+    "read"
+   ],
+   "minStatus": 1
+  },
+  {
+   "id": "grammar",
+   "name": "Latin grammar school",
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "ages": [
+    8,
+    15
+   ],
+   "years": 5,
+   "cost": 2,
+   "gives": [
+    "read",
+    "latin"
+   ],
+   "minStatus": 1,
+   "sex": "male"
+  },
+  {
+   "id": "tutor",
+   "name": "A humanist tutor at home",
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "ages": [
+    6,
+    15
+   ],
+   "years": 6,
+   "cost": 8,
+   "gives": [
+    "read",
+    "reckon",
+    "latin"
+   ],
+   "minStatus": 3
+  },
+  {
+   "id": "convent",
+   "name": "Schooling at a convent",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "ages": [
+    7,
+    14
+   ],
+   "years": 4,
+   "cost": 2,
+   "gives": [
+    "read"
+   ],
+   "sex": "female",
+   "minStatus": 2
+  },
+  {
+   "id": "kuttab",
+   "name": "Qur'an school",
+   "groups": [
+    "maghreb",
+    "sahel",
+    "egypt",
+    "iberia"
+   ],
+   "ages": [
+    5,
+    10
+   ],
+   "years": 4,
+   "cost": 1,
+   "gives": [
+    "read",
+    "arabic"
+   ],
+   "toBy": {
+    "iberia": 1501
+   }
+  },
+  {
+   "id": "kongo_school",
+   "name": "The royal school of Mbanza Kongo",
+   "cities": [
+    "Mbanza Kongo"
+   ],
+   "fromBy": {
+    "kongo": 1509
+   },
+   "ages": [
+    7,
+    14
+   ],
+   "years": 4,
+   "cost": 0,
+   "gives": [
+    "read"
+   ],
+   "minStatus": 3
+  },
+  {
+   "id": "pavia",
+   "name": "University of Pavia",
+   "kind": "university",
+   "cities": [
+    "Pavia"
+   ],
+   "ages": [
+    14,
+    30
+   ],
+   "years": 5,
+   "cost": 6,
+   "needs": "latin",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "padua",
+   "name": "University of Padua",
+   "kind": "university",
+   "cities": [
+    "Padua"
+   ],
+   "ages": [
+    14,
+    30
+   ],
+   "years": 5,
+   "cost": 6,
+   "needs": "latin",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "pisa",
+   "name": "University of Pisa",
+   "kind": "university",
+   "cities": [
+    "Pisa"
+   ],
+   "fromBy": {
+    "italy": 1473
+   },
+   "ages": [
+    14,
+    30
+   ],
+   "years": 5,
+   "cost": 6,
+   "needs": "latin",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "sapienza",
+   "name": "The Sapienza of Rome",
+   "kind": "university",
+   "cities": [
+    "Rome"
+   ],
+   "ages": [
+    14,
+    30
+   ],
+   "years": 5,
+   "cost": 6,
+   "needs": "latin",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "naples_u",
+   "name": "University of Naples",
+   "kind": "university",
+   "cities": [
+    "Naples"
+   ],
+   "ages": [
+    14,
+    30
+   ],
+   "years": 5,
+   "cost": 5,
+   "needs": "latin",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "oxford",
+   "name": "University of Oxford",
+   "kind": "university",
+   "cities": [
+    "Oxford"
+   ],
+   "ages": [
+    14,
+    30
+   ],
+   "years": 5,
+   "cost": 6,
+   "needs": "latin",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "qarawiyyin",
+   "name": "The Qarawiyyin of Fez",
+   "kind": "university",
+   "cities": [
+    "Fez"
+   ],
+   "ages": [
+    13,
+    30
+   ],
+   "years": 6,
+   "cost": 3,
+   "needs": "arabic",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "sankore",
+   "name": "Sankore of Timbuktu",
+   "kind": "university",
+   "cities": [
+    "Timbuktu"
+   ],
+   "ages": [
+    13,
+    30
+   ],
+   "years": 6,
+   "cost": 2,
+   "needs": "arabic",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "azhar",
+   "name": "Al-Azhar of Cairo",
+   "kind": "university",
+   "cities": [
+    "Cairo"
+   ],
+   "ages": [
+    13,
+    30
+   ],
+   "years": 6,
+   "cost": 3,
+   "needs": "arabic",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  },
+  {
+   "id": "granada_madrasa",
+   "name": "The Madrasa of Granada",
+   "kind": "university",
+   "cities": [
+    "Granada"
+   ],
+   "toBy": {
+    "iberia": 1492
+   },
+   "ages": [
+    13,
+    30
+   ],
+   "years": 5,
+   "cost": 3,
+   "needs": "arabic",
+   "sex": "male",
+   "gives": [
+    "degree"
+   ]
+  }
  ],
  "justice": {
   "theft": "the Stinche prison, 1 year",
@@ -2152,14 +4196,60 @@
       }
      }
     }
-   ]
+   ],
+   "requires": {
+    "cities": [
+     "Florence",
+     "Vinci",
+     "Prato",
+     "Pistoia",
+     "Empoli",
+     "Pisa",
+     "Milan",
+     "Pavia",
+     "Cremona",
+     "Como",
+     "Venice",
+     "Padua",
+     "Verona",
+     "Vicenza",
+     "Rome",
+     "Perugia",
+     "Ancona",
+     "Viterbo",
+     "Naples",
+     "Salerno",
+     "Bari",
+     "L'Aquila",
+     "Palermo",
+     "Messina",
+     "Syracuse",
+     "Catania",
+     "Mdina",
+     "Birgu",
+     "Valletta"
+    ]
+   }
   },
   {
    "id": "ren_wool",
    "minAge": 12,
    "maxAge": 25,
    "requires": {
-    "job": false
+    "job": false,
+    "cities": [
+     "Florence",
+     "Prato",
+     "Pistoia",
+     "Empoli",
+     "Pisa",
+     "Milan",
+     "Como",
+     "Venice",
+     "Padua",
+     "Verona",
+     "Vicenza"
+    ]
    },
    "text": "A master of the Arte della Lana needs carders for his shop by the river.",
    "choices": [
@@ -2291,5 +4381,71 @@
     }
    ]
   }
- ]
+ ],
+ "status": {
+  "italy": [
+   "Contadino (peasant)",
+   "Popolano (working people)",
+   "Cittadino (citizen)",
+   "Nobile (noble)"
+  ],
+  "islands": [
+   "Peasant",
+   "Working people",
+   "Citizen",
+   "Noble"
+  ],
+  "england": [
+   "Husbandman",
+   "Labouring sort",
+   "Citizen and freeman",
+   "Gentry"
+  ],
+  "iberia": [
+   "Farmer",
+   "Craftsman",
+   "Merchant family",
+   "Notable family"
+  ],
+  "maghreb": [
+   "Farmer",
+   "Craftsman",
+   "Merchant family",
+   "Notable family"
+  ],
+  "egypt": [
+   "Fellah (farmer)",
+   "Craftsman",
+   "Merchant family",
+   "Notable family"
+  ],
+  "sahel": [
+   "Farmer",
+   "Craftsman",
+   "Merchant family",
+   "Noble family"
+  ],
+  "kongo": [
+   "Villager",
+   "Craftsman",
+   "Townsman",
+   "Noble family"
+  ]
+ },
+ "hubs": {
+  "actor": "Player in a company",
+  "musician": "Court musician",
+  "athlete": "Calcio player or jouster",
+  "fighter": "Fencing master",
+  "politician": "Courtier and ambassador",
+  "police": "Sbirro and constable",
+  "military": "Condottiere",
+  "doctor": "Physician",
+  "lawyer": "Notary",
+  "pilot": "Ship's pilot",
+  "astronaut": "Astronomer",
+  "model": "Painter's model and muse",
+  "vet": "Horse master",
+  "hustler": "Merchant and broker"
+ }
 }

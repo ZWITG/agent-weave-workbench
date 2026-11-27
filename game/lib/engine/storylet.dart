@@ -76,7 +76,7 @@ class Storylet {
 
   /// Life conditions: job (bool), retired (bool), money (">=5000"),
   /// owns (["house"]), childAge (">=16" or "13-17", oldest child),
-  /// prison (bool).
+  /// prison (bool), cities (era events of one place).
   final Map<String, dynamic> conditions;
 
   /// Flag whose memory is shown on the card ("Remembers: …").
@@ -117,6 +117,7 @@ class Storylet {
           'owns',
           'childAge',
           'prison',
+          'cities',
         ])
           if (req.containsKey(k)) k: req[k],
       },
@@ -196,6 +197,9 @@ class Storylet {
         return false;
       }
     }
+    // Era events of one place ("cities": the wool towns of Italy).
+    final cities = conditions['cities'];
+    if (cities is List && !cities.contains(life.city)) return false;
     if (conditions['prison'] != true && life.prison != null) return false;
     return true;
   }

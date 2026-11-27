@@ -342,3 +342,11 @@ The first Legend, free as a prologue preview: live Leonardo's life in Renaissanc
 - Town criers announce a new ruler, and places change their names as history did (Florence becomes the Grand Duchy of Tuscany in 1569).
 - Prices rise after 1550, faster than pay, as they did in the price revolution.
 - Make a journey from the Activities card: by road, by ship, or with a caravan across the Sahara, with a cost, a number of days and a risk on the way.
+
+## Renaissance work and schooling (27 Nov)
+- The Path tab of a Renaissance life is real now: your trade, its guild ladder from apprentice to master, your schooling and the work of your city that year.
+- 42 trades across the sixteen places: painters, goldsmiths and notaries in Florence, printers from the 1460s, players in London from 1576, Sankore scholars and caravan traders in Timbuktu, smiths and raffia weavers in Kongo.
+- Rise in your trade by joining the guild, making your masterpiece or opening your own workshop, and take on extra work once a year.
+- Schools of the time: abacus school, Latin grammar school, tutors, convents, Qur'an schools, the universities, the Qarawiyyin, Sankore, al-Azhar and the royal school of Mbanza Kongo. What you can read opens or closes doors.
+- Birth status and legitimacy matter, as they did: Leonardo, born outside marriage, can't join the notaries. Every closed door says why.
+- Leonardo's Path wears his codex look; his work follows his story.

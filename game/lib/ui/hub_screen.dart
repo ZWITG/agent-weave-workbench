@@ -1,3 +1,4 @@
+import 'era_path_tab.dart';
 import 'legend_soon.dart';
 import '../engine/causes.dart';
 import '../engine/legends.dart';
@@ -128,7 +129,7 @@ class _HubScreenState extends State<HubScreen> {
         PeopleTab(controller: c),
         // A Legend preview: no modern careers, shares or shops in 1470.
         if (life.era != null) ...[
-          LegendSoonTab(life: life, kind: 'path'),
+          EraPathTab(controller: c),
           LegendSoonTab(life: life, kind: 'wealth'),
         ] else ...[
           PathTab(controller: c),

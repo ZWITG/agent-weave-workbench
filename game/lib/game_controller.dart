@@ -306,6 +306,24 @@ class GameController extends ChangeNotifier {
     return ActionResult(text);
   }
 
+  /// Work and school in an era life (era_path.dart): takes a job, rises
+  /// in the trade, enrols at school and so on.
+  ActionResult eraAct(String Function(Life, EraRules, Random) act) {
+    final busy = busyReason;
+    if (busy != null) return ActionResult(busy);
+    final l = life!;
+    final era = eraRegistry[l.era]!;
+    _snapshot();
+    final text = act(
+      l,
+      era,
+      Random(l.seed ^ (l.year * 6271) ^ l.usedActions.length),
+    );
+    _save();
+    notifyListeners();
+    return ActionResult(text);
+  }
+
   /// The past the last finished Legend life left behind, ready to link.
   PastRecord? lastLegendPast;
 

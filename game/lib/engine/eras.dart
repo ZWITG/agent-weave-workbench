@@ -7,6 +7,7 @@ library;
 import 'dart:math';
 
 import 'currency.dart';
+import 'era_path.dart';
 import 'models.dart';
 import 'storylet.dart';
 import 'timeline.dart';
@@ -217,21 +218,225 @@ class EraRegion {
   }
 }
 
+/// One step of an era job's ladder ("Journeyman painter", 20 florins).
+typedef EraRank = ({String title, int pay});
+
+/// An era job on a guild ladder (Legends plan, Phase 2B): apprentice,
+/// journeyman, master, with who it is open to, where and when.
 class EraJob {
-  EraJob(this.title, this.pay, {this.minAge = 14, this.needs = const {}});
-  final String title;
+  EraJob({
+    required this.id,
+    required this.name,
+    required this.ladder,
+    this.guild,
+    this.groups = const [],
+    this.regions = const [],
+    this.cities = const [],
+    this.fromBy = const {},
+    this.toBy = const {},
+    this.minAge = 14,
+    this.sex,
+    this.minStatus = 0,
+    this.legit = false,
+    this.reads = const [],
+    this.needsSchool,
+    this.faith,
+    this.years = const [],
+    this.fees = const [],
+    this.rise = const [],
+    this.riseSchool = const {},
+    this.extra,
+    this.hub,
+    this.hubName,
+    this.entryFee = 0,
+    this.entryWhy,
+    this.closedLegit,
+    this.note,
+    this.aliases = const {},
+  });
+  final String id;
 
-  /// Yearly pay in the era currency.
-  final int pay;
+  /// The trade ("Painter", "Banking").
+  final String name;
+  final List<EraRank> ladder;
+  final String? guild;
+
+  /// Where it exists: region groups ("italy"), regions ("venice") or
+  /// cities ("London"). Empty lists don't limit.
+  final List<String> groups;
+  final List<String> regions;
+  final List<String> cities;
+
+  /// First and last years by region group (printing: italy 1465).
+  final Map<String, int> fromBy;
+  final Map<String, int> toBy;
   final int minAge;
-  final Map<String, String> needs;
 
-  factory EraJob.fromJson(Map<String, dynamic> j) => EraJob(
-    j['title'],
-    j['pay'] ?? 0,
-    minAge: j['minAge'] ?? 14,
-    needs: Map<String, String>.from(j['needs'] ?? const {}),
-  );
+  /// 'male' or 'female' when history closed it to the other.
+  final String? sex;
+
+  /// Birth status needed: 0 peasant, 1 working people, 2 citizen, 3 noble.
+  final int minStatus;
+
+  /// Closed to children born outside marriage (the notaries' guild).
+  final bool legit;
+
+  /// Reading needed: 'read', 'reckon', 'latin', 'arabic'.
+  final List<String> reads;
+
+  /// A school kind that must be finished first ('university').
+  final String? needsSchool;
+
+  /// Only where this faith is held ("Catholic").
+  final String? faith;
+
+  /// Years in each step before rising, and the fee to rise.
+  final List<int> years;
+  final List<int> fees;
+
+  /// The button to rise from each step ("Join the guild").
+  final List<String> rise;
+
+  /// A school kind needed to rise from a step ({0: 'university'}).
+  final Map<int, String> riseSchool;
+
+  /// The yearly extra work ("Take on a commission").
+  final String? extra;
+
+  /// The special career this becomes in Phase 3 (a modern hub id).
+  final String? hub;
+
+  /// The special career's name here, when the era's general name (the
+  /// Italian "Condottiere") doesn't fit the place.
+  final String? hubName;
+
+  /// Paid to start ("a dowry for the convent").
+  final int entryFee;
+  final String? entryWhy;
+
+  /// Why it is closed to the illegitimate, in history's words.
+  final String? closedLegit;
+  final String? note;
+
+  /// Job titles set by events that sit on this ladder, with their step.
+  final Map<String, int> aliases;
+
+  /// The step of [title] on this ladder, or null.
+  int? stepOf(String title) {
+    final i = ladder.indexWhere((r) => r.title == title);
+    return i >= 0 ? i : aliases[title];
+  }
+
+  factory EraJob.fromJson(Map<String, dynamic> j) {
+    List<String> strs(Object? o) => List<String>.from((o as List?) ?? const []);
+    List<int> ints(Object? o) => List<int>.from((o as List?) ?? const []);
+    Map<String, int> years(Object? o) =>
+        Map<String, int>.from((o as Map?) ?? const {});
+    return EraJob(
+      id: j['id'],
+      name: j['name'] ?? j['id'],
+      ladder: [
+        for (final r in j['ladder'] as List)
+          (title: r['title'] as String, pay: (r['pay'] as num).toInt()),
+      ],
+      guild: j['guild'],
+      groups: strs(j['groups']),
+      regions: strs(j['regions']),
+      cities: strs(j['cities']),
+      fromBy: years(j['fromBy']),
+      toBy: years(j['toBy']),
+      minAge: j['minAge'] ?? 14,
+      sex: j['sex'],
+      minStatus: j['minStatus'] ?? 0,
+      legit: j['legit'] == true,
+      reads: strs(j['reads']),
+      needsSchool: j['needsSchool'],
+      faith: j['faith'],
+      years: ints(j['years']),
+      fees: ints(j['fees']),
+      rise: strs(j['rise']),
+      riseSchool: {
+        for (final e in Map<String, dynamic>.from(
+          j['riseSchool'] ?? const {},
+        ).entries)
+          int.parse(e.key): e.value as String,
+      },
+      extra: j['extra'],
+      hub: j['hub'],
+      hubName: j['hubName'],
+      entryFee: j['entryFee'] ?? 0,
+      entryWhy: j['entryWhy'],
+      closedLegit: j['closedLegit'],
+      note: j['note'],
+      aliases: years(j['aliases']),
+    );
+  }
+}
+
+/// A school of the era: abacus school, Latin grammar school, a tutor,
+/// the Qur'an school, a university or a madrasa.
+class EraSchool {
+  EraSchool({
+    required this.id,
+    required this.name,
+    this.kind = 'basic',
+    this.groups = const [],
+    this.cities = const [],
+    this.fromBy = const {},
+    this.toBy = const {},
+    this.minAge = 6,
+    this.maxAge = 14,
+    this.years = 4,
+    this.cost = 0,
+    this.gives = const [],
+    this.minStatus = 0,
+    this.sex,
+    this.needs,
+  });
+  final String id;
+  final String name;
+
+  /// 'basic' or 'university'.
+  final String kind;
+  final List<String> groups;
+  final List<String> cities;
+  final Map<String, int> fromBy;
+  final Map<String, int> toBy;
+  final int minAge;
+  final int maxAge;
+  final int years;
+
+  /// Florins a year.
+  final int cost;
+
+  /// What it teaches: 'read', 'reckon', 'latin', 'arabic', 'degree'.
+  final List<String> gives;
+  final int minStatus;
+  final String? sex;
+
+  /// Reading needed to enter ('latin').
+  final String? needs;
+
+  factory EraSchool.fromJson(Map<String, dynamic> j) {
+    final ages = List<int>.from(j['ages'] ?? const [6, 14]);
+    return EraSchool(
+      id: j['id'],
+      name: j['name'],
+      kind: j['kind'] ?? 'basic',
+      groups: List<String>.from(j['groups'] ?? const []),
+      cities: List<String>.from(j['cities'] ?? const []),
+      fromBy: Map<String, int>.from(j['fromBy'] ?? const {}),
+      toBy: Map<String, int>.from(j['toBy'] ?? const {}),
+      minAge: ages.first,
+      maxAge: ages.last,
+      years: j['years'] ?? 4,
+      cost: j['cost'] ?? 0,
+      gives: List<String>.from(j['gives'] ?? const []),
+      minStatus: j['minStatus'] ?? 0,
+      sex: j['sex'],
+      needs: j['needs'],
+    );
+  }
 }
 
 class EraRules {
@@ -246,6 +451,8 @@ class EraRules {
     this.prices = const {},
     this.jobs = const [],
     this.school = const [],
+    this.statusNames = const {},
+    this.hubs = const {},
     this.crimes = const {},
     this.lifeExpectancy = 48,
     this.plagueChance = 0.02,
@@ -310,8 +517,19 @@ class EraRules {
   final Map<String, int> prices;
   final List<EraJob> jobs;
 
-  /// School stages open to a child ("abacus school", "workshop").
-  final List<String> school;
+  /// The era's schools and universities.
+  final List<EraSchool> school;
+
+  /// Birth status names by region group, from peasant (0) to noble (3).
+  final Map<String, List<String>> statusNames;
+
+  /// The era names of the 14 special careers (plan §7.2), by modern hub id.
+  /// Data only until their Legends bring the full careers (Phase 3).
+  final Map<String, String> hubs;
+
+  EraJob? job(String id) => jobs.where((j) => j.id == id).firstOrNull;
+  EraSchool? schoolById(String id) =>
+      school.where((s) => s.id == id).firstOrNull;
 
   /// Crime -> sentence ("theft" -> "the Stinche, 1 year").
   final Map<String, String> crimes;
@@ -359,7 +577,17 @@ class EraRules {
         for (final r in (j['jobs'] as List?) ?? const [])
           EraJob.fromJson(Map<String, dynamic>.from(r)),
       ],
-      school: List<String>.from(j['school'] ?? const []),
+      school: [
+        for (final r in (j['school'] as List?) ?? const [])
+          EraSchool.fromJson(Map<String, dynamic>.from(r)),
+      ],
+      statusNames: {
+        for (final e in Map<String, dynamic>.from(
+          j['status'] ?? const {},
+        ).entries)
+          e.key: List<String>.from(e.value),
+      },
+      hubs: Map<String, String>.from(j['hubs'] ?? const {}),
       crimes: Map<String, String>.from(j['justice'] ?? const {}),
       lifeExpectancy: health['lifeExpectancy'] ?? 48,
       plagueChance: ((health['plague'] as num?) ?? 0.02).toDouble(),
@@ -426,6 +654,8 @@ List<String> eraYear(Life life, EraRules era, Timeline t, Random rng) {
       ruler != region.rulerIn(life.year - 1)) {
     out.add('Criers in ${life.city} announce a new ruler: $ruler.');
   }
+  // Work and school (era_path.dart): years in the trade, fees, finishing.
+  out.addAll(eraPathYear(life, era, rng));
   if (life.job != null && life.salary > 0) {
     life.money += life.salary;
     life.lastYear = [(life.job!, life.salary)];

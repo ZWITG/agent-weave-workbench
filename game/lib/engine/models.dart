@@ -895,6 +895,11 @@ class Life {
   /// The Fate this Legend life ended in.
   String? fate;
 
+  /// An era life's work and schooling (era_path.dart): birth status,
+  /// legitimacy, reading, job and ladder step, years in the trade, school.
+  /// Empty in the modern world, and never saved there.
+  final Map<String, dynamic> eraPath = {};
+
   bool get isTimeline => era != null;
 
   /// Life at the very top (echelon.dart): tier reached, rival tycoons,
@@ -1074,6 +1079,12 @@ class Life {
 
   String get stage {
     if (age < 5) return 'Early childhood';
+    // An era life has no primary or secondary school: its own school, or
+    // childhood and youth (era_path.dart).
+    if (era != null && age < 18) {
+      return eraPath['schoolName'] as String? ??
+          (age < 12 ? 'Childhood' : 'Youth');
+    }
     if (age < 12) return 'Primary school';
     if (age < 18) return 'Secondary school';
     if (age < 25) return 'Young adult';
@@ -1186,6 +1197,7 @@ class Life {
     if (pivots.isNotEmpty) 'pivots': pivots,
     if (codex.isNotEmpty) 'codex': codex.toList(),
     if (fate != null) 'fate': fate,
+    if (eraPath.isNotEmpty) 'eraPath': eraPath,
     'hub': hub,
     'crew': crew,
     'dirty': dirty,
@@ -1370,9 +1382,11 @@ class Life {
       ..legendId = j['legendId']
       ..timelineId = j['timelineId']
       ..era = j['era']
+      ..eraPath.addAll(Map<String, dynamic>.from(j['eraPath'] ?? const {}))
       ..causes.addAll({
-        for (final e in Map<String, dynamic>.from(j['causes'] ?? const {})
-            .entries)
+        for (final e in Map<String, dynamic>.from(
+          j['causes'] ?? const {},
+        ).entries)
           e.key: (e.value as num).toDouble(),
       })
       ..causeLog.addAll([
