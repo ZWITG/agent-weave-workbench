@@ -52,7 +52,11 @@ class Fate {
     this.notFacts = const [],
     this.chronicleMin = 0,
     this.chronicleMax = 100,
+    this.unfinished = false,
   });
+
+  /// Only for a life that ended before all its turning points came.
+  final bool unfinished;
   final String id;
   final String title;
   final String text;
@@ -62,6 +66,11 @@ class Fate {
   final int chronicleMax;
 
   bool fits(Life life, Timeline? t) {
+    final legend = legendRegistry[life.legendId];
+    final open =
+        legend?.turningPoints.any((p) => !life.pivots.containsKey(p.id)) ??
+        false;
+    if (unfinished != open) return false;
     bool has(String f) =>
         (t?.has(f) ?? false) ||
         life.flags.containsKey('fact:$f') ||
@@ -79,6 +88,7 @@ class Fate {
     notFacts: List<String>.from(j['notFacts'] ?? const []),
     chronicleMin: j['chronicleMin'] ?? 0,
     chronicleMax: j['chronicleMax'] ?? 100,
+    unfinished: j['unfinished'] ?? false,
   );
 }
 
@@ -106,7 +116,12 @@ class Legend {
     this.codex = const {},
     this.test = false,
     this.skipEvents = const [],
+    this.legacy = const {},
   });
+
+  /// What this Legend leaves the modern world (past.dart): heirlooms,
+  /// buildings, companies, institutions, rivals, descendants, trades.
+  final Map<String, dynamic> legacy;
 
   /// Everyday era events that do not fit this person (ids).
   final List<String> skipEvents;
@@ -171,6 +186,7 @@ class Legend {
       look: j['look'] ?? id,
       test: j['test'] ?? false,
       skipEvents: List<String>.from(j['skipEvents'] ?? const []),
+      legacy: Map<String, dynamic>.from(j['legacy'] ?? const {}),
       money: j['money'] ?? 0,
       stats: Map<String, int>.from(j['stats'] ?? const {}),
       npcs: [

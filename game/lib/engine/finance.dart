@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'business_kinds.dart';
@@ -557,7 +558,27 @@ const tickers = <Ticker>[
   ),
 ];
 
-Ticker? tickerById(String id) => tickers.where((t) => t.id == id).firstOrNull;
+/// The tickers, with any company the linked past founded (past.dart).
+List<Ticker> allTickers() => [
+  ...tickers,
+  for (final c in pastCompanies())
+    (
+      id: c.$1,
+      name: c.$2,
+      sector: c.$3,
+      kind: 'stock',
+      base: c.$4,
+      drift: 6,
+      vol: 12,
+      beta: 0.6,
+      since: 1990,
+      yield: 0.03,
+      blurb: 'Founded in ${c.$5} by a house of your linked past. Old, steady, proud.',
+    ),
+];
+
+Ticker? tickerById(String id) =>
+    allTickers().where((t) => t.id == id).firstOrNull;
 
 const _upNews = {
   'Tech': 'a record year for cloud contracts',
@@ -596,7 +617,7 @@ Map<String, double> stepPrices(
 ) {
   final adj = (fundReturns[economy]?.$1 ?? 7) - 7;
   final next = <String, double>{};
-  for (final t in tickers) {
+  for (final t in allTickers()) {
     if (year < t.since) continue;
     final before = prev[t.id];
     if (before == null || before <= 0) {

@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -17,7 +18,27 @@ typedef Gang = ({
   String risk,
 });
 
-const gangs = <Gang>[
+/// The prison gangs. With a linked past, the feud house runs the Ledger
+/// (past.dart); its rules stay the same.
+List<Gang> get gangs {
+  final family = feudCrimeFamily();
+  if (family == null) return _gangs;
+  return [
+    for (final g in _gangs)
+      g.id == 'ledger'
+          ? (
+              id: g.id,
+              name: '${family.replaceFirst(' family', '')} Ledger',
+              about:
+                  '${g.about} Run by ${family.replaceFirst('The ', 'the ')} since the old feud.',
+              perk: g.perk,
+              risk: g.risk,
+            )
+          : g,
+  ];
+}
+
+const _gangs = <Gang>[
   (
     id: 'owls',
     name: 'The Night Owls',

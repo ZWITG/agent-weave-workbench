@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -38,6 +39,9 @@ typedef Funeral = ({
   List<String> eulogy,
   List<String> absent,
 });
+
+/// The house's history from the linked past, for the Life Recap.
+List<String> recapHouse(Life l) => houseHistory(l);
 
 Funeral funeralFor(Life l) {
   final type =

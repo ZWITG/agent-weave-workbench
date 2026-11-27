@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -403,7 +404,7 @@ final crewJobVariants = <ActionVariant>[
 /// Each birthday in a crew: rackets pay up the chain, the crew protects
 /// you, promotion, and one of the crew's problems lands on you.
 List<String> crewYear(Life l, Random rng) {
-  final feed = <String>[];
+  final feed = <String>[?grudgeLine(l, rng)];
   dirtyMoneyYear(l, rng);
   final crew = crewOf(l);
   if (crew == null &&

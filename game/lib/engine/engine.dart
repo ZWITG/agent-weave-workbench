@@ -3,6 +3,7 @@ import 'dart:math';
 import 'causes.dart';
 import 'echelon.dart' show echelonYear;
 import 'eras.dart';
+import 'past.dart';
 import 'legends.dart';
 import 'timeline.dart';
 import 'crime_wall.dart' show noteCrime;
@@ -95,13 +96,23 @@ class Outcome {
 /// Pure-Dart game rules: no Flutter imports, so the simulator bot and unit
 /// tests can run lives headlessly.
 class GameEngine {
-  GameEngine(this.storylets, {World? world}) : world = world ?? World(seed: 1);
+  GameEngine(this.storylets, {World? world})
+    : _world = world ?? World(seed: 1) {
+    past.active = _world.past;
+  }
 
   final List<Storylet> storylets;
 
   /// The player's one persistent world (world.dart). The controller swaps
   /// in the saved world; tests use a fresh one.
-  World world;
+  World get world => _world;
+  set world(World w) {
+    _world = w;
+    // Every modern system reads the linked past through past.dart.
+    past.active = w.past;
+  }
+
+  World _world;
 
   /// The Timeline of the timeline life being played (timeline.dart);
   /// null in the modern world.
@@ -116,6 +127,7 @@ class GameEngine {
     String? countryName,
     int? startYear,
     String? family,
+    bool descendant = false,
   }) {
     final start = startYear ?? world.year;
     final s = seed ?? DateTime.now().microsecondsSinceEpoch & 0x7fffffff;
@@ -125,7 +137,9 @@ class GameEngine {
         : countries[rng.nextInt(countries.length)];
     final g = gender ?? (rng.nextBool() ? 'female' : 'male');
     final pool = g == 'female' ? country.female : country.male;
-    final surname = country.surnames[rng.nextInt(country.surnames.length)];
+    final drawn = country.surnames[rng.nextInt(country.surnames.length)];
+    // A descendant of the linked past carries the house's name.
+    final surname = descendant && past.linked ? past.active!.house : drawn;
     String pick(List<String> l) => l[rng.nextInt(l.length)];
 
     final mother = Npc(
@@ -247,7 +261,22 @@ class GameEngine {
     life.quotes = Map.of(world.pricesFor(life.year));
     life.marks.add('lived:${life.country}');
     if (shape != 'two') life.flags['family_$shape'] = Memory(0, 'your family');
+    if (descendant && past.linked) {
+      life.flags['house_blood'] = Memory(0, 'your house');
+    }
     maybeFamilyHeirloom(life, Random(s * 17 + 3));
+    if (past.linked) {
+      life.npcs.addAll(pastPeople(life, Random(s * 19 + 7)));
+      if (past.ofHouse(life)) {
+        life.feed.add(
+          FeedEntry(
+            0,
+            'You were born a ${past.active!.house}. Your family has a long story.',
+            kind: 'milestone',
+          ),
+        );
+      }
+    }
     return life;
   }
 
@@ -871,6 +900,14 @@ class GameEngine {
     final news = world.headlineFor(year, life.country, life.city);
     if (news != null) {
       life.feed.add(FeedEntry(life.age, news.headline, kind: 'world'));
+    }
+    // From history: round anniversaries of the linked past.
+    if (life.age >= 6) {
+      for (final e in anniversaries(year).take(1)) {
+        life.feed.add(
+          FeedEntry(life.age, 'From history: ${historyLine(e, year)}', kind: 'world'),
+        );
+      }
     }
     // Politicians vote on bills written from the news (career_hub_links).
     if (life.careerId == 'politician' && news != null && !news.mine) {

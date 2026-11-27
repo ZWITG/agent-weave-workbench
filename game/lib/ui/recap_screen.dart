@@ -110,6 +110,24 @@ class RecapScreen extends StatelessWidget {
                     _funeral(funeralFor(life)),
                     const SizedBox(height: 12),
                   ],
+                  // Your house's history from the linked past (past.dart).
+                  if (recapHouse(life).isNotEmpty) ...[
+                    NFCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            recapHouse(life).first,
+                            style: NF.sora(15, weight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 6),
+                          for (final line in recapHouse(life).skip(1))
+                            Text(line, style: NF.sora(13, color: NF.soft)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   // Life Title with transparent scoring
                   NFCard(
                     child: Column(

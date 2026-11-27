@@ -1,0 +1,43 @@
+{
+  "timelineId": "sample_renaissance",
+  "era": "renaissance",
+  "house": "Vespri",
+  "legend": null,
+  "note": "Phase 1 test fixture: a saved sample past standing in for a full 1450-2026 timeline (that comes in Phase 4). Casa Vespri and its rivals are fictional.",
+  "name": {"fame": 35, "wealth": 40, "philanthropy": 20, "power": 25},
+  "facts": {"milan_holds_1499": 1499, "studio_vespri_1488": 1488},
+  "currents": {"Science": 80, "Faith": 40, "Arts": 70, "Mercantile": 82},
+  "events": [
+    {"year": 1471, "text": "Tommaso Vespri outbid the Albertini for a Medici loan, and the feud began", "big": true},
+    {"year": 1488, "text": "The Vespri founded the Studio Vespri, a school of mathematics and drawing in Florence", "big": true},
+    {"year": 1499, "text": "Milan held against France, with Vespri money behind its walls", "big": true, "effect": "festival"},
+    {"year": 1501, "text": "Casa Vespri and Casa Ridolfi joined by marriage", "big": false}
+  ],
+  "heirlooms": [
+    {"id": "crest_ring", "name": "Vespri crest ring", "value": 18000, "story": "Made for Tommaso Vespri in Florence, 1471"},
+    {"id": "ledger_page", "name": "A page of the 1499 Vespri ledger", "value": 6500, "story": "The loan that paid for Milan's walls, in Tommaso's hand"}
+  ],
+  "buildings": [
+    {"name": "Palazzo Vespri", "kind": "palazzo", "built": 1489, "city": "Florence", "value": 4200000, "forSale": true},
+    {"name": "Vespri Library", "kind": "library", "built": 1502, "city": "Florence", "value": 9000000}
+  ],
+  "companies": [
+    {"id": "VSPR", "name": "Banca Vespri", "sector": "Finance", "founded": 1471, "base": 48}
+  ],
+  "institutions": [
+    {"name": "Studio Vespri University", "kind": "university", "founded": 1488, "city": "Florence"},
+    {"name": "Brotherhood of the Lantern", "kind": "faith", "founded": 1497, "city": "the Oltrarno"}
+  ],
+  "nations": [
+    {"name": "Free Cities of the Undrawn Isles", "founded": 1590, "cities": ["Porto Vespri", "Lanterna"], "male": ["Tommaso", "Luca"], "female": ["Lucia", "Bianca"], "surnames": ["Vespri", "Ridolfi", "Neri"], "currency": "isle florin"}
+  ],
+  "rivals": [
+    {"house": "Albertini", "feud": true, "trade": "bankers", "wealth": 55, "power": 30, "fame": 20, "since": 1460},
+    {"house": "Ridolfi", "feud": false, "trade": "wool", "wealth": 45, "philanthropy": 25, "since": 1440}
+  ],
+  "descendants": [
+    {"name": "Marco Albertini", "house": "Albertini", "feud": true},
+    {"name": "Giulia Ridolfi", "house": "Ridolfi", "feud": false}
+  ],
+  "trades": ["analyst", "politician"]
+}

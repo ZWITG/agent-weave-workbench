@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -191,6 +192,26 @@ List<Listing> listings(Life l) {
       shown: shown,
       traits: traits,
       upkeep: ((price * 0.012 + (pool ? 1500 : 0)) / 100).round() * 100,
+    ));
+  }
+  // A historic building of the linked past, now and then (past.dart).
+  for (final b in pastListings(l).take(1)) {
+    final price =
+        ((b['value'] as int? ?? 2000000) * countryProfile(l.country).cost / 1000)
+            .round() *
+        1000;
+    out.add((
+      i: 6,
+      type: 'Historic ${b['kind'] ?? 'palazzo'}: ${b['name']} (built ${b['built']})',
+      beds: 8,
+      garden: true,
+      pool: false,
+      area: 'Old Town',
+      price: price,
+      condition: 60,
+      shown: 90,
+      traits: const [],
+      upkeep: ((price * 0.02) / 100).round() * 100,
     ));
   }
   return out;
@@ -393,7 +414,7 @@ ActionResult renovateHome(Life l, Asset a) {
 
 /// Each birthday: life in your home and tenants in your rental.
 List<String> homeYear(Life l, Random rng) {
-  final feed = <String>[];
+  final feed = <String>[?landmarkLine(l)];
   final home = homeOf(l);
   if (home != null) {
     for (final t in List<String>.from(home.info['traits'] ?? const [])) {

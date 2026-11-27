@@ -14,6 +14,18 @@
   "city": "Vinci",
   "money": 0,
   "skipEvents": ["ren_dowry", "ren_wool", "ren_abacus"],
+  "legacy": {
+    "heirlooms": [
+      {"id": "mirror_page", "name": "A notebook page in mirror writing", "value": 250000, "story": "Kept by the da Vinci family since Leonardo's day"}
+    ],
+    "companies": [
+      {"id": "VNCI", "name": "Vinci Engineering", "sector": "Industry", "founded": 1483, "base": 55, "fact": "leo_engineer_milan"}
+    ],
+    "buildings": [
+      {"name": "Leonardo's workshop in Milan", "kind": "workshop", "built": 1483, "city": "Milan", "value": 3000000, "forSale": true, "fact": "leo_engineer_milan"}
+    ],
+    "trades": ["developer", "lab"]
+  },
   "stats": {"smarts": 82, "looks": 84, "health": 72, "happiness": 60},
   "npcs": [
     {"id": "father", "role": "Father", "name": "Ser Piero da Vinci", "birthYear": 1426, "bond": 45, "died": 1504},
@@ -42,6 +54,12 @@
     }
   ],
   "fates": [
+    {
+      "id": "cut_short",
+      "title": "A Life Cut Short",
+      "text": "You died before your time, and before the moments the books remember. Florence lost a name it never learned.",
+      "unfinished": true
+    },
     {
       "id": "engineer_of_milan",
       "title": "Chief Engineer of Milan",

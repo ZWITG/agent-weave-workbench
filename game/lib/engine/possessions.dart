@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -94,6 +95,8 @@ Asset makeHeirloom(Life l, HeirloomItem h, List<String> history) => Asset(
 
 /// Some families keep something old; it reaches you as a young adult.
 void maybeFamilyHeirloom(Life l, Random rng) {
+  // Heirlooms of the linked past go to members of the house (past.dart).
+  l.assets.addAll(pastHeirlooms(l));
   if (rng.nextInt(100) >= 30) return;
   final h = heirloomItems[rng.nextInt(heirloomItems.length)];
   l.marks.add('family_heirloom:${h.id}');

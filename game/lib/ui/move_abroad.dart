@@ -84,7 +84,7 @@ class _MoveAbroadScreenState extends State<MoveAbroadScreen> {
     final c = widget.controller;
     final l = c.life!;
     final options =
-        countries.where((x) => x.name != l.country).map((x) => x.name).toList()
+        allCountries().where((x) => x.name != l.country).map((x) => x.name).toList()
           ..sort();
     final to = _to;
     final p = to == null ? null : countryProfile(to);

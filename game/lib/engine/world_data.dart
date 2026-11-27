@@ -1,3 +1,5 @@
+import 'past.dart' show pastNations;
+
 /// Starter country data for the prototype. Full country rules come later
 /// (Module 10); for now each country has cities and name pools.
 class CountryData {
@@ -313,8 +315,14 @@ const countries = <CountryData>[
   ),
 ];
 
-CountryData countryNamed(String name) =>
-    countries.firstWhere((c) => c.name == name, orElse: () => countries.first);
+/// Every country you can live in, with nations founded in the linked past
+/// (past.dart).
+List<CountryData> allCountries() => [...countries, ...pastNations()];
+
+CountryData countryNamed(String name) => allCountries().firstWhere(
+  (c) => c.name == name,
+  orElse: () => countries.first,
+);
 
 /// Country profile (plan Module 10, starter data): the facts that change
 /// how a life plays out there. Shown on the Me tab and when emigrating.

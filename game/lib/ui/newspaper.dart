@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/models.dart';
+import '../engine/past.dart' show historyColumn;
 import '../engine/world.dart';
 import '../game_controller.dart';
 import '../theme.dart';
@@ -333,6 +334,18 @@ class NewspaperScreen extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
+                  ),
+              ],
+              // A linked past (past.dart): anniversaries of your history.
+              if (historyColumn(y).isNotEmpty) ...[
+                _section('From history'),
+                for (final h in historyColumn(y))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      h,
+                      style: NF.sora(14, color: _inkSoft, height: 1.5),
                     ),
                   ),
               ],
