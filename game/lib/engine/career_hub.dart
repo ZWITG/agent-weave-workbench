@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart' show ActionResult, GameAction, statChange;
@@ -259,7 +260,7 @@ List<String> hubYear(Life l, Random rng) {
     if (spec.id != 'politician') l.hub['meter'] = min(80, 20 + rank * 15);
   }
   _notePeak(l);
-  final feed = <String>[..._peopleYear(l, rng)];
+  final feed = <String>[..._peopleYear(l, rng), ?ancestorHubLine(l)];
   final beat = hubBeat(l);
   switch (spec.id) {
     case 'actor':

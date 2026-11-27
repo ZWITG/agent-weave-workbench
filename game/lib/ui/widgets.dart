@@ -1,3 +1,4 @@
+import 'legend_look.dart';
 import 'package:flutter/material.dart';
 
 import '../engine/currency.dart';
@@ -136,7 +137,16 @@ class NFCard extends StatelessWidget {
   Color get color => _color ?? NF.surface;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    // In a Legend life plain cards wear the Legend's frame.
+    final look = activeLegendLook;
+    if (look != null && _color == null) {
+      return LegendFrame(look: look, padding: padding, child: child);
+    }
+    return _plain();
+  }
+
+  Widget _plain() => Container(
     width: double.infinity,
     padding: padding,
     decoration: BoxDecoration(
@@ -210,9 +220,11 @@ class GlowBackground extends StatelessWidget {
                 ? const Color(0xFF4D7A69)
                 : NF.gilded
                 ? const Color(0xFFD4AF5A)
+                : NF.legend != null
+                ? NF.orange
                 : const Color(0xFF7C9CFF),
             360,
-            NF.gilded ? 0.10 : 0.22,
+            NF.gilded ? 0.10 : (NF.legend != null ? 0.12 : 0.22),
           ),
         ),
         Positioned(
@@ -227,9 +239,11 @@ class GlowBackground extends StatelessWidget {
                 ? const Color(0xFFE3CF7A)
                 : NF.gilded
                 ? const Color(0xFFF6E3A1)
+                : NF.legend != null
+                ? const Color(0xFF8C6A3C)
                 : const Color(0xFFFFB86B),
             320,
-            NF.prison || NF.gilded ? 0.06 : 0.13,
+            NF.prison || NF.gilded ? 0.06 : (NF.legend != null ? 0.18 : 0.13),
           ),
         ),
         Positioned(
@@ -289,7 +303,9 @@ class StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (color, icon) = statStyle[statKey]!;
+    final (base, icon) = statStyle[statKey]!;
+    // A Legend draws every stat in its own ink (red chalk for Leonardo).
+    final color = NF.legend != null ? NF.blue : base;
     final label = statKey[0].toUpperCase() + statKey.substring(1);
     return Semantics(
       label:
@@ -434,6 +450,9 @@ class AgeRingAvatar extends StatelessWidget {
                       ? const [Color(0xFF5C8A78), Color(0xFF3E6B5B)]
                       : NF.gilded
                       ? const [Color(0xFFF6E3A1), Color(0xFF9C7A33)]
+                      // A Legend: red chalk on parchment.
+                      : NF.legend != null
+                      ? [NF.blue, NF.orange]
                       : const [Color(0xFF9DB4FF), Color(0xFF6A7FE8)],
                 ),
                 boxShadow: [

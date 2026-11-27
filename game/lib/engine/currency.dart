@@ -62,7 +62,12 @@ String currencyLabel(String country) =>
 /// The country whose currency is shown; set by the game as you play.
 String activeCountry = 'United States';
 
-(double, String) currencyOf(String country) => currencies[country] ?? (1, '\$');
+/// Currencies of historical regions (eras.dart), e.g. the florin of the
+/// Republic of Florence; registered when an era loads.
+final Map<String, (double, String)> eraCurrencies = {};
+
+(double, String) currencyOf(String country) =>
+    eraCurrencies[country] ?? currencies[country] ?? (1, '\$');
 
 String _digits(int v) {
   final s = v.abs().toString();

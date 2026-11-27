@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -565,7 +566,8 @@ const majors = [
       0.15 * f['Test score']! +
       0.10 * f['Activities']! +
       0.10 * f['Essay']! +
-      (l.flags.containsKey('recommendation') ? 4 : 0);
+      (l.flags.containsKey('recommendation') ? 4 : 0) +
+      pastAdmissionEdge(l);
   final weakest =
       (f.entries.toList()..sort((a, b) => a.value.compareTo(b.value)))
           .take(2)

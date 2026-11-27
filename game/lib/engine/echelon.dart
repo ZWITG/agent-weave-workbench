@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -159,6 +160,8 @@ void ensureRivals(Life l) {
   if (l.echelon['rivals'] != null) return;
   final rng = Random(l.seed * 7 + 99);
   final pool = [..._rivalPool]..shuffle(rng);
+  // Old money from the linked past joins the List (past.dart).
+  pool.insertAll(0, oldMoneyRivals().take(2));
   _saveRivals(l, [
     for (var i = 0; i < 8; i++)
       {

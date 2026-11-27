@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'family.dart' show childrenOf;
@@ -635,6 +636,34 @@ final achievements = <Achievement>[
     'Challenges',
     'Finish a weekly challenge',
     (l, p) => p.challengesDone.isNotEmpty,
+  ),
+  // Legends and the linked past (legends.dart, past.dart).
+  _a(
+    'ancestors',
+    'My Ancestors Did This',
+    'Rare',
+    'Legends',
+    'Live a modern life in a house from your linked past',
+    (l, p) => l.era == null && past.ofHouse(l),
+    secret: true,
+  ),
+  _a(
+    'kept_history',
+    'As It Was Written',
+    'Uncommon',
+    'Legends',
+    'End a Legend life with a Chronicle of 90% or more',
+    (l, p) => l.fate != null && l.chronicle >= 90,
+    secret: true,
+  ),
+  _a(
+    'rewrote_history',
+    'History Rewritten',
+    'Rare',
+    'Legends',
+    'Rewrite a turning point in a Legend life',
+    (l, p) => l.pivots.containsValue('rewritten'),
+    secret: true,
   ),
 ];
 

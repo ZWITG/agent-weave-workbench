@@ -991,7 +991,7 @@ class _ActivitiesPanelState extends State<ActivitiesPanel> {
                   return;
                 }
                 InteractionVariant? how;
-                final ways = interactionVariantsFor(i.id);
+                final ways = interactionVariantsFor(i.id, life);
                 if (ways.isNotEmpty) {
                   how = await pickInteractionVariant(context, life, n, i, ways);
                   if (how == null || !nav.mounted) return;

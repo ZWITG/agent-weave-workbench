@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'policing.dart' show nextRankNeeds;
 import 'career_hub.dart' show hubRankNeeds, startHub;
 
@@ -272,7 +273,12 @@ class Career {
 
   /// What this rank pays where you live (country wage level).
   int payIn(Life l, int rank) =>
-      (salaryAt(rank) * countryProfile(l.country).wage / 100).round() * 100;
+      (salaryAt(rank) *
+              countryProfile(l.country).wage *
+              (100 + pastTradeBonus(l, id)) /
+              10000)
+          .round() *
+      100;
 
   String get needsLabel => switch (needs) {
     'school' => 'School diploma',

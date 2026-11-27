@@ -10,6 +10,10 @@ import 'engine/actions.dart';
 import 'engine/careers.dart';
 import 'engine/dynasty.dart';
 import 'engine/engine.dart';
+import 'engine/eras.dart';
+import 'engine/legends.dart';
+import 'engine/past.dart';
+import 'engine/timeline.dart';
 import 'engine/health.dart' show endThisLifeRules;
 import 'engine/meta.dart';
 import 'engine/community.dart' show emigrateTo;
@@ -41,6 +45,9 @@ class GameController extends ChangeNotifier {
   /// survives every life that ends.
   static const _worldKey = 'relivable.world.v1';
   static const _profileKey = 'relivable.profile.v1';
+
+  /// The Timeline of the current Legend or timeline life (timeline.dart).
+  static const _timelineKey = 'relivable.timeline.v1';
 
   /// The last few birthdays of the current life, for Rewind.
   static const _rewindKey = 'relivable.rewind.v1';
@@ -75,8 +82,31 @@ class GameController extends ChangeNotifier {
           await rootBundle.loadString('assets/storylets/$file'),
         ) as List).map((e) => Storylet.fromJson(Map<String, dynamic>.from(e))),
     ];
+    // Eras and Legends (eras.dart, legends.dart): their events are tagged,
+    // so modern lives never see them.
+    for (final file in eraFiles) {
+      registerEra(
+        EraRules.fromJson(
+          jsonDecode(await rootBundle.loadString('assets/eras/$file')),
+        ),
+      );
+    }
+    for (final file in legendFiles) {
+      registerLegend(
+        Legend.fromJson(
+          jsonDecode(await rootBundle.loadString('assets/legends/$file')),
+        ),
+      );
+    }
+    list.addAll(timelineStorylets());
     engine = GameEngine(list);
     final prefs = await SharedPreferences.getInstance();
+    final tl = prefs.getString(_timelineKey);
+    if (tl != null) {
+      try {
+        engine!.timeline = Timeline.fromJson(jsonDecode(tl));
+      } catch (_) {}
+    }
     Sound.instance.enabled = prefs.getBool('relivable.sound') ?? true;
     final world = prefs.getString(_worldKey);
     if (world != null) {
@@ -147,6 +177,12 @@ class GameController extends ChangeNotifier {
     }
     await prefs.setString(_profileKey, jsonEncode(profile.toJson()));
     await prefs.setString(_rewindKey, jsonEncode(_snapshots));
+    final t = engine?.timeline;
+    if (t != null) {
+      await prefs.setString(_timelineKey, jsonEncode(t.toJson()));
+    } else {
+      await prefs.remove(_timelineKey);
+    }
     if (life == null) {
       await prefs.remove(_saveKey);
       return;
@@ -188,7 +224,84 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---------------- Legends (legends.dart, past.dart) ----------------
+
+  /// The Legend of the current life, if any.
+  Legend? get legend => legendRegistry[life?.legendId];
+
+  /// Legends you can start. Test Legends show only in debug builds.
+  List<Legend> get playableLegends => [
+    for (final l in legendRegistry.values)
+      if (!l.test || kDebugMode) l,
+  ];
+
+  /// Starts a Legend's life on a new Timeline of its era.
+  void startLegendLife(String id, {int? seed}) {
+    final l = legendRegistry[id]!;
+    final era = eraRegistry[l.era]!;
+    final t = Timeline(
+      id: '${l.id}_${DateTime.now().millisecondsSinceEpoch}',
+      era: l.era,
+      startYear: era.from,
+      legendId: l.id,
+    );
+    engine!.timeline = t;
+    life = startLegend(l, t, seed: seed)
+      ..difficulty = profile.difficulty
+      ..ironman = profile.ironman;
+    _snapshots.clear();
+    pendingEvent = null;
+    lastOutcome = null;
+    _save();
+    notifyListeners();
+  }
+
+  /// The past the last finished Legend life left behind, ready to link.
+  PastRecord? lastLegendPast;
+
+  bool get pastLinked => engine?.world.past != null;
+
+  /// Debug: links the saved sample past (assets/past) as this world's
+  /// history, or unlinks it.
+  Future<void> toggleSamplePast() async {
+    final w = engine!.world;
+    if (w.past != null) {
+      w.unlinkPast();
+    } else {
+      w.linkPast(
+        PastRecord.fromJson(
+          jsonDecode(
+            await rootBundle.loadString('assets/past/sample_renaissance.json'),
+          ),
+        ),
+      );
+    }
+    _save();
+    notifyListeners();
+  }
+
+  /// Links the last Legend life's timeline as this world's history.
+  void linkLastLegendPast() {
+    final p = lastLegendPast;
+    if (p == null) return;
+    engine!.world.linkPast(p);
+    _save();
+    notifyListeners();
+  }
+
   void endLife() {
+    final ended = life;
+    if (ended != null && ended.era != null) {
+      // A timeline life never writes into the modern world; its past can
+      // be linked as history instead.
+      final l = legendRegistry[ended.legendId];
+      final t = engine!.timeline;
+      if (l != null && t != null && ended.fate != null) {
+        lastLegendPast = PastRecord.fromLegendLife(ended, t, l);
+      }
+      engine!.timeline = null;
+      life = null;
+    }
     if (life != null) engine!.world.recordLife(life!);
     life = null;
     pendingEvent = null;

@@ -29,7 +29,32 @@ class Storylet {
     this.conditions = const {},
     this.remembers,
     this.scene = false,
+    this.era,
+    this.legend,
+    this.year,
+    this.yearFrom,
+    this.yearTo,
+    this.pivot,
   });
+
+  // ---- Legends and timelines (all optional; null in modern storylets) ----
+
+  /// Only in timeline lives of this era ("renaissance").
+  final String? era;
+
+  /// Only in this Legend's life ("leonardo").
+  final String? legend;
+
+  /// Only in this calendar year, or between [yearFrom] and [yearTo].
+  final int? year;
+  final int? yearFrom;
+  final int? yearTo;
+
+  /// A turning point: its id. It fires in its year before anything else,
+  /// and its choices count towards the Chronicle.
+  final String? pivot;
+
+  bool get timeline => era != null || legend != null;
 
   /// True for code-driven events built by scenes.dart.
   final bool scene;
@@ -96,6 +121,12 @@ class Storylet {
           if (req.containsKey(k)) k: req[k],
       },
       remembers: j['remembers'],
+      era: j['era'],
+      legend: j['legend'],
+      year: j['year'],
+      yearFrom: (j['yearRange'] as List?)?.first,
+      yearTo: (j['yearRange'] as List?)?.last,
+      pivot: j['pivot'] == true ? j['id'] : j['pivot'],
       choices: (j['choices'] as List)
           .map((c) => Choice.fromJson(Map<String, dynamic>.from(c)))
           .toList(),
@@ -103,6 +134,19 @@ class Storylet {
   }
 
   bool isEligible(Life life) {
+    // Timeline content never reaches a modern life, and a timeline life
+    // only gets content written for its era or Legend.
+    if (timeline) {
+      if (life.era == null) return false;
+      if (era != null && era != life.era) return false;
+      if (legend != null && legend != life.legendId) return false;
+    } else if (life.era != null && !scene) {
+      return false;
+    }
+    if (year != null && life.year != year) return false;
+    if (yearFrom != null && (life.year < yearFrom! || life.year > yearTo!)) {
+      return false;
+    }
     if (life.age < minAge || life.age > maxAge) return false;
     final seen = life.lastSeen[id];
     if (seen != null) {
@@ -190,6 +234,15 @@ class Choice {
     String? risk,
     this.miniGame,
     this.scored,
+    this.canon = false,
+    this.causes = const {},
+    this.adds = const {},
+    this.why,
+    this.rewrites,
+    this.chronicle,
+    this.failOutcome,
+    this.failEffects,
+    this.codex,
   }) : effects = effects ?? Effects(),
        risk = _local(hideOddsOrNull(risk));
 
@@ -217,6 +270,36 @@ class Choice {
   final String? miniGame;
   final String? Function(Life life, Random rng, double score)? scored;
 
+  // ---- Legends (causes.dart) ----
+
+  /// What really happened at this turning point.
+  final bool canon;
+
+  /// Cause weight needed to rewrite history here, e.g. {"military": 60}.
+  /// Below half it is hidden; see causes.dart for the odds.
+  final Map<String, num> causes;
+
+  /// Cause weight this choice adds, and the note kept with it
+  /// ("studied fortifications"). Defaults to the label.
+  final Map<String, num> adds;
+  final String? why;
+
+  /// The world fact written when this rewrite succeeds
+  /// ("milan_holds_1499").
+  final String? rewrites;
+
+  /// Chronicle points this choice moves (positive keeps history).
+  final int? chronicle;
+
+  /// What happens when a cause-gated choice fails its roll.
+  final String? failOutcome;
+  final Effects? failEffects;
+
+  /// A Codex card this choice unlocks.
+  final String? codex;
+
+  bool get gated => causes.isNotEmpty;
+
   /// Null when the choice can be taken, otherwise why not.
   String? lockReason(Life life) {
     for (final e in needs.entries) {
@@ -235,6 +318,17 @@ class Choice {
     needs: Map<String, String>.from(j['needs'] ?? {}),
     needsMoney: j['needsMoney'] ?? 0,
     risk: j['risk'],
+    canon: j['canon'] ?? false,
+    causes: Map<String, num>.from(j['causes'] ?? const {}),
+    adds: Map<String, num>.from(j['adds'] ?? const {}),
+    why: j['why'],
+    rewrites: j['rewrites'],
+    chronicle: j['chronicle'],
+    failOutcome: j['failOutcome'],
+    failEffects: j['failEffects'] == null
+        ? null
+        : Effects.fromJson(Map<String, dynamic>.from(j['failEffects'])),
+    codex: j['codex'],
   );
 }
 

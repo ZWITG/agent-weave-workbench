@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -68,6 +69,8 @@ List<String> eliteYear(Life l, Random rng) {
     }
     return feed;
   }
+  final oldMoney = oldMoneyLine(l);
+  if (oldMoney != null) feed.add(oldMoney);
   // Selling the newspaper ends the protection it gave.
   if (l.marks.contains('paper_publicist') && !l.has('media')) {
     l.marks.removeAll(['publicist', 'paper_publicist']);

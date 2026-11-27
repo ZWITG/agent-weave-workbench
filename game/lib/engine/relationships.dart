@@ -1095,8 +1095,36 @@ final interactionVariants = <String, List<InteractionVariant>>{
   ],
 };
 
-List<InteractionVariant> interactionVariantsFor(String id) =>
-    interactionVariants[id] ?? const [];
+/// Interactions and variants that need the modern world (phones, cinemas,
+/// cars, therapists, vets, priced in dollars). They are hidden in an era
+/// life such as a Legend, until the era brings its own versions.
+const modernOnlyInteractions = {
+  'call',
+  'teach_drive',
+  'take_to_sport',
+  'help_homework',
+  'counselling',
+  'pet_vet',
+  'pet_insure',
+};
+const modernOnlyVariants = {'film', 'dinner'};
+
+/// The interactions that fit [life]'s world.
+List<Interaction> interactionsFor(Life? life) => life?.era == null
+    ? interactions
+    : [
+        for (final i in interactions)
+          if (!modernOnlyInteractions.contains(i.id)) i,
+      ];
+
+List<InteractionVariant> interactionVariantsFor(String id, [Life? life]) {
+  final all = interactionVariants[id] ?? const <InteractionVariant>[];
+  if (life?.era == null) return all;
+  return [
+    for (final v in all)
+      if (!modernOnlyVariants.contains(v.id)) v,
+  ];
+}
 
 /// After a fight: apologise, stand firm, give space or make a peace offering.
 Storylet? reactionScene(List<String> args, Life l) {

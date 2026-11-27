@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'careers.dart';
@@ -26,7 +27,12 @@ double deathChance(Life life) {
   final health = life.stats['health'];
   final healthMult = (1 + (50 - health) / 25).clamp(0.3, 4.0);
   final diff = difficulties[life.difficulty]?.death ?? 1.0;
-  return (base * healthMult * diff * healthRiskFactor(life)).clamp(0.0, 0.95);
+  return (base *
+          healthMult *
+          diff *
+          healthRiskFactor(life) *
+          pastLifespanFactor())
+      .clamp(0.0, 0.95);
 }
 
 /// Shown on the header and Me tab when the yearly risk gets serious.

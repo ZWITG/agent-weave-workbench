@@ -1078,7 +1078,7 @@ class _CashFlow extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
+                Icon(
                   Icons.warning_amber_rounded,
                   color: NF.danger,
                   size: 20,

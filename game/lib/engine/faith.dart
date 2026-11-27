@@ -1,3 +1,4 @@
+import 'past.dart';
 import 'dart:math';
 
 import 'actions.dart';
@@ -154,7 +155,7 @@ List<String> faithYear(Life l, Random rng) {
       !l.sceneQueue.contains('faith_path')) {
     l.sceneQueue.add('faith_path');
   }
-  final feed = <String>[];
+  final feed = <String>[?pastFaithLine(l)];
   for (final m in l.marks.where((m) => m.startsWith('faith_reconcile:')).toList()) {
     final parts = m.split(':');
     if (int.tryParse(parts[2]) != l.age) continue;

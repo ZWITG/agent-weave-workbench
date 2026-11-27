@@ -328,3 +328,11 @@ The season tabs now open a sheet of choices that belong to the career, and every
 - Astronaut: a countdown ring. Selection and training count down to a crew; only then is GO open in the launch window.
 - Fighter: a body damage chart and tonight's opponent. Strike beats grapple, grapple beats defend, defend beats strike.
 Choices show what they move as chips (meter, stats, money, the signature, and how likely it is, in words). Many play a mini-game, and a good score raises the odds. Still once a year, and the tab in season still counts for more.
+
+## Legends preview: Leonardo da Vinci (27 Nov)
+The first Legend, free as a prologue preview: live Leonardo's life in Renaissance Florence, from Vinci to the turning points that made his name.
+- New Life has a Legends button. Leonardo's life wears its own look: sepia parchment, iron-gall ink, red chalk and mirror writing, on every screen.
+- Turning points: keep history as it happened, or rewrite it if what you did before built up to it. A Chronicle score shows how close you stayed to history.
+- The Codex keeps "What really happened" cards for each turning point and discovery, and the Fate your Leonardo met.
+- When the life ends, you can make it your world's history: modern lives are born into the world it left behind, with its family, rivals, companies and inventions.
+- A preview: Path, Wealth and Activities show what the era has so far. Workshops, commissions, markets and the era's mini-games come with the Renaissance update.

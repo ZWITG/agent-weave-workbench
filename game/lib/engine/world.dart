@@ -3,6 +3,8 @@ import 'dart:math';
 import 'economy.dart' show nextEconomy, fundReturns;
 import 'finance.dart' show stepPrices;
 import 'models.dart';
+import 'past.dart' show PastRecord, pastMods, pastNames;
+import 'past.dart' as p show past;
 import 'world_data.dart';
 
 /// One persistent world per player (plan Module 11, "Echoes"). Every life
@@ -159,6 +161,7 @@ class World {
     Set<String>? deeds,
     Map<int, Map<String, double>>? prices,
     Map<int, List<String>>? market,
+    this.past,
   }) : prices = prices ?? {},
        market = market ?? {},
        seed = seed ?? Random().nextInt(1 << 30),
@@ -171,6 +174,36 @@ class World {
        deeds = deeds ?? {};
 
   final int seed;
+
+  /// The linked past (past.dart): a timeline that became this world's
+  /// history. Null for most worlds, and then nothing changes.
+  PastRecord? past;
+
+  /// Links [record] as this world's history: its family names join
+  /// [names] (capped), and every modern system starts to read it.
+  void linkPast(PastRecord record) {
+    unlinkPast();
+    past = record;
+    p.past.active = record;
+    pastNames().forEach((surname, axes) {
+      final rep = names.putIfAbsent(surname, () => {});
+      axes.forEach((k, v) => rep[k] = ((rep[k] ?? 0) + v).clamp(0, 100));
+    });
+  }
+
+  /// Unlinks the past and takes back what it added to family names.
+  void unlinkPast() {
+    if (past == null) return;
+    p.past.active = past;
+    pastNames().forEach((surname, axes) {
+      final rep = names[surname];
+      if (rep == null) return;
+      axes.forEach((k, v) => rep[k] = ((rep[k] ?? 0) - v).clamp(0, 100));
+      if (rep.values.every((v) => v == 0)) names.remove(surname);
+    });
+    past = null;
+    p.past.active = null;
+  }
 
   /// The furthest year any life has reached; new lives start here, so the
   /// history only ever moves forward.
@@ -304,6 +337,10 @@ class World {
         out[e.key] = (out[e.key] ?? 0) + e.value;
       }
     }
+    // Big anniversaries in the linked past: small, one-year effects.
+    pastMods(y, {
+      for (final e in worldEffects.entries) e.key: e.value.mods,
+    }).forEach((k, v) => out[k] = (out[k] ?? 0) + v);
     final rep = names[surname];
     // The underworld remembers infamous families.
     if ((rep?['infamy'] ?? 0) >= 20) out['infamy'] = rep!['infamy']! ~/ 5;
@@ -428,6 +465,7 @@ class World {
     'names': names,
     'lives': lives,
     'deeds': deeds.toList(),
+    if (past != null) 'past': past!.toJson(),
     // Only recent years are needed (lives move forward; Rewind goes back
     // at most a few years).
     'prices': {
@@ -465,6 +503,9 @@ class World {
     },
     lives: List<String>.from(j['lives'] ?? []),
     deeds: Set<String>.from(j['deeds'] ?? []),
+    past: j['past'] == null
+        ? null
+        : PastRecord.fromJson(Map<String, dynamic>.from(j['past'])),
     prices: {
       for (final e in Map<String, dynamic>.from(j['prices'] ?? {}).entries)
         int.parse(e.key): {

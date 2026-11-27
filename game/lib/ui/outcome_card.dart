@@ -8,7 +8,7 @@ import 'widgets.dart';
 const _good = Color(0xFF5EE6A8);
 
 Color toneColor(String tone) => switch (tone) {
-  'good' => _good,
+  'good' => NF.legend != null ? NF.good : _good,
   'bad' => NF.danger,
   'mixed' => NF.orange,
   _ => NF.blue,
