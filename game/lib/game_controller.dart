@@ -1,5 +1,5 @@
-
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -254,6 +254,56 @@ class GameController extends ChangeNotifier {
     lastOutcome = null;
     _save();
     notifyListeners();
+  }
+
+  /// Debug: an ordinary person of the era (Phase 2 test bed; players get
+  /// these with Beyond Time).
+  void startEraLife({
+    String era = 'renaissance',
+    int? year,
+    String? region,
+    int? seed,
+  }) {
+    final rules = eraRegistry[era]!;
+    final born = year ?? rules.from;
+    final t = Timeline(
+      id: '${era}_${DateTime.now().millisecondsSinceEpoch}',
+      era: era,
+      startYear: born,
+    );
+    engine!.timeline = t;
+    life = startTimelineLife(rules, t, seed: seed, year: born, regionId: region)
+      ..difficulty = profile.difficulty
+      ..ironman = profile.ironman;
+    _snapshots.clear();
+    pendingEvent = null;
+    lastOutcome = null;
+    _save();
+    notifyListeners();
+  }
+
+  /// Places a timeline life can travel to this year (eras.dart), or none
+  /// if it already made a journey this year.
+  List<Journey> journeys() {
+    final l = life;
+    final era = eraRegistry[l?.era];
+    if (l == null || era == null || !l.alive) return const [];
+    if (l.flags.containsKey('journey_${l.year}')) return const [];
+    return journeysFrom(l, era);
+  }
+
+  /// Makes a journey in a timeline life.
+  ActionResult journey(Journey j) {
+    final busy = busyReason;
+    if (busy != null) return ActionResult(busy);
+    final l = life!;
+    final era = eraRegistry[l.era]!;
+    _snapshot();
+    final text = makeJourney(l, era, j, Random(l.seed ^ (l.year * 7919)));
+    l.feed.add(FeedEntry(l.age, text, kind: 'action'));
+    _save();
+    notifyListeners();
+    return ActionResult(text);
   }
 
   /// The past the last finished Legend life left behind, ready to link.

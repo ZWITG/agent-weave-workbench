@@ -1,10 +1,10 @@
-
 import 'legend_soon.dart';
 import '../engine/causes.dart';
 import '../engine/legends.dart';
 import 'chronicle_strip.dart';
 import 'codex.dart';
 import 'legend_look.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -127,7 +127,7 @@ class _HubScreenState extends State<HubScreen> {
       ] else ...[
         PeopleTab(controller: c),
         // A Legend preview: no modern careers, shares or shops in 1470.
-        if (life.legendId != null) ...[
+        if (life.era != null) ...[
           LegendSoonTab(life: life, kind: 'path'),
           LegendSoonTab(life: life, kind: 'wealth'),
         ] else ...[
@@ -157,7 +157,7 @@ class _HubScreenState extends State<HubScreen> {
             onFame: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => FameScreen(controller: c)),
             ),
-            onCareer: life.legendId != null
+            onCareer: life.era != null
                 ? () => _goTab(2)
                 : () => openCareerHub(context, c),
           ),
@@ -207,10 +207,14 @@ class _HubScreenState extends State<HubScreen> {
                     ),
                   ),
                   padding: const EdgeInsets.only(top: 16),
-                  child: life.legendId != null
+                  child: life.era != null
                       ? Padding(
                           padding: const EdgeInsets.all(16),
-                          child: LegendSoonCard(life: life, kind: 'activities'),
+                          child: LegendSoonCard(
+                            life: life,
+                            kind: 'activities',
+                            controller: c,
+                          ),
                         )
                       : ActivitiesPanel(
                           controller: c,
@@ -336,14 +340,18 @@ class _HubScreenState extends State<HubScreen> {
   void _openSearch(BuildContext context, {bool focusSearch = false}) {
     Sound.instance.whoosh();
     final life = c.life;
-    if (life != null && life.legendId != null) {
+    if (life != null && life.era != null) {
       // A Legend preview has no modern activities.
       showModalBottomSheet(
         context: context,
         builder: (_) => SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: LegendSoonCard(life: life, kind: 'activities'),
+            child: LegendSoonCard(
+              life: life,
+              kind: 'activities',
+              controller: c,
+            ),
           ),
         ),
       );
@@ -543,12 +551,22 @@ class _Header extends StatelessWidget {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: (NF.gilded ? Gilt.gold : NF.legend != null ? NF.blue : const Color(0xFF5EE6A8))
-                          .withValues(alpha: 0.14),
+                      color:
+                          (NF.gilded
+                                  ? Gilt.gold
+                                  : NF.legend != null
+                                  ? NF.blue
+                                  : const Color(0xFF5EE6A8))
+                              .withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: (NF.gilded ? Gilt.gold : NF.legend != null ? NF.blue : const Color(0xFF5EE6A8))
-                            .withValues(alpha: NF.gilded ? 0.7 : 0.35),
+                        color:
+                            (NF.gilded
+                                    ? Gilt.gold
+                                    : NF.legend != null
+                                    ? NF.blue
+                                    : const Color(0xFF5EE6A8))
+                                .withValues(alpha: NF.gilded ? 0.7 : 0.35),
                       ),
                     ),
                     child: Row(
@@ -1461,10 +1479,7 @@ class _EventCard extends StatelessWidget {
             style: NF.sora(22, weight: FontWeight.w700),
           ),
         const SizedBox(height: 8),
-        Text(
-          engine.fill(event.text, life),
-          style: NF.sora(17, height: 1.4),
-        ),
+        Text(engine.fill(event.text, life), style: NF.sora(17, height: 1.4)),
         const SizedBox(height: 14),
         for (var i = 0; i < shown.length; i++) ...[
           if (i > 0) const SizedBox(height: 8),
@@ -1599,7 +1614,8 @@ class _EventCard extends StatelessWidget {
     final lock = choice.lockReason(life);
     // A rewrite shows its odds band: "Long shot" or "You built for this".
     final hint =
-        lock ?? (choice.gated ? causeTag(life, choice.causes) : null) ??
+        lock ??
+        (choice.gated ? causeTag(life, choice.causes) : null) ??
         choice.risk;
     final label = hint == null
         ? Text(engine.fill(choice.label, life), textAlign: TextAlign.center)
@@ -1613,7 +1629,8 @@ class _EventCard extends StatelessWidget {
               Text(
                 lock != null ? '🔒 $lock' : hint,
                 textAlign: TextAlign.center,
-                style: lock == null && choice.gated && legendLookFor(life) != null
+                style:
+                    lock == null && choice.gated && legendLookFor(life) != null
                     ? legendHand(legendLookFor(life)!, 17)
                     : lock != null
                     ? NF.sora(11, weight: FontWeight.w500, color: NF.orange)
@@ -1736,8 +1753,7 @@ class _MeTabState extends State<_MeTab> {
           id: 'codex',
           icon: Icons.menu_book_rounded,
           label: 'Codex',
-          status:
-              '${life.codex.length} cards · Chronicle ${life.chronicle}%',
+          status: '${life.codex.length} cards · Chronicle ${life.chronicle}%',
           about: 'What really happened, and what you did',
           alert: false,
           dim: false,

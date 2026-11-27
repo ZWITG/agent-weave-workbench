@@ -297,7 +297,7 @@ class RecapScreen extends StatelessWidget {
                         onPressed: () => showRewind(context, controller),
                       ),
                     ),
-                  if (life.legendId == null) ...[
+                  if (life.era == null) ...[
                     _dynasty(context, life),
                     const SizedBox(height: 10),
                   ],
@@ -339,6 +339,8 @@ class RecapScreen extends StatelessWidget {
                   Text(
                     life.legendId != null
                         ? 'Your modern world carries on as it was unless you make this its history.'
+                        : life.era != null
+                        ? 'Your modern world carries on as it was.'
                         : 'Your world remembers this life. The next one starts in ${life.year}.',
                     textAlign: TextAlign.center,
                     style: NF.sora(12, color: NF.muted),
