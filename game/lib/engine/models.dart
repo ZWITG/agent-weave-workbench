@@ -865,6 +865,38 @@ class Life {
   /// Your music career: label, advance, albums, tours (music.dart).
   final Map<String, dynamic> music = {};
 
+  // ---- Legends and timelines (legends.dart, causes.dart) ----
+
+  /// The Legend being played ("leonardo"); null in an ordinary life.
+  String? legendId;
+
+  /// The Timeline this life belongs to (timeline.dart); null in the modern
+  /// world.
+  String? timelineId;
+
+  /// The era of a timeline life ("renaissance"); null in the modern world.
+  String? era;
+
+  /// Cause weights built up by choices (causes.dart).
+  final Map<String, double> causes = {};
+
+  /// Why each cause grew: {cause, amount, year, age, why}.
+  final List<Map<String, dynamic>> causeLog = [];
+
+  /// How closely this Legend life follows recorded history, 0-100.
+  int chronicle = 100;
+
+  /// Turning point id -> "canon", "rewritten" or "other".
+  final Map<String, String> pivots = {};
+
+  /// Codex cards unlocked ("What really happened").
+  final Set<String> codex = {};
+
+  /// The Fate this Legend life ended in.
+  String? fate;
+
+  bool get isTimeline => era != null;
+
   /// Life at the very top (echelon.dart): tier reached, rival tycoons,
   /// influence, a moonshot, heirs' readiness and your best rank.
   final Map<String, dynamic> echelon = {};
@@ -1145,6 +1177,15 @@ class Life {
     'songs': songs,
     'music': music,
     'echelon': echelon,
+    if (legendId != null) 'legendId': legendId,
+    if (timelineId != null) 'timelineId': timelineId,
+    if (era != null) 'era': era,
+    if (causes.isNotEmpty) 'causes': causes,
+    if (causeLog.isNotEmpty) 'causeLog': causeLog,
+    if (legendId != null) 'chronicle': chronicle,
+    if (pivots.isNotEmpty) 'pivots': pivots,
+    if (codex.isNotEmpty) 'codex': codex.toList(),
+    if (fate != null) 'fate': fate,
     'hub': hub,
     'crew': crew,
     'dirty': dirty,
@@ -1326,6 +1367,22 @@ class Life {
       ])
       ..music.addAll(Map<String, dynamic>.from(j['music'] ?? const {}))
       ..echelon.addAll(Map<String, dynamic>.from(j['echelon'] ?? const {}))
+      ..legendId = j['legendId']
+      ..timelineId = j['timelineId']
+      ..era = j['era']
+      ..causes.addAll({
+        for (final e in Map<String, dynamic>.from(j['causes'] ?? const {})
+            .entries)
+          e.key: (e.value as num).toDouble(),
+      })
+      ..causeLog.addAll([
+        for (final e in (j['causeLog'] as List?) ?? const [])
+          Map<String, dynamic>.from(e),
+      ])
+      ..chronicle = j['chronicle'] ?? 100
+      ..pivots.addAll(Map<String, String>.from(j['pivots'] ?? const {}))
+      ..codex.addAll(List<String>.from(j['codex'] ?? const []))
+      ..fate = j['fate']
       ..hub.addAll(Map<String, dynamic>.from(j['hub'] ?? const {}))
       ..crew.addAll(Map<String, dynamic>.from(j['crew'] ?? const {}))
       ..dirty = j['dirty'] ?? 0

@@ -1,6 +1,10 @@
 import 'dart:math';
 
+import 'causes.dart';
 import 'echelon.dart' show echelonYear;
+import 'eras.dart';
+import 'legends.dart';
+import 'timeline.dart';
 import 'crime_wall.dart' show noteCrime;
 import 'manhunt.dart' show manhuntYear;
 import 'actions.dart';
@@ -98,6 +102,10 @@ class GameEngine {
   /// The player's one persistent world (world.dart). The controller swaps
   /// in the saved world; tests use a fresh one.
   World world;
+
+  /// The Timeline of the timeline life being played (timeline.dart);
+  /// null in the modern world.
+  Timeline? timeline;
 
   // ---------- New life ----------
 
@@ -254,6 +262,7 @@ class GameEngine {
   /// Ages the character one year and returns the event to show, if any.
   Storylet? ageUp(Life life) {
     if (!life.alive || life.age >= sliceEndAge) return null;
+    if (life.era != null) return _timelineYear(life);
     life.lastYearStats = Map.of(life.stats.values);
     final workedHard = life.usedActions.contains('work_harder');
     final slacked = life.usedActions.contains('slack_off');
@@ -461,8 +470,106 @@ class GameEngine {
     }
   }
 
+  // ---------- Timeline lives (Legends) ----------
+
+  /// One year of a timeline life. Only era rules run: the modern world,
+  /// its news, prices and systems are never touched.
+  Storylet? _timelineYear(Life life) {
+    final era = eraRegistry[life.era];
+    life.lastYearStats = Map.of(life.stats.values);
+    life.age += 1;
+    life.idleYears = 0;
+    life.usedActions.clear();
+    life.interactionCounts.clear();
+    life.energy = 10;
+    if (life.job != null) life.yearsWorked++;
+    final rng = _rngFor(life);
+    final t = timeline;
+    if (era != null && t != null) {
+      for (final line in eraYear(life, era, t, _rngFor(life, 211))) {
+        life.feed.add(FeedEntry(life.age, line, kind: 'nudge'));
+      }
+    }
+    // Family and friends grow old too.
+    // Real people of a Legend die when history says they did.
+    for (final n in life.npcs.where((n) => n.alive)) {
+      final a = n.ageIn(life.year);
+      final died = n.info['died'] as int?;
+      final p = a < 40 ? 0.004 : (a < 60 ? 0.02 : (a < 75 ? 0.07 : 0.18));
+      if (died != null ? life.year >= died : rng.nextDouble() < p) {
+        n.alive = false;
+        life.reason = 'Loss';
+        life.stats.add('happiness', n.bond >= 60 ? -10 : -3);
+        life.feed.add(
+          FeedEntry(
+            life.age,
+            '${n.name} (your ${n.role.toLowerCase()}) died, aged $a.',
+            kind: 'milestone',
+            who: n.name,
+          ),
+        );
+      }
+    }
+    life.reason = 'Ups and downs';
+    life.stats.add('happiness', rng.nextInt(5) - 2);
+    if (life.age > 45) life.stats.add('health', -(rng.nextInt(3)));
+    var dies = era == null ? 0.0 : eraDeathChance(life, era);
+    // A Legend rarely dies before their turning points have come.
+    final legendNow = legendRegistry[life.legendId];
+    if (legendNow != null &&
+        legendNow.turningPoints.any((p) => !life.pivots.containsKey(p.id))) {
+      dies *= 0.15;
+    }
+    if (life.stats['health'] <= 0 || rng.nextDouble() < dies) {
+      life.alive = false;
+      life.causeOfDeath = life.stats['health'] <= 0
+          ? 'Illness'
+          : (life.age > 60 ? 'Old age' : 'Fever');
+      life.feed.add(
+        FeedEntry(
+          life.age,
+          'Your story ended at ${life.age}, in ${life.year}. '
+          'Cause: ${life.causeOfDeath}.',
+          kind: 'milestone',
+        ),
+      );
+      endLegend(life, t);
+      return null;
+    }
+    final legend = legendRegistry[life.legendId];
+    final chapter = legend?.chapterFor(life.year) ?? '';
+    if (chapter.isNotEmpty && chapter != life.chapter) {
+      life.feed.add(
+        FeedEntry(life.age, 'A new chapter begins: $chapter', kind: 'milestone'),
+      );
+      life.chapter = chapter;
+    }
+    final due = dueTurningPoint(life, storylets);
+    if (due != null) return due;
+    final event = pickStorylet(life, rng);
+    if (event == null) {
+      final quiet = era?.quietYears ?? const <String>[];
+      life.feed.add(
+        FeedEntry(
+          life.age,
+          quiet.isEmpty
+              ? 'A quiet year in ${life.city}.'
+              : quiet[rng.nextInt(quiet.length)],
+        ),
+      );
+    }
+    return event;
+  }
+
   Storylet? pickStorylet(Life life, Random rng) {
-    final eligible = storylets.where((s) => s.isEligible(life)).toList();
+    var eligible = storylets.where((s) => s.isEligible(life)).toList();
+    if (life.legendId != null) {
+      // A Legend's own events come first; everyday era events fill gaps.
+      final legend = legendRegistry[life.legendId];
+      eligible.removeWhere((s) => legend?.skipEvents.contains(s.id) ?? false);
+      final own = eligible.where((s) => s.legend != null).toList();
+      if (own.isNotEmpty && rng.nextDouble() < 0.8) eligible = own;
+    }
     if (eligible.isEmpty) return null;
     final total = eligible.fold<int>(0, (a, s) => a + s.weight);
     var roll = rng.nextInt(total);
@@ -481,7 +588,12 @@ class GameEngine {
     final npcsBefore = life.npcs.map((n) => n.id).toSet();
     final moneyBefore = life.money;
     life.reason = event.scene ? choice.label : 'Choice: ${choice.label}';
-    final notes = choice.effects.apply(life);
+    // Rewriting history (causes.dart): a cause-gated choice rolls its odds.
+    final success = !choice.gated ||
+        rollCause(life, choice.causes, '${event.id}:${choice.label}');
+    final notes = success
+        ? choice.effects.apply(life)
+        : (choice.failEffects ?? Effects()).apply(life);
     storyPets(life);
     final rng0 = _rngFor(life, event.id.hashCode);
     // A choice played as a mini-game resolves with its score (Skip: 0.6).
@@ -542,9 +654,14 @@ class GameEngine {
         if (life.who(id) != null) '${life.who(id)!.name} will remember this',
       if (choice.effects.setFlags.isNotEmpty)
         'This moment may come back years from now',
+      if (life.era != null)
+        ...afterTimelineChoice(life, event, choice, success, timeline),
     ];
     final text = fill(
-      custom ?? (choice.outcome.isEmpty ? choice.label : choice.outcome),
+      success
+          ? custom ?? (choice.outcome.isEmpty ? choice.label : choice.outcome)
+          : choice.failOutcome ??
+                'It was not enough. History held its course.',
       life,
     );
     life.feed.add(FeedEntry(life.age, text));
@@ -552,6 +669,7 @@ class GameEngine {
       life.alive = false;
       life.causeOfDeath = 'Injuries';
     }
+    if (!life.alive) endLegend(life, timeline);
     return Outcome(
       text,
       notes,

@@ -1,0 +1,130 @@
+{
+  "id": "renaissance",
+  "name": "The Renaissance",
+  "years": [1450, 1520],
+  "stub": "Phase 1: Florence only. Phase 2 adds the rest of Italy, Europe, Africa and the Ottoman world.",
+  "money": {
+    "name": "florin",
+    "symbol": "ƒ",
+    "prices": {
+      "living_year": 9,
+      "bread_year": 4,
+      "cloak": 6,
+      "mule": 12,
+      "horse": 30,
+      "dowry_modest": 150,
+      "house_small": 200,
+      "palazzo": 10000
+    }
+  },
+  "regions": [
+    {
+      "id": "florence",
+      "name": "Republic of Florence",
+      "cities": ["Florence", "Vinci", "Prato", "Pistoia", "Empoli"],
+      "male": ["Giovanni", "Piero", "Lorenzo", "Antonio", "Francesco", "Bartolomeo", "Jacopo", "Niccolò", "Andrea", "Matteo", "Tommaso", "Filippo", "Bernardo", "Luca"],
+      "female": ["Caterina", "Lucrezia", "Ginevra", "Alessandra", "Marietta", "Bartolomea", "Nannina", "Margherita", "Lisa", "Contessina", "Piera", "Maddalena"],
+      "surnames": ["Rucellai", "Strozzi", "Capponi", "Ridolfi", "Bardi", "Peruzzi", "Albizzi", "Guicciardini", "Soderini", "Tornabuoni", "Corsini", "Gherardini", "Del Bene", "Martelli"]
+    }
+  ],
+  "jobs": [
+    {"title": "Workshop garzone", "pay": 4, "minAge": 10},
+    {"title": "Wool carder", "pay": 14, "minAge": 12},
+    {"title": "Dyer's hand", "pay": 18, "minAge": 14},
+    {"title": "Notary", "pay": 60, "minAge": 21, "needs": {"smarts": ">=60"}},
+    {"title": "Painter of the Guild of St Luke", "pay": 40, "minAge": 18},
+    {"title": "Merchant's factor", "pay": 50, "minAge": 18, "needs": {"smarts": ">=55"}}
+  ],
+  "school": ["abacus school", "Latin grammar school", "a workshop apprenticeship"],
+  "justice": {
+    "theft": "the Stinche prison, 1 year",
+    "brawl": "a fine from the Otto di Guardia",
+    "debt": "the Stinche until it is paid",
+    "anonymous accusation": "a hearing before the Officers of the Night"
+  },
+  "health": {"lifeExpectancy": 48, "plague": 0.025},
+  "news": {
+    "name": "Avvisi",
+    "headlines": {
+      "1453": ["Constantinople has fallen to Sultan Mehmed. Greek scholars are arriving with their books."],
+      "1464": ["Cosimo de' Medici is dead. The Signoria names him Father of his Country."],
+      "1469": ["Lorenzo de' Medici, twenty years old, takes up his father's place."],
+      "1471": ["Verrocchio's gilded ball is raised onto the lantern of the Duomo."],
+      "1478": ["Giuliano de' Medici murdered in the Duomo at Mass. Lorenzo escaped, wounded. The Pazzi hang from the Palazzo windows."],
+      "1479": ["Plague in the city. Lorenzo sails to Naples to make peace with King Ferrante."],
+      "1492": ["Lorenzo the Magnificent is dead at Careggi.", "A Genoese sailor in the service of Castile has sailed west."],
+      "1494": ["King Charles of France rides into Florence. Piero de' Medici has fled."],
+      "1497": ["Friar Savonarola's boys burn mirrors, cards and paintings in the Piazza."],
+      "1498": ["Savonarola hanged and burned in the Piazza della Signoria."],
+      "1499": ["The French have taken Milan. Duke Ludovico has fled to the Emperor."],
+      "1504": ["Michelangelo's giant David is set up before the Palazzo della Signoria."],
+      "1512": ["The Medici are back in Florence with Spanish troops."],
+      "1513": ["Cardinal Giovanni de' Medici is Pope, as Leo X. Bonfires all night."]
+    },
+    "quiet": [
+      "A quiet year. The Arno rose, then fell again.",
+      "The year went by between the market and the church bells.",
+      "Nothing the Avvisi would print, but a good year at home."
+    ]
+  },
+  "anachronisms": ["phone", "internet", "television", "TV", "car", "cars", "dollar", "\\$", "email", "online", "credit card", "university loan", "app", "laptop", "Instagram"],
+  "events": [
+    {
+      "id": "ren_san_giovanni",
+      "minAge": 5, "maxAge": 70, "once": false, "cooldown": 6, "weight": 8,
+      "text": "The feast of San Giovanni. Banners hang from every window, and the palio horses run bareback through the streets.",
+      "choices": [
+        {"label": "Watch the palio", "outcome": "You squeezed to the front. The Albizzi horse won, and the crowd nearly carried you away.", "effects": {"stats": {"happiness": 6}}},
+        {"label": "Bet a soldo on a horse", "outcome": "Your horse threw its rider at the first corner. You learned something about betting.", "effects": {"stats": {"happiness": -2, "smarts": 2}}}
+      ]
+    },
+    {
+      "id": "ren_abacus",
+      "minAge": 7, "maxAge": 11,
+      "text": "Your father wants you at the abacus school, to learn reckoning for trade. It costs a florin a year.",
+      "choices": [
+        {"label": "Go and learn your numbers", "outcome": "You learned to reckon interest and exchange like a merchant's son.", "effects": {"stats": {"smarts": 8}, "money": -1, "flags": {"abacus": "learning reckoning at the abacus school"}}},
+        {"label": "Stay home and help instead", "outcome": "You stayed and helped. Your hands grew rough before your head grew learned.", "effects": {"stats": {"health": 3, "smarts": -2}}}
+      ]
+    },
+    {
+      "id": "ren_wool",
+      "minAge": 12, "maxAge": 25,
+      "requires": {"job": false},
+      "text": "A master of the Arte della Lana needs carders for his shop by the river.",
+      "choices": [
+        {"label": "Take the work", "outcome": "The work was hard and the wool got everywhere, but there were florins at the end of the year.", "effects": {"job": "Wool carder", "salary": 14, "stats": {"health": -2}}},
+        {"label": "Look for better", "outcome": "You held out for something better. It did not come this year.", "effects": {"stats": {"happiness": -2}}}
+      ]
+    },
+    {
+      "id": "ren_dowry",
+      "minAge": 16, "maxAge": 30,
+      "requires": {"notFlags": ["partner"]},
+      "text": "A marriage broker comes to the house. A family two streets over has a match in mind, and a dowry of 150 florins is spoken of.",
+      "choices": [
+        {"label": "Agree to the match", "outcome": "The notary drew up the contract and the families shook hands in church.", "effects": {"flags": {"partner": "your marriage"}, "stats": {"happiness": 5}, "addNpcs": [{"id": "spouse", "role": "Spouse", "name": "Lucrezia Bardi", "circle": "Partner", "bond": 55}]}},
+        {"label": "Refuse for now", "outcome": "The broker left in a huff. Your mother did not speak to you for a week.", "effects": {"bond": {"mother": -6}}}
+      ]
+    },
+    {
+      "id": "ren_savonarola",
+      "minAge": 12, "maxAge": 90,
+      "yearRange": [1494, 1498],
+      "text": "Friar Savonarola preaches in the Duomo that Florence must burn its vanities. Boys in white go door to door collecting mirrors and paintings.",
+      "choices": [
+        {"label": "Give them your finery", "outcome": "You handed over a mirror and a painted chest. The friar's boys sang as they carried them off.", "effects": {"stats": {"happiness": -3}, "flags": {"piagnone": "giving your vanities to Savonarola"}}},
+        {"label": "Bar the door", "outcome": "You kept your things and your door shut. Someone chalked a cross on it in the night.", "effects": {"stats": {"happiness": 2}}}
+      ]
+    },
+    {
+      "id": "ren_calcio",
+      "minAge": 14, "maxAge": 35, "once": false, "cooldown": 5,
+      "text": "Young men are playing calcio in the Piazza Santa Croce. A team is one player short.",
+      "choices": [
+        {"label": "Join in", "outcome": "You scored once and lost a tooth. Worth it.", "effects": {"stats": {"health": -3, "happiness": 7, "looks": -1}}},
+        {"label": "Watch from the steps", "outcome": "You watched and shouted with the rest.", "effects": {"stats": {"happiness": 3}}}
+      ]
+    }
+  ]
+}

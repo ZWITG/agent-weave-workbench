@@ -1,0 +1,208 @@
+{
+  "id": "leonardo_test",
+  "test": true,
+  "name": "Leonardo da Vinci (test)",
+  "era": "renaissance",
+  "look": "leonardo",
+  "firstName": "Leonardo",
+  "surname": "da Vinci",
+  "house": "da Vinci",
+  "gender": "male",
+  "birthYear": 1452,
+  "deathYear": 1519,
+  "region": "florence",
+  "city": "Vinci",
+  "money": 0,
+  "skipEvents": ["ren_dowry", "ren_wool", "ren_abacus"],
+  "stats": {"smarts": 82, "looks": 84, "health": 72, "happiness": 60},
+  "npcs": [
+    {"id": "father", "role": "Father", "name": "Ser Piero da Vinci", "birthYear": 1426, "bond": 45, "died": 1504},
+    {"id": "mother", "role": "Mother", "name": "Caterina", "birthYear": 1436, "bond": 70, "died": 1494},
+    {"id": "grandfather", "role": "Grandfather", "name": "Antonio da Vinci", "birthYear": 1372, "bond": 75, "died": 1465},
+    {"id": "uncle", "role": "Uncle", "name": "Francesco da Vinci", "birthYear": 1436, "bond": 80, "died": 1507}
+  ],
+  "chapters": [
+    {"title": "A Notary's Son in Vinci", "from": 1452, "to": 1465},
+    {"title": "The Workshop of Verrocchio", "from": 1466, "to": 1476},
+    {"title": "Master in Florence", "from": 1477, "to": 1482},
+    {"title": "After the Prologue", "from": 1483, "to": 1600}
+  ],
+  "turningPoints": [
+    {
+      "id": "drum_1476",
+      "year": 1476,
+      "title": "The drum of 1476",
+      "history": "On 9 April 1476 an unsigned accusation was dropped in the tamburo, the box where Florentines could denounce one another to the Officers of the Night. It named the goldsmith's apprentice Jacopo Saltarelli and four young men, Leonardo among them. No witness came forward. The case was heard twice and dismissed in June 1476, on condition that no new accusation was made. Leonardo stayed in Verrocchio's workshop."
+    },
+    {
+      "id": "letter_1482",
+      "year": 1482,
+      "title": "The letter to Ludovico",
+      "history": "Around 1482 Leonardo left Florence for Milan. A draft of his letter to Ludovico Sforza survives in the Codex Atlanticus: nine points on bridges, siege engines, cannon, covered carts and ships, and only at the end painting, sculpture and a great bronze horse. Lorenzo de' Medici sent him with a silver lyre shaped like a horse's skull. In Milan he was mostly a painter and pageant-maker; his war machines stayed on paper."
+    }
+  ],
+  "fates": [
+    {
+      "id": "engineer_of_milan",
+      "title": "Chief Engineer of Milan",
+      "text": "Your machines were built. Ludovico's walls and engines carried your name, and the notebooks became blueprints instead of dreams.",
+      "facts": ["leo_engineer_milan"]
+    },
+    {
+      "id": "painter_who_stayed",
+      "title": "The Painter Who Stayed",
+      "text": "You never went north. Florence kept you, the Adoration was finished, and Milan never heard your lyre.",
+      "facts": ["stayed_florence"]
+    },
+    {
+      "id": "as_history_records",
+      "title": "As History Records",
+      "text": "Your life ran close to the one the books remember: a workshop in Florence, a letter to Milan, notebooks full of machines that waited centuries.",
+      "chronicleMin": 70
+    },
+    {
+      "id": "off_the_page",
+      "title": "A Life Off the Page",
+      "text": "You bent your own story away from the books. Historians would not recognise it, but it was yours."
+    }
+  ],
+  "codex": {
+    "palla_1471": {"title": "The ball on the Duomo", "text": "On 27 May 1471 Verrocchio's workshop raised a gilded copper ball, about two tonnes, onto the lantern of Florence Cathedral, using hoists designed by Brunelleschi. Leonardo, then an apprentice, drew those machines for years afterwards."},
+    "catasto_1457": {"title": "Not legitimate, aged 5", "text": "The tax return of 1457 by Leonardo's grandfather Antonio lists in his household \"Lionardo, son of the said Ser Piero, not legitimate, aged 5\". It is one of the first records of his life."}
+  },
+  "events": [
+    {
+      "id": "leo_catasto",
+      "year": 1457, "weight": 60,
+      "text": "The tax officials have come to Antonio's house. Grandfather lists everyone who lives under his roof, and pauses at your name.",
+      "choices": [
+        {"label": "Stand up straight beside him", "outcome": "\"Lionardo, son of Ser Piero, not legitimate, aged five,\" the clerk wrote. Grandfather squeezed your shoulder.", "effects": {"bond": {"grandfather": 6}, "stats": {"happiness": 2}}, "codex": "catasto_1457"},
+        {"label": "Run off to the river", "outcome": "You were down at the river watching kites wheel before the clerk had dipped his pen.", "effects": {"stats": {"smarts": 3}}, "adds": {"science": 5}, "why": "watched the kites over the river", "codex": "catasto_1457"}
+      ]
+    },
+    {
+      "id": "leo_river_birds",
+      "minAge": 6, "maxAge": 12, "weight": 25,
+      "text": "Uncle Francesco takes you walking in the hills above Vinci. A kite hangs on the wind, barely moving its wings.",
+      "choices": [
+        {"label": "Draw how it holds the air", "outcome": "You drew the bird again and again, until the page was more wing than paper. You wrote the notes backwards, right to left, so they were yours alone.", "effects": {"stats": {"smarts": 5}, "bond": {"uncle": 4}}, "adds": {"science": 10}, "why": "drew how the kite holds the air"},
+        {"label": "Throw stones at it", "outcome": "The kite drifted away, unbothered. Uncle Francesco sighed.", "effects": {"bond": {"uncle": -3}}}
+      ]
+    },
+    {
+      "id": "leo_apprentice",
+      "yearRange": [1464, 1468], "minAge": 12, "weight": 60,
+      "requires": {"notFlags": ["verrocchio"]},
+      "text": "Your father has shown some of your drawings to Andrea del Verrocchio, whose workshop paints, casts bronze and carves for the Medici. Verrocchio studies them for a long time.",
+      "choices": [
+        {"label": "Join the workshop", "outcome": "You moved to Florence and swept floors, ground pigments and watched everything. Verrocchio worked you hard and taught you more.", "effects": {"job": "Garzone in Verrocchio's workshop", "salary": 4, "stats": {"smarts": 4}, "flags": {"verrocchio": "joining Verrocchio's workshop"}, "addNpcs": [{"id": "verrocchio", "role": "Master", "name": "Andrea del Verrocchio", "circle": "Work", "bond": 62, "ageOffset": -17}]}, "adds": {"arts": 10}, "why": "joined Verrocchio's workshop", "canon": true},
+        {"label": "Ask to train as a notary instead", "outcome": "Your father laughed. An illegitimate son cannot join the notaries' guild. You went to Verrocchio anyway.", "effects": {"job": "Garzone in Verrocchio's workshop", "salary": 4, "bond": {"father": -4}, "flags": {"verrocchio": "joining Verrocchio's workshop"}, "addNpcs": [{"id": "verrocchio", "role": "Master", "name": "Andrea del Verrocchio", "circle": "Work", "bond": 55, "ageOffset": -17}]}}
+      ]
+    },
+    {
+      "id": "leo_copy_contracts",
+      "yearRange": [1466, 1475], "once": false, "cooldown": 3, "weight": 8,
+      "requires": {"flags": ["verrocchio"]},
+      "text": "Ser Piero needs clean copies of contracts for the monks of the Badia. He pays poorly, but his clients are the best families in Florence.",
+      "choices": [
+        {"label": "Copy them carefully", "outcome": "Your copies were perfect, even if your father had to read them in a mirror first. He mentioned you to a client.", "effects": {"bond": {"father": 5}, "money": 2}, "adds": {"standing": 12}, "why": "copied contracts for your father's clients"},
+        {"label": "Draw in the margins", "outcome": "The monks found horses galloping along the edge of their lease. Ser Piero was not amused.", "effects": {"bond": {"father": -4}, "stats": {"happiness": 3}}, "adds": {"arts": 5}, "why": "drew horses in the margins"}
+      ]
+    },
+    {
+      "id": "leo_palla",
+      "year": 1471, "weight": 60,
+      "requires": {"flags": ["verrocchio"]},
+      "text": "The workshop's great gilded ball is to be raised onto the lantern of the Duomo, higher than anything in Florence. Brunelleschi's old hoists creak in the wind.",
+      "choices": [
+        {"label": "Work the hoist and study it", "outcome": "You learned every gear and rope of Brunelleschi's machine. You would draw it for years.", "effects": {"stats": {"smarts": 4}}, "adds": {"military": 10, "science": 5}, "why": "worked Brunelleschi's hoist on the Duomo", "codex": "palla_1471"},
+        {"label": "Watch from the piazza", "outcome": "The ball rose, flashed gold and settled. The crowd roared.", "effects": {"stats": {"happiness": 4}}, "codex": "palla_1471"}
+      ]
+    },
+    {
+      "id": "leo_guild",
+      "year": 1472, "weight": 60,
+      "text": "You can register with the Compagnia di San Luca, the painters' confraternity. Membership means you can take your own commissions.",
+      "choices": [
+        {"label": "Pay the dues and join", "outcome": "Your name went into the red book of the Company of St Luke. You are a painter now, not just a boy who sweeps.", "effects": {"money": -1, "job": "Painter of the Guild of St Luke", "salary": 20, "flags": {"guild": "joining the painters' company"}}, "adds": {"standing": 10, "arts": 5}, "why": "joined the Company of St Luke", "canon": true},
+        {"label": "Stay on as Verrocchio's assistant", "outcome": "You stayed under Verrocchio's roof and name, for now.", "effects": {"bond": {"verrocchio": 5}}}
+      ]
+    },
+    {
+      "id": "leo_landscape",
+      "year": 1473, "weight": 40,
+      "text": "The feast of Santa Maria della Neve, 5 August. From a hill above the Arno valley the whole land is spread out under the summer haze.",
+      "choices": [
+        {"label": "Draw it exactly as it is", "outcome": "You drew the valley in quick pen strokes and dated it in your backwards hand. It is the first drawing anyone will date.", "effects": {"stats": {"smarts": 3, "happiness": 4}}, "adds": {"arts": 8, "science": 4}, "why": "drew the Arno valley from life"}
+      ]
+    },
+    {
+      "id": "leo_angel",
+      "year": 1475, "weight": 50,
+      "requires": {"flags": ["verrocchio"]},
+      "text": "Verrocchio's Baptism of Christ needs a second angel in the corner. He hands you the brush.",
+      "choices": [
+        {"label": "Paint it in oils, slowly", "outcome": "Your angel looked more alive than anything else on the panel. People said Verrocchio never wanted to paint again. People say a lot.", "effects": {"stats": {"looks": 1, "happiness": 6}, "bond": {"verrocchio": -2}}, "adds": {"arts": 12}, "why": "painted the angel in the Baptism of Christ"},
+        {"label": "Match the master's style", "outcome": "Your angel fit so well that nobody could tell where Verrocchio stopped. He was pleased.", "effects": {"bond": {"verrocchio": 6}}, "adds": {"standing": 8}, "why": "matched Verrocchio's style on the Baptism"}
+      ]
+    },
+    {
+      "id": "leo_drum",
+      "year": 1476, "weight": 100,
+      "pivot": "drum_1476",
+      "text": "April 1476. An unsigned letter has been dropped in the tamburo, the drum where anyone can accuse anyone. It names Jacopo Saltarelli and four young men. Your name is among them. The Officers of the Night will hear it.",
+      "choices": [
+        {"label": "Keep working and wait for the hearing", "outcome": "No witness came. The case was heard twice and dismissed in June. You went back to the workshop, quieter than before.", "effects": {"stats": {"happiness": -8}}, "canon": true},
+        {"label": "Have Ser Piero's clients bury it first", "outcome": "A word from a Tornabuoni here, a favour owed there. The accusation was quietly lost before any hearing.", "effects": {"stats": {"happiness": -2}, "bond": {"father": 6}}, "causes": {"standing": 30}, "rewrites": "drum_quashed_1476", "failOutcome": "Your father's clients would not risk it. The hearing went ahead, and the whole city heard your name read out.", "failEffects": {"stats": {"happiness": -12}, "bond": {"father": -6}}},
+        {"label": "Leave Florence for Vinci until it passes", "outcome": "You went home to the hills. The case was dismissed without you, but commissions went to others that year.", "effects": {"stats": {"happiness": -4}, "money": -4, "bond": {"uncle": 6}}, "chronicle": 30}
+      ]
+    },
+    {
+      "id": "leo_pazzi",
+      "year": 1478, "weight": 60,
+      "text": "Sunday 26 April 1478. Giuliano de' Medici has been stabbed to death at Mass in the Duomo. Lorenzo escaped. By evening, the conspirators hang from the windows of the Palazzo.",
+      "choices": [
+        {"label": "Study the Bargello's crossbows and guns", "outcome": "While the city hunted Pazzi, you sketched the guards' crossbows and the new bronze guns, and how a gate is defended.", "effects": {"stats": {"smarts": 3}}, "adds": {"military": 12}, "why": "studied the guards' weapons after the Pazzi plot"},
+        {"label": "Offer to paint for the Medici", "outcome": "Lorenzo's people noted your name. Painters would be needed to shame the traitors on the walls.", "effects": {"stats": {"happiness": 2}}, "adds": {"standing": 10}, "why": "offered your brush to the Medici after the Pazzi plot"}
+      ]
+    },
+    {
+      "id": "leo_machines",
+      "yearRange": [1477, 1481], "once": false, "cooldown": 1, "weight": 10,
+      "text": "Your notebook is open. It could be another Madonna. It could be a machine.",
+      "choices": [
+        {"label": "Draw siege engines and scythed carts", "outcome": "Pages of crossbows big as houses, covered carts and bridges that fold. Nobody has asked for any of it. Yet.", "effects": {"stats": {"smarts": 2}}, "adds": {"military": 15}, "why": "filled notebooks with siege engines"},
+        {"label": "Draw a Madonna with a cat", "outcome": "The cat would not sit still. Neither would the Child. The sketches are wonderful.", "effects": {"stats": {"happiness": 4}}, "adds": {"arts": 6}, "why": "drew the Madonna with a cat"}
+      ]
+    },
+    {
+      "id": "leo_baroncelli",
+      "year": 1479, "weight": 60,
+      "text": "December 1479. Bernardo Baroncelli, who killed Giuliano, was dragged back from Constantinople. He hangs today from the Bargello window.",
+      "choices": [
+        {"label": "Sketch him and note his clothes", "outcome": "\"Small tan cap, black serge jerkin, blue cloak lined with fox fur.\" You drew the hanged man as coolly as a still life.", "effects": {"stats": {"happiness": -3, "smarts": 2}}, "adds": {"science": 6}, "why": "sketched the hanged Baroncelli"},
+        {"label": "Look away", "outcome": "You went home the long way.", "effects": {"stats": {"happiness": -1}}}
+      ]
+    },
+    {
+      "id": "leo_adoration",
+      "year": 1481, "weight": 60,
+      "text": "The monks of San Donato a Scopeto want an Adoration of the Magi for their high altar, to be finished in thirty months at most.",
+      "choices": [
+        {"label": "Take it on, on your terms", "outcome": "You drew horses, ruins and a hundred faces into the underpainting. It grew, and grew, and was not finished.", "effects": {"money": 10, "stats": {"happiness": 3}}, "adds": {"arts": 10}, "why": "began the Adoration of the Magi", "canon": true},
+        {"label": "Turn it down for your machines", "outcome": "The monks went to Filippino Lippi. You went back to your notebooks.", "effects": {"stats": {"happiness": -2}}, "adds": {"military": 10}, "why": "turned down the monks to design machines"}
+      ]
+    },
+    {
+      "id": "leo_letter",
+      "year": 1482, "weight": 100,
+      "pivot": "letter_1482",
+      "text": "Lorenzo is sending you to Milan with a silver lyre shaped like a horse's skull, a gift for Duke Ludovico. You draft a letter of introduction to the Duke.",
+      "choices": [
+        {"label": "List war machines, and painting last", "outcome": "Nine points on bridges, bombards and covered carts, and at the end: \"Also I can do in painting whatever can be done.\" You rode north with the lyre.", "effects": {"stats": {"happiness": 4}, "flags": {"milan": "going to Milan"}}, "canon": true},
+        {"label": "Bring working models, not promises", "outcome": "You arrived with a working model of a folding bridge and a covered cart. Ludovico's captains stopped laughing. By spring you were the Duke's engineer.", "effects": {"stats": {"happiness": 8}, "salary": 120, "job": "Ducal engineer of Milan", "flags": {"milan": "going to Milan"}}, "causes": {"military": 60}, "rewrites": "leo_engineer_milan", "failOutcome": "The models jammed in front of the Duke's captains. Ludovico kept you on as a painter and pageant-maker, as the books remember.", "failEffects": {"stats": {"happiness": -5}, "flags": {"milan": "going to Milan"}}},
+        {"label": "Stay in Florence and finish the Adoration", "outcome": "You sent the lyre with someone else and stayed. The monks got their altarpiece, years late.", "effects": {"stats": {"happiness": 2}, "flags": {"stayed_florence": "staying in Florence"}}, "chronicle": 20}
+      ]
+    }
+  ]
+}
