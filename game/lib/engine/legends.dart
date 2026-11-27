@@ -211,8 +211,9 @@ class Legend {
           Fate.fromJson(Map<String, dynamic>.from(f)),
       ],
       codex: {
-        for (final e in Map<String, dynamic>.from(j['codex'] ?? const {})
-            .entries)
+        for (final e in Map<String, dynamic>.from(
+          j['codex'] ?? const {},
+        ).entries)
           e.key: Map<String, String>.from(e.value),
       },
       // Every event of a Legend belongs to it and its era.
@@ -234,34 +235,36 @@ Life startLegend(Legend legend, Timeline t, {int? seed}) {
   final rng = Random(s);
   final stats = Stats.random(rng);
   legend.stats.forEach((k, v) => stats.values[k] = v);
-  final life = Life(
-    seed: s,
-    firstName: legend.firstName,
-    surname: legend.surname,
-    gender: legend.gender,
-    country: eraRegistry[legend.era]?.region(legend.region).name ??
-        legend.region,
-    city: legend.city,
-    birthYear: legend.birthYear,
-    stats: stats,
-    npcs: [
-      for (final n in legend.npcs)
-        Npc(
-          id: n['id'],
-          role: n['role'],
-          name: n['name'],
-          circle: n['circle'] ?? 'Family',
-          birthYear: n['birthYear'] ?? legend.birthYear - 25,
-          bond: n['bond'] ?? 60,
-        )..info.addAll({if (n['died'] != null) 'died': n['died']}),
-    ],
-    money: legend.money,
-  )
-    ..legendId = legend.id
-    ..era = legend.era
-    ..timelineId = t.id
-    ..chronicle = 100
-    ..chapter = legend.chapterFor(legend.birthYear);
+  final life =
+      Life(
+          seed: s,
+          firstName: legend.firstName,
+          surname: legend.surname,
+          gender: legend.gender,
+          country:
+              eraRegistry[legend.era]?.region(legend.region).name ??
+              legend.region,
+          city: legend.city,
+          birthYear: legend.birthYear,
+          stats: stats,
+          npcs: [
+            for (final n in legend.npcs)
+              Npc(
+                id: n['id'],
+                role: n['role'],
+                name: n['name'],
+                circle: n['circle'] ?? 'Family',
+                birthYear: n['birthYear'] ?? legend.birthYear - 25,
+                bond: n['bond'] ?? 60,
+              )..info.addAll({if (n['died'] != null) 'died': n['died']}),
+          ],
+          money: legend.money,
+        )
+        ..legendId = legend.id
+        ..era = legend.era
+        ..timelineId = t.id
+        ..chronicle = 100
+        ..chapter = legend.chapterFor(legend.birthYear);
   life.feed.add(
     FeedEntry(
       0,
@@ -276,41 +279,52 @@ Life startLegend(Legend legend, Timeline t, {int? seed}) {
 
 /// Starts an ordinary life (no Legend) in [t]'s era: a random person of
 /// the time.
-Life startTimelineLife(EraRules era, Timeline t, {int? seed, int? year}) {
+Life startTimelineLife(
+  EraRules era,
+  Timeline t, {
+  int? seed,
+  int? year,
+  String? regionId,
+}) {
   final s = seed ?? Random().nextInt(1 << 30);
   final rng = Random(s);
-  final region = era.regions[rng.nextInt(era.regions.length)];
+  final born = year ?? t.year;
+  final open = era.regionsIn(born);
+  final region = regionId != null
+      ? era.region(regionId)
+      : open[rng.nextInt(open.length)];
   String pick(List<String> l) => l[rng.nextInt(l.length)];
   final g = rng.nextBool() ? 'female' : 'male';
-  final born = year ?? t.year;
-  final life = Life(
-    seed: s,
-    firstName: pick(g == 'female' ? region.female : region.male),
-    surname: pick(region.surnames),
-    gender: g,
-    country: region.name,
-    city: pick(region.cities),
-    birthYear: born,
-    stats: Stats.random(rng),
-    npcs: [
-      Npc(
-        id: 'mother',
-        role: 'Mother',
-        name: pick(region.female),
-        birthYear: born - 20 - rng.nextInt(12),
-        bond: 70 + rng.nextInt(25),
-      ),
-      Npc(
-        id: 'father',
-        role: 'Father',
-        name: pick(region.male),
-        birthYear: born - 24 - rng.nextInt(14),
-        bond: 55 + rng.nextInt(30),
-      ),
-    ],
-  )
-    ..era = era.id
-    ..timelineId = t.id;
+  final male = region.maleIn(born), female = region.femaleIn(born);
+  final life =
+      Life(
+          seed: s,
+          firstName: pick(g == 'female' ? female : male),
+          surname: pick(region.surnames),
+          gender: g,
+          country: region.nameIn(born),
+          city: pick(region.citiesIn(born)),
+          birthYear: born,
+          stats: Stats.random(rng),
+          npcs: [
+            Npc(
+              id: 'mother',
+              role: 'Mother',
+              name: pick(female),
+              birthYear: born - 20 - rng.nextInt(12),
+              bond: 70 + rng.nextInt(25),
+            ),
+            Npc(
+              id: 'father',
+              role: 'Father',
+              name: pick(male),
+              birthYear: born - 24 - rng.nextInt(14),
+              bond: 55 + rng.nextInt(30),
+            ),
+          ],
+        )
+        ..era = era.id
+        ..timelineId = t.id;
   life.feed.add(
     FeedEntry(
       0,
@@ -344,12 +358,8 @@ List<String> afterTimelineChoice(
 ) {
   final echoes = <String>[];
   choice.adds.forEach(
-    (cause, amount) => addCause(
-      life,
-      cause,
-      amount,
-      choice.why ?? choice.label.toLowerCase(),
-    ),
+    (cause, amount) =>
+        addCause(life, cause, amount, choice.why ?? choice.label.toLowerCase()),
   );
   if (choice.gated) {
     final because = becauseLine(life, choice.causes);

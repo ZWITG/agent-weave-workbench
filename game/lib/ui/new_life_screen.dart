@@ -157,6 +157,11 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                     ),
                   if (kDebugMode)
                     TextButton(
+                      onPressed: () => widget.controller.startEraLife(),
+                      child: const Text('Ordinary 1450 life (debug)'),
+                    ),
+                  if (kDebugMode)
+                    TextButton(
                       onPressed: () => widget.controller
                           .toggleSamplePast()
                           .then((_) => setState(() {})),

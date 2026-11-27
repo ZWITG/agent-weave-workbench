@@ -23,7 +23,7 @@ void checkLife(Life life, EraRules era, RegExp bad, String tag) {
   expect(life.assets.where((a) => !a.id.startsWith('past_')), isEmpty, reason: tag);
   expect(life.shares, isEmpty, reason: tag);
   expect(life.businesses, isEmpty, reason: tag);
-  expect(life.year, lessThanOrEqualTo(era.from + 140), reason: tag);
+  expect(life.age, lessThanOrEqualTo(140), reason: tag);
   expect(life.alive, isFalse, reason: '$tag never ended');
 }
 
@@ -76,8 +76,61 @@ void main() {
       checkLife(life, era, bad, 'ordinary $seed');
       expect(life.legendId, isNull);
       expect(life.fate, isNull);
-      expect(era.regions.first.cities, contains(life.city));
+      expect(era.regionOf(life).cities, contains(life.city));
     }
+    expect(jsonEncode(world.toJson()), before, reason: 'modern world changed');
+  });
+
+  test('300 ordinary lives across 1450–1640 and every region, with journeys',
+      () {
+    final world = World(seed: 23);
+    final e = timelineEngine(world: world);
+    final before = jsonEncode(world.toJson());
+    final era = eraRegistry['renaissance']!;
+    final bad = anachronismsOf(era);
+    final regions = <String>{};
+    var journeys = 0;
+    for (var seed = 0; seed < 300; seed++) {
+      final year = 1450 + (seed * 37) % 190;
+      final t = newTimeline('renaissance', year, seed: 5000 + seed);
+      e.timeline = t;
+      final life = startTimelineLife(era, t, seed: seed, year: year);
+      final region = era.regionOf(life);
+      regions.add(region.id);
+      expect(region.openIn(year), isTrue, reason: '${region.id} in $year');
+      expect(region.citiesIn(year), contains(life.city));
+      final rng = Random(seed);
+      var guard = 0;
+      while (life.alive && guard++ < 130) {
+        // Travel now and then, as a player might.
+        if (life.age >= 16 && rng.nextInt(12) == 0) {
+          final js = journeysFrom(life, era)
+              .where((j) => j.cost <= life.money)
+              .toList();
+          if (js.isNotEmpty) {
+            makeJourney(life, era, js[rng.nextInt(js.length)], rng);
+            journeys++;
+          }
+        }
+        final s = e.ageUp(life);
+        if (s != null) {
+          final shown = visibleChoices(life, s);
+          if (shown.isNotEmpty) {
+            final c = shown[rng.nextInt(shown.length)];
+            if (c.lockReason(life) == null) e.choose(life, s, c);
+          }
+        }
+        final r = era.regionOf(life);
+        expect(
+          {r.name, ...r.names.values},
+          contains(life.country),
+          reason: 'seed $seed: ${life.country} for ${life.city}',
+        );
+      }
+      checkLife(life, era, bad, 'ordinary $seed');
+    }
+    expect(regions.length, era.regions.length, reason: '$regions');
+    expect(journeys, greaterThan(50));
     expect(jsonEncode(world.toJson()), before, reason: 'modern world changed');
   });
 }

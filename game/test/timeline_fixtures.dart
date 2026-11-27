@@ -55,3 +55,22 @@ Life playOut(
 
 Timeline newTimeline(String era, int start, {String? legend, int seed = 7}) =>
     Timeline(id: 'tl_$seed', era: era, startYear: start, seed: seed, legendId: legend);
+
+/// A grown-up nobody of the era, living in [city] in [year].
+Life blankEraLife({required String city, required int year}) {
+  final era = eraRegistry['renaissance']!;
+  final r = era.regionOfCity(city);
+  return Life(
+    seed: 1,
+    firstName: 'Test',
+    surname: 'Case',
+    gender: 'male',
+    country: r.nameIn(year),
+    city: city,
+    birthYear: year - 30,
+    stats: Stats({}),
+    npcs: [],
+  )
+    ..age = 30
+    ..era = 'renaissance';
+}

@@ -66,6 +66,27 @@ String activeCountry = 'United States';
 /// Republic of Florence; registered when an era loads.
 final Map<String, (double, String)> eraCurrencies = {};
 
+/// Regions whose money is not written as symbol and number: English
+/// pounds, shillings and pence. The formatter gets the local amount.
+final Map<String, String Function(int local, {bool short})> eraFormats = {};
+
+/// Pence as English money: "£3 6s 8d", short "£3 7s".
+String lsdMoney(int pence, {bool short = false}) {
+  final p = pence.abs();
+  final l = p ~/ 240, s = (p % 240) ~/ 12, d = p % 12;
+  final sign = pence < 0 ? '−' : '';
+  if (short) {
+    if (l >= 1000) return '$sign£${_digits(l)}';
+    if (l > 0) return '$sign£$l${s > 0 ? ' ${s}s' : ''}';
+    return '$sign${s > 0 ? '${s}s' : ''}${s > 0 && d > 0 ? ' ' : ''}${d > 0 || s == 0 ? '${d}d' : ''}';
+  }
+  return [
+    if (l > 0) '£${_digits(l)}',
+    if (s > 0) '${s}s',
+    if (d > 0 || (l == 0 && s == 0)) '${d}d',
+  ].join(' ').replaceFirst(RegExp('^'), sign);
+}
+
 (double, String) currencyOf(String country) =>
     eraCurrencies[country] ?? currencies[country] ?? (1, '\$');
 
@@ -83,6 +104,8 @@ String _digits(int v) {
 /// A balance in the active currency, short: $950, $25K, $1.2M, $3.4B.
 String shortMoney(int amount, [String? country]) {
   final (rate, symbol) = currencyOf(country ?? activeCountry);
+  final fmt = eraFormats[country ?? activeCountry];
+  if (fmt != null) return fmt((amount * rate).round(), short: true);
   final a = amount.abs() * rate;
   String f(double x, String u) =>
       '${x >= 100 ? x.toStringAsFixed(0) : x.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}$u';
@@ -102,6 +125,8 @@ String shortMoney(int amount, [String? country]) {
 String moneyIn(int amount, String country) {
   final (rate, symbol) = currencyOf(country);
   final local = (amount * rate).round();
+  final fmt = eraFormats[country];
+  if (fmt != null) return fmt(local);
   final space = symbol.length > 2 && !symbol.endsWith('\$') ? ' ' : '';
   return '${local < 0 ? '−' : ''}$symbol$space${_digits(local)}';
 }

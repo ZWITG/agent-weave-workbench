@@ -1,130 +1,2295 @@
 {
-  "id": "renaissance",
-  "name": "The Renaissance",
-  "years": [1450, 1520],
-  "stub": "Phase 1: Florence only. Phase 2 adds the rest of Italy, Europe, Africa and the Ottoman world.",
-  "money": {
-    "name": "florin",
+ "id": "renaissance",
+ "name": "The Renaissance",
+ "years": [
+  1450,
+  1520
+ ],
+ "money": {
+  "name": "florin",
+  "symbol": "ƒ",
+  "note": "Every amount is kept in gold florins and shown in the local money. Rates and wages are game approximations from historians' series (Goldthwaite, Malanima, Munro).",
+  "prices": {
+   "living_year": 9,
+   "bread_year": 4,
+   "cloak": 6,
+   "mule": 12,
+   "horse": 30,
+   "dowry_modest": 150,
+   "house_small": 200,
+   "palazzo": 10000
+  },
+  "inflation": [
+   [
+    1450,
+    1.0
+   ],
+   [
+    1500,
+    1.05
+   ],
+   [
+    1530,
+    1.15
+   ],
+   [
+    1550,
+    1.3
+   ],
+   [
+    1575,
+    1.65
+   ],
+   [
+    1600,
+    2.0
+   ],
+   [
+    1625,
+    2.2
+   ],
+   [
+    1650,
+    2.3
+   ]
+  ],
+  "currencies": {
+   "florin": {
     "symbol": "ƒ",
-    "prices": {
-      "living_year": 9,
-      "bread_year": 4,
-      "cloak": 6,
-      "mule": 12,
-      "horse": 30,
-      "dowry_modest": 150,
-      "house_small": 200,
-      "palazzo": 10000
+    "rate": 1,
+    "name": "florins"
+   },
+   "ducat": {
+    "symbol": "duc.",
+    "rate": 1,
+    "name": "ducats"
+   },
+   "scudo": {
+    "symbol": "sc.",
+    "rate": 1,
+    "name": "scudi"
+   },
+   "lsd": {
+    "symbol": "£",
+    "rate": 40,
+    "format": "lsd",
+    "name": "pounds, shillings and pence"
+   },
+   "dinar": {
+    "symbol": "din.",
+    "rate": 1,
+    "name": "gold dinars"
+   },
+   "mithqal": {
+    "symbol": "mth.",
+    "rate": 1,
+    "name": "mithqals of gold"
+   },
+   "nzimbu": {
+    "symbol": "nz.",
+    "rate": 1000,
+    "name": "nzimbu shells"
+   },
+   "libongo": {
+    "symbol": "lib.",
+    "rate": 20,
+    "name": "lengths of libongo cloth"
+   },
+   "reis": {
+    "symbol": "rs.",
+    "rate": 400,
+    "name": "réis"
+   }
+  }
+ },
+ "regions": [
+  {
+   "id": "florence",
+   "name": "Republic of Florence",
+   "cities": [
+    "Florence",
+    "Vinci",
+    "Prato",
+    "Pistoia",
+    "Empoli",
+    "Pisa"
+   ],
+   "male": [
+    "Giovanni",
+    "Piero",
+    "Lorenzo",
+    "Antonio",
+    "Francesco",
+    "Bartolomeo",
+    "Jacopo",
+    "Niccolò",
+    "Andrea",
+    "Matteo",
+    "Tommaso",
+    "Filippo",
+    "Bernardo",
+    "Luca"
+   ],
+   "female": [
+    "Caterina",
+    "Lucrezia",
+    "Ginevra",
+    "Alessandra",
+    "Marietta",
+    "Bartolomea",
+    "Nannina",
+    "Margherita",
+    "Lisa",
+    "Contessina",
+    "Piera",
+    "Maddalena"
+   ],
+   "surnames": [
+    "Rucellai",
+    "Strozzi",
+    "Capponi",
+    "Ridolfi",
+    "Bardi",
+    "Peruzzi",
+    "Albizzi",
+    "Guicciardini",
+    "Soderini",
+    "Tornabuoni",
+    "Corsini",
+    "Gherardini",
+    "Del Bene",
+    "Martelli"
+   ],
+   "names": {
+    "1450": "Republic of Florence",
+    "1532": "Duchy of Florence",
+    "1569": "Grand Duchy of Tuscany"
+   },
+   "group": "italy",
+   "at": [
+    43.77,
+    11.25
+   ],
+   "currency": "florin",
+   "prices": 1.0,
+   "wages": 1.0,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Tuscan",
+   "rulers": [
+    {
+     "from": 1434,
+     "to": 1494,
+     "ruler": "the Medici (Cosimo, Piero, then Lorenzo)"
+    },
+    {
+     "from": 1494,
+     "to": 1498,
+     "ruler": "the Great Council, under the friar Savonarola"
+    },
+    {
+     "from": 1499,
+     "to": 1512,
+     "ruler": "the Republic (Piero Soderini, Gonfaloniere for life from 1502)"
+    },
+    {
+     "from": 1512,
+     "to": 1526,
+     "ruler": "the Medici, returned"
+    },
+    {
+     "from": 1527,
+     "to": 1530,
+     "ruler": "the last Republic"
+    },
+    {
+     "from": 1531,
+     "to": 1536,
+     "ruler": "Duke Alessandro de' Medici"
+    },
+    {
+     "from": 1537,
+     "to": 1573,
+     "ruler": "Cosimo I de' Medici (Grand Duke from 1569)"
+    },
+    {
+     "from": 1574,
+     "to": 1586,
+     "ruler": "Grand Duke Francesco I"
+    },
+    {
+     "from": 1587,
+     "to": 1608,
+     "ruler": "Grand Duke Ferdinando I"
+    },
+    {
+     "from": 1609,
+     "to": 1620,
+     "ruler": "Grand Duke Cosimo II"
+    },
+    {
+     "from": 1621,
+     "to": 1670,
+     "ruler": "Grand Duke Ferdinando II"
     }
+   ]
   },
-  "regions": [
+  {
+   "id": "milan",
+   "names": {
+    "1450": "Duchy of Milan"
+   },
+   "group": "italy",
+   "at": [
+    45.46,
+    9.19
+   ],
+   "currency": "ducat",
+   "prices": 1.0,
+   "wages": 1.0,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Lombard",
+   "cities": [
+    "Milan",
+    "Pavia",
+    "Cremona",
+    "Como"
+   ],
+   "rulers": [
     {
-      "id": "florence",
-      "name": "Republic of Florence",
-      "cities": ["Florence", "Vinci", "Prato", "Pistoia", "Empoli"],
-      "male": ["Giovanni", "Piero", "Lorenzo", "Antonio", "Francesco", "Bartolomeo", "Jacopo", "Niccolò", "Andrea", "Matteo", "Tommaso", "Filippo", "Bernardo", "Luca"],
-      "female": ["Caterina", "Lucrezia", "Ginevra", "Alessandra", "Marietta", "Bartolomea", "Nannina", "Margherita", "Lisa", "Contessina", "Piera", "Maddalena"],
-      "surnames": ["Rucellai", "Strozzi", "Capponi", "Ridolfi", "Bardi", "Peruzzi", "Albizzi", "Guicciardini", "Soderini", "Tornabuoni", "Corsini", "Gherardini", "Del Bene", "Martelli"]
+     "from": 1450,
+     "to": 1466,
+     "ruler": "Duke Francesco Sforza"
+    },
+    {
+     "from": 1466,
+     "to": 1476,
+     "ruler": "Duke Galeazzo Maria Sforza"
+    },
+    {
+     "from": 1477,
+     "to": 1493,
+     "ruler": "Ludovico Sforza, regent for his nephew Gian Galeazzo"
+    },
+    {
+     "from": 1494,
+     "to": 1499,
+     "ruler": "Duke Ludovico Sforza, il Moro"
+    },
+    {
+     "from": 1500,
+     "to": 1511,
+     "ruler": "King Louis XII of France"
+    },
+    {
+     "from": 1512,
+     "to": 1514,
+     "ruler": "Duke Massimiliano Sforza"
+    },
+    {
+     "from": 1515,
+     "to": 1520,
+     "ruler": "King Francis I of France"
+    },
+    {
+     "from": 1521,
+     "to": 1534,
+     "ruler": "Duke Francesco II Sforza"
+    },
+    {
+     "from": 1535,
+     "to": 1555,
+     "ruler": "Emperor Charles V"
+    },
+    {
+     "from": 1556,
+     "to": 1597,
+     "ruler": "King Philip II of Spain"
+    },
+    {
+     "from": 1598,
+     "to": 1620,
+     "ruler": "King Philip III of Spain"
+    },
+    {
+     "from": 1621,
+     "to": 1665,
+     "ruler": "King Philip IV of Spain"
     }
-  ],
-  "jobs": [
-    {"title": "Workshop garzone", "pay": 4, "minAge": 10},
-    {"title": "Wool carder", "pay": 14, "minAge": 12},
-    {"title": "Dyer's hand", "pay": 18, "minAge": 14},
-    {"title": "Notary", "pay": 60, "minAge": 21, "needs": {"smarts": ">=60"}},
-    {"title": "Painter of the Guild of St Luke", "pay": 40, "minAge": 18},
-    {"title": "Merchant's factor", "pay": 50, "minAge": 18, "needs": {"smarts": ">=55"}}
-  ],
-  "school": ["abacus school", "Latin grammar school", "a workshop apprenticeship"],
-  "justice": {
-    "theft": "the Stinche prison, 1 year",
-    "brawl": "a fine from the Otto di Guardia",
-    "debt": "the Stinche until it is paid",
-    "anonymous accusation": "a hearing before the Officers of the Night"
+   ],
+   "male": [
+    "Ludovico",
+    "Galeazzo",
+    "Gian Giacomo",
+    "Ambrogio",
+    "Bernardino",
+    "Cristoforo",
+    "Bartolomeo",
+    "Pietro",
+    "Carlo",
+    "Gaspare",
+    "Giovanni Antonio"
+   ],
+   "female": [
+    "Bianca",
+    "Beatrice",
+    "Cecilia",
+    "Ippolita",
+    "Isabella",
+    "Caterina",
+    "Lucia",
+    "Margherita",
+    "Angela",
+    "Dorotea"
+   ],
+   "surnames": [
+    "Visconti",
+    "Borromeo",
+    "Trivulzio",
+    "Del Maino",
+    "Crivelli",
+    "Brivio",
+    "Landriani",
+    "Bossi",
+    "Castiglioni",
+    "Pusterla",
+    "Marliani",
+    "Archinto"
+   ]
   },
-  "health": {"lifeExpectancy": 48, "plague": 0.025},
-  "news": {
-    "name": "Avvisi",
-    "headlines": {
-      "1453": ["Constantinople has fallen to Sultan Mehmed. Greek scholars are arriving with their books."],
-      "1464": ["Cosimo de' Medici is dead. The Signoria names him Father of his Country."],
-      "1469": ["Lorenzo de' Medici, twenty years old, takes up his father's place."],
-      "1471": ["Verrocchio's gilded ball is raised onto the lantern of the Duomo."],
-      "1478": ["Giuliano de' Medici murdered in the Duomo at Mass. Lorenzo escaped, wounded. The Pazzi hang from the Palazzo windows."],
-      "1479": ["Plague in the city. Lorenzo sails to Naples to make peace with King Ferrante."],
-      "1492": ["Lorenzo the Magnificent is dead at Careggi.", "A Genoese sailor in the service of Castile has sailed west."],
-      "1494": ["King Charles of France rides into Florence. Piero de' Medici has fled."],
-      "1497": ["Friar Savonarola's boys burn mirrors, cards and paintings in the Piazza."],
-      "1498": ["Savonarola hanged and burned in the Piazza della Signoria."],
-      "1499": ["The French have taken Milan. Duke Ludovico has fled to the Emperor."],
-      "1504": ["Michelangelo's giant David is set up before the Palazzo della Signoria."],
-      "1512": ["The Medici are back in Florence with Spanish troops."],
-      "1513": ["Cardinal Giovanni de' Medici is Pope, as Leo X. Bonfires all night."]
-    },
-    "quiet": [
-      "A quiet year. The Arno rose, then fell again.",
-      "The year went by between the market and the church bells.",
-      "Nothing the Avvisi would print, but a good year at home."
-    ]
-  },
-  "anachronisms": ["phone", "internet", "television", "TV", "car", "cars", "dollar", "\\$", "email", "online", "credit card", "university loan", "app", "laptop", "Instagram"],
-  "events": [
+  {
+   "id": "venice",
+   "names": {
+    "1450": "Republic of Venice"
+   },
+   "group": "italy",
+   "at": [
+    45.44,
+    12.33
+   ],
+   "currency": "ducat",
+   "prices": 1.1,
+   "wages": 1.1,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Venetian",
+   "cities": [
+    "Venice",
+    "Padua",
+    "Verona",
+    "Vicenza"
+   ],
+   "rulers": [
     {
-      "id": "ren_san_giovanni",
-      "minAge": 5, "maxAge": 70, "once": false, "cooldown": 6, "weight": 8,
-      "text": "The feast of San Giovanni. Banners hang from every window, and the palio horses run bareback through the streets.",
-      "choices": [
-        {"label": "Watch the palio", "outcome": "You squeezed to the front. The Albizzi horse won, and the crowd nearly carried you away.", "effects": {"stats": {"happiness": 6}}},
-        {"label": "Bet a soldo on a horse", "outcome": "Your horse threw its rider at the first corner. You learned something about betting.", "effects": {"stats": {"happiness": -2, "smarts": 2}}}
-      ]
-    },
-    {
-      "id": "ren_abacus",
-      "minAge": 7, "maxAge": 11,
-      "text": "Your father wants you at the abacus school, to learn reckoning for trade. It costs a florin a year.",
-      "choices": [
-        {"label": "Go and learn your numbers", "outcome": "You learned to reckon interest and exchange like a merchant's son.", "effects": {"stats": {"smarts": 8}, "money": -1, "flags": {"abacus": "learning reckoning at the abacus school"}}},
-        {"label": "Stay home and help instead", "outcome": "You stayed and helped. Your hands grew rough before your head grew learned.", "effects": {"stats": {"health": 3, "smarts": -2}}}
-      ]
-    },
-    {
-      "id": "ren_wool",
-      "minAge": 12, "maxAge": 25,
-      "requires": {"job": false},
-      "text": "A master of the Arte della Lana needs carders for his shop by the river.",
-      "choices": [
-        {"label": "Take the work", "outcome": "The work was hard and the wool got everywhere, but there were florins at the end of the year.", "effects": {"job": "Wool carder", "salary": 14, "stats": {"health": -2}}},
-        {"label": "Look for better", "outcome": "You held out for something better. It did not come this year.", "effects": {"stats": {"happiness": -2}}}
-      ]
-    },
-    {
-      "id": "ren_dowry",
-      "minAge": 16, "maxAge": 30,
-      "requires": {"notFlags": ["partner"]},
-      "text": "A marriage broker comes to the house. A family two streets over has a match in mind, and a dowry of 150 florins is spoken of.",
-      "choices": [
-        {"label": "Agree to the match", "outcome": "The notary drew up the contract and the families shook hands in church.", "effects": {"flags": {"partner": "your marriage"}, "stats": {"happiness": 5}, "addNpcs": [{"id": "spouse", "role": "Spouse", "name": "Lucrezia Bardi", "circle": "Partner", "bond": 55}]}},
-        {"label": "Refuse for now", "outcome": "The broker left in a huff. Your mother did not speak to you for a week.", "effects": {"bond": {"mother": -6}}}
-      ]
-    },
-    {
-      "id": "ren_savonarola",
-      "minAge": 12, "maxAge": 90,
-      "yearRange": [1494, 1498],
-      "text": "Friar Savonarola preaches in the Duomo that Florence must burn its vanities. Boys in white go door to door collecting mirrors and paintings.",
-      "choices": [
-        {"label": "Give them your finery", "outcome": "You handed over a mirror and a painted chest. The friar's boys sang as they carried them off.", "effects": {"stats": {"happiness": -3}, "flags": {"piagnone": "giving your vanities to Savonarola"}}},
-        {"label": "Bar the door", "outcome": "You kept your things and your door shut. Someone chalked a cross on it in the night.", "effects": {"stats": {"happiness": 2}}}
-      ]
-    },
-    {
-      "id": "ren_calcio",
-      "minAge": 14, "maxAge": 35, "once": false, "cooldown": 5,
-      "text": "Young men are playing calcio in the Piazza Santa Croce. A team is one player short.",
-      "choices": [
-        {"label": "Join in", "outcome": "You scored once and lost a tooth. Worth it.", "effects": {"stats": {"health": -3, "happiness": 7, "looks": -1}}},
-        {"label": "Watch from the steps", "outcome": "You watched and shouted with the rest.", "effects": {"stats": {"happiness": 3}}}
-      ]
+     "from": 1450,
+     "to": 1797,
+     "ruler": "the Doge and the Council of Ten"
     }
+   ],
+   "male": [
+    "Marco",
+    "Zuane",
+    "Alvise",
+    "Piero",
+    "Andrea",
+    "Nicolò",
+    "Domenego",
+    "Francesco",
+    "Zorzi",
+    "Lunardo",
+    "Vettor"
+   ],
+   "female": [
+    "Elena",
+    "Chiara",
+    "Lucia",
+    "Marina",
+    "Orsola",
+    "Isabetta",
+    "Cecilia",
+    "Moretta",
+    "Franceschina",
+    "Paolina"
+   ],
+   "surnames": [
+    "Contarini",
+    "Morosini",
+    "Dandolo",
+    "Grimani",
+    "Loredan",
+    "Mocenigo",
+    "Barbarigo",
+    "Foscari",
+    "Zen",
+    "Corner",
+    "Querini",
+    "Bembo"
+   ]
+  },
+  {
+   "id": "rome",
+   "names": {
+    "1450": "Papal States"
+   },
+   "group": "italy",
+   "at": [
+    41.9,
+    12.5
+   ],
+   "currency": "ducat",
+   "prices": 1.0,
+   "wages": 0.95,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Roman",
+   "cities": [
+    "Rome",
+    "Perugia",
+    "Ancona",
+    "Viterbo"
+   ],
+   "rulers": [
+    {
+     "from": 1447,
+     "to": 1455,
+     "ruler": "Pope Nicholas V"
+    },
+    {
+     "from": 1455,
+     "to": 1458,
+     "ruler": "Pope Callixtus III"
+    },
+    {
+     "from": 1458,
+     "to": 1464,
+     "ruler": "Pope Pius II"
+    },
+    {
+     "from": 1464,
+     "to": 1471,
+     "ruler": "Pope Paul II"
+    },
+    {
+     "from": 1471,
+     "to": 1484,
+     "ruler": "Pope Sixtus IV"
+    },
+    {
+     "from": 1484,
+     "to": 1492,
+     "ruler": "Pope Innocent VIII"
+    },
+    {
+     "from": 1492,
+     "to": 1503,
+     "ruler": "Pope Alexander VI"
+    },
+    {
+     "from": 1503,
+     "to": 1513,
+     "ruler": "Pope Julius II"
+    },
+    {
+     "from": 1513,
+     "to": 1521,
+     "ruler": "Pope Leo X"
+    },
+    {
+     "from": 1522,
+     "to": 1523,
+     "ruler": "Pope Adrian VI"
+    },
+    {
+     "from": 1523,
+     "to": 1534,
+     "ruler": "Pope Clement VII"
+    },
+    {
+     "from": 1534,
+     "to": 1549,
+     "ruler": "Pope Paul III"
+    },
+    {
+     "from": 1550,
+     "to": 1555,
+     "ruler": "Pope Julius III"
+    },
+    {
+     "from": 1555,
+     "to": 1559,
+     "ruler": "Pope Paul IV"
+    },
+    {
+     "from": 1560,
+     "to": 1565,
+     "ruler": "Pope Pius IV"
+    },
+    {
+     "from": 1566,
+     "to": 1572,
+     "ruler": "Pope Pius V"
+    },
+    {
+     "from": 1572,
+     "to": 1585,
+     "ruler": "Pope Gregory XIII"
+    },
+    {
+     "from": 1585,
+     "to": 1590,
+     "ruler": "Pope Sixtus V"
+    },
+    {
+     "from": 1590,
+     "to": 1591,
+     "ruler": "Popes Urban VII and Gregory XIV"
+    },
+    {
+     "from": 1592,
+     "to": 1605,
+     "ruler": "Pope Clement VIII"
+    },
+    {
+     "from": 1605,
+     "to": 1621,
+     "ruler": "Pope Paul V"
+    },
+    {
+     "from": 1621,
+     "to": 1623,
+     "ruler": "Pope Gregory XV"
+    },
+    {
+     "from": 1623,
+     "to": 1644,
+     "ruler": "Pope Urban VIII"
+    },
+    {
+     "from": 1644,
+     "to": 1655,
+     "ruler": "Pope Innocent X"
+    }
+   ],
+   "male": [
+    "Giuliano",
+    "Pompeo",
+    "Marcantonio",
+    "Orazio",
+    "Paolo",
+    "Lelio",
+    "Ottavio",
+    "Fabrizio",
+    "Prospero",
+    "Ascanio"
+   ],
+   "female": [
+    "Vittoria",
+    "Giulia",
+    "Felice",
+    "Porzia",
+    "Livia",
+    "Costanza",
+    "Faustina",
+    "Girolama",
+    "Olimpia",
+    "Prudenza"
+   ],
+   "surnames": [
+    "Colonna",
+    "Orsini",
+    "Savelli",
+    "Conti",
+    "Caetani",
+    "Frangipane",
+    "Massimo",
+    "Altieri",
+    "Mattei",
+    "Santacroce",
+    "Capranica",
+    "Muti"
+   ]
+  },
+  {
+   "id": "naples",
+   "names": {
+    "1450": "Kingdom of Naples"
+   },
+   "group": "italy",
+   "at": [
+    40.85,
+    14.27
+   ],
+   "currency": "ducat",
+   "prices": 0.85,
+   "wages": 0.85,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Neapolitan",
+   "cities": [
+    "Naples",
+    "Salerno",
+    "Bari",
+    "L'Aquila"
+   ],
+   "rulers": [
+    {
+     "from": 1442,
+     "to": 1458,
+     "ruler": "King Alfonso of Aragon"
+    },
+    {
+     "from": 1458,
+     "to": 1494,
+     "ruler": "King Ferrante"
+    },
+    {
+     "from": 1494,
+     "to": 1495,
+     "ruler": "King Alfonso II"
+    },
+    {
+     "from": 1495,
+     "to": 1496,
+     "ruler": "King Ferrandino"
+    },
+    {
+     "from": 1496,
+     "to": 1501,
+     "ruler": "King Federico"
+    },
+    {
+     "from": 1501,
+     "to": 1503,
+     "ruler": "France and Spain, at war over the kingdom"
+    },
+    {
+     "from": 1504,
+     "to": 1516,
+     "ruler": "King Ferdinand the Catholic, through his viceroy"
+    },
+    {
+     "from": 1516,
+     "to": 1556,
+     "ruler": "Emperor Charles V, through his viceroy"
+    },
+    {
+     "from": 1556,
+     "to": 1598,
+     "ruler": "King Philip II of Spain, through his viceroy"
+    },
+    {
+     "from": 1598,
+     "to": 1621,
+     "ruler": "King Philip III of Spain, through his viceroy"
+    },
+    {
+     "from": 1621,
+     "to": 1665,
+     "ruler": "King Philip IV of Spain, through his viceroy"
+    }
+   ],
+   "male": [
+    "Ferrante",
+    "Alfonso",
+    "Carlo",
+    "Gennaro",
+    "Sergio",
+    "Antonello",
+    "Berardino",
+    "Cesare",
+    "Scipione",
+    "Giovan Battista"
+   ],
+   "female": [
+    "Isabella",
+    "Costanza",
+    "Eleonora",
+    "Giovanna",
+    "Dianora",
+    "Lucrezia",
+    "Covella",
+    "Antonia",
+    "Sveva",
+    "Aurelia"
+   ],
+   "surnames": [
+    "Caracciolo",
+    "Carafa",
+    "Sanseverino",
+    "d'Avalos",
+    "Pignatelli",
+    "Acquaviva",
+    "Spinelli",
+    "Pandone",
+    "Brancaccio",
+    "Filomarino",
+    "Tomacelli",
+    "Capece"
+   ]
+  },
+  {
+   "id": "sicily",
+   "names": {
+    "1450": "Kingdom of Sicily"
+   },
+   "group": "islands",
+   "at": [
+    38.12,
+    13.36
+   ],
+   "currency": "ducat",
+   "prices": 0.8,
+   "wages": 0.8,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Sicilian",
+   "cities": [
+    "Palermo",
+    "Messina",
+    "Syracuse",
+    "Catania"
+   ],
+   "rulers": [
+    {
+     "from": 1416,
+     "to": 1458,
+     "ruler": "King Alfonso of Aragon, through his viceroy"
+    },
+    {
+     "from": 1458,
+     "to": 1479,
+     "ruler": "King John II of Aragon, through his viceroy"
+    },
+    {
+     "from": 1479,
+     "to": 1516,
+     "ruler": "King Ferdinand the Catholic, through his viceroy"
+    },
+    {
+     "from": 1516,
+     "to": 1556,
+     "ruler": "Emperor Charles V, through his viceroy"
+    },
+    {
+     "from": 1556,
+     "to": 1598,
+     "ruler": "King Philip II of Spain, through his viceroy"
+    },
+    {
+     "from": 1598,
+     "to": 1621,
+     "ruler": "King Philip III of Spain, through his viceroy"
+    },
+    {
+     "from": 1621,
+     "to": 1665,
+     "ruler": "King Philip IV of Spain, through his viceroy"
+    }
+   ],
+   "male": [
+    "Giovanni",
+    "Antonino",
+    "Vincenzo",
+    "Salvatore",
+    "Francesco",
+    "Pietro",
+    "Girolamo",
+    "Bartolo",
+    "Mariano",
+    "Filippo"
+   ],
+   "female": [
+    "Rosalia",
+    "Agata",
+    "Lucia",
+    "Caterina",
+    "Antonina",
+    "Giovanna",
+    "Eleonora",
+    "Franca",
+    "Vincenza",
+    "Margherita"
+   ],
+   "surnames": [
+    "Ventimiglia",
+    "Moncada",
+    "Chiaramonte",
+    "Alliata",
+    "Lanza",
+    "Filangeri",
+    "Spadafora",
+    "Bonanno",
+    "Abatellis",
+    "Platamone"
+   ]
+  },
+  {
+   "id": "malta",
+   "names": {
+    "1450": "Malta"
+   },
+   "group": "islands",
+   "at": [
+    35.9,
+    14.51
+   ],
+   "currency": "scudo",
+   "prices": 0.9,
+   "wages": 0.85,
+   "faiths": {
+    "1450": "Catholic"
+   },
+   "language": "Maltese",
+   "cities": [
+    "Mdina",
+    "Birgu",
+    {
+     "name": "Valletta",
+     "from": 1566
+    }
+   ],
+   "rulers": [
+    {
+     "from": 1450,
+     "to": 1529,
+     "ruler": "the King of Aragon, as part of Sicily"
+    },
+    {
+     "from": 1530,
+     "to": 1798,
+     "ruler": "the Knights of St John and their Grand Master"
+    }
+   ],
+   "male": [
+    "Matteo",
+    "Antonio",
+    "Giacomo",
+    "Paolo",
+    "Salvu",
+    "Ġwann",
+    "Indri",
+    "Pietru",
+    "Mikiel",
+    "Wistin"
+   ],
+   "female": [
+    "Katerina",
+    "Margerita",
+    "Pawla",
+    "Marija",
+    "Ursula",
+    "Agata",
+    "Imperia",
+    "Vittoria",
+    "Lukrezja",
+    "Bettina"
+   ],
+   "surnames": [
+    "Inguanez",
+    "Cassar",
+    "Bonnici",
+    "Zammit",
+    "Vella",
+    "Camilleri",
+    "Mallia",
+    "Farrugia",
+    "Borg",
+    "Caruana"
+   ]
+  },
+  {
+   "id": "england",
+   "names": {
+    "1450": "Kingdom of England",
+    "1649": "Commonwealth of England"
+   },
+   "group": "england",
+   "at": [
+    51.51,
+    -0.13
+   ],
+   "currency": "lsd",
+   "prices": 0.95,
+   "wages": 0.9,
+   "faiths": {
+    "1450": "Catholic",
+    "1534": "Church of England",
+    "1553": "Catholic",
+    "1559": "Church of England"
+   },
+   "language": "English",
+   "cities": [
+    "London",
+    "Stratford-upon-Avon",
+    "Oxford",
+    "Bristol",
+    "York",
+    "Norwich"
+   ],
+   "rulers": [
+    {
+     "from": 1422,
+     "to": 1460,
+     "ruler": "King Henry VI"
+    },
+    {
+     "from": 1461,
+     "to": 1469,
+     "ruler": "King Edward IV"
+    },
+    {
+     "from": 1470,
+     "to": 1470,
+     "ruler": "King Henry VI, restored"
+    },
+    {
+     "from": 1471,
+     "to": 1482,
+     "ruler": "King Edward IV"
+    },
+    {
+     "from": 1483,
+     "to": 1484,
+     "ruler": "King Richard III"
+    },
+    {
+     "from": 1485,
+     "to": 1508,
+     "ruler": "King Henry VII"
+    },
+    {
+     "from": 1509,
+     "to": 1546,
+     "ruler": "King Henry VIII"
+    },
+    {
+     "from": 1547,
+     "to": 1552,
+     "ruler": "King Edward VI"
+    },
+    {
+     "from": 1553,
+     "to": 1557,
+     "ruler": "Queen Mary I"
+    },
+    {
+     "from": 1558,
+     "to": 1602,
+     "ruler": "Queen Elizabeth I"
+    },
+    {
+     "from": 1603,
+     "to": 1624,
+     "ruler": "King James I"
+    },
+    {
+     "from": 1625,
+     "to": 1648,
+     "ruler": "King Charles I"
+    },
+    {
+     "from": 1649,
+     "to": 1652,
+     "ruler": "Parliament and the Council of State"
+    },
+    {
+     "from": 1653,
+     "to": 1658,
+     "ruler": "Oliver Cromwell, Lord Protector"
+    }
+   ],
+   "male": [
+    "John",
+    "Thomas",
+    "William",
+    "Richard",
+    "Robert",
+    "Henry",
+    "Edward",
+    "Nicholas",
+    "Walter",
+    "Hugh",
+    "Roger",
+    "Francis"
+   ],
+   "female": [
+    "Joan",
+    "Agnes",
+    "Alice",
+    "Margaret",
+    "Elizabeth",
+    "Anne",
+    "Katherine",
+    "Isabel",
+    "Mary",
+    "Jane",
+    "Joyce",
+    "Cecily"
+   ],
+   "surnames": [
+    "Smith",
+    "Taylor",
+    "Fletcher",
+    "Cooke",
+    "Baker",
+    "Turner",
+    "Ward",
+    "Fuller",
+    "Sadler",
+    "Combe",
+    "Lambert",
+    "Wheeler",
+    "Greene",
+    "Field"
+   ]
+  },
+  {
+   "id": "granada",
+   "names": {
+    "1450": "Emirate of Granada",
+    "1492": "Kingdom of Granada"
+   },
+   "group": "iberia",
+   "at": [
+    37.18,
+    -3.6
+   ],
+   "currency": "dinar",
+   "currencies": {
+    "1492": "ducat"
+   },
+   "prices": 0.85,
+   "wages": 0.8,
+   "faiths": {
+    "1450": "Muslim",
+    "1492": "Catholic, with Muslims living under Castile"
+   },
+   "language": "Andalusi Arabic",
+   "cities": [
+    "Granada",
+    "Ugíjar"
+   ],
+   "rulers": [
+    {
+     "from": 1447,
+     "to": 1453,
+     "ruler": "Sultan Muhammad IX"
+    },
+    {
+     "from": 1454,
+     "to": 1463,
+     "ruler": "Sultan Sa'd"
+    },
+    {
+     "from": 1464,
+     "to": 1481,
+     "ruler": "Sultan Abu'l-Hasan Ali"
+    },
+    {
+     "from": 1482,
+     "to": 1484,
+     "ruler": "Sultans Muhammad XII (Boabdil) and Abu'l-Hasan Ali, in a civil war"
+    },
+    {
+     "from": 1485,
+     "to": 1486,
+     "ruler": "Sultan Muhammad al-Zaghal"
+    },
+    {
+     "from": 1487,
+     "to": 1491,
+     "ruler": "Sultan Muhammad XII (Boabdil), besieged by Castile"
+    },
+    {
+     "from": 1492,
+     "to": 1504,
+     "ruler": "Queen Isabella and King Ferdinand of Castile and Aragon"
+    },
+    {
+     "from": 1505,
+     "to": 1516,
+     "ruler": "Queen Joanna, with King Ferdinand as regent"
+    },
+    {
+     "from": 1516,
+     "to": 1556,
+     "ruler": "Emperor Charles V"
+    },
+    {
+     "from": 1556,
+     "to": 1598,
+     "ruler": "King Philip II of Spain"
+    },
+    {
+     "from": 1598,
+     "to": 1621,
+     "ruler": "King Philip III of Spain"
+    },
+    {
+     "from": 1621,
+     "to": 1665,
+     "ruler": "King Philip IV of Spain"
+    }
+   ],
+   "male": [
+    "Muhammad",
+    "Ahmad",
+    "Ali",
+    "Yusuf",
+    "Sa'id",
+    "Ibrahim",
+    "Abd Allah",
+    "Hasan",
+    "Umar",
+    "Musa"
+   ],
+   "female": [
+    "Aisha",
+    "Fatima",
+    "Maryam",
+    "Zaynab",
+    "Khadija",
+    "Zahra",
+    "Hafsa",
+    "Umm al-Fath",
+    "Salma",
+    "Ruqayya"
+   ],
+   "surnames": [
+    "ibn Sarraj",
+    "al-Zaghri",
+    "ibn Hud",
+    "al-Wazzan",
+    "ibn Kumasha",
+    "al-Mawl",
+    "ibn Rashid",
+    "al-Ansari",
+    "al-Gharnati",
+    "al-Qaysi"
+   ]
+  },
+  {
+   "id": "fez",
+   "names": {
+    "1450": "Kingdom of Fez"
+   },
+   "group": "maghreb",
+   "at": [
+    34.03,
+    -5.0
+   ],
+   "currency": "dinar",
+   "prices": 0.75,
+   "wages": 0.7,
+   "faiths": {
+    "1450": "Muslim"
+   },
+   "language": "Arabic and Amazigh",
+   "cities": [
+    "Fez",
+    "Marrakesh",
+    "Meknes",
+    "Salé"
+   ],
+   "rulers": [
+    {
+     "from": 1420,
+     "to": 1465,
+     "ruler": "Sultan Abd al-Haqq II, the last Marinid"
+    },
+    {
+     "from": 1465,
+     "to": 1471,
+     "ruler": "the sharifs of Fez"
+    },
+    {
+     "from": 1472,
+     "to": 1504,
+     "ruler": "Sultan Muhammad al-Shaykh, the first Wattasid"
+    },
+    {
+     "from": 1505,
+     "to": 1525,
+     "ruler": "Sultan Muhammad al-Burtuqali"
+    },
+    {
+     "from": 1526,
+     "to": 1548,
+     "ruler": "Sultan Ahmad al-Wattasi"
+    },
+    {
+     "from": 1549,
+     "to": 1557,
+     "ruler": "Sultan Muhammad al-Shaykh, the first Saadi in Fez"
+    },
+    {
+     "from": 1557,
+     "to": 1573,
+     "ruler": "Sultan Abdallah al-Ghalib"
+    },
+    {
+     "from": 1574,
+     "to": 1575,
+     "ruler": "Sultan al-Mutawakkil"
+    },
+    {
+     "from": 1576,
+     "to": 1577,
+     "ruler": "Sultan Abd al-Malik"
+    },
+    {
+     "from": 1578,
+     "to": 1602,
+     "ruler": "Sultan Ahmad al-Mansur"
+    },
+    {
+     "from": 1603,
+     "to": 1626,
+     "ruler": "rival Saadi princes, at war with each other"
+    },
+    {
+     "from": 1627,
+     "to": 1630,
+     "ruler": "Sultan Abd al-Malik II"
+    },
+    {
+     "from": 1631,
+     "to": 1635,
+     "ruler": "Sultan al-Walid"
+    },
+    {
+     "from": 1636,
+     "to": 1655,
+     "ruler": "Sultan Muhammad al-Shaykh al-Saghir"
+    }
+   ],
+   "male": [
+    "Muhammad",
+    "Ahmad",
+    "Abd al-Rahman",
+    "Idris",
+    "Ali",
+    "Hasan",
+    "Yahya",
+    "Abd al-Qadir",
+    "Mas'ud",
+    "Uthman"
+   ],
+   "female": [
+    "Fatima",
+    "Aisha",
+    "Rahma",
+    "Zaynab",
+    "Itto",
+    "Kanza",
+    "Maryam",
+    "Sakina",
+    "Halima",
+    "Amina"
+   ],
+   "surnames": [
+    "al-Fasi",
+    "ibn Shaqrun",
+    "al-Idrisi",
+    "al-Lamti",
+    "ibn Ghazi",
+    "al-Wansharisi",
+    "al-Meknasi",
+    "ibn Jallun",
+    "al-Tazi",
+    "al-Sanhaji"
+   ]
+  },
+  {
+   "id": "songhai",
+   "names": {
+    "1450": "Songhai",
+    "1591": "Pashalik of Timbuktu"
+   },
+   "group": "sahel",
+   "at": [
+    16.77,
+    -3.0
+   ],
+   "currency": "mithqal",
+   "prices": 0.65,
+   "wages": 0.6,
+   "faiths": {
+    "1450": "Muslim, with older beliefs"
+   },
+   "language": "Songhay and Arabic",
+   "cities": [
+    "Gao",
+    "Timbuktu",
+    "Djenné"
+   ],
+   "rulers": [
+    {
+     "from": 1450,
+     "to": 1463,
+     "ruler": "the Sonni kings of Gao"
+    },
+    {
+     "from": 1464,
+     "to": 1492,
+     "ruler": "Sonni Ali"
+    },
+    {
+     "from": 1492,
+     "to": 1492,
+     "ruler": "Sonni Baru"
+    },
+    {
+     "from": 1493,
+     "to": 1527,
+     "ruler": "Askia Muhammad"
+    },
+    {
+     "from": 1528,
+     "to": 1530,
+     "ruler": "Askia Musa"
+    },
+    {
+     "from": 1531,
+     "to": 1536,
+     "ruler": "Askia Benkan"
+    },
+    {
+     "from": 1537,
+     "to": 1538,
+     "ruler": "Askia Ismail"
+    },
+    {
+     "from": 1539,
+     "to": 1548,
+     "ruler": "Askia Ishaq I"
+    },
+    {
+     "from": 1549,
+     "to": 1581,
+     "ruler": "Askia Dawud"
+    },
+    {
+     "from": 1582,
+     "to": 1585,
+     "ruler": "Askia al-Hajj"
+    },
+    {
+     "from": 1586,
+     "to": 1587,
+     "ruler": "Askia Muhammad Bani"
+    },
+    {
+     "from": 1588,
+     "to": 1590,
+     "ruler": "Askia Ishaq II"
+    },
+    {
+     "from": 1591,
+     "to": 1660,
+     "ruler": "the pashas of the Sultan of Morocco"
+    }
+   ],
+   "male": [
+    "Ali",
+    "Bukar",
+    "Dawud",
+    "Ishaq",
+    "Musa",
+    "Bani",
+    "Kassim",
+    "Alfa",
+    "Sidi",
+    "Mahmud"
+   ],
+   "female": [
+    "Kassey",
+    "Aisha",
+    "Fati",
+    "Habsatu",
+    "Mariama",
+    "Hawa",
+    "Kadija",
+    "Ramatu",
+    "Zara",
+    "Bintu"
+   ],
+   "surnames": [
+    "Touré",
+    "Cissé",
+    "Maïga",
+    "Kati",
+    "Aqit",
+    "Baghayogho",
+    "Traoré",
+    "Diakité",
+    "Koné",
+    "Sylla"
+   ]
+  },
+  {
+   "id": "cairo",
+   "names": {
+    "1450": "Mamluk Sultanate",
+    "1517": "Ottoman Egypt"
+   },
+   "group": "egypt",
+   "at": [
+    30.04,
+    31.24
+   ],
+   "currency": "dinar",
+   "prices": 0.85,
+   "wages": 0.75,
+   "faiths": {
+    "1450": "Muslim"
+   },
+   "language": "Arabic",
+   "cities": [
+    "Cairo",
+    "Alexandria",
+    "Damietta"
+   ],
+   "rulers": [
+    {
+     "from": 1438,
+     "to": 1453,
+     "ruler": "Sultan Jaqmaq"
+    },
+    {
+     "from": 1453,
+     "to": 1461,
+     "ruler": "Sultan Inal"
+    },
+    {
+     "from": 1461,
+     "to": 1467,
+     "ruler": "Sultan Khushqadam"
+    },
+    {
+     "from": 1468,
+     "to": 1496,
+     "ruler": "Sultan Qaitbay"
+    },
+    {
+     "from": 1496,
+     "to": 1500,
+     "ruler": "short-lived sultans, one after another"
+    },
+    {
+     "from": 1501,
+     "to": 1516,
+     "ruler": "Sultan al-Ghuri"
+    },
+    {
+     "from": 1516,
+     "to": 1516,
+     "ruler": "Sultan Tumanbay II"
+    },
+    {
+     "from": 1517,
+     "to": 1519,
+     "ruler": "Sultan Selim I, from Istanbul"
+    },
+    {
+     "from": 1520,
+     "to": 1566,
+     "ruler": "Sultan Suleiman, from Istanbul"
+    },
+    {
+     "from": 1566,
+     "to": 1574,
+     "ruler": "Sultan Selim II, from Istanbul"
+    },
+    {
+     "from": 1574,
+     "to": 1595,
+     "ruler": "Sultan Murad III, from Istanbul"
+    },
+    {
+     "from": 1595,
+     "to": 1603,
+     "ruler": "Sultan Mehmed III, from Istanbul"
+    },
+    {
+     "from": 1603,
+     "to": 1617,
+     "ruler": "Sultan Ahmed I, from Istanbul"
+    },
+    {
+     "from": 1618,
+     "to": 1622,
+     "ruler": "Sultan Osman II, from Istanbul"
+    },
+    {
+     "from": 1623,
+     "to": 1640,
+     "ruler": "Sultan Murad IV, from Istanbul"
+    },
+    {
+     "from": 1640,
+     "to": 1648,
+     "ruler": "Sultan Ibrahim, from Istanbul"
+    },
+    {
+     "from": 1648,
+     "to": 1687,
+     "ruler": "Sultan Mehmed IV, from Istanbul"
+    }
+   ],
+   "male": [
+    "Muhammad",
+    "Ahmad",
+    "Ali",
+    "Hasan",
+    "Husayn",
+    "Khalil",
+    "Yusuf",
+    "Ibrahim",
+    "Shams al-Din",
+    "Nur al-Din"
+   ],
+   "female": [
+    "Fatima",
+    "Khadija",
+    "Aisha",
+    "Zaynab",
+    "Nafisa",
+    "Umm Hani",
+    "Badriyya",
+    "Sara",
+    "Rabi'a",
+    "Sitt al-Mulk"
+   ],
+   "surnames": [
+    "al-Misri",
+    "ibn Iyas",
+    "al-Suyuti",
+    "al-Sakhawi",
+    "al-Bulqini",
+    "ibn Taghribirdi",
+    "al-Maqrizi",
+    "al-Damiri",
+    "al-Ansari",
+    "al-Qalqashandi"
+   ]
+  },
+  {
+   "id": "kongo",
+   "names": {
+    "1450": "Kingdom of Kongo"
+   },
+   "group": "kongo",
+   "at": [
+    -6.27,
+    14.24
+   ],
+   "currency": "nzimbu",
+   "prices": 0.55,
+   "wages": 0.5,
+   "faiths": {
+    "1450": "Kongo religion",
+    "1491": "Catholic, joined with Kongo beliefs"
+   },
+   "language": "Kikongo",
+   "cities": [
+    "Mbanza Kongo",
+    "Mpinda",
+    "Mbanza Soyo"
+   ],
+   "rulers": [
+    {
+     "from": 1450,
+     "to": 1469,
+     "ruler": "the Manikongo Nkuwu a Ntinu"
+    },
+    {
+     "from": 1470,
+     "to": 1509,
+     "ruler": "the Manikongo Nzinga a Nkuwu (João I from 1491)"
+    },
+    {
+     "from": 1509,
+     "to": 1542,
+     "ruler": "King Afonso I (Mvemba a Nzinga)"
+    },
+    {
+     "from": 1543,
+     "to": 1545,
+     "ruler": "King Pedro I"
+    },
+    {
+     "from": 1545,
+     "to": 1561,
+     "ruler": "King Diogo I"
+    },
+    {
+     "from": 1561,
+     "to": 1567,
+     "ruler": "King Bernardo I"
+    },
+    {
+     "from": 1567,
+     "to": 1568,
+     "ruler": "King Henrique I"
+    },
+    {
+     "from": 1568,
+     "to": 1587,
+     "ruler": "King Álvaro I"
+    },
+    {
+     "from": 1587,
+     "to": 1614,
+     "ruler": "King Álvaro II"
+    },
+    {
+     "from": 1614,
+     "to": 1622,
+     "ruler": "Kings Bernardo II and Álvaro III"
+    },
+    {
+     "from": 1622,
+     "to": 1626,
+     "ruler": "Kings Pedro II and Garcia I"
+    },
+    {
+     "from": 1626,
+     "to": 1641,
+     "ruler": "short reigns, one after another"
+    },
+    {
+     "from": 1641,
+     "to": 1660,
+     "ruler": "King Garcia II"
+    }
+   ],
+   "male": [
+    "Nzinga",
+    "Mvemba",
+    "Mpanzu",
+    "Nkuwu",
+    "Nsaku",
+    "Lukeni",
+    "Mbumba",
+    "Nkanga",
+    "Ne Vunda",
+    "Mbemba"
+   ],
+   "female": [
+    "Mbanda",
+    "Nlaza",
+    "Kimpa",
+    "Mpemba",
+    "Nsimba",
+    "Lemba",
+    "Nkenge",
+    "Mbuta",
+    "Nzuzi",
+    "Lusala"
+   ],
+   "namesFrom": {
+    "1491": {
+     "male": [
+      "Afonso",
+      "Pedro",
+      "Álvaro",
+      "Garcia",
+      "Diogo",
+      "Manuel"
+     ],
+     "female": [
+      "Leonor",
+      "Isabel",
+      "Ana",
+      "Beatriz",
+      "Maria",
+      "Catarina"
+     ]
+    }
+   },
+   "surnames": [
+    "Kinlaza",
+    "Kimpanzu",
+    "Nsaku",
+    "Mbata",
+    "Nsundi",
+    "Mpemba",
+    "Vunda",
+    "Kanda"
+   ]
+  },
+  {
+   "id": "ndongo",
+   "names": {
+    "1450": "Kingdom of Ndongo"
+   },
+   "group": "kongo",
+   "at": [
+    -9.3,
+    15.0
+   ],
+   "currency": "libongo",
+   "prices": 0.55,
+   "wages": 0.5,
+   "faiths": {
+    "1450": "Mbundu religion"
+   },
+   "language": "Kimbundu",
+   "cities": [
+    "Kabasa",
+    "Pungo a Ndongo"
+   ],
+   "rulers": [
+    {
+     "from": 1450,
+     "to": 1514,
+     "ruler": "the ngola kings, paying tribute to Kongo"
+    },
+    {
+     "from": 1515,
+     "to": 1555,
+     "ruler": "Ngola Kiluanje kia Samba"
+    },
+    {
+     "from": 1556,
+     "to": 1574,
+     "ruler": "the ngola kings after Kiluanje kia Samba"
+    },
+    {
+     "from": 1575,
+     "to": 1592,
+     "ruler": "Ngola Kilombo kia Kasenda"
+    },
+    {
+     "from": 1592,
+     "to": 1616,
+     "ruler": "Ngola Mbandi Kiluanji"
+    },
+    {
+     "from": 1617,
+     "to": 1623,
+     "ruler": "Ngola Mbandi"
+    },
+    {
+     "from": 1624,
+     "to": 1626,
+     "ruler": "Queen Nzinga"
+    },
+    {
+     "from": 1626,
+     "to": 1664,
+     "ruler": "Ngola Hari, backed by the Portuguese"
+    }
+   ],
+   "male": [
+    "Kiluanji",
+    "Mbandi",
+    "Kasenda",
+    "Kafuxe",
+    "Kakulu",
+    "Ndambi",
+    "Kiteke",
+    "Ngola",
+    "Kabuku",
+    "Kalunga"
+   ],
+   "female": [
+    "Kambu",
+    "Funji",
+    "Mukambu",
+    "Kangela",
+    "Ndumba",
+    "Kifunji",
+    "Mbande",
+    "Kalembe",
+    "Tembo",
+    "Kamana"
+   ],
+   "surnames": [
+    "a Ngola",
+    "kia Samba",
+    "kia Ndambi",
+    "a Mbandi",
+    "ka Kabasa",
+    "a Kiluanje",
+    "kia Kasenda",
+    "a Kakulu"
+   ]
+  },
+  {
+   "id": "matamba",
+   "names": {
+    "1450": "Kingdom of Matamba"
+   },
+   "group": "kongo",
+   "at": [
+    -9.0,
+    17.0
+   ],
+   "currency": "libongo",
+   "prices": 0.5,
+   "wages": 0.45,
+   "faiths": {
+    "1450": "Mbundu religion"
+   },
+   "language": "Kimbundu",
+   "cities": [
+    "Matamba"
+   ],
+   "rulers": [
+    {
+     "from": 1450,
+     "to": 1630,
+     "ruler": "the rulers of Matamba"
+    },
+    {
+     "from": 1631,
+     "to": 1663,
+     "ruler": "Queen Nzinga"
+    }
+   ],
+   "male": [
+    "Kiluanji",
+    "Kasanje",
+    "Kafuxe",
+    "Kalunga",
+    "Ndambi",
+    "Kiteke",
+    "Mbumba",
+    "Kabuku"
+   ],
+   "female": [
+    "Kambu",
+    "Funji",
+    "Mukambu",
+    "Kangela",
+    "Ndumba",
+    "Mbande",
+    "Kalembe",
+    "Kamana"
+   ],
+   "surnames": [
+    "a Matamba",
+    "a Ngola",
+    "kia Ndambi",
+    "a Mbandi",
+    "a Kiluanje",
+    "kia Kasanje"
+   ]
+  },
+  {
+   "id": "luanda",
+   "from": 1576,
+   "names": {
+    "1576": "Portuguese Luanda"
+   },
+   "group": "kongo",
+   "at": [
+    -8.84,
+    13.23
+   ],
+   "currency": "reis",
+   "prices": 0.8,
+   "wages": 0.7,
+   "faiths": {
+    "1576": "Catholic"
+   },
+   "language": "Portuguese and Kimbundu",
+   "cities": [
+    "Luanda"
+   ],
+   "rulers": [
+    {
+     "from": 1576,
+     "to": 1579,
+     "ruler": "Governor Paulo Dias de Novais, for the King of Portugal"
+    },
+    {
+     "from": 1580,
+     "to": 1640,
+     "ruler": "the governors of Angola, for the King of Spain and Portugal"
+    },
+    {
+     "from": 1641,
+     "to": 1647,
+     "ruler": "the Dutch West India Company"
+    },
+    {
+     "from": 1648,
+     "to": 1700,
+     "ruler": "the governors of Angola, for the King of Portugal"
+    }
+   ],
+   "male": [
+    "João",
+    "Manuel",
+    "Paulo",
+    "Francisco",
+    "Luís",
+    "Gaspar",
+    "Bento",
+    "Domingos",
+    "Fernão",
+    "Salvador",
+    "Kiluanji",
+    "Kasenda"
+   ],
+   "female": [
+    "Maria",
+    "Isabel",
+    "Ana",
+    "Catarina",
+    "Inês",
+    "Beatriz",
+    "Joana",
+    "Leonor",
+    "Graça",
+    "Kambu",
+    "Funji"
+   ],
+   "surnames": [
+    "Dias",
+    "Pereira",
+    "Correia",
+    "Fernandes",
+    "Lopes",
+    "Gonçalves",
+    "Rodrigues",
+    "Teixeira",
+    "Sousa",
+    "a Ngola"
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "title": "Workshop garzone",
+   "pay": 4,
+   "minAge": 10
+  },
+  {
+   "title": "Wool carder",
+   "pay": 14,
+   "minAge": 12
+  },
+  {
+   "title": "Dyer's hand",
+   "pay": 18,
+   "minAge": 14
+  },
+  {
+   "title": "Notary",
+   "pay": 60,
+   "minAge": 21,
+   "needs": {
+    "smarts": ">=60"
+   }
+  },
+  {
+   "title": "Painter of the Guild of St Luke",
+   "pay": 40,
+   "minAge": 18
+  },
+  {
+   "title": "Merchant's factor",
+   "pay": 50,
+   "minAge": 18,
+   "needs": {
+    "smarts": ">=55"
+   }
+  }
+ ],
+ "school": [
+  "abacus school",
+  "Latin grammar school",
+  "a workshop apprenticeship"
+ ],
+ "justice": {
+  "theft": "the Stinche prison, 1 year",
+  "brawl": "a fine from the Otto di Guardia",
+  "debt": "the Stinche until it is paid",
+  "anonymous accusation": "a hearing before the Officers of the Night"
+ },
+ "health": {
+  "lifeExpectancy": 48,
+  "plague": 0.025
+ },
+ "news": {
+  "name": "Avvisi",
+  "headlines": {
+   "1453": [
+    "Constantinople has fallen to Sultan Mehmed. Greek scholars are arriving with their books."
+   ],
+   "1464": [
+    "Cosimo de' Medici is dead. The Signoria names him Father of his Country."
+   ],
+   "1469": [
+    "Lorenzo de' Medici, twenty years old, takes up his father's place."
+   ],
+   "1471": [
+    "Verrocchio's gilded ball is raised onto the lantern of the Duomo."
+   ],
+   "1478": [
+    "Giuliano de' Medici murdered in the Duomo at Mass. Lorenzo escaped, wounded. The Pazzi hang from the Palazzo windows."
+   ],
+   "1479": [
+    "Plague in the city. Lorenzo sails to Naples to make peace with King Ferrante."
+   ],
+   "1492": [
+    "Lorenzo the Magnificent is dead at Careggi.",
+    "A Genoese sailor in the service of Castile has sailed west."
+   ],
+   "1494": [
+    "King Charles of France rides into Florence. Piero de' Medici has fled."
+   ],
+   "1497": [
+    "Friar Savonarola's boys burn mirrors, cards and paintings in the Piazza."
+   ],
+   "1498": [
+    "Savonarola hanged and burned in the Piazza della Signoria."
+   ],
+   "1499": [
+    "The French have taken Milan. Duke Ludovico has fled to the Emperor."
+   ],
+   "1504": [
+    "Michelangelo's giant David is set up before the Palazzo della Signoria."
+   ],
+   "1512": [
+    "The Medici are back in Florence with Spanish troops."
+   ],
+   "1513": [
+    "Cardinal Giovanni de' Medici is Pope, as Leo X. Bonfires all night."
+   ]
+  },
+  "quiet": [
+   "A quiet year. The Arno rose, then fell again.",
+   "The year went by between the market and the church bells.",
+   "Nothing the Avvisi would print, but a good year at home."
   ]
+ },
+ "anachronisms": [
+  "phone",
+  "internet",
+  "television",
+  "TV",
+  "car",
+  "cars",
+  "dollar",
+  "\\$",
+  "email",
+  "online",
+  "credit card",
+  "university loan",
+  "app",
+  "laptop",
+  "Instagram"
+ ],
+ "events": [
+  {
+   "id": "ren_san_giovanni",
+   "minAge": 5,
+   "maxAge": 70,
+   "once": false,
+   "cooldown": 6,
+   "weight": 8,
+   "text": "The feast of San Giovanni. Banners hang from every window, and the palio horses run bareback through the streets.",
+   "choices": [
+    {
+     "label": "Watch the palio",
+     "outcome": "You squeezed to the front. The Albizzi horse won, and the crowd nearly carried you away.",
+     "effects": {
+      "stats": {
+       "happiness": 6
+      }
+     }
+    },
+    {
+     "label": "Bet a soldo on a horse",
+     "outcome": "Your horse threw its rider at the first corner. You learned something about betting.",
+     "effects": {
+      "stats": {
+       "happiness": -2,
+       "smarts": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "ren_abacus",
+   "minAge": 7,
+   "maxAge": 11,
+   "text": "Your father wants you at the abacus school, to learn reckoning for trade. It costs a florin a year.",
+   "choices": [
+    {
+     "label": "Go and learn your numbers",
+     "outcome": "You learned to reckon interest and exchange like a merchant's son.",
+     "effects": {
+      "stats": {
+       "smarts": 8
+      },
+      "money": -1,
+      "flags": {
+       "abacus": "learning reckoning at the abacus school"
+      }
+     }
+    },
+    {
+     "label": "Stay home and help instead",
+     "outcome": "You stayed and helped. Your hands grew rough before your head grew learned.",
+     "effects": {
+      "stats": {
+       "health": 3,
+       "smarts": -2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "ren_wool",
+   "minAge": 12,
+   "maxAge": 25,
+   "requires": {
+    "job": false
+   },
+   "text": "A master of the Arte della Lana needs carders for his shop by the river.",
+   "choices": [
+    {
+     "label": "Take the work",
+     "outcome": "The work was hard and the wool got everywhere, but there were florins at the end of the year.",
+     "effects": {
+      "job": "Wool carder",
+      "salary": 14,
+      "stats": {
+       "health": -2
+      }
+     }
+    },
+    {
+     "label": "Look for better",
+     "outcome": "You held out for something better. It did not come this year.",
+     "effects": {
+      "stats": {
+       "happiness": -2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "ren_dowry",
+   "minAge": 16,
+   "maxAge": 30,
+   "requires": {
+    "notFlags": [
+     "partner"
+    ]
+   },
+   "text": "A marriage broker comes to the house. A family two streets over has a match in mind, and a dowry of 150 florins is spoken of.",
+   "choices": [
+    {
+     "label": "Agree to the match",
+     "outcome": "The notary drew up the contract and the families shook hands in church.",
+     "effects": {
+      "flags": {
+       "partner": "your marriage"
+      },
+      "stats": {
+       "happiness": 5
+      },
+      "addNpcs": [
+       {
+        "id": "spouse",
+        "role": "Spouse",
+        "name": "Lucrezia Bardi",
+        "circle": "Partner",
+        "bond": 55
+       }
+      ]
+     }
+    },
+    {
+     "label": "Refuse for now",
+     "outcome": "The broker left in a huff. Your mother did not speak to you for a week.",
+     "effects": {
+      "bond": {
+       "mother": -6
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "ren_savonarola",
+   "minAge": 12,
+   "maxAge": 90,
+   "yearRange": [
+    1494,
+    1498
+   ],
+   "text": "Friar Savonarola preaches in the Duomo that Florence must burn its vanities. Boys in white go door to door collecting mirrors and paintings.",
+   "choices": [
+    {
+     "label": "Give them your finery",
+     "outcome": "You handed over a mirror and a painted chest. The friar's boys sang as they carried them off.",
+     "effects": {
+      "stats": {
+       "happiness": -3
+      },
+      "flags": {
+       "piagnone": "giving your vanities to Savonarola"
+      }
+     }
+    },
+    {
+     "label": "Bar the door",
+     "outcome": "You kept your things and your door shut. Someone chalked a cross on it in the night.",
+     "effects": {
+      "stats": {
+       "happiness": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "ren_calcio",
+   "minAge": 14,
+   "maxAge": 35,
+   "once": false,
+   "cooldown": 5,
+   "text": "Young men are playing calcio in the Piazza Santa Croce. A team is one player short.",
+   "choices": [
+    {
+     "label": "Join in",
+     "outcome": "You scored once and lost a tooth. Worth it.",
+     "effects": {
+      "stats": {
+       "health": -3,
+       "happiness": 7,
+       "looks": -1
+      }
+     }
+    },
+    {
+     "label": "Watch from the steps",
+     "outcome": "You watched and shouted with the rest.",
+     "effects": {
+      "stats": {
+       "happiness": 3
+      }
+     }
+    }
+   ]
+  }
+ ]
 }
