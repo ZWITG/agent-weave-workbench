@@ -1,4 +1,9 @@
 
+import '../engine/causes.dart';
+import '../engine/legends.dart';
+import 'chronicle_strip.dart';
+import 'codex.dart';
+import 'legend_look.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -62,8 +67,16 @@ class _HubScreenState extends State<HubScreen> {
 
   // Outside the five tabs are Life, People, Path, Wealth and Me; inside
   // prison they become Cell, Visits, File, Canteen and ID (inside_tabs.dart).
-  static List<(IconData, IconData, String)> get _destinations =>
-      NF.prison ? insideDestinations : _outside;
+  static List<(IconData, IconData, String)> get _destinations {
+    if (NF.prison) return insideDestinations;
+    // A Legend keeps the five tabs, drawn with its own icons.
+    final look = activeLegendLook;
+    if (look == null) return _outside;
+    return [
+      for (var i = 0; i < _outside.length; i++)
+        (look.nav[i].$1, look.nav[i].$2, _outside[i].$3),
+    ];
+  }
 
   static const _outside = [
     (Icons.auto_stories_outlined, Icons.auto_stories, 'Life'),
@@ -359,6 +372,8 @@ class _Header extends StatelessWidget {
           ? NF.danger
           : upperEchelon(life) && life.prison == null
           ? Gilt.gold
+          : NF.legend != null
+          ? NF.blue
           : const Color(0xFF5EE6A8),
     );
     return Row(
@@ -415,7 +430,7 @@ class _Header extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.monitor_heart_rounded,
                         size: 14,
                         color: NF.danger,
@@ -479,11 +494,11 @@ class _Header extends StatelessWidget {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: (NF.gilded ? Gilt.gold : const Color(0xFF5EE6A8))
+                      color: (NF.gilded ? Gilt.gold : NF.legend != null ? NF.blue : const Color(0xFF5EE6A8))
                           .withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: (NF.gilded ? Gilt.gold : const Color(0xFF5EE6A8))
+                        color: (NF.gilded ? Gilt.gold : NF.legend != null ? NF.blue : const Color(0xFF5EE6A8))
                             .withValues(alpha: NF.gilded ? 0.7 : 0.35),
                       ),
                     ),
@@ -497,6 +512,8 @@ class _Header extends StatelessWidget {
                           size: 14,
                           color: NF.gilded
                               ? Gilt.gold
+                              : NF.legend != null
+                              ? NF.blue
                               : const Color(0xFF5EE6A8),
                         ),
                         const SizedBox(width: 5),
@@ -528,6 +545,8 @@ class _Header extends StatelessWidget {
                           size: 14,
                           color: NF.gilded
                               ? Gilt.gold
+                              : NF.legend != null
+                              ? NF.blue
                               : const Color(0xFF5EE6A8),
                         ),
                       ],
@@ -917,6 +936,11 @@ class _LifeTabState extends State<_LifeTab> {
           const SizedBox(height: 10),
         ],
         if (life.prison != null) const BarbedWire(),
+        // A Legend life: the thin Chronicle line under the four stats.
+        if (controller.legend != null) ...[
+          ChronicleStrip(life: life, legend: controller.legend!),
+          const SizedBox(height: 6),
+        ],
         const SizedBox(height: 4),
         AnimatedSwitcher(
           duration: motion(context, const Duration(milliseconds: 350)),
@@ -1359,14 +1383,56 @@ class _EventCard extends StatelessWidget {
     final life = controller.life!;
     final engine = controller.engine!;
     final mem = event.remembers != null ? life.flags[event.remembers] : null;
+    // Rewrites stay hidden until their cause is half built (causes.dart).
+    final shown = visibleChoices(life, event);
+    final look = legendLookFor(life);
     final compact =
-        event.choices.length == 3 &&
-        event.choices.every(
+        look == null &&
+        shown.length == 3 &&
+        shown.every(
           (c) =>
               engine.fill(c.label, life).length <= 18 &&
               c.risk == null &&
               c.lockReason(life) == null,
         );
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          event.pivot != null
+              ? 'Turning point · ${life.year}'
+              : '${life.year} · Age ${life.age}',
+          style: look == null
+              ? NF.sora(12, color: NF.orange)
+              : legendHand(look, 19),
+        ),
+        if (event.pivot != null)
+          Text(
+            legendRegistry[life.legendId]?.point(event.pivot!)?.title ?? '',
+            style: NF.sora(22, weight: FontWeight.w700),
+          ),
+        const SizedBox(height: 8),
+        Text(
+          engine.fill(event.text, life),
+          style: NF.sora(17, height: 1.4),
+        ),
+        const SizedBox(height: 14),
+        for (var i = 0; i < shown.length; i++) ...[
+          if (i > 0) const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: _choiceButton(context, shown[i], i, life, engine),
+          ),
+        ],
+      ],
+    );
+    if (look != null) {
+      return Semantics(
+        container: true,
+        liveRegion: true,
+        child: LegendFrame(look: look, child: body),
+      );
+    }
     return Semantics(
       container: true,
       liveRegion: true,
@@ -1446,20 +1512,22 @@ class _EventCard extends StatelessWidget {
             if (compact)
               Row(
                 children: [
-                  for (var i = 0; i < event.choices.length; i++) ...[
+                  for (var i = 0; i < shown.length; i++) ...[
                     if (i > 0) const SizedBox(width: 8),
-                    Expanded(child: _choiceButton(context, i, life, engine)),
+                    Expanded(
+                      child: _choiceButton(context, shown[i], i, life, engine),
+                    ),
                   ],
                 ],
               )
             else
               Column(
                 children: [
-                  for (var i = 0; i < event.choices.length; i++) ...[
+                  for (var i = 0; i < shown.length; i++) ...[
                     if (i > 0) const SizedBox(height: 8),
                     SizedBox(
                       width: double.infinity,
-                      child: _choiceButton(context, i, life, engine),
+                      child: _choiceButton(context, shown[i], i, life, engine),
                     ),
                   ],
                 ],
@@ -1474,13 +1542,16 @@ class _EventCard extends StatelessWidget {
 
   Widget _choiceButton(
     BuildContext context,
+    Choice choice,
     int i,
     Life life,
     GameEngine engine,
   ) {
-    final choice = event.choices[i];
     final lock = choice.lockReason(life);
-    final hint = lock ?? choice.risk;
+    // A rewrite shows its odds band: "Long shot" or "You built for this".
+    final hint =
+        lock ?? (choice.gated ? causeTag(life, choice.causes) : null) ??
+        choice.risk;
     final label = hint == null
         ? Text(engine.fill(choice.label, life), textAlign: TextAlign.center)
         : Column(
@@ -1493,7 +1564,9 @@ class _EventCard extends StatelessWidget {
               Text(
                 lock != null ? '🔒 $lock' : hint,
                 textAlign: TextAlign.center,
-                style: lock != null
+                style: lock == null && choice.gated && legendLookFor(life) != null
+                    ? legendHand(legendLookFor(life)!, 17)
+                    : lock != null
                     ? NF.sora(11, weight: FontWeight.w500, color: NF.orange)
                     : const TextStyle(
                         fontSize: 11,
@@ -1581,6 +1654,10 @@ class _MeTabState extends State<_MeTab> {
       'achievements' => AchievementsScreen(controller: controller),
       'collections' => CollectionsScreen(controller: controller),
       'settings' => SettingsScreen(controller: controller),
+      'codex' when controller.legend != null => CodexScreen(
+        life: controller.life!,
+        legend: controller.legend!,
+      ),
       _ => null,
     };
     if (screen != null) {
@@ -1604,6 +1681,18 @@ class _MeTabState extends State<_MeTab> {
     final now = DateTime.now();
     final goals = goalsFor(now).where((g) => goalDone(p, g.id, now)).length;
     return [
+      // A Legend life: the Codex of what really happened.
+      if (controller.legend != null)
+        (
+          id: 'codex',
+          icon: Icons.menu_book_rounded,
+          label: 'Codex',
+          status:
+              '${life.codex.length} cards · Chronicle ${life.chronicle}%',
+          about: 'What really happened, and what you did',
+          alert: false,
+          dim: false,
+        ),
       (
         id: 'health',
         icon: Icons.monitor_heart_rounded,

@@ -408,6 +408,13 @@ class NF {
   /// The special career whose look the game wears, or null.
   static String? career;
 
+  /// The Legend look the game wears (ui/legend_look.dart), or null.
+  static String? legend;
+
+  /// The body face of the Legend look; Sora otherwise.
+  static String _font = 'Sora';
+  static String get font => _font;
+
   /// Picks the look: prison wins over everything, then the Crime page and
   /// the Real estate page (only while open), then riches, then a special
   /// career's look ([careerLooks]).
@@ -417,9 +424,21 @@ class NF {
     bool sunset = false,
     bool alley = false,
     String? career,
+    String? legend,
+    NFPalette? legendPalette,
+    String? legendFont,
   }) {
     final c = careerLooks[career];
-    NF.career = prison || alley || sunset || rich || c == null ? null : career;
+    // A Legend's look wins over a career look; prison, the Crime and Real
+    // estate pages and riches still win over both (until Phase 2).
+    final lg = prison || alley || sunset || rich || legendPalette == null
+        ? null
+        : legend;
+    NF.legend = lg;
+    _font = lg == null ? 'Sora' : (legendFont ?? 'Sora');
+    NF.career = prison || alley || sunset || rich || c == null || lg != null
+        ? null
+        : career;
     _p = prison
         ? yardTime
         : alley
@@ -428,8 +447,13 @@ class NF {
         ? sunsetStrip
         : rich
         ? gildedLook
+        : lg != null
+        ? legendPalette!
         : c?.palette ?? nightFeed;
   }
+
+  /// True when the look is light (a Legend's parchment).
+  static bool get light => bg.computeLuminance() > 0.4;
 
   static Color get bg => _p.bg;
   static Color get surface => _p.surface;
@@ -443,7 +467,13 @@ class NF {
   static Color get soft => _p.soft;
   static Color get blue => _p.blue;
   static Color get orange => _p.orange;
-  static const danger = Color(0xFFFF8A8A);
+  /// Bad news: soft red, or a deep red chalk on a Legend's parchment.
+  static Color get danger =>
+      legend != null ? const Color(0xFF9E2B1E) : const Color(0xFFFF8A8A);
+
+  /// Good news: mint, or verdigris on a Legend's parchment.
+  static Color get good =>
+      legend != null ? const Color(0xFF4F6B2F) : const Color(0xFF5EE6A8);
 
   /// The chalk handwriting and stencil faces used for prison decals.
   static TextStyle chalk(double size, {Color? color}) => TextStyle(
@@ -467,7 +497,9 @@ class NF {
     Color? color,
     double? height,
   }) => TextStyle(
-    fontFamily: 'Sora',
+    fontFamily: _font,
+    // Signs a period face lacks (−, ★) fall back to Sora.
+    fontFamilyFallback: _font == 'Sora' ? null : const ['Sora'],
     fontSize: size,
     fontWeight: weight,
     fontVariations: [FontVariation('wght', weight.value.toDouble())],
@@ -478,25 +510,34 @@ class NF {
   static ThemeData theme() {
     final base = ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: light ? Brightness.light : Brightness.dark,
       scaffoldBackgroundColor: bg,
-      fontFamily: 'Sora',
+      fontFamily: _font,
       // Plain ripple: avoids loading the ink_sparkle shader on the web.
       splashFactory: InkRipple.splashFactory,
-      colorScheme: ColorScheme.dark(
-        primary: blue,
-        secondary: orange,
-        surface: surface,
-        onPrimary: bg,
-        onSecondary: bg,
-        onSurface: text,
-      ),
+      colorScheme: light
+          ? ColorScheme.light(
+              primary: blue,
+              secondary: orange,
+              surface: surface,
+              onPrimary: bg,
+              onSecondary: bg,
+              onSurface: text,
+            )
+          : ColorScheme.dark(
+              primary: blue,
+              secondary: orange,
+              surface: surface,
+              onPrimary: bg,
+              onSecondary: bg,
+              onSurface: text,
+            ),
     );
     return base.copyWith(
       textTheme: base.textTheme.apply(
         bodyColor: text,
         displayColor: text,
-        fontFamily: 'Sora',
+        fontFamily: _font,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: nav,

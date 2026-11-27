@@ -115,7 +115,7 @@ void main() {
       final e = linkedEngine();
       expect(
         historyColumn(2024).first,
-        '525 years ago, milan held against France, with Vespri money behind its walls.',
+        '525 years ago, Milan held against France, with Vespri money behind its walls.',
       );
       final mods = e.world.modsFor(2024, 'Italy', 'Rome', 'Rossi');
       expect(mods['happiness'], 1);

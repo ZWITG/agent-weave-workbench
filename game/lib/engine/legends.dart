@@ -357,7 +357,8 @@ List<String> afterTimelineChoice(
   }
   final legend = legendRegistry[life.legendId];
   if (event.pivot != null) {
-    final kind = choice.canon
+    // A rewrite that fails its odds leaves history as it was.
+    final kind = choice.canon || (choice.gated && !success)
         ? 'canon'
         : (choice.rewrites != null && success ? 'rewritten' : 'other');
     life.pivots[event.pivot!] = choice.chronicle != null && kind == 'other'

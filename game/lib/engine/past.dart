@@ -269,8 +269,12 @@ List<PastEvent> anniversaries(int year) => [
 
 /// "525 years ago, Milan held against France."
 String historyLine(PastEvent e, int year) {
-  final t = e.text;
-  return '${year - e.year} years ago, ${t[0].toLowerCase()}${t.substring(1)}${t.endsWith('.') ? '' : '.'}';
+  var t = e.text;
+  // "The Vespri..." reads "the Vespri..." mid-sentence; names stay.
+  if (RegExp(r'^(The|A|An) ').hasMatch(t)) {
+    t = '${t[0].toLowerCase()}${t.substring(1)}';
+  }
+  return '${year - e.year} years ago, $t${t.endsWith('.') ? '' : '.'}';
 }
 
 /// The "From history" column for a year: anniversaries first, then the

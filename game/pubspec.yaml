@@ -23,6 +23,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/storylets/
+    - assets/eras/
+    - assets/legends/
+    - assets/past/
     - assets/sounds/
     - assets/homes/
     - assets/fonts/OFL.txt
@@ -38,6 +41,11 @@ flutter:
       fonts:
         - asset: assets/fonts/StardosStencil-Bold.ttf
           weight: 700
+    - family: IMFellDWPica
+      fonts:
+        - asset: assets/fonts/IMFellDWPica-Regular.ttf
+        - asset: assets/fonts/IMFellDWPica-Italic.ttf
+          style: italic
     - family: Playfair
       fonts:
         - asset: assets/fonts/PlayfairDisplay-Variable.ttf

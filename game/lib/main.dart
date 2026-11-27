@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import 'game_controller.dart';
 import 'theme.dart';
+import 'ui/legend_look.dart';
 import 'ui/intro.dart';
 import 'ui/hub_screen.dart';
 import 'ui/new_life_screen.dart';
@@ -56,6 +57,11 @@ class RelivableApp extends StatelessWidget {
       alley: l != null && l.alive && controller.alleyLook,
       // Special careers wear their own look (career_curtain.dart).
       career: controller.profile.careerLooks ? careerLookId(l) : null,
+      // A Legend life wears its Legend's look (ui/legend_look.dart).
+      // It stays on after death, for the Codex, the Fate and the recap.
+      legend: legendLookFor(l)?.id,
+      legendPalette: legendLookFor(l)?.palette,
+      legendFont: legendLookFor(l)?.bodyFont,
     );
     return MaterialApp(
       title: 'Relivable',
