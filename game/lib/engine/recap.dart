@@ -49,7 +49,8 @@ Funeral funeralFor(Life l) {
           .where((m) => m.startsWith('funeral:'))
           .map((m) => m.substring(8))
           .firstOrNull ??
-      'cremation';
+      // Before the modern age, a churchyard burial.
+      (l.era != null ? 'burial' : 'cremation');
   final people =
       l.npcs
           .where((n) => n.alive && n.circle != 'Pets' && n.circle != 'Prison')

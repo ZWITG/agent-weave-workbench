@@ -112,22 +112,35 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                       seed: dailySeed(DateTime.now()),
                     ),
                   ),
-                  // Legends (test): debug builds only until the store comes
-                  // in Phase 5.
-                  if (kDebugMode) ...[
-                    const SizedBox(height: 10),
-                    for (final l in widget.controller.playableLegends)
-                      OutlinedButton.icon(
-                        style: secondaryButton().copyWith(
-                          minimumSize: const WidgetStatePropertyAll(
-                            Size.fromHeight(52),
-                          ),
+                  // Legends: Leonardo is a free prologue preview until the
+                  // store comes in Phase 5.
+                  const SizedBox(height: 10),
+                  for (final l in widget.controller.playableLegends)
+                    OutlinedButton.icon(
+                      style: secondaryButton().copyWith(
+                        minimumSize: const WidgetStatePropertyAll(
+                          Size.fromHeight(52),
                         ),
-                        icon: const Icon(Icons.history_edu_rounded),
-                        label: Text('Legends (test) · ${l.name}'),
-                        onPressed: () =>
-                            widget.controller.startLegendLife(l.id),
                       ),
+                      icon: const Icon(Icons.history_edu_rounded),
+                      label: Text(
+                        l.test
+                            ? 'Legends (test) · ${l.name}'
+                            : 'Legends · ${l.name} (free prologue preview)',
+                      ),
+                      onPressed: () => widget.controller.startLegendLife(l.id),
+                    ),
+                  // A second chance to link the last Legend's past.
+                  if (widget.controller.lastLegendPast != null &&
+                      !widget.controller.pastLinked)
+                    TextButton(
+                      onPressed: () =>
+                          setState(widget.controller.linkLastLegendPast),
+                      child: const Text(
+                        "Make your last Legend's life your world's history",
+                      ),
+                    ),
+                  if (kDebugMode)
                     TextButton(
                       onPressed: () => widget.controller
                           .toggleSamplePast()
@@ -138,15 +151,6 @@ class _NewLifeScreenState extends State<NewLifeScreen> {
                             : 'Link the sample past (debug)',
                       ),
                     ),
-                    if (widget.controller.lastLegendPast != null &&
-                        !widget.controller.pastLinked)
-                      TextButton(
-                        onPressed: () => setState(
-                          widget.controller.linkLastLegendPast,
-                        ),
-                        child: const Text("Link the last Legend's past (debug)"),
-                      ),
-                  ],
                   const SizedBox(height: 18),
                   NFCard(
                     child: Column(

@@ -33,7 +33,7 @@ void main() {
     final e = timelineEngine(world: world);
     final before = jsonEncode(world.toJson());
     final era = eraRegistry['renaissance']!;
-    final leo = legendRegistry['leonardo_test']!;
+    final leo = legendRegistry['leonardo']!;
     final bad = anachronismsOf(era);
     final fates = <String, int>{};
     for (var seed = 0; seed < 200; seed++) {

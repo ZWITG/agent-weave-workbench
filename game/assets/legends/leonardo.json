@@ -1,7 +1,7 @@
 {
-  "id": "leonardo_test",
-  "test": true,
-  "name": "Leonardo da Vinci (test)",
+  "id": "leonardo",
+  "test": false,
+  "name": "Leonardo da Vinci",
   "era": "renaissance",
   "look": "leonardo",
   "firstName": "Leonardo",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/dynasty.dart';
+import '../engine/legends.dart';
 import '../engine/lifespan.dart';
 import '../engine/models.dart';
 import '../engine/recap.dart';
@@ -240,7 +241,21 @@ class RecapScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        if (mine.isEmpty)
+                        // A Legend: the Fate this life met, and how close
+                        // it stayed to history.
+                        if (legendFate(life) case final f?) ...[
+                          Text(
+                            f.title,
+                            style: NF.sora(16, weight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(f.text, style: NF.sora(14, color: NF.soft)),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Chronicle ${life.chronicle}%: how close you stayed to history.',
+                            style: NF.sora(13, color: NF.muted),
+                          ),
+                        ] else if (mine.isEmpty)
                           Text(
                             'The papers never wrote about you. The people who loved you will remember.',
                             style: NF.sora(14, color: NF.soft),
@@ -282,8 +297,35 @@ class RecapScreen extends StatelessWidget {
                         onPressed: () => showRewind(context, controller),
                       ),
                     ),
-                  _dynasty(context, life),
-                  const SizedBox(height: 10),
+                  if (life.legendId == null) ...[
+                    _dynasty(context, life),
+                    const SizedBox(height: 10),
+                  ],
+                  // A Legend's timeline can become the modern world's
+                  // history (past.dart): its house, feuds and inventions.
+                  if (life.legendId != null && life.fate != null) ...[
+                    FilledButton.icon(
+                      style: primaryButton().copyWith(
+                        minimumSize: const WidgetStatePropertyAll(
+                          Size.fromHeight(56),
+                        ),
+                      ),
+                      icon: const Icon(Icons.auto_stories_rounded),
+                      label: const Text("Make this your world's history"),
+                      onPressed: () {
+                        controller.endLife();
+                        controller.linkLastLegendPast();
+                      },
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Your modern lives will be born into the world this '
+                      'life left behind: its family, feuds and inventions.',
+                      textAlign: TextAlign.center,
+                      style: NF.sora(12, color: NF.muted),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   FilledButton(
                     style: orangeButton().copyWith(
                       minimumSize: const WidgetStatePropertyAll(
@@ -295,7 +337,9 @@ class RecapScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Your world remembers this life. The next one starts in ${life.year}.',
+                    life.legendId != null
+                        ? 'Your modern world carries on as it was unless you make this its history.'
+                        : 'Your world remembers this life. The next one starts in ${life.year}.',
                     textAlign: TextAlign.center,
                     style: NF.sora(12, color: NF.muted),
                   ),

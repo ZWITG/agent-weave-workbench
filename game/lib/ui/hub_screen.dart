@@ -1,4 +1,5 @@
 
+import 'legend_soon.dart';
 import '../engine/causes.dart';
 import '../engine/legends.dart';
 import 'chronicle_strip.dart';
@@ -125,8 +126,14 @@ class _HubScreenState extends State<HubScreen> {
         InmateIdTab(controller: c),
       ] else ...[
         PeopleTab(controller: c),
-        PathTab(controller: c),
-        WealthTab(controller: c),
+        // A Legend preview: no modern careers, shares or shops in 1470.
+        if (life.legendId != null) ...[
+          LegendSoonTab(life: life, kind: 'path'),
+          LegendSoonTab(life: life, kind: 'wealth'),
+        ] else ...[
+          PathTab(controller: c),
+          WealthTab(controller: c),
+        ],
         _MeTab(controller: c),
       ],
     ];
@@ -150,7 +157,9 @@ class _HubScreenState extends State<HubScreen> {
             onFame: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => FameScreen(controller: c)),
             ),
-            onCareer: () => openCareerHub(context, c),
+            onCareer: life.legendId != null
+                ? () => _goTab(2)
+                : () => openCareerHub(context, c),
           ),
           Expanded(
             child: IndexedStack(index: _tab, children: tabs),
@@ -198,11 +207,16 @@ class _HubScreenState extends State<HubScreen> {
                     ),
                   ),
                   padding: const EdgeInsets.only(top: 16),
-                  child: ActivitiesPanel(
-                    controller: c,
-                    scrollController: _dockScroll,
-                    docked: true,
-                  ),
+                  child: life.legendId != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: LegendSoonCard(life: life, kind: 'activities'),
+                        )
+                      : ActivitiesPanel(
+                          controller: c,
+                          scrollController: _dockScroll,
+                          docked: true,
+                        ),
                 ),
               ],
             ),
@@ -244,6 +258,7 @@ class _HubScreenState extends State<HubScreen> {
   void _nextToast() {
     if (!mounted || _toast != null || c.toasts.isEmpty) return;
     final text = c.toasts.removeAt(0);
+    final look = activeLegendLook;
     final entry = OverlayEntry(
       builder: (context) => Positioned(
         top: MediaQuery.of(context).padding.top + 12,
@@ -251,19 +266,39 @@ class _HubScreenState extends State<HubScreen> {
         right: 16,
         child: Semantics(
           liveRegion: true,
+          // On a Legend's parchment the toast is a paper slip with an ink
+          // rule, not a dark card with a black shadow.
           child: Material(
-            color: NF.card,
-            elevation: 8,
+            color: look?.cardTop ?? NF.card,
+            elevation: look == null ? 8 : 0,
             borderRadius: BorderRadius.circular(16),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: NF.orange.withValues(alpha: 0.6)),
+                border: Border.all(
+                  color: look?.ink ?? NF.orange.withValues(alpha: 0.6),
+                  width: look == null ? 1 : 1.2,
+                ),
+                gradient: look == null
+                    ? null
+                    : LinearGradient(colors: [look.cardTop, look.cardBottom]),
+                boxShadow: look == null
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: look.ink.withValues(alpha: 0.18),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
               ),
               child: Row(
                 children: [
-                  Icon(Icons.emoji_events_rounded, color: NF.orange),
+                  Icon(
+                    Icons.emoji_events_rounded,
+                    color: look?.accent ?? NF.orange,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -300,6 +335,20 @@ class _HubScreenState extends State<HubScreen> {
   /// Opens the Activities panel (swipe up on the bottom bar, or tap it).
   void _openSearch(BuildContext context, {bool focusSearch = false}) {
     Sound.instance.whoosh();
+    final life = c.life;
+    if (life != null && life.legendId != null) {
+      // A Legend preview has no modern activities.
+      showModalBottomSheet(
+        context: context,
+        builder: (_) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: LegendSoonCard(life: life, kind: 'activities'),
+          ),
+        ),
+      );
+      return;
+    }
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

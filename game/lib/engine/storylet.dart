@@ -42,7 +42,7 @@ class Storylet {
   /// Only in timeline lives of this era ("renaissance").
   final String? era;
 
-  /// Only in this Legend's life ("leonardo_test").
+  /// Only in this Legend's life ("leonardo").
   final String? legend;
 
   /// Only in this calendar year, or between [yearFrom] and [yearTo].

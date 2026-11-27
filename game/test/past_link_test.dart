@@ -88,7 +88,7 @@ void main() {
     test('playing a Legend never touches the modern world', () {
       final e = timelineEngine(world: World(seed: 3));
       final before = jsonEncode(e.world.toJson());
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       final t = newTimeline('renaissance', 1450, legend: leo.id);
       e.timeline = t;
       playOut(e, startLegend(leo, t, seed: 4), (s, shown) => 0);
@@ -254,7 +254,7 @@ void main() {
   group('A Legend life becomes a past', () {
     test('Leonardo leaves his heirloom, and his company only if rewritten', () {
       final e = timelineEngine();
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       for (final rewrite in [false, true]) {
         PastRecord? rec;
         for (var seed = 0; seed < 40 && rec == null; seed++) {

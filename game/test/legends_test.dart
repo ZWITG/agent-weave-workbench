@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:relivable/engine/causes.dart';
 import 'package:relivable/engine/legends.dart';
 import 'package:relivable/engine/models.dart';
+import 'package:relivable/engine/relationships.dart';
 import 'package:relivable/engine/storylet.dart';
 import 'package:relivable/engine/timeline.dart';
 
@@ -144,7 +145,7 @@ void main() {
   group('Legend runner', () {
     test('turning points fire in their year and the Chronicle follows', () {
       final e = timelineEngine();
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       final t = newTimeline('renaissance', 1450, legend: leo.id);
       e.timeline = t;
       final life = startLegend(leo, t, seed: 3);
@@ -166,7 +167,7 @@ void main() {
 
     test('building the cause makes the rewrite visible and writes a fact', () {
       final e = timelineEngine();
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       var rewrote = 0, shownRewrite = 0;
       for (var seed = 0; seed < 200; seed++) {
         final t = newTimeline('renaissance', 1450, legend: leo.id, seed: seed);
@@ -196,7 +197,7 @@ void main() {
 
     test('without the cause the rewrite never shows', () {
       final e = timelineEngine();
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       for (var seed = 0; seed < 20; seed++) {
         final t = newTimeline('renaissance', 1450, legend: leo.id, seed: seed);
         e.timeline = t;
@@ -214,7 +215,7 @@ void main() {
 
     test('every Fate can be reached', () {
       final e = timelineEngine();
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       final reached = <String>{};
       final strategies = <int Function(Storylet, List<Choice>)>[
         (s, shown) => shown.indexWhere((c) => c.canon).clamp(0, 9),
@@ -247,7 +248,7 @@ void main() {
 
     test('historical people die when history says', () {
       final e = timelineEngine();
-      final leo = legendRegistry['leonardo_test']!;
+      final leo = legendRegistry['leonardo']!;
       final t = newTimeline('renaissance', 1450, legend: leo.id);
       e.timeline = t;
       final life = startLegend(leo, t, seed: 11);
@@ -286,7 +287,7 @@ void main() {
 
     test('Legend fields round-trip', () {
       final l = _blank()
-        ..legendId = 'leonardo_test'
+        ..legendId = 'leonardo'
         ..timelineId = 't1'
         ..era = 'renaissance'
         ..chronicle = 70
@@ -295,7 +296,7 @@ void main() {
       l.pivots['drum_1476'] = 'other:30';
       l.codex.add('drum_1476');
       final back = Life.fromJson(l.toJson());
-      expect(back.legendId, 'leonardo_test');
+      expect(back.legendId, 'leonardo');
       expect(back.timelineId, 't1');
       expect(back.era, 'renaissance');
       expect(back.causes, {'military': 12.0});
@@ -315,5 +316,25 @@ void main() {
       expect(b.currents, {'Science': 12});
       expect(b.log.single, '1499: Milan held');
     });
+  });
+
+  test('the free preview hides modern interactions in an era life', () {
+    final modern = _blank();
+    final era = Life.fromJson(modern.toJson())..era = 'renaissance';
+    final m = interactionsFor(modern).map((i) => i.id).toSet();
+    final e = interactionsFor(era).map((i) => i.id).toSet();
+    expect(m, containsAll(modernOnlyInteractions));
+    expect(e.intersection(modernOnlyInteractions), isEmpty);
+    expect(e, contains('hug'));
+    expect(
+      interactionVariantsFor('spend_time', era).map((v) => v.id),
+      isNot(contains('film')),
+    );
+    expect(
+      interactionVariantsFor('spend_time', modern).map((v) => v.id),
+      contains('film'),
+    );
+    // Leonardo is released: not a test Legend.
+    expect(legendRegistry['leonardo']!.test, isFalse);
   });
 }

@@ -14,7 +14,7 @@ import 'storylet.dart';
 import 'timeline.dart';
 
 /// Every Legend file in assets/legends, in load order.
-const legendFiles = ['leonardo_test.json'];
+const legendFiles = ['leonardo.json'];
 
 /// Loaded Legends by id; filled by the game controller (and tests).
 final Map<String, Legend> legendRegistry = {};
@@ -413,6 +413,11 @@ Fate? pickFate(Life life, Timeline? t) {
   return legend.fates.where((f) => f.fits(life, t)).firstOrNull ??
       legend.fates.last;
 }
+
+/// The Fate a finished Legend life met, if any.
+Fate? legendFate(Life life) => legendRegistry[life.legendId]?.fates
+    .where((f) => f.id == life.fate)
+    .firstOrNull;
 
 /// Ends a Legend life: picks its Fate and writes it to the feed.
 void endLegend(Life life, Timeline? t) {

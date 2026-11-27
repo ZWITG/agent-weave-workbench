@@ -483,7 +483,7 @@ class _PersonSheet extends StatelessWidget {
 
   List<Widget> _group(BuildContext context, String group) {
     final life = controller.life!;
-    final items = interactions
+    final items = interactionsFor(life)
         .where((i) => i.group == group && i.appliesTo(npc))
         .toList();
     final visible = items.where((i) => life.age <= i.maxAge).toList();
@@ -561,7 +561,7 @@ class _PersonSheet extends StatelessWidget {
                   return;
                 }
                 InteractionVariant? how;
-                final ways = interactionVariantsFor(i.id);
+                final ways = interactionVariantsFor(i.id, controller.life);
                 if (ways.isNotEmpty) {
                   how = await pickInteractionVariant(
                     context,
@@ -635,6 +635,6 @@ class _PersonSheet extends StatelessWidget {
 /// Person interactions that match a search ("apologize Leo", "talk to mum").
 List<(Npc, Interaction)> searchInteractions(Life life, String q) => [
   for (final n in life.npcs.where((n) => n.alive))
-    for (final i in interactions)
+    for (final i in interactionsFor(life))
       if (life.age <= i.maxAge && i.appliesTo(n) && i.matches(q, n)) (n, i),
 ];
