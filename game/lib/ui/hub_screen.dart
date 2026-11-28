@@ -1813,11 +1813,11 @@ class _MeTabState extends State<_MeTab> {
         (
           id: 'law',
           icon: Icons.gavel_rounded,
-          label: 'The law',
+          label: 'Crime and the law',
           status: eraHeat(life) == 0
               ? 'Nothing against you'
               : 'Heat ${eraHeat(life)} of 5',
-          about: 'Denunciations, the night streets and your record',
+          about: 'Crimes to commit, denunciations, heat and your record',
           alert: eraHeat(life) >= 3,
           dim: false,
         ),

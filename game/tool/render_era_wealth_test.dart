@@ -170,6 +170,9 @@ void main() {
     await t.tap(find.textContaining('What do you want').first, warnIfMissed: false);
     await t.pump(const Duration(milliseconds: 600));
     await _shot(t, key, '04_leonardo_activities');
+    await t.tap(find.text('Crime').first, warnIfMissed: false);
+    await t.pump(const Duration(milliseconds: 600));
+    await _shot(t, key, '04b_leonardo_crime_filter');
     await t.pump(const Duration(seconds: 10));
   });
 

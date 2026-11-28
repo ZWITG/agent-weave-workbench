@@ -136,7 +136,7 @@ void main() {
   testWidgets('Leonardo: The law', (t) async {
     final (c, key) = await leo(t, h: 1500);
     await show(t, c, key);
-    await me(t, 'The law');
+    await me(t, 'Crime and the law');
     await _shot(t, key, '03_leonardo_law');
     await t.pump(const Duration(seconds: 10));
   });
@@ -252,7 +252,7 @@ void main() {
     await ordinary(t, c, 'fez', 1500, 22, city: 'Fez');
     c.life!.eraWorld['heat'] = 1;
     await show(t, c, key);
-    await me(t, 'The law');
+    await me(t, 'Crime and the law');
     await _shot(t, key, '10_fez_law');
     await t.pump(const Duration(seconds: 10));
   });

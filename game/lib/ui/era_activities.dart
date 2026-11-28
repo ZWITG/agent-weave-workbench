@@ -33,13 +33,14 @@ class EraActivitiesPanel extends StatefulWidget {
   State<EraActivitiesPanel> createState() => _EraActivitiesPanelState();
 }
 
-const _kinds = ['All', 'Feasts', 'Sport', 'Leisure', 'Faith', 'Travel'];
+const _kinds = ['All', 'Feasts', 'Sport', 'Leisure', 'Crime', 'Faith', 'Travel'];
 
 String _kindOf(String id) => switch (id) {
   'era_carnival' || 'era_san_giovanni' || 'era_procession' || 'era_playhouse' => 'Feasts',
   'era_calcio' || 'era_joust' || 'era_tilt' || 'era_pallacorda' || 'era_ride' => 'Sport',
   'era_pilgrimage' || 'era_shrine' || 'era_hajj' => 'Faith',
   'era_journey' || 'era_market' => 'Travel',
+  'era_night' => 'Crime',
   _ => 'Leisure',
 };
 
