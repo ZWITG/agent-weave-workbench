@@ -25,7 +25,8 @@ class EraLawScreen extends StatelessWidget {
       final drum = court['drum'] as String;
       final heat = eraHeat(life);
       final group = era.regionOf(life).group;
-      final curfew = group == 'italy' || group == 'islands' || group == 'england';
+      final curfew =
+          group == 'italy' || group == 'islands' || group == 'england';
       final lock = eraLawLock(life);
       final record = eraRecord(life);
       final bribe = eraBribe(life, era);
@@ -89,9 +90,9 @@ class EraLawScreen extends StatelessWidget {
           EraCard(
             life: life,
             title: curfew ? 'After curfew' : 'After dark',
-            note: lock == null
-                ? 'Each one adds heat. The more heat, the more eyes on you.'
-                : lock,
+            note:
+                lock ??
+                'Each one adds heat. The more heat, the more eyes on you.',
             children: [
               for (final (i, cr) in eraCrimes(life, era).indexed)
                 EraRow(
@@ -104,7 +105,8 @@ class EraLawScreen extends StatelessWidget {
                     _ => 'High',
                   },
                   filled: cr.heat >= 3,
-                  lock: lock ??
+                  lock:
+                      lock ??
                       (life.usedActions.contains('era_crime_${cr.id}')
                           ? 'Not again this year.'
                           : null),
@@ -121,7 +123,8 @@ class EraLawScreen extends StatelessWidget {
                 sub:
                     'Clears one denunciation · ${moneyIn(bribe.cost, life.country)}',
                 pill: '−1',
-                lock: lock ??
+                lock:
+                    lock ??
                     (heat == 0
                         ? 'Nothing against your name to lose.'
                         : life.money < bribe.cost

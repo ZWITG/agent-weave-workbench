@@ -28,7 +28,7 @@ class EraHealthScreen extends StatelessWidget {
       final healers = eraHealers(life, era);
       final plague = eraPlagueHere(life, era);
       final chosen = eraPlagueChoice(life);
-      final money = (int f) => f == 0 ? 'free' : moneyIn(f, life.country);
+      String money(int f) => f == 0 ? 'free' : moneyIn(f, life.country);
       return EraPage(
         life: life,
         kicker: 'Health · ${life.city} ${life.year}',
