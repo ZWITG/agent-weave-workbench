@@ -9,9 +9,13 @@ import 'dart:math';
 import 'currency.dart';
 import 'era_faith.dart';
 import 'era_health.dart';
+import 'era_homes.dart';
+import 'era_houses.dart';
 import 'era_justice.dart';
 import 'era_news.dart';
 import 'era_path.dart';
+import 'era_people.dart';
+import 'era_wealth.dart';
 import 'models.dart';
 import 'storylet.dart';
 import 'timeline.dart';
@@ -471,6 +475,12 @@ class EraRules {
     this.lawData = const {},
     this.faithData = const {},
     this.newsData = const {},
+    this.wealthData = const {},
+    this.homesData = const {},
+    this.marketData = const {},
+    this.activityData = const [],
+    this.housesData = const {},
+    this.peopleData = const {},
   });
 
   /// Phase 2C data, read by era_health, era_justice, era_faith and
@@ -480,6 +490,15 @@ class EraRules {
   final Map<String, dynamic> lawData;
   final Map<String, dynamic> faithData;
   final Map<String, dynamic> newsData;
+
+  /// Phase 2D: banks, lenders and ventures; homes; the market; activities;
+  /// the Great Houses; and people's natures and moments.
+  final Map<String, dynamic> wealthData;
+  final Map<String, dynamic> homesData;
+  final Map<String, dynamic> marketData;
+  final List<Map<String, dynamic>> activityData;
+  final Map<String, dynamic> housesData;
+  final Map<String, dynamic> peopleData;
 
   /// The era's moneys by id ("florin", "lsd", "nzimbu").
   final Map<String, EraCurrency> currencies;
@@ -636,6 +655,15 @@ class EraRules {
       lawData: Map<String, dynamic>.from(j['law'] ?? const {}),
       faithData: Map<String, dynamic>.from(j['faith'] ?? const {}),
       newsData: news,
+      wealthData: Map<String, dynamic>.from(j['wealth'] ?? const {}),
+      homesData: Map<String, dynamic>.from(j['homes'] ?? const {}),
+      marketData: Map<String, dynamic>.from(j['market'] ?? const {}),
+      activityData: [
+        for (final a in (j['activities'] as List?) ?? const [])
+          Map<String, dynamic>.from(a as Map),
+      ],
+      housesData: Map<String, dynamic>.from(j['houses'] ?? const {}),
+      peopleData: Map<String, dynamic>.from(j['people'] ?? const {}),
       storylets: [
         for (final s in (j['events'] as List?) ?? const [])
           Storylet.fromJson({'era': j['id'], ...Map<String, dynamic>.from(s)}),
@@ -711,6 +739,11 @@ List<String> eraYear(Life life, EraRules era, Timeline t, Random rng) {
   out.addAll(eraFaithYear(life, era, rng));
   out.addAll(eraLawYear(life, era, rng));
   out.addAll(eraHealthYear(life, era, rng));
+  // Money, homes, the Great Houses and people (Phase 2D).
+  if (!eraInside(life)) out.addAll(eraWealthYear(life, era, rng));
+  out.addAll(eraHomesYear(life, era, rng));
+  out.addAll(eraHousesYear(life, era));
+  out.addAll(eraPeopleYear(life, era, rng));
   return out;
 }
 

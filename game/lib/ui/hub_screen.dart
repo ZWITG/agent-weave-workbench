@@ -1,14 +1,15 @@
+import 'era_activities.dart';
 import 'era_path_tab.dart';
 import 'era_faith_screen.dart';
 import 'era_health_screen.dart';
 import 'era_law_screen.dart';
 import 'era_news_screen.dart';
 import 'era_prison_tabs.dart';
+import 'era_wealth_tab.dart';
 import '../engine/era_justice.dart' show eraInside, eraHeat;
 import '../engine/era_faith.dart' show eraFaithName;
 import '../engine/era_health.dart' show eraIllnesses;
 import '../engine/eras.dart' show eraRegistry;
-import 'legend_soon.dart';
 import '../engine/causes.dart';
 import '../engine/legends.dart';
 import 'chronicle_strip.dart';
@@ -149,7 +150,7 @@ class _HubScreenState extends State<HubScreen> {
         // A Legend preview: no modern careers, shares or shops in 1470.
         if (life.era != null) ...[
           EraPathTab(controller: c),
-          LegendSoonTab(life: life, kind: 'wealth'),
+          EraWealthTab(controller: c),
         ] else ...[
           PathTab(controller: c),
           WealthTab(controller: c),
@@ -230,13 +231,9 @@ class _HubScreenState extends State<HubScreen> {
                   ),
                   padding: const EdgeInsets.only(top: 16),
                   child: life.era != null
-                      ? Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: LegendSoonCard(
-                            life: life,
-                            kind: 'activities',
-                            controller: c,
-                          ),
+                      ? EraActivitiesPanel(
+                          controller: c,
+                          scroll: _dockScroll,
                         )
                       : ActivitiesPanel(
                           controller: c,
@@ -363,18 +360,17 @@ class _HubScreenState extends State<HubScreen> {
     Sound.instance.whoosh();
     final life = c.life;
     if (life != null && life.era != null) {
-      // A Legend preview has no modern activities.
+      // An era life has the era's own activities (Phase 2D).
       showModalBottomSheet(
         context: context,
-        builder: (_) => SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: LegendSoonCard(
-              life: life,
-              kind: 'activities',
-              controller: c,
-            ),
-          ),
+        isScrollControlled: true,
+        builder: (_) => DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.85,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          builder: (context, scroll) =>
+              EraActivitiesPanel(controller: c, scroll: scroll),
         ),
       );
       return;

@@ -350,3 +350,11 @@ The first Legend, free as a prologue preview: live Leonardo's life in Renaissanc
 - Schools of the time: abacus school, Latin grammar school, tutors, convents, Qur'an schools, the universities, the Qarawiyyin, Sankore, al-Azhar and the royal school of Mbanza Kongo. What you can read opens or closes doors.
 - Birth status and legitimacy matter, as they did: Leonardo, born outside marriage, can't join the notaries. Every closed door says why.
 - Leonardo's Path wears his codex look; his work follows his story.
+
+## Renaissance wealth, homes and people (28 Nov)
+- The Wealth tab of a Renaissance life is real now: your purse, a bank or a goldsmith or a trusted merchant to keep it, lenders, the Monte di Pietà where it has opened, ventures (a galley, a caravan, a silk shop, later the VOC) and Florence's dowry fund. Banks can fail, as the Medici bank did in 1494.
+- Homes by place: a rented room, a workshop, a townhouse, a villa to flee the plague to, a palazzo; a riad in Fez, a walled compound in Kongo. Leonardo's own homes follow his story.
+- The Great Houses: the richest families of the age in a gold "Palazzo" list (the Medici, the Fugger, the Aqit of Timbuktu and more), rising and falling with history. Your house can join.
+- An era market: cloth, beasts, books after the press reaches your city, a lute, a sword. Sumptuary laws can fine you for silk.
+- About twenty era activities, from Carnival and the joust to the stufa, the tavern, pilgrimages and the hajj, each with its own mini-game in an ink scene.
+- People in a Renaissance life are now scenes, not buttons: each person has a nature you learn over time, something on their mind this year, three moments a year, letters and calls, and marriages arranged with a dowry.

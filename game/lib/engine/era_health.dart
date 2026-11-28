@@ -12,6 +12,7 @@ import 'dart:math';
 
 import 'currency.dart';
 import 'era_faith.dart' show eraStanding;
+import 'era_homes.dart' show eraCountryHome;
 import 'era_justice.dart' show eraInside;
 import 'eras.dart';
 import 'legends.dart' show legendRegistry;
@@ -182,13 +183,16 @@ void _cure(Life l, String ailment) =>
 typedef EraPlagueChoice = ({String id, String label, String about, int cost});
 
 List<EraPlagueChoice> eraPlagueChoices(Life l, EraRules era) {
-  final away = l.legendId == 'leonardo' && l.city == 'Florence'
-      ? 'Vinci'
-      : 'the countryside';
-  final cost = max(
-    2,
-    era.price('living_year', era.regionOf(l), l.year) ~/ 3,
-  );
+  // A house in the country (Phase 2D) is free to go to.
+  final villa = eraCountryHome(l, era);
+  final away = villa != null
+      ? 'your ${villa.label.replaceFirst(RegExp('^(A|An|The) '), '').toLowerCase()}'
+      : (l.legendId == 'leonardo' && l.city == 'Florence'
+            ? 'Vinci'
+            : 'the countryside');
+  final cost = villa != null
+      ? 0
+      : max(2, era.price('living_year', era.regionOf(l), l.year) ~/ 3);
   final pest = eraLazaretto(l, era);
   return [
     (

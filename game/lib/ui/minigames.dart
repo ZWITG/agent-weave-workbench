@@ -50,6 +50,27 @@ Future<double?> showMiniGame(
 /// The games each activity rotates between, so the same activity is not
 /// always the same game.
 const miniPools = <String, List<String>>{
+  // Era activities (Phase 2D): one game each.
+  'era_carnival': ['memory', 'timing'],
+  'era_san_giovanni': ['timing', 'memory'],
+  'era_procession': ['timing', 'balance'],
+  'era_calcio': ['lanes', 'reaction'],
+  'era_joust': ['timing', 'balance'],
+  'era_tilt': ['timing', 'reaction'],
+  'era_pallacorda': ['reaction', 'timing'],
+  'era_cards': ['cards', 'memory'],
+  'era_chess': ['memory', 'cards'],
+  'era_tavern': ['reaction', 'cards'],
+  'era_storyteller': ['memory', 'words'],
+  'era_bath': ['breath', 'balance'],
+  'era_music': ['rhythm', 'memory'],
+  'era_dance': ['rhythm', 'memory'],
+  'era_ride': ['balance', 'lanes'],
+  'era_pilgrimage': ['lanes', 'breath'],
+  'era_shrine': ['lanes', 'breath'],
+  'era_hajj': ['lanes', 'breath'],
+  'era_playhouse': ['timing', 'memory'],
+  'era_portrait': ['memory', 'timing'],
   // The Career Hub (career_hub.dart).
   'act_audition': ['coldread', 'memory'],
   'mus_rehearse': ['soundcheck', 'rhythm'],
@@ -104,6 +125,66 @@ String miniIntro(String? activity, String game) =>
     _defaults[game]!.intro;
 
 const _intros = <String, Map<String, String>>{
+  'era_carnival': {
+    'timing': 'Throw the egg as the mask passes: tap inside the green.',
+  },
+  'era_san_giovanni': {
+    'memory': 'Learn the order of the banners, then call them back.',
+  },
+  'era_procession': {
+    'balance': 'Carry your candle steady through the crowd: nudge left and right.',
+  },
+  'era_calcio': {
+    'reaction': 'The ball breaks loose: grab it the moment it shows.',
+  },
+  'era_joust': {
+    'balance': 'Keep your seat as the lance strikes: nudge left and right.',
+  },
+  'era_tilt': {
+    'reaction': 'The ring swings into reach: strike the moment it shows.',
+  },
+  'era_pallacorda': {
+    'timing': 'Strike the ball as it comes off the wall: tap inside the green.',
+  },
+  'era_cards': {
+    'memory': 'Remember the cards as they are laid down, then name them back.',
+  },
+  'era_chess': {
+    'cards': 'Read the board: is your next move stronger or weaker? Three rounds.',
+  },
+  'era_tavern': {
+    'cards': 'Dice at the trestle: will the next throw be higher or lower? Three rounds.',
+  },
+  'era_storyteller': {
+    'words': 'The story is jumbled: set the words right before the candle burns down.',
+  },
+  'era_bath': {
+    'balance': 'Keep your footing on the wet stone: nudge left and right.',
+  },
+  'era_music': {
+    'memory': 'Learn the air by ear, then play it back.',
+  },
+  'era_dance': {
+    'memory': 'Learn the figures of the dance, then step them back in order.',
+  },
+  'era_ride': {
+    'lanes': 'Ride the road: steer clear of carts and ruts.',
+  },
+  'era_pilgrimage': {
+    'breath': 'Pray at each shrine on the way: breathe in, let go at the ring.',
+  },
+  'era_shrine': {
+    'breath': 'Pray at the shrine: breathe in, let go at the ring.',
+  },
+  'era_hajj': {
+    'breath': 'Pray at the station: breathe in, let go at the ring.',
+  },
+  'era_playhouse': {
+    'memory': 'Learn your lines: watch the cues, then give them back.',
+  },
+  'era_portrait': {
+    'timing': 'Hold still for the painter: tap inside the green when he looks up.',
+  },
   'act_audition': {
     'memory': 'Learn the scene: watch the beats, then play them back in order.',
   },
@@ -315,6 +396,83 @@ final _defaults = <String, MiniTheme>{
 
 /// Themes by activity id.
 final miniThemes = <String, MiniTheme>{
+  // Era activities (Phase 2D).
+  'era_carnival': _t(
+    'Find your friends in the crowd: watch the masks, then follow them in order.',
+    pads: ['Moretta', 'Bauta', 'Volto', 'Jester'],
+    stat: 'creativity',
+  ),
+  'era_san_giovanni': _t(
+    'The palio horses round the last bend: cheer when your district\'s horse is in the zone.',
+    button: 'Cheer!',
+    stat: 'charisma',
+  ),
+  'era_procession': _t(
+    'Keep in step with the procession: tap on the bell.',
+    button: 'Step',
+    stat: 'discipline',
+  ),
+  'era_joust': _t(
+    'The knights charge: call the strike the moment the lances meet.',
+    button: 'Now!',
+  ),
+  'era_tilt': _t(
+    'Lower your lance as the marker reaches the shield. Three passes.',
+    button: 'Strike!',
+    stat: 'athleticism',
+  ),
+  'era_calcio': _t(
+    'Carry the ball up the square. Dodge the tacklers.',
+    stat: 'athleticism',
+  ),
+  'era_pallacorda': _t(
+    'Return the ball off the wall the moment it comes.',
+    button: 'Return!',
+    wait: 'Watch…',
+    stat: 'athleticism',
+  ),
+  'era_cards': _t('Primiera: will the next card be higher or lower? Three rounds.'),
+  'era_tavern': _t(
+    'A drunk swings at you across the table: duck the moment he moves.',
+    button: 'Duck!',
+    wait: 'He sways…',
+    stat: 'athleticism',
+  ),
+  'era_chess': _t(
+    'Remember the moves he shows you, then play them back.',
+    pads: ['Shah', 'Firzan', 'Faras', 'Rukh'],
+    stat: 'smarts',
+  ),
+  'era_storyteller': _t(
+    'Follow the tale: remember the order of the heroes.',
+    pads: ['Antar', 'Abla', 'Shayban', 'the Sultan'],
+    stat: 'smarts',
+  ),
+  'era_bath': _t('Breathe with the steam: hold, then let go at the ring.'),
+  'era_music': _t(
+    'Sing your part: tap each voice as it comes in, on the beat.',
+    pads: ['Cantus', 'Altus', 'Tenor', 'Bassus'],
+    stat: 'creativity',
+  ),
+  'era_dance': _t(
+    'Dance to the drums: tap each drum as it sounds.',
+    pads: ['Ngoma', 'Horn', 'Bell', 'Rattle'],
+    stat: 'athleticism',
+  ),
+  'era_ride': _t('Keep your seat over rough ground: nudge left and right.', stat: 'athleticism'),
+  'era_pilgrimage': _t('The road to Rome: keep out of trouble on the way.', stat: 'willpower'),
+  'era_shrine': _t('The road to the shrine: keep out of trouble on the way.', stat: 'willpower'),
+  'era_hajj': _t('With the caravan: stay clear of the heat and the storms.', stat: 'willpower'),
+  'era_playhouse': _t(
+    'Clap at the right moment: when the actor lands his line.',
+    button: 'Clap!',
+    stat: 'charisma',
+  ),
+  'era_portrait': _t(
+    'Study the face: watch the features, then draw them in order.',
+    pads: ['Eyes', 'Mouth', 'Brow', 'Hands'],
+    stat: 'creativity',
+  ),
   'gym': _t(
     'Tap LIFT as many times as you can in 6 seconds. The fitter you are, the fewer reps a top score needs.',
     button: 'LIFT',

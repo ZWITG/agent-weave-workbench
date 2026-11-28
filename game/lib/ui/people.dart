@@ -8,6 +8,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart'
     show OptionRow, pickInteractionVariant, showBusyNotice, showEvent;
+import 'era_people_sheet.dart' show EraPeopleTop, openEraPersonSheet;
 import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
@@ -128,6 +129,7 @@ class _PeopleTabState extends State<PeopleTab> {
               style: NF.sora(14, color: NF.muted),
             ),
         ] else ...[
+          if (life.era != null) EraPeopleTop(controller: widget.controller),
           if (needs.isNotEmpty) ...[
             const HubHeading('Suggested for you', sub: 'People who need you'),
             for (final (n, why) in needs.take(3)) ...[
@@ -328,6 +330,11 @@ Widget _tag(IconData icon, String text, Color color) => Container(
 );
 
 void openPersonSheet(BuildContext context, GameController controller, Npc npc) {
+  // An era life has its own People (era_people_sheet.dart, Phase 2D).
+  if (controller.life?.era != null) {
+    openEraPersonSheet(context, controller, npc);
+    return;
+  }
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,

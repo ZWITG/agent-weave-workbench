@@ -262,7 +262,60 @@ const _cellSkin = MiniSkin(
   ],
 );
 
-MiniSkin skinFor(String? activity) => NF.prison
+/// Era activities (Phase 2D): ink on parchment in a Legend's look (or the
+/// era's colours in an ordinary era life), with a scene for each.
+const _eraScenes = <String, String>{
+  'era_carnival': 'era_masks',
+  'era_san_giovanni': 'era_piazza',
+  'era_procession': 'era_piazza',
+  'era_joust': 'era_lists',
+  'era_tilt': 'era_lists',
+  'era_playhouse': 'era_playhouse',
+  'era_calcio': 'era_field',
+  'era_pallacorda': 'era_court',
+  'era_cards': 'era_table',
+  'era_tavern': 'era_table',
+  'era_chess': 'era_table',
+  'era_storyteller': 'era_table',
+  'era_bath': 'era_bath',
+  'era_music': 'era_staff',
+  'era_dance': 'era_raffia',
+  'era_ride': 'era_hills',
+  'era_pilgrimage': 'era_road',
+  'era_shrine': 'era_road',
+  'era_hajj': 'era_dunes',
+  'era_portrait': 'era_window',
+};
+
+MiniSkin _eraSkin(String activity) => MiniSkin(
+  top: NF.surface,
+  bottom: NF.bg,
+  panel: NF.surface2,
+  accent: NF.orange,
+  onAccent: NF.surface,
+  zone: const Color(0xFF6B7F3A),
+  scene: _eraScenes[activity] ?? 'era_piazza',
+  pads: [NF.blue, const Color(0xFF6B7F3A), const Color(0xFFB8933F), NF.text],
+  player: switch (activity) {
+    'era_hajj' => Icons.directions_walk_rounded,
+    'era_calcio' => Icons.sports_handball_rounded,
+    _ => Icons.hiking_rounded,
+  },
+  hazard: switch (activity) {
+    'era_hajj' => Icons.wb_sunny_outlined,
+    'era_calcio' => Icons.sports_kabaddi_rounded,
+    _ => Icons.terrain_rounded,
+  },
+  marker: switch (activity) {
+    'era_joust' || 'era_tilt' => Icons.flag_rounded,
+    'era_ride' => Icons.pets_rounded,
+    _ => null,
+  },
+);
+
+MiniSkin skinFor(String? activity) => activity != null && _eraScenes.containsKey(activity)
+    ? _eraSkin(activity)
+    : NF.prison
     ? (activity == 'prison_gym' || activity == 'breakout'
           ? _yardSkin
           : _cellSkin)
@@ -530,7 +583,157 @@ class _ScenePainter extends CustomPainter {
         canvas.drawRect(Rect.fromLTWH(0, h * 0.66, w * 0.45, 14), fill);
         _tallies(canvas, Offset(w - 120, h * 0.3), 17, skin.accent);
       default:
-        break;
+        if (skin.scene.startsWith('era_')) _era(canvas, size);
+    }
+  }
+
+  /// The era scenes, drawn in ink.
+  void _era(Canvas canvas, Size size) {
+    final w = size.width, h = size.height;
+    final ink = Paint()
+      ..color = NF.text.withValues(alpha: 0.13)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    final wash = Paint()..color = NF.text.withValues(alpha: 0.05);
+    final rng = Random(skin.scene.hashCode);
+    switch (skin.scene) {
+      case 'era_masks':
+        for (var i = 0; i < 9; i++) {
+          final c = Offset(rng.nextDouble() * w, rng.nextDouble() * h);
+          canvas.drawOval(Rect.fromCenter(center: c, width: 70, height: 44), ink);
+          canvas.drawOval(Rect.fromCenter(center: c + const Offset(-15, -4), width: 16, height: 9), ink);
+          canvas.drawOval(Rect.fromCenter(center: c + const Offset(15, -4), width: 16, height: 9), ink);
+        }
+      case 'era_piazza' || 'era_lists' || 'era_playhouse':
+        // A skyline of towers and banners along the bottom.
+        var x = 0.0;
+        while (x < w) {
+          final tw = 30 + rng.nextDouble() * 40;
+          final th = 60 + rng.nextDouble() * 140;
+          canvas.drawRect(Rect.fromLTWH(x, h - th, tw, th), wash);
+          canvas.drawRect(Rect.fromLTWH(x, h - th, tw, th), ink);
+          for (var b = x + 6; b < x + tw - 6; b += 10) {
+            canvas.drawRect(Rect.fromLTWH(b, h - th - 7, 5, 7), ink);
+          }
+          x += tw + 6;
+        }
+        if (skin.scene == 'era_lists') {
+          canvas.drawLine(Offset(0, h * 0.55), Offset(w, h * 0.55), ink..strokeWidth = 4);
+        }
+        if (skin.scene == 'era_playhouse') {
+          canvas.drawCircle(Offset(w / 2, h * 0.35), w * 0.38, ink);
+          canvas.drawCircle(Offset(w / 2, h * 0.35), w * 0.3, ink);
+        }
+        for (var i = 0; i < 5; i++) {
+          final bx = 40 + i * (w - 80) / 4;
+          canvas.drawLine(Offset(bx, 60), Offset(bx, 120), ink);
+          canvas.drawPath(
+            Path()
+              ..moveTo(bx, 60)
+              ..lineTo(bx + 30, 70)
+              ..lineTo(bx, 82),
+            wash,
+          );
+        }
+      case 'era_field':
+        canvas.drawRect(Rect.fromLTWH(20, 40, w - 40, h - 80), ink);
+        canvas.drawLine(Offset(20, h / 2), Offset(w - 20, h / 2), ink);
+        canvas.drawCircle(Offset(w / 2, h / 2), 50, ink);
+      case 'era_court':
+        canvas.drawLine(Offset(0, h / 2), Offset(w, h / 2), ink..strokeWidth = 3);
+        for (var x = 0.0; x < w; x += 14) {
+          canvas.drawLine(Offset(x, h / 2 - 20), Offset(x, h / 2), ink..strokeWidth = 1);
+        }
+        canvas.drawRect(Rect.fromLTWH(0, 0, w, h * 0.12), wash);
+      case 'era_table':
+        canvas.drawRect(Rect.fromLTWH(0, h * 0.72, w, h * 0.28), wash);
+        canvas.drawLine(Offset(0, h * 0.72), Offset(w, h * 0.72), ink);
+        for (final cx in [w * 0.15, w * 0.85]) {
+          canvas.drawRect(Rect.fromCenter(center: Offset(cx, h * 0.68), width: 10, height: 34), ink);
+          canvas.drawOval(Rect.fromCenter(center: Offset(cx, h * 0.6), width: 8, height: 16), ink);
+        }
+        for (var i = 0; i < 4; i++) {
+          final ax = i * w / 3.5;
+          canvas.drawArc(Rect.fromLTWH(ax, 30, w / 4, 140), pi, pi, false, ink);
+        }
+      case 'era_bath':
+        for (var i = 0; i < 3; i++) {
+          canvas.drawArc(Rect.fromLTWH(i * w / 3 + 8, 40, w / 3 - 16, 200), pi, pi, false, ink);
+        }
+        for (var i = 0; i < 8; i++) {
+          final sx = rng.nextDouble() * w, sy = h * 0.4 + rng.nextDouble() * h * 0.5;
+          final path = Path()..moveTo(sx, sy);
+          for (var k = 0; k < 4; k++) {
+            path.quadraticBezierTo(sx + (k.isEven ? 10 : -10), sy - 10 - k * 14, sx, sy - 20 - k * 14);
+          }
+          canvas.drawPath(path, ink);
+        }
+      case 'era_staff':
+        for (var s = 0; s < 3; s++) {
+          final top = 80.0 + s * (h - 160) / 3;
+          for (var l = 0; l < 5; l++) {
+            canvas.drawLine(Offset(16, top + l * 9), Offset(w - 16, top + l * 9), ink..strokeWidth = 1);
+          }
+          for (var n = 0; n < 7; n++) {
+            final nx = 40 + n * (w - 80) / 7;
+            final ny = top + rng.nextInt(5) * 9.0;
+            canvas.drawOval(Rect.fromCenter(center: Offset(nx, ny), width: 10, height: 7), wash..color = NF.text.withValues(alpha: 0.12));
+            canvas.drawLine(Offset(nx + 5, ny), Offset(nx + 5, ny - 26), ink);
+          }
+        }
+      case 'era_raffia':
+        // A band of raffia-cloth geometry, top and bottom.
+        for (final y in [30.0, h - 70]) {
+          for (var x = 0.0; x < w; x += 40) {
+            canvas.drawPath(
+              Path()
+                ..moveTo(x, y + 40)
+                ..lineTo(x + 20, y)
+                ..lineTo(x + 40, y + 40),
+              ink,
+            );
+            canvas.drawRect(Rect.fromLTWH(x + 14, y + 22, 12, 12), wash..color = NF.text.withValues(alpha: 0.1));
+          }
+        }
+      case 'era_hills' || 'era_road' || 'era_window':
+        final hill = Path()
+          ..moveTo(0, h * 0.75)
+          ..quadraticBezierTo(w * 0.25, h * 0.55, w * 0.5, h * 0.7)
+          ..quadraticBezierTo(w * 0.75, h * 0.85, w, h * 0.62)
+          ..lineTo(w, h)
+          ..lineTo(0, h)
+          ..close();
+        canvas.drawPath(hill, wash);
+        canvas.drawPath(hill, ink);
+        for (final x in [w * 0.12, w * 0.2, w * 0.82]) {
+          final y = h * 0.62;
+          canvas.drawOval(Rect.fromCenter(center: Offset(x, y), width: 14, height: 46), ink);
+        }
+        if (skin.scene == 'era_road') {
+          canvas.drawPath(
+            Path()
+              ..moveTo(w * 0.42, h)
+              ..lineTo(w * 0.5, h * 0.66)
+              ..lineTo(w * 0.58, h),
+            ink,
+          );
+        }
+        if (skin.scene == 'era_window') {
+          canvas.drawRect(Rect.fromLTWH(24, 24, w - 48, h - 48), ink..strokeWidth = 5);
+          canvas.drawLine(Offset(w / 2, 24), Offset(w / 2, h - 24), ink);
+        }
+      case 'era_dunes':
+        for (var i = 0; i < 4; i++) {
+          final y = h * (0.45 + i * 0.13);
+          canvas.drawPath(
+            Path()
+              ..moveTo(0, y)
+              ..quadraticBezierTo(w * 0.3, y - 40, w * 0.6, y)
+              ..quadraticBezierTo(w * 0.8, y + 25, w, y - 10),
+            ink,
+          );
+        }
+        canvas.drawCircle(Offset(w * 0.8, 90), 26, ink);
     }
   }
 

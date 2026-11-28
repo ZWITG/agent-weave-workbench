@@ -5602,7 +5602,12 @@
   "antibiotics",
   "vaccine",
   "ambulance",
-  "pharmacy"
+  "pharmacy",
+  "stock market",
+  "casino",
+  "gym",
+  "cinema",
+  "mortgage"
  ],
  "events": [
   {
@@ -6658,5 +6663,2287 @@
    }
   ],
   "recusantFine": 3
+ },
+ "wealth": {
+  "note": "Rates, prices and fortunes are game approximations from historians' estimates (de Roover, Goldthwaite, Häberlein, Ehrenberg).",
+  "banks": [
+   {
+    "id": "medici",
+    "name": "the Medici bank",
+    "about": "Deposits a discrezione: the bank pays what it chooses",
+    "regions": [
+     "florence"
+    ],
+    "to": 1494,
+    "rate": 0.08,
+    "failYears": [
+     1494
+    ],
+    "lose": 0.7,
+    "fall": "The Medici are driven out of Florence and their bank collapses. Depositors get back what the receivers can find."
+   },
+   {
+    "id": "fl_banco",
+    "name": "a banco on the Mercato Nuovo",
+    "about": "A Florentine merchant bank, about 6% a year",
+    "regions": [
+     "florence"
+    ],
+    "from": 1495,
+    "rate": 0.06,
+    "fail": 0.012,
+    "lose": 0.5
+   },
+   {
+    "id": "rialto",
+    "name": "a bank at the Rialto",
+    "about": "A banco di scritta: your money is a line in the banker's book",
+    "regions": [
+     "venice"
+    ],
+    "to": 1586,
+    "rate": 0.04,
+    "fail": 0.02,
+    "lose": 0.5,
+    "failYears": [
+     1499
+    ],
+    "fall": "A run on the Rialto banks: the Lippomano and the Garzoni close their doors."
+   },
+   {
+    "id": "banco_piazza",
+    "name": "the Banco della Piazza di Rialto",
+    "about": "The Republic's own bank, from 1587: safe, and pays nothing",
+    "regions": [
+     "venice"
+    ],
+    "from": 1587,
+    "rate": 0.0,
+    "fail": 0.0
+   },
+   {
+    "id": "rome_bank",
+    "name": "a Roman bank",
+    "about": "Bankers to the Pope's court, about 7% a year",
+    "regions": [
+     "rome"
+    ],
+    "rate": 0.07,
+    "fail": 0.015,
+    "lose": 0.5
+   },
+   {
+    "id": "it_bank",
+    "name": "a merchant bank",
+    "about": "About 6% a year, if the merchant stays sound",
+    "regions": [
+     "milan",
+     "naples",
+     "sicily",
+     "malta"
+    ],
+    "rate": 0.06,
+    "fail": 0.02,
+    "lose": 0.5
+   },
+   {
+    "id": "goldsmith",
+    "name": "a goldsmith's strongbox",
+    "about": "Kept safe in Cheapside, but it earns nothing",
+    "groups": [
+     "england"
+    ],
+    "to": 1629,
+    "rate": 0.0,
+    "fail": 0.004,
+    "lose": 0.5
+   },
+   {
+    "id": "goldsmith_bank",
+    "name": "a goldsmith-banker",
+    "about": "London goldsmiths now pay interest on deposits",
+    "groups": [
+     "england"
+    ],
+    "from": 1630,
+    "rate": 0.05,
+    "fail": 0.015,
+    "lose": 0.5
+   },
+   {
+    "id": "amana",
+    "name": "a trusted merchant (amana)",
+    "about": "Held in trust, as the law asks: safe, and it earns nothing",
+    "groups": [
+     "maghreb",
+     "egypt",
+     "sahel",
+     "iberia"
+    ],
+    "rate": 0.0,
+    "fail": 0.005,
+    "lose": 0.5
+   },
+   {
+    "id": "household",
+    "name": "your lineage's store",
+    "about": "Shells and cloth kept in the compound, under the elders' eye",
+    "groups": [
+     "kongo"
+    ],
+    "rate": 0.0,
+    "fail": 0.0
+   }
+  ],
+  "lenders": [
+   {
+    "name": "a licensed Jewish banco",
+    "about": "Licensed by the city, about 20% a year",
+    "regions": [
+     "florence"
+    ],
+    "from": 1450,
+    "to": 1570,
+    "rate": 0.2
+   },
+   {
+    "name": "a banco in the Ghetto",
+    "about": "Licensed by the Republic, about 10% a year",
+    "regions": [
+     "venice"
+    ],
+    "from": 1516,
+    "rate": 0.1
+   },
+   {
+    "name": "a Jewish lender",
+    "about": "Licensed, about 15% a year",
+    "regions": [
+     "venice"
+    ],
+    "to": 1515,
+    "rate": 0.15
+   },
+   {
+    "name": "a Jewish lender",
+    "about": "Licensed by the Pope, about 20% a year",
+    "regions": [
+     "rome"
+    ],
+    "rate": 0.2
+   },
+   {
+    "name": "a moneylender",
+    "about": "About 25% a year, and he wants a pledge",
+    "regions": [
+     "florence"
+    ],
+    "from": 1571,
+    "rate": 0.25
+   },
+   {
+    "name": "a moneylender",
+    "about": "About 25% a year, and he wants a pledge",
+    "regions": [
+     "milan",
+     "naples",
+     "sicily",
+     "malta"
+    ],
+    "rate": 0.25
+   },
+   {
+    "name": "a moneylender",
+    "about": "Usury is a sin, but the law allows 10% from 1571",
+    "groups": [
+     "england"
+    ],
+    "rate": 0.1
+   },
+   {
+    "name": "a merchant's goodwill loan (qard)",
+    "about": "No interest, as the law asks. He lends only to people he trusts",
+    "groups": [
+     "maghreb",
+     "egypt",
+     "sahel",
+     "iberia"
+    ],
+    "rate": 0.0,
+    "trust": true
+   },
+   {
+    "name": "the head of your lineage",
+    "about": "No interest. The elders remember who repays",
+    "groups": [
+     "kongo"
+    ],
+    "rate": 0.0,
+    "trust": true
+   }
+  ],
+  "montes": [
+   {
+    "cities": [
+     "Perugia"
+    ],
+    "from": 1462
+   },
+   {
+    "cities": [
+     "Florence"
+    ],
+    "from": 1496
+   },
+   {
+    "cities": [
+     "Milan"
+    ],
+    "from": 1496
+   },
+   {
+    "cities": [
+     "Rome"
+    ],
+    "from": 1539
+   },
+   {
+    "cities": [
+     "Naples"
+    ],
+    "from": 1539
+   },
+   {
+    "cities": [
+     "Palermo"
+    ],
+    "from": 1541
+   },
+   {
+    "cities": [
+     "Ancona",
+     "Viterbo",
+     "Padua",
+     "Verona",
+     "Vicenza",
+     "Pisa",
+     "Prato",
+     "Pistoia"
+    ],
+    "from": 1500
+   }
+  ],
+  "dowryFund": {
+   "name": "the Monte delle doti",
+   "about": "Florence's dowry fund: pay in for a daughter and it grows about 8% a year",
+   "regions": [
+    "florence"
+   ],
+   "from": 1450,
+   "rate": 0.08
+  },
+  "ventures": [
+   {
+    "id": "flanders",
+    "label": "A share in the Flanders galleys",
+    "about": "Wool and alum to Bruges, back next year",
+    "regions": [
+     "florence"
+    ],
+    "to": 1480,
+    "cost": 50,
+    "ret": 1.35,
+    "risk": 0.15,
+    "lost": "The galleys were taken by pirates off Brittany."
+   },
+   {
+    "id": "florence_venture",
+    "label": "A share in a cloth shipment to Antwerp",
+    "about": "Florentine cloth north, back next year",
+    "regions": [
+     "florence"
+    ],
+    "from": 1481,
+    "cost": 50,
+    "ret": 1.3,
+    "risk": 0.12,
+    "lost": "The bales rotted in a wet hold off Marseille."
+   },
+   {
+    "id": "silk",
+    "label": "A share in a Por Santa Maria silk shop",
+    "about": "Safer, slower",
+    "regions": [
+     "florence"
+    ],
+    "cost": 30,
+    "ret": 1.15,
+    "risk": 0.05,
+    "lost": "The shop failed, and its partners fled their debts."
+   },
+   {
+    "id": "alexandria",
+    "label": "A share in the spice galleys to Alexandria",
+    "about": "Pepper and cloves for Venice, back next year",
+    "regions": [
+     "venice"
+    ],
+    "to": 1570,
+    "cost": 60,
+    "ret": 1.5,
+    "risk": 0.2,
+    "lost": "A Turkish squadron took the galleys."
+   },
+   {
+    "id": "venice_grain",
+    "label": "A share in a grain ship from Sicily",
+    "about": "Bread for the city",
+    "regions": [
+     "venice",
+     "naples",
+     "sicily",
+     "malta"
+    ],
+    "cost": 30,
+    "ret": 1.25,
+    "risk": 0.12,
+    "lost": "The ship went down in a winter storm."
+   },
+   {
+    "id": "rome_alum",
+    "label": "A share in the papal alum mines at Tolfa",
+    "about": "Alum for every dyer in Europe",
+    "regions": [
+     "rome"
+    ],
+    "from": 1462,
+    "cost": 40,
+    "ret": 1.25,
+    "risk": 0.08,
+    "lost": "The alum sat unsold in the warehouses all year."
+   },
+   {
+    "id": "milan_arms",
+    "label": "A share in a Milanese armourer's shop",
+    "about": "Helmets and breastplates for every army",
+    "regions": [
+     "milan"
+    ],
+    "cost": 40,
+    "ret": 1.3,
+    "risk": 0.1,
+    "lost": "The buyer was killed in battle, and never paid."
+   },
+   {
+    "id": "portugal",
+    "label": "A share in a Portuguese cargo from the Indies",
+    "about": "Through Florentine merchants in Lisbon. Huge returns, or nothing",
+    "regions": [
+     "florence",
+     "rome"
+    ],
+    "from": 1500,
+    "cost": 100,
+    "ret": 2.0,
+    "risk": 0.3,
+    "lost": "The carrack was lost off the Cape of Good Hope."
+   },
+   {
+    "id": "wool",
+    "label": "A share in the cloth fleet to Antwerp",
+    "about": "English broadcloth across the sea, back next year",
+    "groups": [
+     "england"
+    ],
+    "cost": 30,
+    "ret": 1.2,
+    "risk": 0.08,
+    "lost": "The cloth fleet was seized in a quarrel with the Netherlands."
+   },
+   {
+    "id": "eic",
+    "label": "A subscription to an East India voyage",
+    "about": "Ships of the East India Company, out and back in two years",
+    "groups": [
+     "england"
+    ],
+    "from": 1600,
+    "cost": 100,
+    "ret": 1.8,
+    "risk": 0.25,
+    "lost": "The ships did not come back."
+   },
+   {
+    "id": "voc",
+    "label": "Shares in the Dutch East India Company (VOC)",
+    "about": "Bought through an agent on the Amsterdam exchange",
+    "groups": [
+     "england",
+     "italy"
+    ],
+    "from": 1602,
+    "cost": 100,
+    "ret": 1.3,
+    "risk": 0.06,
+    "lost": "The VOC paid no dividend this year, and the price fell."
+   },
+   {
+    "id": "caravan",
+    "label": "A qirad share in a caravan across the Sahara",
+    "about": "You give the money, a merchant gives the work: you share the profit and the loss",
+    "regions": [
+     "fez",
+     "songhai"
+    ],
+    "cost": 40,
+    "ret": 1.5,
+    "risk": 0.2,
+    "lost": "The caravan lost its way, and the camels with it."
+   },
+   {
+    "id": "redsea",
+    "label": "A qirad share in the Red Sea spice trade",
+    "about": "Pepper from Jeddah to Cairo",
+    "regions": [
+     "cairo"
+    ],
+    "cost": 40,
+    "ret": 1.35,
+    "risk": 0.12,
+    "lost": "The Portuguese took the ship in the Red Sea."
+   },
+   {
+    "id": "copper",
+    "label": "A share in a copper and cloth caravan",
+    "about": "Copper from the north, raffia cloth to the coast",
+    "groups": [
+     "kongo"
+    ],
+    "cost": 20,
+    "ret": 1.3,
+    "risk": 0.12,
+    "lost": "The caravan was robbed on the road to the coast."
+   }
+  ]
+ },
+ "homes": {
+  "note": "Rents and prices are game approximations.",
+  "list": [
+   {
+    "id": "room",
+    "label": "A rented room",
+    "about": "Shared stair, a shutter, the smell of the street",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "rent": 4,
+    "standing": 0
+   },
+   {
+    "id": "bottega",
+    "label": "A workshop with rooms above",
+    "about": "Work and sleep in one place; pupils sleep in the loft",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "rent": 18,
+    "standing": 1,
+    "work": true
+   },
+   {
+    "id": "townhouse",
+    "label": "A townhouse",
+    "about": "Three floors, a loggia, a servant",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "buy": 600,
+    "upkeep": 15,
+    "standing": 2
+   },
+   {
+    "id": "villa",
+    "label": "A villa in the hills",
+    "about": "Vines, olives and clean air in plague years",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "buy": 2000,
+    "upkeep": 40,
+    "standing": 3,
+    "country": true
+   },
+   {
+    "id": "palazzo",
+    "label": "A palazzo",
+    "about": "Rusticated stone, your arms over the door",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "buy": 10000,
+    "upkeep": 200,
+    "standing": 5
+   },
+   {
+    "id": "tenement",
+    "label": "A room in a tenement",
+    "about": "Under the eaves, up a crooked stair",
+    "groups": [
+     "england"
+    ],
+    "rent": 3,
+    "standing": 0
+   },
+   {
+    "id": "timber",
+    "label": "A timber-framed house",
+    "about": "Your own door on the street, a shop below",
+    "groups": [
+     "england"
+    ],
+    "rent": 10,
+    "standing": 1,
+    "work": true
+   },
+   {
+    "id": "cityhouse",
+    "label": "A merchant's house in the City",
+    "about": "Glass in the windows, a hall and a parlour",
+    "groups": [
+     "england"
+    ],
+    "buy": 800,
+    "upkeep": 18,
+    "standing": 2
+   },
+   {
+    "id": "manor",
+    "label": "A manor in the country",
+    "about": "A hall, tenants and a deer park. Far from the plague",
+    "groups": [
+     "england"
+    ],
+    "buy": 3000,
+    "upkeep": 50,
+    "standing": 4,
+    "country": true
+   },
+   {
+    "id": "funduq",
+    "label": "A room in a funduq",
+    "about": "Upstairs from the merchants' courtyard",
+    "groups": [
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "rent": 3,
+    "standing": 0
+   },
+   {
+    "id": "medina",
+    "label": "A house in the medina",
+    "about": "Blank walls on the lane, a courtyard inside",
+    "groups": [
+     "maghreb",
+     "iberia"
+    ],
+    "buy": 300,
+    "upkeep": 6,
+    "standing": 1
+   },
+   {
+    "id": "rab",
+    "label": "Rooms in a rab'",
+    "about": "An apartment block over the shops of the qasaba",
+    "groups": [
+     "egypt"
+    ],
+    "rent": 5,
+    "standing": 1
+   },
+   {
+    "id": "riad",
+    "label": "A riad round a garden",
+    "about": "Orange trees, a fountain and tiled walls",
+    "groups": [
+     "maghreb",
+     "iberia"
+    ],
+    "buy": 1500,
+    "upkeep": 25,
+    "standing": 3
+   },
+   {
+    "id": "qaa",
+    "label": "A qa'a house",
+    "about": "A high hall with a wind-catcher and a fountain",
+    "groups": [
+     "egypt"
+    ],
+    "buy": 1500,
+    "upkeep": 25,
+    "standing": 3
+   },
+   {
+    "id": "estate",
+    "label": "A country estate",
+    "about": "Fields, a well and a walled garden. Far from the plague",
+    "groups": [
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "buy": 2500,
+    "upkeep": 40,
+    "standing": 4,
+    "country": true
+   },
+   {
+    "id": "mudhouse",
+    "label": "A mud-brick house",
+    "about": "Thick walls, a roof terrace, cool at night",
+    "groups": [
+     "sahel"
+    ],
+    "buy": 120,
+    "upkeep": 3,
+    "standing": 1
+   },
+   {
+    "id": "library",
+    "label": "A scholar's house with a library",
+    "about": "Manuscripts in chests, students at the door",
+    "groups": [
+     "sahel"
+    ],
+    "buy": 600,
+    "upkeep": 10,
+    "standing": 3
+   },
+   {
+    "id": "sahel_compound",
+    "label": "A great compound",
+    "about": "Courtyards for a household, horses and guests",
+    "groups": [
+     "sahel"
+    ],
+    "buy": 1500,
+    "upkeep": 25,
+    "standing": 4
+   },
+   {
+    "id": "lineage",
+    "label": "A house in your lineage's compound",
+    "about": "Wattle walls and a thatch, kin all around",
+    "groups": [
+     "kongo"
+    ],
+    "rent": 0,
+    "standing": 0
+   },
+   {
+    "id": "kongo_compound",
+    "label": "A walled compound",
+    "about": "Your own enclosure of woven walls, with a courtyard",
+    "groups": [
+     "kongo"
+    ],
+    "buy": 400,
+    "upkeep": 8,
+    "standing": 2
+   },
+   {
+    "id": "noble_enclosure",
+    "label": "A noble's enclosure",
+    "about": "A maze of walls near the court, with clients and guards",
+    "groups": [
+     "kongo"
+    ],
+    "buy": 2000,
+    "upkeep": 40,
+    "standing": 4
+   },
+   {
+    "id": "kilombo",
+    "label": "A kilombo war camp",
+    "about": "A fortified camp of warriors who follow you",
+    "regions": [
+     "ndongo",
+     "matamba"
+    ],
+    "buy": 600,
+    "upkeep": 20,
+    "standing": 4,
+    "lock": "For a war leader of noble birth",
+    "status": 3
+   }
+  ],
+  "legend": [
+   {
+    "legend": "leonardo",
+    "id": "verrocchio",
+    "label": "A room above Verrocchio's workshop",
+    "about": "Sawdust, plaster and bronze filings; the master's pupils on the stair",
+    "from": 1466,
+    "to": 1481,
+    "cities": [
+     "Florence"
+    ],
+    "rent": 0,
+    "standing": 1,
+    "start": true
+   },
+   {
+    "legend": "leonardo",
+    "id": "vigna",
+    "label": "The vineyard by San Vittore",
+    "about": "Sixteen perches of vines outside Milan, a gift of Ludovico Sforza",
+    "from": 1499,
+    "regions": [
+     "milan"
+    ],
+    "gift": "Ludovico gives you a vineyard outside the Porta Vercellina: sixteen perches of vines, yours to keep.",
+    "value": 300,
+    "standing": 1
+   },
+   {
+    "legend": "leonardo",
+    "id": "cloux",
+    "label": "The manor of Cloux at Amboise",
+    "about": "A red-brick manor near the king's château, with a pension",
+    "from": 1516,
+    "gift": "Francis I gives you the manor of Cloux at Amboise, a short walk from his château, and a pension of a thousand écus a year.",
+    "value": 1500,
+    "standing": 3
+   }
+  ]
+ },
+ "market": {
+  "items": [
+   {
+    "id": "cloak",
+    "label": "A wool cloak",
+    "about": "Good cloth from the Arte della Lana",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "cost": 6,
+    "looks": 1
+   },
+   {
+    "id": "cloak",
+    "label": "A wool cloak",
+    "about": "English broadcloth, warm and plain",
+    "groups": [
+     "england"
+    ],
+    "cost": 5,
+    "looks": 1
+   },
+   {
+    "id": "cloak",
+    "label": "A wool burnous",
+    "about": "A hooded cloak against the cold nights",
+    "groups": [
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "cost": 5,
+    "looks": 1
+   },
+   {
+    "id": "cloak",
+    "label": "A cotton robe",
+    "about": "A wide robe of Djenné cotton",
+    "groups": [
+     "sahel"
+    ],
+    "cost": 4,
+    "looks": 1
+   },
+   {
+    "id": "cloak",
+    "label": "A fine raffia cloth",
+    "about": "Woven as soft as velvet; worn by people of rank",
+    "groups": [
+     "kongo"
+    ],
+    "cost": 4,
+    "looks": 2
+   },
+   {
+    "id": "silk",
+    "label": "A silk doublet",
+    "about": "Florentine silk. The sumptuary officers notice",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "cost": 25,
+    "looks": 4,
+    "sumptuary": true
+   },
+   {
+    "id": "silk",
+    "label": "A silk doublet",
+    "about": "Fine, and the sumptuary laws say who may wear it",
+    "groups": [
+     "england"
+    ],
+    "cost": 25,
+    "looks": 4,
+    "sumptuary": true
+   },
+   {
+    "id": "silk",
+    "label": "A silk kaftan",
+    "about": "From the looms of Fez, with gold thread",
+    "groups": [
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "cost": 20,
+    "looks": 4
+   },
+   {
+    "id": "silk",
+    "label": "Imported cloth from the coast",
+    "about": "European linen and silk, a mark of rank at court",
+    "groups": [
+     "kongo"
+    ],
+    "from": 1491,
+    "cost": 20,
+    "looks": 4
+   },
+   {
+    "id": "copper",
+    "label": "Copper bracelets",
+    "about": "Worn at court and at feasts",
+    "groups": [
+     "kongo"
+    ],
+    "cost": 3,
+    "looks": 2
+   },
+   {
+    "id": "mule",
+    "label": "A mule",
+    "about": "Cheaper journeys, and someone to carry the load",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "cost": 12
+   },
+   {
+    "id": "horse",
+    "label": "A horse",
+    "about": "Ride out and hunt, and travel faster",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "cost": 30,
+    "looks": 1
+   },
+   {
+    "id": "horse",
+    "label": "A horse",
+    "about": "Rare and costly here: a mark of the powerful",
+    "groups": [
+     "sahel"
+    ],
+    "cost": 60,
+    "looks": 2
+   },
+   {
+    "id": "book",
+    "label": "A printed book",
+    "about": "Bought from a stationer",
+    "groups": [
+     "italy",
+     "islands"
+    ],
+    "cost": 3,
+    "smarts": 2,
+    "press": true
+   },
+   {
+    "id": "book",
+    "label": "A printed book",
+    "about": "From a stationer by St Paul's",
+    "groups": [
+     "england"
+    ],
+    "cost": 3,
+    "smarts": 2,
+    "press": true
+   },
+   {
+    "id": "book",
+    "label": "A copied manuscript",
+    "about": "A scholar's copy, bound in leather",
+    "groups": [
+     "maghreb",
+     "iberia",
+     "egypt",
+     "sahel"
+    ],
+    "cost": 8,
+    "smarts": 3
+   },
+   {
+    "id": "paper",
+    "label": "Paper, chalk and pigments",
+    "about": "For drawing and notes",
+    "groups": [
+     "italy",
+     "islands",
+     "england"
+    ],
+    "cost": 2,
+    "creativity": 2,
+    "pages": true
+   },
+   {
+    "id": "lute",
+    "label": "A lute",
+    "about": "For songs at home and at feasts",
+    "groups": [
+     "italy",
+     "islands",
+     "england"
+    ],
+    "cost": 5,
+    "creativity": 1
+   },
+   {
+    "id": "lute",
+    "label": "An oud",
+    "about": "For the nuba, the old music of al-Andalus",
+    "groups": [
+     "maghreb",
+     "iberia",
+     "egypt"
+    ],
+    "cost": 5,
+    "creativity": 1
+   },
+   {
+    "id": "lute",
+    "label": "A slit drum",
+    "about": "For the dances at court",
+    "groups": [
+     "kongo"
+    ],
+    "cost": 2,
+    "creativity": 1
+   },
+   {
+    "id": "sword",
+    "label": "A sword, with a permit",
+    "about": "Carry it by day. After curfew it's still a crime",
+    "groups": [
+     "italy",
+     "islands",
+     "england"
+    ],
+    "cost": 8
+   },
+   {
+    "id": "sword",
+    "label": "A dagger",
+    "about": "A curved koummya with a silver sheath",
+    "groups": [
+     "maghreb"
+    ],
+    "cost": 4,
+    "looks": 1
+   },
+   {
+    "id": "spice",
+    "label": "A pound of pepper",
+    "about": "For a feast, or to sell on",
+    "groups": [
+     "italy",
+     "islands",
+     "england",
+     "maghreb",
+     "egypt"
+    ],
+    "cost": 2
+   }
+  ],
+  "press": {
+   "florence": 1471,
+   "venice": 1469,
+   "rome": 1467,
+   "milan": 1469,
+   "naples": 1471,
+   "sicily": 1478,
+   "malta": 1642,
+   "england": 1476
+  },
+  "market": {
+   "Florence": "the Mercato Vecchio",
+   "Venice": "the Rialto market",
+   "Rome": "Campo de' Fiori",
+   "Milan": "the Broletto",
+   "Naples": "the Mercato",
+   "London": "Cheapside",
+   "Fez": "the souks of Fez el-Bali",
+   "Cairo": "Khan al-Khalili",
+   "Timbuktu": "the market of Timbuktu",
+   "Mbanza Kongo": "the market of Mbanza Kongo",
+   "Granada": "the Alcaicería"
+  }
+ },
+ "activities": [
+  {
+   "id": "era_carnival",
+   "label": "Carnival",
+   "about": "Masks, floats and songs before Lent",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "game": "memory",
+   "cost": 1,
+   "happiness": 6,
+   "good": "You danced behind the floats until dawn, mask on, nobody's son.",
+   "bad": "A mask came off at the wrong moment. Everyone saw who you were with."
+  },
+  {
+   "id": "era_san_giovanni",
+   "label": "The feast of San Giovanni",
+   "about": "The procession, the offerings and the palio",
+   "cities": [
+    "Florence"
+   ],
+   "game": "timing",
+   "happiness": 5,
+   "good": "You cheered the palio horses home from the best spot on the Corso.",
+   "bad": "Crushed in the crowd, you saw nothing but backs."
+  },
+  {
+   "id": "era_procession",
+   "label": "Walk in a procession",
+   "about": "Corpus Domini: banners, candles and the whole city",
+   "groups": [
+    "italy",
+    "islands",
+    "islands"
+   ],
+   "game": "timing",
+   "happiness": 3,
+   "standing": 1,
+   "good": "You carried a candle with your confraternity, in step all the way.",
+   "bad": "Your candle went out in the wind halfway round."
+  },
+  {
+   "id": "era_procession",
+   "label": "Walk in a procession",
+   "about": "Corpus Christi and the guild pageants",
+   "groups": [
+    "england"
+   ],
+   "to": 1547,
+   "game": "timing",
+   "happiness": 3,
+   "standing": 1,
+   "good": "You walked behind your guild's banner as the pageant wagons rolled.",
+   "bad": "Rain soaked the pageant and the banners ran."
+  },
+  {
+   "id": "era_procession",
+   "label": "The Mawlid procession",
+   "about": "Lamps, poems and sweets for the Prophet's birthday",
+   "groups": [
+    "maghreb",
+    "egypt"
+   ],
+   "game": "timing",
+   "happiness": 4,
+   "standing": 1,
+   "good": "You walked with the lamps and the singers until late.",
+   "bad": "The crowd was so thick you went home early."
+  },
+  {
+   "id": "era_calcio",
+   "label": "Calcio in Santa Croce",
+   "about": "Twenty-seven a side, and almost no rules",
+   "cities": [
+    "Florence"
+   ],
+   "game": "lanes",
+   "stat": "athleticism",
+   "men": true,
+   "minAge": 15,
+   "maxAge": 40,
+   "happiness": 6,
+   "health": -2,
+   "good": "You carried the ball through three tacklers and scored. The square roared.",
+   "bad": "You took a fist to the jaw in the first minute."
+  },
+  {
+   "id": "era_joust",
+   "label": "Watch a joust",
+   "about": "Knights in the lists, lances and a crowd",
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "game": "timing",
+   "happiness": 4,
+   "good": "A lance shattered right in front of you. You kept a splinter.",
+   "bad": "The best knight was unhorsed early, and the day fizzled out."
+  },
+  {
+   "id": "era_tilt",
+   "label": "Ride in the joust",
+   "about": "Armour, a lance and your house's colours",
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "game": "timing",
+   "stat": "athleticism",
+   "men": true,
+   "needs": "horse",
+   "status": 2,
+   "minAge": 17,
+   "maxAge": 45,
+   "happiness": 7,
+   "standing": 1,
+   "health": -3,
+   "good": "Your lance broke clean on his shield. The ladies' stand rose.",
+   "bad": "You were unhorsed and lay in the sand, seeing stars."
+  },
+  {
+   "id": "era_pallacorda",
+   "label": "Pallacorda",
+   "about": "Tennis on a walled court, for a wager",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "game": "reaction",
+   "stat": "athleticism",
+   "cost": 1,
+   "minAge": 12,
+   "happiness": 4,
+   "good": "You won the set and the wager.",
+   "bad": "You lost the set, the wager and your temper."
+  },
+  {
+   "id": "era_pallacorda",
+   "label": "Real tennis",
+   "about": "Tennis on an indoor court, the king's own game",
+   "groups": [
+    "england"
+   ],
+   "game": "reaction",
+   "stat": "athleticism",
+   "cost": 1,
+   "minAge": 12,
+   "happiness": 4,
+   "good": "You won the set and the wager.",
+   "bad": "You lost the set and the wager."
+  },
+  {
+   "id": "era_cards",
+   "label": "Cards and dice",
+   "about": "Primiera at the tavern. Dice are forbidden",
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "game": "cards",
+   "cost": 1,
+   "minAge": 14,
+   "happiness": 3,
+   "heat": 0.25,
+   "gamble": true,
+   "good": "You won a few coins and a reputation.",
+   "bad": "You lost what you'd put down, and then some."
+  },
+  {
+   "id": "era_chess",
+   "label": "Chess in the coffee courtyard",
+   "about": "Shatranj with an old man who never loses",
+   "groups": [
+    "maghreb",
+    "egypt",
+    "iberia",
+    "sahel"
+   ],
+   "game": "memory",
+   "stat": "smarts",
+   "minAge": 10,
+   "happiness": 3,
+   "smarts": 1,
+   "good": "You beat him at last. He bought the tea.",
+   "bad": "He beat you in twelve moves and told everyone."
+  },
+  {
+   "id": "era_tavern",
+   "label": "The tavern",
+   "about": "Wine, stories and quarrels",
+   "groups": [
+    "italy",
+    "islands",
+    "england"
+   ],
+   "game": "reaction",
+   "cost": 1,
+   "minAge": 14,
+   "happiness": 4,
+   "good": "A good night: songs, stories and a new friend.",
+   "bad": "A drunk picked a fight with you over nothing."
+  },
+  {
+   "id": "era_storyteller",
+   "label": "The storytellers' square",
+   "about": "Tales of Antar and the Thousand and One Nights",
+   "groups": [
+    "maghreb",
+    "egypt",
+    "iberia"
+   ],
+   "game": "memory",
+   "happiness": 4,
+   "good": "You stayed for the whole tale of Antar, and paid the teller twice.",
+   "bad": "Rain broke up the circle before the end."
+  },
+  {
+   "id": "era_bath",
+   "label": "The stufa",
+   "about": "The bathhouse: steam, gossip and a barber",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "game": "breath",
+   "cost": 1,
+   "happiness": 3,
+   "health": 2,
+   "good": "You came out light as air.",
+   "bad": "The water was dirty and the barber was drunk."
+  },
+  {
+   "id": "era_bath",
+   "label": "The bathhouse",
+   "about": "The stews on the Bankside, before the King shuts them",
+   "groups": [
+    "england"
+   ],
+   "to": 1546,
+   "game": "breath",
+   "cost": 1,
+   "happiness": 3,
+   "health": 1,
+   "good": "Hot water and a long soak.",
+   "bad": "The water was cold and the company was worse."
+  },
+  {
+   "id": "era_bath",
+   "label": "The hammam",
+   "about": "Hot rooms, cold water and the scrub",
+   "groups": [
+    "maghreb",
+    "egypt",
+    "iberia"
+   ],
+   "game": "breath",
+   "cost": 1,
+   "happiness": 4,
+   "health": 3,
+   "good": "You came out scrubbed, steamed and new.",
+   "bad": "Too hot for too long: you came out dizzy."
+  },
+  {
+   "id": "era_music",
+   "label": "Sing with the lute",
+   "about": "Frottole and songs at a friend's house",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "to": 1529,
+   "game": "rhythm",
+   "stat": "creativity",
+   "happiness": 4,
+   "creativity": 1,
+   "good": "Your song made the whole room go quiet.",
+   "bad": "You lost the tune in the second verse."
+  },
+  {
+   "id": "era_music",
+   "label": "Lute and madrigals",
+   "about": "Five voices round a table, the parts on one book",
+   "groups": [
+    "italy",
+    "islands"
+   ],
+   "from": 1530,
+   "game": "rhythm",
+   "stat": "creativity",
+   "happiness": 4,
+   "creativity": 1,
+   "good": "Your voice held the part to the end.",
+   "bad": "You came in a bar early, twice."
+  },
+  {
+   "id": "era_music",
+   "label": "Songs and the lute",
+   "about": "Ballads and part-songs after supper",
+   "groups": [
+    "england"
+   ],
+   "game": "rhythm",
+   "stat": "creativity",
+   "happiness": 4,
+   "creativity": 1,
+   "good": "Everyone joined the last chorus.",
+   "bad": "A string snapped mid-song."
+  },
+  {
+   "id": "era_music",
+   "label": "The oud and the nuba",
+   "about": "The old music of al-Andalus, suite by suite",
+   "groups": [
+    "maghreb",
+    "iberia",
+    "egypt"
+   ],
+   "game": "rhythm",
+   "stat": "creativity",
+   "happiness": 4,
+   "creativity": 1,
+   "good": "The players let you take a verse.",
+   "bad": "You lost the mode and the players frowned."
+  },
+  {
+   "id": "era_music",
+   "label": "Griots and drums",
+   "about": "The griot sings the deeds of the old kings",
+   "groups": [
+    "sahel"
+   ],
+   "game": "rhythm",
+   "happiness": 4,
+   "good": "The griot sang your family's name.",
+   "bad": "The drummers left early."
+  },
+  {
+   "id": "era_dance",
+   "label": "Dance at the court",
+   "about": "Drums, ivory horns and the mani watching",
+   "groups": [
+    "kongo"
+   ],
+   "game": "rhythm",
+   "stat": "athleticism",
+   "happiness": 5,
+   "standing": 1,
+   "good": "You danced until the drummers tired. The court noticed you.",
+   "bad": "You missed the turn and the court laughed."
+  },
+  {
+   "id": "era_ride",
+   "label": "Ride out and hunt",
+   "about": "Hounds, a hawk and the hills",
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "maghreb",
+    "iberia",
+    "egypt",
+    "sahel"
+   ],
+   "game": "balance",
+   "stat": "athleticism",
+   "needs": "horse",
+   "minAge": 12,
+   "happiness": 5,
+   "health": 2,
+   "good": "A long gallop and a hare for supper.",
+   "bad": "Your horse shied at a ditch and you went over its head."
+  },
+  {
+   "id": "era_market",
+   "label": "The market",
+   "about": "Cloth, beasts, books and everything else",
+   "market": true,
+   "minAge": 8
+  },
+  {
+   "id": "era_pilgrimage",
+   "label": "Pilgrimage to Rome",
+   "about": "The jubilee year: every sin forgiven at St Peter's",
+   "groups": [
+    "italy",
+    "islands",
+    "england",
+    "islands"
+   ],
+   "years": [
+    1450,
+    1475,
+    1500,
+    1525,
+    1550,
+    1575,
+    1600,
+    1625,
+    1650
+   ],
+   "faith": [
+    "catholic"
+   ],
+   "game": "lanes",
+   "cost": 8,
+   "minAge": 12,
+   "happiness": 8,
+   "standing": 2,
+   "once": true,
+   "good": "You walked to Rome, knelt at St Peter's and came home changed.",
+   "bad": "Fever on the road. You reached Rome, but barely."
+  },
+  {
+   "id": "era_shrine",
+   "label": "A pilgrimage",
+   "about": "To Loreto or Assisi, on foot",
+   "groups": [
+    "italy",
+    "islands",
+    "islands"
+   ],
+   "faith": [
+    "catholic"
+   ],
+   "game": "lanes",
+   "cost": 3,
+   "minAge": 10,
+   "happiness": 5,
+   "standing": 1,
+   "good": "You reached the shrine and left a candle.",
+   "bad": "Blisters, rain and a robbed purse."
+  },
+  {
+   "id": "era_shrine",
+   "label": "A pilgrimage to Canterbury",
+   "about": "To Becket's shrine, until the King destroys it",
+   "groups": [
+    "england"
+   ],
+   "to": 1538,
+   "faith": [
+    "catholic",
+    "english"
+   ],
+   "game": "lanes",
+   "cost": 2,
+   "minAge": 10,
+   "happiness": 5,
+   "standing": 1,
+   "good": "You reached Becket's shrine and bought a pilgrim's badge.",
+   "bad": "The inns were full and the road was mud."
+  },
+  {
+   "id": "era_hajj",
+   "label": "The hajj",
+   "about": "With the caravan to Mecca: once in a life, if you can",
+   "groups": [
+    "maghreb",
+    "egypt",
+    "sahel",
+    "iberia"
+   ],
+   "faith": [
+    "muslim"
+   ],
+   "game": "lanes",
+   "cost": 40,
+   "minAge": 16,
+   "happiness": 10,
+   "standing": 3,
+   "health": -5,
+   "once": true,
+   "title": "hajji",
+   "good": "You stood at Arafat with a hundred thousand others. You come home a hajji.",
+   "bad": "The caravan suffered on the road, but you reached Mecca."
+  },
+  {
+   "id": "era_playhouse",
+   "label": "The playhouse",
+   "about": "A penny to stand in the yard",
+   "cities": [
+    "London"
+   ],
+   "from": 1576,
+   "game": "timing",
+   "cost": 1,
+   "happiness": 6,
+   "good": "The whole yard wept at the death scene. So did you.",
+   "bad": "A pickpocket worked the yard while you watched."
+  },
+  {
+   "id": "era_night",
+   "label": "The night streets",
+   "about": "Curfew, blades, dice and the drum",
+   "law": true,
+   "minAge": 14
+  },
+  {
+   "id": "era_journey",
+   "label": "Make a journey",
+   "about": "Another city, by road, sea or caravan",
+   "journey": true,
+   "minAge": 12
+  }
+ ],
+ "houses": {
+  "note": "Fortunes are historians' estimates in gold florins, shown in the money of where you live; the list follows history unless your life changes it.",
+  "join": 5000,
+  "list": [
+   {
+    "id": "medici",
+    "name": "The Medici",
+    "city": "Florence",
+    "trade": "banking",
+    "worth": [
+     [
+      1450,
+      180000
+     ],
+     [
+      1470,
+      230000
+     ],
+     [
+      1478,
+      200000
+     ],
+     [
+      1490,
+      120000
+     ],
+     [
+      1494,
+      40000
+     ],
+     [
+      1511,
+      60000
+     ],
+     [
+      1513,
+      180000
+     ],
+     [
+      1530,
+      300000
+     ],
+     [
+      1600,
+      600000
+     ],
+     [
+      1650,
+      700000
+     ]
+    ],
+    "notes": {
+     "1478": "branches failing",
+     "1494": "exiled, the bank falls",
+     "1513": "back, with a Medici pope",
+     "1532": "dukes of Florence"
+    }
+   },
+   {
+    "id": "pazzi",
+    "name": "The Pazzi",
+    "city": "Florence",
+    "trade": "banking",
+    "worth": [
+     [
+      1450,
+      90000
+     ],
+     [
+      1477,
+      120000
+     ]
+    ],
+    "fell": 1478,
+    "fallen": "Ruined and banished after their plot, April 1478"
+   },
+   {
+    "id": "strozzi",
+    "name": "The Strozzi",
+    "city": "Florence",
+    "trade": "banking",
+    "worth": [
+     [
+      1450,
+      40000
+     ],
+     [
+      1466,
+      60000
+     ],
+     [
+      1478,
+      110000
+     ],
+     [
+      1491,
+      150000
+     ],
+     [
+      1530,
+      200000
+     ],
+     [
+      1538,
+      60000
+     ],
+     [
+      1650,
+      80000
+     ]
+    ],
+    "notes": {
+     "1466": "back from exile",
+     "1489": "building their palazzo",
+     "1538": "Filippo dies in prison"
+    }
+   },
+   {
+    "id": "fugger",
+    "name": "The Fugger",
+    "city": "Augsburg",
+    "trade": "cloth, then silver",
+    "worth": [
+     [
+      1450,
+      8000
+     ],
+     [
+      1478,
+      30000
+     ],
+     [
+      1494,
+      54000
+     ],
+     [
+      1511,
+      200000
+     ],
+     [
+      1527,
+      2000000
+     ],
+     [
+      1546,
+      5000000
+     ],
+     [
+      1600,
+      2000000
+     ],
+     [
+      1650,
+      600000
+     ]
+    ],
+    "notes": {
+     "1511": "bankers to the Emperor",
+     "1525": "Jakob the Rich dies",
+     "1557": "hit by Spain's bankruptcy"
+    }
+   },
+   {
+    "id": "welser",
+    "name": "The Welser",
+    "city": "Augsburg",
+    "trade": "spices",
+    "worth": [
+     [
+      1450,
+      10000
+     ],
+     [
+      1500,
+      80000
+     ],
+     [
+      1530,
+      500000
+     ],
+     [
+      1556,
+      400000
+     ],
+     [
+      1600,
+      200000
+     ],
+     [
+      1613,
+      100000
+     ]
+    ],
+    "fell": 1614,
+    "fallen": "Bankrupt, 1614",
+    "notes": {
+     "1528": "granted Venezuela",
+     "1556": "Venezuela taken back"
+    }
+   },
+   {
+    "id": "chigi",
+    "name": "The Chigi",
+    "city": "Siena and Rome",
+    "trade": "banking",
+    "worth": [
+     [
+      1450,
+      3000
+     ],
+     [
+      1490,
+      20000
+     ],
+     [
+      1500,
+      100000
+     ],
+     [
+      1520,
+      800000
+     ],
+     [
+      1530,
+      150000
+     ],
+     [
+      1560,
+      50000
+     ],
+     [
+      1650,
+      200000
+     ]
+    ],
+    "notes": {
+     "1500": "Agostino rising in Rome",
+     "1520": "Agostino dies, the richest man in Rome",
+     "1655": "a Chigi pope"
+    }
+   },
+   {
+    "id": "grimaldi",
+    "name": "The Grimaldi",
+    "city": "Genoa",
+    "trade": "loans to Spain",
+    "from": 1528,
+    "worth": [
+     [
+      1528,
+      150000
+     ],
+     [
+      1580,
+      900000
+     ],
+     [
+      1627,
+      400000
+     ],
+     [
+      1650,
+      300000
+     ]
+    ],
+    "notes": {
+     "1528": "Genoa allies with Spain"
+    }
+   },
+   {
+    "id": "gresham",
+    "name": "The Greshams",
+    "city": "London",
+    "trade": "cloth and the Crown's debts",
+    "groups": [
+     "england"
+    ],
+    "from": 1500,
+    "worth": [
+     [
+      1500,
+      10000
+     ],
+     [
+      1540,
+      60000
+     ],
+     [
+      1571,
+      150000
+     ]
+    ],
+    "fell": 1580,
+    "fallen": "Sir Thomas dies without heirs (1579)",
+    "notes": {
+     "1571": "opened the Royal Exchange"
+    }
+   },
+   {
+    "id": "aqit",
+    "name": "The Aqit",
+    "city": "Timbuktu",
+    "trade": "scholars and judges",
+    "groups": [
+     "sahel"
+    ],
+    "worth": [
+     [
+      1450,
+      8000
+     ],
+     [
+      1467,
+      8000
+     ],
+     [
+      1468,
+      2000
+     ],
+     [
+      1493,
+      10000
+     ],
+     [
+      1580,
+      15000
+     ]
+    ],
+    "fell": 1591,
+    "fallen": "Exiled to Marrakesh after the Moroccan conquest",
+    "notes": {
+     "1468": "fled Sunni Ali to Walata",
+     "1493": "back under Askia Muhammad"
+    }
+   },
+   {
+    "id": "wattasid",
+    "name": "The Wattasids",
+    "city": "Fez",
+    "trade": "viziers, then sultans",
+    "groups": [
+     "maghreb"
+    ],
+    "worth": [
+     [
+      1450,
+      60000
+     ],
+     [
+      1472,
+      90000
+     ],
+     [
+      1550,
+      40000
+     ]
+    ],
+    "fell": 1554,
+    "fallen": "Overthrown by the Saadians, 1554",
+    "notes": {
+     "1472": "sultans of Fez"
+    }
+   },
+   {
+    "id": "saadi",
+    "name": "The Saadians",
+    "city": "Marrakesh",
+    "trade": "sugar and Saharan gold",
+    "groups": [
+     "maghreb"
+    ],
+    "from": 1554,
+    "worth": [
+     [
+      1554,
+      80000
+     ],
+     [
+      1591,
+      400000
+     ],
+     [
+      1650,
+      60000
+     ]
+    ],
+    "notes": {
+     "1591": "gold from Timbuktu"
+    }
+   },
+   {
+    "id": "emirs",
+    "name": "The households of the Mamluk emirs",
+    "city": "Cairo",
+    "trade": "land and the spice tax",
+    "groups": [
+     "egypt"
+    ],
+    "worth": [
+     [
+      1450,
+      100000
+     ],
+     [
+      1500,
+      80000
+     ]
+    ],
+    "fell": 1517,
+    "fallen": "Swept away by the Ottoman conquest, 1517"
+   },
+   {
+    "id": "kilukeni",
+    "name": "The royal lineage (Kilukeni)",
+    "city": "Mbanza Kongo",
+    "trade": "tribute, cloth and shells",
+    "groups": [
+     "kongo"
+    ],
+    "worth": [
+     [
+      1450,
+      20000
+     ],
+     [
+      1520,
+      40000
+     ],
+     [
+      1570,
+      15000
+     ],
+     [
+      1650,
+      30000
+     ]
+    ],
+    "notes": {
+     "1568": "the Jaga invasion"
+    }
+   }
+  ]
+ },
+ "people": {
+  "humours": {
+   "sanguine": {
+    "label": "Sanguine",
+    "about": "warm, talkative, loves company",
+    "likes": [
+     "feast",
+     "news",
+     "gift"
+    ],
+    "dislike": "cold"
+   },
+   "choleric": {
+    "label": "Choleric",
+    "about": "proud and quick to anger",
+    "likes": [
+     "work",
+     "respect",
+     "horse"
+    ],
+    "dislike": "crossed"
+   },
+   "melancholic": {
+    "label": "Melancholic",
+    "about": "quiet, remembers everything",
+    "likes": [
+     "old",
+     "letter",
+     "art"
+    ],
+    "dislike": "secret"
+   },
+   "phlegmatic": {
+    "label": "Phlegmatic",
+    "about": "calm and patient, slow to change",
+    "likes": [
+     "help",
+     "faith",
+     "quiet"
+    ],
+    "dislike": "quarrel"
+   }
+  },
+  "likes": {
+   "feast": "feasts and company",
+   "news": "news and gossip",
+   "gift": "gifts",
+   "work": "talk of your work",
+   "respect": "being asked for advice",
+   "horse": "riding out",
+   "old": "the old days",
+   "letter": "letters",
+   "art": "music and pictures",
+   "help": "a helping hand",
+   "faith": "church and prayer",
+   "quiet": "a quiet walk",
+   "money": "money"
+  },
+  "dislikes": {
+   "cold": "being left out",
+   "crossed": "being contradicted",
+   "secret": "being kept a secret",
+   "quarrel": "raised voices"
+  },
+  "legend": {
+   "leonardo": {
+    "mother": {
+     "humour": "melancholic",
+     "likes": [
+      "old",
+      "letter"
+     ],
+     "dislike": "secret",
+     "where": "Campo Zeppi, near Vinci",
+     "note": "married to Accattabriga, a kiln-man"
+    },
+    "father": {
+     "humour": "choleric",
+     "likes": [
+      "work",
+      "respect"
+     ],
+     "dislike": "crossed",
+     "where": "Florence",
+     "note": "a notary to the Signoria"
+    },
+    "uncle": {
+     "humour": "sanguine",
+     "likes": [
+      "old",
+      "quiet"
+     ],
+     "dislike": "cold",
+     "where": "Vinci",
+     "note": "keeps the family's farms"
+    },
+    "grandfather": {
+     "humour": "phlegmatic",
+     "likes": [
+      "old",
+      "faith"
+     ],
+     "dislike": "quarrel",
+     "where": "Vinci",
+     "note": "keeps the family's books"
+    }
+   }
+  },
+  "minds": [
+   {
+    "id": "harvest",
+    "text": "The harvest failed and there's little to eat. {they} won't ask you for help.",
+    "help": "grain",
+    "country": true
+   },
+   {
+    "id": "debt",
+    "text": "{they_cap} owes money to a lender and lies awake over it.",
+    "help": "money",
+    "minAge": 18
+   },
+   {
+    "id": "ill",
+    "text": "A cough that won't go away this winter.",
+    "help": "physician",
+    "minAge": 40
+   },
+   {
+    "id": "lonely",
+    "text": "Lonely since the last time you came.",
+    "help": "visit"
+   },
+   {
+    "id": "match",
+    "text": "Worried about a match for a daughter: there's no dowry.",
+    "help": "money",
+    "minAge": 35
+   },
+   {
+    "id": "work",
+    "text": "Looking for work, and too proud to say so.",
+    "help": "favour",
+    "minAge": 16,
+    "maxAge": 55
+   },
+   {
+    "id": "plague",
+    "text": "Afraid of the plague this year.",
+    "help": "grain",
+    "plague": true
+   },
+   {
+    "id": "love",
+    "text": "In love with someone the family won't accept.",
+    "help": "talk",
+    "minAge": 15,
+    "maxAge": 30
+   }
+  ],
+  "gifts": [
+   {
+    "id": "sweets",
+    "label": "Sweets and figs",
+    "cost": 1,
+    "likes": [
+     "feast",
+     "old"
+    ]
+   },
+   {
+    "id": "cloth",
+    "label": "A length of good cloth",
+    "cost": 6,
+    "likes": [
+     "gift"
+    ]
+   },
+   {
+    "id": "book",
+    "label": "A book",
+    "cost": 3,
+    "likes": [
+     "art",
+     "faith"
+    ],
+    "needs": "book"
+   },
+   {
+    "id": "money5",
+    "label": "Five {money} in coin",
+    "cost": 5,
+    "money": true,
+    "likes": [
+     "money",
+     "help"
+    ]
+   },
+   {
+    "id": "money20",
+    "label": "Twenty {money} in coin",
+    "cost": 20,
+    "money": true,
+    "likes": [
+     "money",
+     "help"
+    ]
+   }
+  ],
+  "quotes": {
+   "sanguine": {
+    "good": [
+     "Ha! You always know how to cheer a house.",
+     "Come again, and bring friends next time!",
+     "Now that's a day worth telling about."
+    ],
+    "bad": [
+     "Well. That was dull.",
+     "You've gone sour, you know that?"
+    ]
+   },
+   "choleric": {
+    "good": [
+     "Good. That's how it's done.",
+     "At last someone in this family talks sense.",
+     "I won't forget that."
+    ],
+    "bad": [
+     "Don't tell me what to think.",
+     "You've a nerve, after all I've done."
+    ]
+   },
+   "melancholic": {
+    "good": [
+     "I'll keep this, you know. I keep everything.",
+     "You remembered. Nobody remembers.",
+     "Stay a little longer."
+    ],
+    "bad": [
+     "I see how it is.",
+     "You always did leave too soon."
+    ]
+   },
+   "phlegmatic": {
+    "good": [
+     "Well. That was a good day.",
+     "Thank you. Truly.",
+     "You're a help, you are."
+    ],
+    "bad": [
+     "Let's not do that again.",
+     "I'd rather sit quietly."
+    ]
+   }
+  },
+  "legendQuotes": {
+   "leonardo": {
+    "mother": {
+     "old": "You drew the river on the wall with a burnt stick. Your grandfather beat the wall, not you.",
+     "secret": "Some things a mother keeps. Ask your father, if you dare."
+    }
+   }
+  },
+  "dowry": {
+   "base": 150,
+   "status": [
+    60,
+    150,
+    600,
+    3000
+   ]
+  },
+  "secrets": {
+   "leonardo": {
+    "mother": "Ask about your birth",
+    "father": "Ask why you can't be a notary"
+   }
+  }
  }
 }
