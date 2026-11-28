@@ -8,7 +8,7 @@ import '../game_controller.dart';
 import '../theme.dart';
 import 'activities.dart'
     show OptionRow, pickInteractionVariant, showBusyNotice, showEvent;
-import 'era_people_sheet.dart' show EraPeopleTop, openEraPersonSheet;
+import 'era_people_sheet.dart' show EraPeopleWall, openEraPersonSheet;
 import 'hub_kit.dart';
 import 'result_popup.dart';
 import 'widgets.dart';
@@ -128,8 +128,9 @@ class _PeopleTabState extends State<PeopleTab> {
               'Nobody matches "$_q". Try a first name, "mother" or "friend".',
               style: NF.sora(14, color: NF.muted),
             ),
+        ] else if (life.era != null) ...[
+          EraPeopleWall(controller: widget.controller),
         ] else ...[
-          if (life.era != null) EraPeopleTop(controller: widget.controller),
           if (needs.isNotEmpty) ...[
             const HubHeading('Suggested for you', sub: 'People who need you'),
             for (final (n, why) in needs.take(3)) ...[

@@ -358,3 +358,6 @@ The first Legend, free as a prologue preview: live Leonardo's life in Renaissanc
 - An era market: cloth, beasts, books after the press reaches your city, a lute, a sword. Sumptuary laws can fine you for silk.
 - About twenty era activities, from Carnival and the joust to the stufa, the tavern, pilgrimages and the hajj, each with its own mini-game in an ink scene.
 - People in a Renaissance life are now scenes, not buttons: each person has a nature you learn over time, something on their mind this year, three moments a year, letters and calls, and marriages arranged with a dowry.
+
+## Renaissance pages with a look of their own (28 Nov)
+- Every era page is now its own Renaissance object instead of the same cards: Wealth is a counting-house ledger (a coin stack, money in and out, banks as wax seals, ventures as a voyage on a map), Activities is a city broadsheet with the season's feast as a woodcut, the market is a striped stall with goods on wooden shelves and "YOURS" stamps, Homes is an ink drawing of your street with your flag on your house, the Great Houses hang as heraldic banners in a dark hall, and People is a red portrait wall with sealed letters.

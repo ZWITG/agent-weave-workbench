@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../engine/era_people.dart';
@@ -5,6 +7,7 @@ import '../engine/eras.dart';
 import '../engine/models.dart';
 import '../game_controller.dart';
 import '../theme.dart';
+import 'era_art.dart';
 import 'era_kit.dart';
 import 'minigames.dart';
 import 'widgets.dart';
@@ -714,43 +717,235 @@ class _HillsPainter extends CustomPainter {
   bool shouldRepaint(covariant _HillsPainter old) => old.ink != ink;
 }
 
-/// The top of the People tab in an era life: people who came to you, and
-/// a match if you are unmarried.
-class EraPeopleTop extends StatelessWidget {
-  const EraPeopleTop({super.key, required this.controller});
+/// The People tab of an era life, drawn as a portrait wall: calls and
+/// invitations arrive as sealed letters, and everyone you know hangs in a
+/// gold oval frame on a red wall with a ribbon for their mood. Tap a
+/// portrait to open their scenes.
+class EraPeopleWall extends StatelessWidget {
+  const EraPeopleWall({super.key, required this.controller});
   final GameController controller;
+
+  static const _order = ['Partner', 'Family', 'Children', 'Friends', 'Work', 'School', 'Exes', 'Pets'];
+
+  static String mood(Life l, Npc n) {
+    if (!n.alive) return 'remembered';
+    if (eraMind(l, n) != null) return 'on their mind';
+    if (n.resentment >= 40) return 'hurt';
+    if (l.age - n.lastContactAge >= 5) return 'missing you';
+    if (n.affection >= 70) return 'fond of you';
+    return 'well';
+  }
 
   @override
   Widget build(BuildContext context) {
     final life = controller.life!;
     final calls = eraCalls(life);
     final match = eraMatchLock(life) == null;
-    if (calls.isEmpty && !match) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(top: 14),
-      child: EraCard(
-        life: life,
-        title: calls.isNotEmpty ? 'Waiting for you' : 'A match',
+    final groups = <String, List<Npc>>{};
+    for (final n in life.npcs.where((n) => n.alive)) {
+      groups.putIfAbsent(n.circle, () => []).add(n);
+    }
+    final gone = life.npcs.where((n) => !n.alive).toList();
+    final keys = groups.keys.toList()
+      ..sort((a, b) {
+        final ia = _order.indexOf(a), ib = _order.indexOf(b);
+        return (ia < 0 ? 99 : ia).compareTo(ib < 0 ? 99 : ib);
+      });
+    return Container(
+      margin: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.fromLTRB(14, 16, 14, 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFA87C2E), width: 2),
+        gradient: const RadialGradient(
+          center: Alignment(0, -0.6),
+          radius: 1.2,
+          colors: [Color(0xFF874033), Color(0xFF4F2018)],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          inkKicker('People · ${life.year}', color: const Color(0xFFF0C37A)),
+          Text('Your people', style: hand(40, color: const Color(0xFFF6DC8F))),
           for (final (i, call) in calls.indexed)
-            EraRow(
-              first: i == 0,
-              title: call.npc.name,
-              sub: call.text,
-              pill: 'Answer',
-              filled: true,
+            _Letter(
+              seal: call.npc.name.characters.first,
+              title: _callTitle(call),
+              quote: call.text,
+              tilt: i.isEven ? -0.012 : 0.01,
               onTap: () => openEraCall(context, controller, call),
             ),
           if (match)
-            EraRow(
-              first: calls.isEmpty,
+            _Letter(
+              seal: '♥',
+              glyph: 'flag',
               title: 'Seek a match',
-              sub: 'A broker, a family, a dowry',
-              pill: 'Hear them',
+              quote: 'A broker, a family, a dowry…',
+              tilt: calls.length.isEven ? -0.012 : 0.01,
               onTap: () => openEraMatch(context, controller),
+            ),
+          for (final k in keys) ...[
+            const SizedBox(height: 14),
+            Text(k, style: hand(26, color: const Color(0xFFF0C37A))),
+            _Frames(controller: controller, people: groups[k]!),
+          ],
+          if (gone.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Text('In memory', style: hand(26, color: const Color(0xFFD9C49A))),
+            Opacity(opacity: 0.6, child: _Frames(controller: controller, people: gone)),
+          ],
+          if (life.npcs.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                'The wall is bare for now. New people arrive through work, love and events.',
+                style: fell(14.5, color: const Color(0xFFF3E2BD)),
+              ),
             ),
         ],
       ),
+    );
+  }
+
+  static String _callTitle(EraCall call) {
+    final first = call.npc.name.split(' ').first;
+    return switch (call.kind) {
+      'match' => 'A marriage broker calls',
+      'childmatch' => 'A match for $first',
+      'milestone' => 'News from $first',
+      _ => 'A letter from $first',
+    };
+  }
+}
+
+class _Letter extends StatelessWidget {
+  const _Letter({
+    required this.seal,
+    required this.title,
+    required this.quote,
+    required this.tilt,
+    required this.onTap,
+    this.glyph,
+  });
+  final String seal;
+  final String? glyph;
+  final String title;
+  final String quote;
+  final double tilt;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: onTap,
+    child: Transform.rotate(
+      angle: tilt,
+      child: Container(
+        margin: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
+        decoration: const BoxDecoration(
+          color: EraInk.paper,
+          boxShadow: [BoxShadow(color: Color(0x55000000), offset: Offset(0, 4))],
+        ),
+        child: Row(
+          children: [
+            WaxSeal(glyph != null ? '' : seal.toUpperCase(), size: 40, glyph: glyph),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: fell(15.5)),
+                  Text(
+                    quote,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: hand(20, color: EraInk.ink2, height: 1.0),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Text('Open', style: TextStyle(fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w700, color: EraInk.red)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+/// "Ser Piero da Vinci" → "Piero".
+String _given(String name) {
+  final w = name.split(' ');
+  return w.length > 1 && const {'Ser', 'Messer', 'Monna', 'Madonna', 'Sir', 'Dame', 'Mistress', 'Master'}.contains(w.first)
+      ? w[1]
+      : w.first;
+}
+
+class _Frames extends StatelessWidget {
+  const _Frames({required this.controller, required this.people});
+  final GameController controller;
+  final List<Npc> people;
+
+  @override
+  Widget build(BuildContext context) {
+    final life = controller.life!;
+    return LayoutBuilder(
+      builder: (context, box) {
+        final cols = box.maxWidth > 480 ? 4 : 3;
+        final w = (box.maxWidth - (cols - 1) * 8) / cols;
+        return Wrap(
+          spacing: 8,
+          runSpacing: 10,
+          children: [
+            for (final n in people)
+              SizedBox(
+                width: w,
+                child: GestureDetector(
+                  onTap: () => openEraPersonSheet(context, controller, n),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 6),
+                      InkPortrait(
+                        seed: n.id,
+                        female: n.gender == 'female',
+                        age: n.ageIn(life.year),
+                        width: min(w - 10, 96),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _given(n.name),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: fell(15, color: const Color(0xFFF3E2BD)),
+                      ),
+                      Text(
+                        n.role,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: fell(11.5, color: const Color(0xFFD9B88A)),
+                      ),
+                      const SizedBox(height: 3),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: EraPeopleWall.mood(life, n) == 'on their mind'
+                              ? EraInk.goldLight
+                              : const Color(0xFFF3E2BD),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          EraPeopleWall.mood(life, n),
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 10, color: EraInk.red2),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
